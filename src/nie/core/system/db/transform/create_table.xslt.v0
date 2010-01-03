@@ -1,0 +1,121 @@
+<?xml version="1.0"?>
+<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
+<xsl:output method="text"/>
+
+<!-- <xsl:text disable-output-escaping="yes">&lt;</xsl:text> -->
+
+<!-- The name of the database target we are using -->
+<xsl:param name="db" />
+
+<!-- The root -->
+<xsl:template match="/">
+
+<!-- Targeting "<xsl:value-of select="$db" />" -->
+
+<!-- Preamble: dropping old versions of the tables, etc -->
+<xsl:apply-templates select="table" mode="preamble" />
+
+<!-- Create fields: the actual create statement, types -->
+<xsl:apply-templates select="table" mode="schema" />
+<!-- Indicies and constraints -->
+<!-- closing -->
+
+
+</xsl:template>
+
+
+<!-- Preamble:
+	==========================================
+-->
+<xsl:template match="table" mode="preamble">
+	DROP TABLE <xsl:value-of select="@name" />
+	<xsl:if test="$db = 'oracle'">
+		CASCADE CONSTRAINTS
+	</xsl:if>
+	;
+</xsl:template>
+
+
+<!-- Create fields:
+	Including the actual schema, types, etc.
+	==========================================
+-->
+<!-- The Table -->
+<!-- ========= -->
+<xsl:template match="table" mode="schema" >
+	CREATE TABLE <xsl:value-of select="@name" />
+	( 	<!-- each field -->
+		<xsl:apply-templates
+			select="field[not(@implemented) or (@implemented='TRUE')]"
+			mode="schema"
+		/>
+		<!--
+			select="field/[(@implemented='TRUE') or (@implemented='')]"
+			select="field[@implemented='TRUE']"
+		-->
+	);
+</xsl:template>
+
+<!-- Each Field -->
+<!-- ========== -->
+<xsl:template match="field" mode="schema" >
+
+	<!-- The name of the field -->
+	<xsl:value-of select="@name" />
+
+	<!-- It's declaration, dispatch to proper DB -->
+	<xsl:choose>
+		<!-- Oracle -->
+		<xsl:when test="$db = 'oracle'">
+			<xsl:apply-templates select="."
+				mode="schema_oracle_field_decl"
+			/>
+		</xsl:when>
+		<!-- PostgreSQL -->
+		<xsl:when test="$db = 'postgresql'">
+			<xsl:apply-templates select="."
+				mode="schema_postgresql_field_decl"
+			/>
+		</xsl:when>
+		<!-- Else we have no idea! -->
+		<xsl:otherwise>
+			otherwise "<xsl:value-of select="$db" />"
+			can only do oracle or postgresql
+		</xsl:otherwise>
+	</xsl:choose>
+
+	<!-- not null -->
+
+	<!-- The closing comma, if needed -->
+	<xsl:if test="position() &lt; last()">,
+	</xsl:if>
+</xsl:template>
+
+<!-- The declaration portion for an ORACLE field -->
+<!-- ==============================########===== -->
+<xsl:template match="field" mode="schema_oracle_field_decl">
+	<xsl:choose>
+		<xsl:when test="(@type='boolean') or (@type='int') or (@type='long')">	NUMBER</xsl:when>
+		<xsl:when test="@type='text'">	VARCHAR2(<xsl:value-of select="@size" />)</xsl:when>
+		<xsl:when test="@type='timestamp'">	DATE</xsl:when>
+		<xsl:otherwise>
+			UNKNOWN type "<xsl:value-of select="@type" />"
+		</xsl:otherwise>
+	</xsl:choose>
+</xsl:template>
+
+<!-- The declaration portion for an POSTGRES field -->
+<!-- ==============================##########===== -->
+<xsl:template match="field" mode="schema_postgresql_field_decl">
+	<xsl:choose>
+		<xsl:when test="(@type='boolean') or (@type='int') or (@type='long')">	INT4</xsl:when>
+		<xsl:when test="@type='text'">	TEXT</xsl:when>
+		<xsl:when test="@type='timestamp'">	TIMESTAMP</xsl:when>
+		<xsl:otherwise>
+			UNKNOWN type "<xsl:value-of select="@type" />"
+		</xsl:otherwise>
+	</xsl:choose>
+</xsl:template>
+
+
+</xsl:stylesheet>

@@ -1,0 +1,81 @@
+<form
+	action="..."
+	title="Locate and Manage Directed Results Maps"
+>
+
+	<!--
+			See sr2.java_reports.ListMapsForTerms N
+			and sr2.ReportConstants.MAP_SELECTOR_REPORT_NAME
+	-->
+
+	<!--
+			title="Search by Term Or URL (* wildcards OK)"
+	-->
+	<section
+		title="Search by Term _OR_ URL (use * or % for wildcards)"
+		help="find_map_basic_info.html"
+	>
+		<field
+			name="term"
+			label="Search Term"
+			type="text"
+		/>
+		<field
+			name="url"
+			label="URL"
+			type="text"
+		/>
+	</section>
+
+	<!--
+	<section
+		title="or by Exact Map ID (advanced)"
+		help="find_map_by_id.html"
+	>
+		<field
+			name="map_id"
+			label="Map ID"
+			type="text"
+		/>
+	</section>
+	-->
+
+	<section
+		title="or Create a New Map"
+		help="find_map_or_create.html"
+	>
+		<field
+			name="seed_terms"
+			label="Starting Term(s)"
+			type="textarea"
+			rows="4"
+		/>
+	</section>
+
+	<section>
+		<field type="hidden" name="mode">
+			submit
+		</field>
+
+		<!-- placeholder -->
+		<!--
+		<field type="hidden" name="return_url" />
+		-->
+		<!-- See webui.UILink -->
+		<field type="hidden" name="return_url">
+			(self)
+		</field>
+
+		<!-- Submit buttons -->
+		<!--
+		<button>
+			&lt; Cancel
+		</button>
+		-->
+		<button>
+			Go &gt;
+		</button>
+	</section>
+
+
+</form>

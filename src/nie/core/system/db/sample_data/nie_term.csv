@@ -1,0 +1,11 @@
+#id,text_as_entered,text_normalized,created_by_person
+1,Insurance,insurance,demoloader
+2,"Airplane Insurance","airplane insurance",demoloader
+3,"Pilot's Insurance","pilot's insurance",demoloader
+4,"Member Products","member products",demoloader
+5,Charts,charts,demoloader
+6,Airport Charts,airport charts,demoloader
+7,Jeppesen,jeppesen,demoloader
+8,Jeppsen,jeppsen,demoloader
+9,Jeppson,jeppson,demoloader
+10,Search,search,demoloader

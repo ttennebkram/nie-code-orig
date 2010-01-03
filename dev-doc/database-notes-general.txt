@@ -1,0 +1,17 @@
+nie.core.
+DBConfig
+DBTableDef
+
+DBConfig main()
+
+lDoLoadData
+lDoExportData
+
+myDB.loadASpecificDBTable( target, overwrite, directory )
+myDB.loadAllDBTables( target, overwrite, directory )
+
+DBTableDef
+.saveCsvDataToFile
+
+-export[_table]
+-import[_table]

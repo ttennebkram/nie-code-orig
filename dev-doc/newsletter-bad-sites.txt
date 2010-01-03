@@ -1,0 +1,12 @@
+# Not there?
+aexp.com
+# Invalid 0x0 character
+agilent.com
+# :'s in names
+arboradvisors.com
+# IO Exception but att.com is there
+att.com
+# javascript: in form action
+att.net
+# trouble removing prefix
+ca.eyi.com

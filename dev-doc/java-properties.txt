@@ -1,0 +1,53 @@
+-- listing properties --
+
+java.version=1.3.0
+java.vm.version=1.3.0-C
+java.runtime.version=1.3.0-C
+
+java.home=D:\apps\jdk13ee\jre
+user.dir=D:\data\java (current directory)
+java.ext.dirs=D:\apps\jdk13ee\jre\lib\ext
+java.class.path=.;.;d:\apps\java-jmf\lib\sound.jar;d:...
+sun.boot.class.path=D:\apps\jdk13ee\jre\lib\rt.jar;D:\app...
+java.library.path=D:\apps\jdk13ee\bin;.;C:\WINNT\system...
+java.vendor=Sun Microsystems Inc.
+
+user.name=mbennett
+user.timezone=
+user.home=C:\Documents and Settings\mbennett
+user.region=US
+user.language=en
+java.io.tmpdir=C:\DOCUME~1\mbennett\LOCALS~1\Temp\
+
+os.arch=x86
+sun.cpu.isalist=pentium i486 i386
+os.name=Windows 2000
+os.version=5.0
+sun.cpu.endian=little
+sun.io.unicode.encoding=UnicodeLittle
+file.encoding=Cp1252
+file.encoding.pkg=sun.io
+file.separator=\
+path.separator=;
+line.separator=
+
+
+java.specification.vendor=Sun Microsystems Inc.
+java.runtime.name=Java(TM) 2 Runtime Environment, Stand...
+sun.boot.library.path=D:\apps\jdk13ee\jre\bin
+java.vm.name=Java HotSpot(TM) Client VM
+java.vm.vendor=Sun Microsystems Inc.
+java.vendor.url=http://java.sun.com/
+java.vendor.url.bug=http://java.sun.com/cgi-bin/bugreport...
+
+java.vm.specification.version=1.0
+java.vm.info=mixed mode
+java.vm.specification.name=Java Virtual Machine Specification
+java.awt.graphicsenv=sun.awt.Win32GraphicsEnvironment
+java.vm.specification.vendor=Sun Microsystems Inc.
+java.awt.fonts=
+java.specification.name=Java Platform API Specification
+java.class.version=47.0
+java.awt.printerjob=sun.awt.windows.WPrinterJob
+java.specification.version=1.3
+awt.toolkit=sun.awt.windows.WToolkit

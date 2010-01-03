@@ -1,0 +1,985 @@
+//package nie.processors;
+package nie.pump.processors;
+
+import java.util.*;
+
+import org.jdom.Element;
+
+import nie.core.*;
+import nie.pump.base.*;
+import nie.pump.base.Queue;
+
+/***
+	todo list:
+	maybe offer option to complain if no key is present
+	add runpath stamp to here, also check csv in
+	consider default for output count field name to be
+	input name + "_count"
+***/
+
+/**
+ * Title:	Tabulator 2
+ * Description:
+ * Copyright:    Copyright (c) 2001
+ * Company:
+ * @author	Mark
+ * @version 2.0
+ *
+ * Requires two input queues and one output queue
+ * Fisrt input queue: work units to tabulate
+ * Second input queue: the "wait" queue from the exit processor
+ * Output queue: new work units with tabulate results
+ *
+ * We will look for only ONE parameters tag:
+ *      <tabulate ... />
+ *
+ * Will output one work unit for each unique pattern with the count
+ * The output work units will have two fields, the count and the
+ * key that the count is for
+ *
+ * Required attrs:
+ * key_field= (or key=)
+ * 	Field to tabulate
+ * total_count_field= (or total=)
+ *	Field to put results COUNT into
+ *
+ * Important option
+ * What feild to put the key for each count in
+ *		"destination_key_field", default is the source field name
+ *
+ * Optional flags, see end of class for details
+ *
+ * Tabulate creates NEW work units
+ * You can force free form for new work units
+ * free_form = x (doens't matter what you set it to)
+ *
+ * Tabulate tag attribute: Whether to do case sensitive matching or not
+ * When tabulating the input field
+ *	    "case_sensitive", default is FALSE, by default we are case INsensitive
+ *
+ * Tabulate tag attribute: Whether or not we should count null
+ * strings in our totals
+ * This is NOT the same as counting user fields that are NOT FOUND
+ * at all.
+ *	    "count_empty_strings", default is TRUE,
+ *		consistent with most DB's nulls
+ *
+ * Tabulate tag attribute: Whether to trim strings before tabulating
+ * This has a relation to the counting of null strings; with both
+ * set, all manner of white space strings will be counted in the single
+ * empty string tally
+ *      "trim_before_tabulating", default is TRUE
+ *
+ * You're also allowed to specify that fields should be copied over
+ * For example, on a matching id number, you can copy over new references
+ * <copy_field src= dst= />
+ */
+
+
+public class TabulatorV2 extends Processor
+{
+	public String kClassName() { return "TabulatorV2"; }
+
+
+	// public static final boolean debug = true;
+
+	private void __sep__Constructors__() {};
+	////////////////////////////////////////////////////////////
+	public TabulatorV2( Application inApplication,
+		Queue[] inReadQueue,
+		Queue[] inWriteQueue,
+		Queue[] inUsesQueue,
+		Element inParameter,
+		String inID )
+	{
+		super( inApplication, inReadQueue, inWriteQueue, inUsesQueue, inParameter, inID );
+		if( (inReadQueue == null) || (inReadQueue.length < 2) ||
+			(inReadQueue[0] == null) || (inReadQueue[1] == null)
+			);
+			final String kFName = "constructor";
+		{
+			
+			fatalErrorMsg( kFName, "Tabulator requires two input queues." );
+			System.exit( -1 );
+		}
+
+		fReadQueue = inReadQueue[0];
+		fWaitQueue = inReadQueue[1];
+
+		if( (inWriteQueue == null) || (inWriteQueue[0] == null) )
+		{
+			// System.err.println( "No output queue specified." );
+			fatalErrorMsg( kFName, "No output queue specified." );
+			System.exit( -1 );
+		}
+
+		fWriteQueue = inWriteQueue[0];
+
+		// If parameters were sent in, save them
+		if( inParameter != null )
+		{
+			//System.err.println( "inParameters = " + inParameter );
+			try
+			{
+				fJdh = new JDOMHelper( inParameter );
+			}
+			catch (Exception e)
+			{
+				fJdh = null;
+				// System.err.println(
+				//	"Error creating jdom helper for parameter\n" + e
+				//	);
+				fatalErrorMsg( kFName,
+						"Error creating jdom helper for parameter\n" + e
+						);
+				System.exit(1);
+			}
+		}
+		else
+		{
+			// System.err.println( "Error: inParameter == null." );
+			fatalErrorMsg( kFName, "inParameter == null." );
+			// System.err.println( "see doc" );
+			// fatalErrorMsg( kFName, "see doc" );
+			System.exit(1);
+		}
+
+//		List tmpList = fJdh.findElementsByPath( TABULATE_TAG_NAME );
+//
+//		if( tmpList.size() != 1 )
+//		{
+//			System.err.println( "Error: must have exactly one tabulate tag." );
+//			System.err.println( "see doc" );
+//			System.exit(1);
+//		}
+//
+//		// Store our tag
+//		try
+//		{
+//			fTabTag = new JDOMHelper( (Element)tmpList.get(0) );
+//		}
+//		catch (Exception e)
+//		{
+//			System.err.println( "Can't create jdom helper for tabulate tag" );
+//			System.err.println(e);
+//			System.exit(1);
+//		}
+
+		// Get the main tables ready
+		fMainHashTableCounts = new Hashtable();
+		fMainHashTableWorkUnits = new Hashtable();
+
+		// Now init and check all the tag attributes
+
+		// Make sure they get the valueus from the tag, vs the cache
+		fHaveDoneInit = false;
+
+		// Call the get methods so they will fill their cache
+		// they will do an exit if they are not happy
+		getSourceFieldName();
+		getDestinationCountFieldName();
+		getDestinationKeyFieldName();
+		getIsCaseSensitive();
+		getDoCountNullStrings();
+		getForceFreeForm();
+		getDoTrimStrings();
+
+		// switch over to using the cached values
+		fHaveDoneInit = true;
+
+	}
+
+
+
+
+	/*************************************************
+	*
+	*	Simple Get/Set Logic
+	*
+	*************************************************/
+	private void __sep__Simple_Get_and_Set__() {};
+	////////////////////////////////////////////////////////////
+
+	// see also calculateCompilerOptionsMask() below
+
+	String getSourceFieldName()
+	{
+		final String kFName = "constructor";
+		if( fHaveDoneInit )
+			return fSourceFieldName;
+		else
+		{
+			if( fJdh == null )
+			{
+				// System.err.println( "Error: no parameters tag?" );
+				fatalErrorMsg( kFName, "no parameters tag?" );
+				System.exit(1);
+			}
+			else
+			{
+				//String tmpString = fTabTag.getStringFromAttribute(
+				String tmpString = fJdh.getTextByPath(
+					SOURCE_FIELD_ATTR_NAME
+					);
+				if( tmpString == null || tmpString.trim().equals("") )
+				{
+					tmpString = fJdh.getTextByPath(
+						SOURCE_FIELD_ATTR_SHORT_NAME
+						);
+					if( tmpString == null || tmpString.trim().equals("") )
+					{
+						// System.err.println( "Error:" +
+						//	" not told which key field to tabulate on" +
+						//	", should specify tag " + SOURCE_FIELD_ATTR_NAME +
+						//	" or shorthand form " + SOURCE_FIELD_ATTR_SHORT_NAME
+						//	);
+						fatalErrorMsg( kFName, "Error:" +
+								" not told which key field to tabulate on" +
+								", should specify tag " + SOURCE_FIELD_ATTR_NAME +
+								" or shorthand form " + SOURCE_FIELD_ATTR_SHORT_NAME
+								);
+						System.exit(1);
+					}
+				}
+				fSourceFieldName = tmpString.trim();
+			}
+			return fSourceFieldName;
+		}
+	}
+
+
+	String getDestinationCountFieldName()
+	{
+		final String kFName = "constructor";
+		if( fHaveDoneInit )
+			return fDestinationCountFieldName;
+		else
+		{
+			if( fJdh == null )
+			{
+				// System.err.println( "Error: no params tag" );
+				fatalErrorMsg( kFName, "no params tag" );
+				System.exit(1);
+				//fDestinationFieldName = null;
+			}
+			else
+			{
+				String tmpString = fJdh.getTextByPath(
+					DESTINATION_COUNT_FIELD_ATTR_NAME
+					);
+				if( tmpString == null || tmpString.trim().equals("") )
+				{
+
+					tmpString = fJdh.getTextByPath(
+						DESTINATION_COUNT_FIELD_ATTR_SHORT_NAME
+						);
+					if( tmpString == null || tmpString.trim().equals("") )
+					{
+						// System.err.println( "Error:" +
+						//	" not told which key field to put the total count in" +
+						//	", should specify tag " + DESTINATION_COUNT_FIELD_ATTR_NAME +
+						//	" or shorthand form " + DESTINATION_COUNT_FIELD_ATTR_SHORT_NAME
+						//	);
+						fatalErrorMsg( kFName,
+								"not told which key field to put the total count in" +
+								", should specify tag " + DESTINATION_COUNT_FIELD_ATTR_NAME +
+								" or shorthand form " + DESTINATION_COUNT_FIELD_ATTR_SHORT_NAME
+								);
+						System.exit(1);
+					}
+				}
+				fDestinationCountFieldName = tmpString.trim();
+			}
+			return fDestinationCountFieldName;
+		}
+	}
+
+	String getDestinationKeyFieldName()
+	{
+		final String kFName = "constructor";
+		if( fHaveDoneInit )
+			return fDestinationKeyFieldName;
+		else
+		{
+			if( fJdh == null )
+			{
+				// System.err.println( "Error: no params tag" );
+				fatalErrorMsg( kFName, "no params tag" );
+				System.exit(1);
+				//fDestinationFieldName = null;
+			}
+			else
+			{
+				String tmpString = fJdh.getTextByPath(
+					DESTINATION_KEY_FIELD_ATTR_NAME
+					);
+				if( tmpString == null || tmpString.trim().equals("") )
+				{
+					// Make it the same as the source's
+					tmpString = getSourceFieldName();
+					if( tmpString == null || tmpString.trim().equals("") )
+					{
+						// System.err.println( "Error:"
+						//	+ " Unable to calculate destination key field name"
+						//	);
+						fatalErrorMsg( kFName,
+								"Unable to calculate destination key field name"
+								);
+						System.exit(1);
+					}
+				}
+				fDestinationKeyFieldName = tmpString.trim();
+			}
+			return fDestinationKeyFieldName;
+		}
+	}
+
+	String getCopySourceFieldName( Element inCopyInstructionElement )
+	{
+		final String kFName = "constructor";
+		// Look for the long name
+		String tmpString = inCopyInstructionElement.getAttributeValue(
+				COPY_SOURCE_FIELD_ATTR_NAME
+				);
+		// If not found, look for the short name
+		if( tmpString == null )
+			tmpString = inCopyInstructionElement.getAttributeValue(
+					COPY_SOURCE_FIELD_ATTR_SHORT_NAME
+					);
+		if( tmpString == null || tmpString.trim().equals("") )
+		{
+			// System.out.println(
+			//	"Tabulate:Copy: Must specify a source field" +
+			//	" with attr of " + COPY_SOURCE_FIELD_ATTR_NAME + " or " +
+			//	COPY_SOURCE_FIELD_ATTR_SHORT_NAME
+			//	);
+			fatalErrorMsg( kFName,
+					"Tabulate:Copy: Must specify a source field" +
+					" with attr of " + COPY_SOURCE_FIELD_ATTR_NAME + " or " +
+					COPY_SOURCE_FIELD_ATTR_SHORT_NAME
+					);
+			System.exit(1);
+		}
+		return tmpString.trim();
+	}
+
+	String getCopyDestinationFieldName( Element inCopyInstructionElement )
+	{
+		// Look for the long name
+		String tmpString = inCopyInstructionElement.getAttributeValue(
+				COPY_DESTINATION_FIELD_ATTR_NAME
+				);
+		// If not found, try the short name
+		if( tmpString == null )
+			tmpString = inCopyInstructionElement.getAttributeValue(
+					COPY_DESTINATION_FIELD_ATTR_SHORT_NAME
+					);
+		// Else just make it the same as the source field,
+		// after all it's between two different work units
+		if( tmpString == null || tmpString.trim().equals("") )
+		{
+			tmpString = getCopySourceFieldName( inCopyInstructionElement );
+		}
+		return tmpString.trim();
+	}
+
+	// Will return a trimmed string or a null (if null or empty)
+	String getCopyDestinationBranchName( Element inBranchInstructionElement )
+	{
+		// Look for the long name
+		String tmpString = inBranchInstructionElement.getAttributeValue(
+				BRANCH_DESTINATION_FIELD_ATTR_NAME
+				);
+		// If not found, try the short name
+		if( tmpString == null )
+			tmpString = inBranchInstructionElement.getAttributeValue(
+					BRANCH_DESTINATION_FIELD_ATTR_SHORT_NAME
+					);
+
+		// Normalize, and set to a true null if it's empty
+		if( tmpString.trim().equals("") )
+			tmpString = null;
+		else
+			tmpString = tmpString.trim();
+
+		return tmpString;
+	}
+
+
+	boolean getIsCaseSensitive()
+	{
+		if( fHaveDoneInit )
+			return fDoIsCaseSensitive;
+		else
+		{
+			if( fJdh == null )
+				fDoIsCaseSensitive = DEFAULT_IS_CASE_SENSITIVE;
+			else
+			{   // getTextByPath
+				fDoIsCaseSensitive = fJdh.getBooleanFromPathText(
+					CASE_SENSITIVE_ATTR_NAME,
+					DEFAULT_IS_CASE_SENSITIVE
+					);
+			}
+			return fDoIsCaseSensitive;
+		}
+	}
+
+	boolean getDoCountNullStrings()
+	{
+		if( fHaveDoneInit )
+			return fDoCountNullStrings;
+		else
+		{
+			if( fJdh == null )
+				fDoCountNullStrings = DEFAULT_DO_COUNT_NULL;
+			else
+			{
+				fDoCountNullStrings = fJdh.getBooleanFromPathText(
+					COUNT_NULL_ATTR_NAME,
+					DEFAULT_DO_COUNT_NULL
+					);
+			}
+			return fDoCountNullStrings;
+		}
+	}
+
+	boolean getDoTrimStrings()
+	{
+		if( fHaveDoneInit )
+			return fDoCountNullStrings;
+		else
+		{
+			if( fJdh == null )
+				fDoCountNullStrings = DEFAULT_DO_TRIM_STRINGS;
+			else
+			{
+				fDoCountNullStrings = fJdh.getBooleanFromPathText(
+					TRIM_STRINGS_ATTR_NAME,
+					DEFAULT_DO_TRIM_STRINGS
+					);
+			}
+			return fDoCountNullStrings;
+		}
+	}
+
+	boolean getForceFreeForm()
+	{
+		if( fHaveDoneInit )
+			return fForceFreeForm;
+		else
+		{
+			// Look for a <free_form/> tag
+			Element tmp = fJdh.findElementByPath(
+				FREE_FORM_INDICATOR_NAME
+				);
+			// It's true if we DID find the tag.
+			fForceFreeForm = (tmp != null);
+			return fForceFreeForm;
+		}
+	}
+
+
+
+	private void __sep__Central_Logic__() {};
+	////////////////////////////////////////////////////////////
+	public void run()
+	{
+		final String kFName = "run";
+		try
+		{
+		    traceMsg( kFName, "Waiting for trigger" );
+
+			WorkUnit lWorkUnit = dequeue( fWaitQueue );
+
+			traceMsg( kFName, "Reading raw data" );
+
+			while( ! fReadQueue.isEmpty() )
+			{
+
+				lWorkUnit = dequeue( fReadQueue );
+
+				try
+				{
+					tabulateUnit( lWorkUnit );
+				}
+				catch(Exception e)
+				{
+					lWorkUnit = null;
+					// System.err.println( "Tabule: unable to tabulate work unit" +
+					//	", skipping, error was: " + e
+					//	);
+					stackTrace( kFName, e, "unable to tabulate work unit, skipping" );
+					continue;
+				}
+
+				fCounter ++;
+				if( fCounter % kReportInterval == 0 )
+				{
+					infoMsg( kFName, "Processed '" + fCounter +
+						"' input records." );
+				}
+
+
+			}
+
+			debugMsg( kFName, "Outputting tabulated data" );
+
+			outputTabulations();
+
+			debugMsg( kFName, "Finished outputting tabulated data" );
+
+		}
+		catch( InterruptedException ie )
+		{
+		}
+	}
+
+	void tabulateUnit( WorkUnit inWU )
+		throws Exception
+	{
+		final String kFName = "tabulateUnit";
+		
+		List keys = inWU.getUserFieldsText( getSourceFieldName() );
+		Iterator it = keys.iterator();
+		while( it.hasNext() )
+		{
+			String key = (String)it.next();
+			// We must not have truely a NULL key
+			if( key == null )
+			{
+				// System.err.println( "Warning: TabulatorV2:tabulateWorkUnit:"
+				//	+ " found a truly null field"
+				//	+ " for key " + getSourceFieldName()
+				//	+ ", skipping this key."
+				//	);
+				errorMsg( kFName, "found a truly null field"
+						+ " for key " + getSourceFieldName()
+						+ ", skipping this key."
+						);
+				continue;
+			}
+			// Keep the original copy, we may want it later
+			String origKey = key;
+			// If it's not case sensitive, then normalize it
+			if( ! getIsCaseSensitive() )
+				key = key.toLowerCase();
+				// We don't lowercase the original key
+			// Do trimming if requested
+			if( getDoTrimStrings() )
+			{
+				// For this option we do trim both
+				// Todo: maybe have more options
+				origKey = origKey.trim();
+				key = key.trim();
+			}
+			// Ignore empty strings if requested to do so
+			if( ! getDoCountNullStrings() )
+				if( key.equals("") )
+					continue;
+
+			// Find the existing count
+			int oldValue;
+			// Is there key already there?
+			if( fMainHashTableCounts.containsKey( key ) )
+			{
+				Integer tmpInt = (Integer)fMainHashTableCounts.get( key );
+				oldValue = tmpInt.intValue();
+			}
+			else
+			{
+				oldValue = 0;
+			}
+
+			// Now create the new value
+			Integer newValue = new Integer( oldValue + 1 );
+
+			// And now store the integer
+			fMainHashTableCounts.put( key, newValue );
+
+			// See if there's already a work unit for it
+			WorkUnit destinationWorkUnit = null;
+			if( fMainHashTableWorkUnits.containsKey( key ) )
+			{
+				destinationWorkUnit = (WorkUnit)fMainHashTableWorkUnits.get(
+					key
+					);
+			}
+			else
+			{
+				// Create a new work unit for this key
+				// destinationWorkUnit = newWorkUnit( key );
+				// We'd like to preserve the original key in their data
+				destinationWorkUnit = newWorkUnit( origKey );
+				fMainHashTableWorkUnits.put( key, destinationWorkUnit );
+			}
+
+			// Process any copy instructions
+			doCopies( inWU, destinationWorkUnit );
+
+		}
+	}
+
+	// Run through the hash table and create the output
+	void outputTabulations()
+	{
+		final String kFName = "outputTabulations";
+			// reset the counter
+			fCounter = 0;
+
+			// Loop through all the keys
+			Set keys = fMainHashTableWorkUnits.keySet();
+			Iterator it = keys.iterator();
+			while( it.hasNext() )
+			{
+				// Grab they key and value
+				String theKey = (String)it.next();
+				// The work unit
+				WorkUnit theUnit = (WorkUnit)fMainHashTableWorkUnits.get(
+					theKey
+					);
+
+				// Just to be safe, get rid of the hash's reference
+				// to this work unit
+				//fMainHashTableWorkUnits.remove( theKey );
+
+				// The count
+				Integer theValueObj = (Integer)fMainHashTableCounts.get(
+					theKey
+					);
+				String theValueStr = theValueObj.toString();
+
+				// Add the count field
+				theUnit.addNamedField( getDestinationCountFieldName(), theValueStr );
+
+				// Output this work unit
+				enqueue( fWriteQueue, theUnit );
+				theUnit = null;
+
+				fCounter ++;
+				if( fCounter % kReportInterval == 0 )
+				{
+					// System.out.println( "Tabulator: Generated '" + fCounter +
+					//	"' output records." );
+					infoMsg( kFName, "Generated '" + fCounter +
+					"' output records." );
+				}
+
+			}
+			// Free up the references to work units
+			fMainHashTableWorkUnits = null;
+	}
+
+
+	WorkUnit newWorkUnit( String inKeyValue )
+		throws Exception
+	{
+
+		WorkUnit returnRecord = new WorkUnit();
+		addRunpathEntry( returnRecord );
+
+		// If we need freeform
+		if( getForceFreeForm() )
+			returnRecord.forceUserDataToFreeForm();
+
+		// Add the main field
+
+		// Get the key name
+		String dstFieldName = getDestinationKeyFieldName();
+
+		// Add in the value
+		returnRecord.addNamedField( dstFieldName, inKeyValue );
+
+		// Return it
+		return returnRecord;
+	}
+
+	void addRunpathEntry( WorkUnit inWU )
+	{
+		inWU.createRunpathEntry( getID() );
+	}
+
+	// Process all (if any) copy instructions we're to perform when
+	// we find a match
+	void doCopies( WorkUnit inSourceWU, WorkUnit inDestinationWU )
+	{
+		final String kFName = "doCopies";
+		List instructions = fJdh.getJdomChildren();
+		Element branch = null;
+		for( Iterator it = instructions.iterator(); it.hasNext(); )
+		{
+			// Get the static copy instruction we're to work on
+			Element instruction = (Element)it.next();
+			// Get the instruction name, check and normalize
+			String insName = instruction.getName();
+			// This should never happen
+			if( insName == null || insName.trim().equals("") )
+			{
+				// System.err.println( "Error:TabulatorV2:doCopies: null element name, skipping" );
+			    inDestinationWU.errorMsg( this, kFName, "null element name, skipping" );
+				continue;
+			}
+			insName = insName.trim().toLowerCase();
+			// Is it a branch instruction?
+			if( insName.equals( NEW_BRANCH_INSTRUCTION ) )
+			{
+				String branchName = getCopyDestinationBranchName( instruction );
+				// It's OK if the brach name is null, that means they
+				// want to clear it and not use a branch
+				if( branchName == null || branchName.trim().equals("") )
+				{
+					// This would be odd if they already have a null branch
+					// Maybe they're confused?
+					if( branch == null )
+						// System.err.println( "Warning: Error:TabulatorV2:doCopies:"
+						//	+ ", encountered null/clear brach instruction"
+						//	+ " but branch was already null?"
+						//	);
+					    inDestinationWU.errorMsg( this, kFName, "encountered null/clear brach instruction"
+							+ " but branch was already null?"
+							);
+					// So clear it and loop
+					branch = null;
+					continue;
+				}
+				branchName = branchName.trim();
+				// Instantiate the branch
+				branch = new Element( branchName );
+				if( branch != null )
+				{
+					branch.detach();
+					// Attach it to the destination
+					inDestinationWU.addUserDataElement( branch );
+				}
+				else    // Branch was null???
+					// System.err.println( "Error: Error:TabulatorV2:doCopies:"
+					//	+ ", got a null brach element back from jdom???"
+					//	+ " Subsequent fields will be copied to root of dest."
+					//	);
+				    inDestinationWU.errorMsg( this, kFName, "got a null branch element back from jdom???"
+						+ " Subsequent fields will be copied to root of dest."
+						);
+
+				// Now all subsequent fields will be attached to
+				// this branch, until told otherwise
+			}   // End if it's a branch instruction
+			// Else is it a copy instruction?
+			else if( insName.equals( COPY_FIELD_INSTRUCTION ) )
+			{
+				// Run it against the source and destination work units we have
+				// If branch is null that's fine, doACopy will know what to do
+				doACopy( instruction, inSourceWU, inDestinationWU, branch );
+			}   // End else if it was a copy instruction
+			// Else is it one of the accidental tags we can ignore?
+			else if(
+				insName.equals("from") ||
+				insName.equals("from_q") ||
+				insName.equals("from_queue") ||
+				insName.equals("to") ||
+				insName.equals("to_q") ||
+				insName.equals("to_queue") ||
+				insName.equals("error") ||
+				insName.equals("error_q") ||
+				insName.equals("error_queue") ||
+				insName.equals("uses") ||
+				insName.equals("uses_q") ||
+				insName.equals("uses_queue") ||
+				// insName.equals(TABULATE_TAG_NAME) ||
+				insName.equals(SOURCE_FIELD_ATTR_NAME) ||
+				insName.equals(SOURCE_FIELD_ATTR_SHORT_NAME) ||
+				insName.equals(DESTINATION_COUNT_FIELD_ATTR_NAME) ||
+				insName.equals(DESTINATION_COUNT_FIELD_ATTR_SHORT_NAME) ||
+				insName.equals(DESTINATION_KEY_FIELD_ATTR_NAME) ||
+				insName.equals(CASE_SENSITIVE_ATTR_NAME) ||
+				insName.equals(COUNT_NULL_ATTR_NAME) ||
+				insName.equals(TRIM_STRINGS_ATTR_NAME) ||
+				insName.equals(FREE_FORM_INDICATOR_NAME)
+				)
+			{
+				// ignore
+			}
+			else    // Else we don't know what it is
+				// System.err.println( "Error: Error:TabulatorV2:doCopies:"
+				//	+ " ingoring unknown instruction '" + insName + "'"
+				//	+ ", tag was: " + JDOMHelper.JDOMToString( instruction )
+				//	);
+			    inDestinationWU.errorMsg( this, kFName, "ingoring unknown instruction '" + insName + "'"
+					+ ", tag was: " + JDOMHelper.JDOMToString( instruction )
+					);
+		}
+	}
+
+//	// Process all (if any) copy instructions we're to perform when
+//	// we find a match
+//	void doCopiesOLD( WorkUnit inSourceWU, WorkUnit inDestinationWU )
+//	{
+//
+//		String branchName = getCopyDestinationBranchName();
+//		Element branch = null;
+//		if( branchName != null && ! branchName.trim().equals("") )
+//		{
+//			branchName = branchName.trim();
+//			branch = new Element( branchName );
+//			branch.detach();
+//		}
+//
+//		List copyInstructions = fJdh.findElementsByPath(
+//			COPY_FIELD_INSTRUCTION
+//			);
+//		for( Iterator it = copyInstructions.iterator(); it.hasNext(); )
+//		{
+//			// Get the static copy instruction we're to work on
+//			Element copyIns = (Element)it.next();
+//			// Run it against the source and destination work units we have
+//			doACopy( copyIns, inSourceWU, inDestinationWU, branch );
+//		}
+//
+//		if( branch != null )
+//		{
+//			inDestinationWU.addUserDataElement( branch );
+//		}
+//	}
+
+	// Todo: make return type meaningful
+	// would need meaningful return value from work unit method as well
+	private boolean doACopy( Element inCopyInstruction,
+		WorkUnit inSourceWorkUnit, WorkUnit inDestinationWorkUnit,
+		Element branch
+		)
+	{
+		String lSourceFieldName = getCopySourceFieldName( inCopyInstruction );
+		String lDestinationFieldName =
+			getCopyDestinationFieldName( inCopyInstruction
+			);
+
+		if( branch == null )
+		{
+			// work unit copy command
+			inSourceWorkUnit.copyNamedFields( lSourceFieldName,
+				lDestinationFieldName, inDestinationWorkUnit
+				);
+		}
+		else
+		{
+			List sourceData = inSourceWorkUnit.getUserFields(
+				lSourceFieldName
+				);
+			if( sourceData != null && sourceData.size() > 0 )
+			{
+				for( Iterator it = sourceData.iterator(); it.hasNext(); )
+				{
+					Element oldChild = (Element)it.next();
+					Element newChild = (Element)oldChild.clone();
+					newChild.detach();
+					branch.addContent( newChild );
+				}
+			}
+		}
+		return true;
+	}
+
+
+
+	private void __sep__Constants__() {};
+	//////////////////////////////////////////////////////
+	// Control of the parameters to the Perl 5 regex compiler
+	// see also calculateCompilerOptionsMask()
+	private static final boolean DEFAULT_IS_CASE_SENSITIVE = false;
+	// Do we cound EMPTY tags, typically ""
+	private static final boolean DEFAULT_DO_COUNT_NULL = true;
+	// Should we trim text before tabulation
+	private static final boolean DEFAULT_DO_TRIM_STRINGS = true;
+
+
+
+
+
+	// Some constant strings
+	//private static final String TABULATE_TAG_NAME =
+	//	"tabulate";
+	// Tabulate tag attribute: What field to look in
+	private static final String SOURCE_FIELD_ATTR_NAME =
+		"key_field";
+	private static final String SOURCE_FIELD_ATTR_SHORT_NAME =
+		"key";
+	// Tabulate tag attribute: What feild to put the final count in
+	private static final String DESTINATION_COUNT_FIELD_ATTR_NAME =
+		"total_count_field";
+	// Tabulate tag attribute: What feild to put the final count in
+	private static final String DESTINATION_COUNT_FIELD_ATTR_SHORT_NAME =
+		"total";
+	// Tabulate tag attribute: What feild to put the key for each count in
+	// default is the source field name
+	private static final String DESTINATION_KEY_FIELD_ATTR_NAME =
+		"destination_key_field";
+
+	// Tabulate tag attribute: Whether to do case sensitive matching or not
+	// When tabulating the input field
+	private static final String CASE_SENSITIVE_ATTR_NAME =
+		"case_sensitive";
+	// Tabulate tag attribute: Whether or not we should count null
+	// strings in our totals
+	// This is NOT the same as counting user fields that are NOT FOUND
+	// at all.
+	private static final String COUNT_NULL_ATTR_NAME =
+		"count_empty_strings";
+	// Tabulate tag attribute: Whether to trim strings before tabulating
+	// This has a relation to the counting of null strings; with both
+	// set, all manner of white space strings will be counted in the single
+	// empty string tally
+	private static final String TRIM_STRINGS_ATTR_NAME =
+		"trim_before_tabulating";
+
+	// Indicator to force free form data
+	private static final String FREE_FORM_INDICATOR_NAME =
+		"free_form";
+
+	static final String COPY_FIELD_INSTRUCTION = "copy_field";
+	static final String COPY_SOURCE_FIELD_ATTR_NAME = "source_field";
+	static final String COPY_SOURCE_FIELD_ATTR_SHORT_NAME = "src";
+	static final String COPY_DESTINATION_FIELD_ATTR_NAME = "destination_field";
+	static final String COPY_DESTINATION_FIELD_ATTR_SHORT_NAME = "dst";
+
+	static final String NEW_BRANCH_INSTRUCTION = "create_branch";
+	static final String BRANCH_DESTINATION_FIELD_ATTR_NAME = "destination_branch_name";
+	static final String BRANCH_DESTINATION_FIELD_ATTR_SHORT_NAME = "dst";
+
+	// We don't output a singular work unit, so nothing to hang errors on
+	// in doCopies we use the destination work unit that is handed to us
+	WorkUnit _mWorkUnit;
+	
+	private void __sep__Member_Fields1__() {};
+	//////////////////////////////////////////////////////
+
+	// some debug variables
+	private static long fCounter;
+	private static final long kReportInterval = 1000;
+
+	// The main JDOM node from the parameters section
+	JDOMHelper fJdh;
+	//JDOMHelper fTabTag;
+
+	// The queues
+	Queue fReadQueue;
+	Queue fWriteQueue;
+	Queue fWaitQueue;
+
+	// Have we initialized, set by contstructor
+	boolean fHaveDoneInit;
+
+	// cache for name of field to read from
+	String fSourceFieldName;
+	// cached name of fields to write to
+	String fDestinationKeyFieldName;
+	String fDestinationCountFieldName;
+	// cached boolean attrs
+	boolean fDoIsCaseSensitive;
+	boolean fDoCountNullStrings;
+	boolean fForceFreeForm;
+
+	// The main hash
+	Hashtable fMainHashTableCounts;
+	Hashtable fMainHashTableWorkUnits;
+
+
+}

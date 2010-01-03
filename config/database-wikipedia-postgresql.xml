@@ -1,0 +1,8 @@
+<database
+	vendor_tag="PostgreSQL"
+	server_name="niesearch"
+	port=""
+	database_name="wikipedia"
+	username="wikipedia"
+	password="wikipedia"
+/>

@@ -1,0 +1,8 @@
+<database
+	vendor_tag="MySQL"
+	server_name="NIESearch2"
+	port=""
+	database_name="abbottroll"
+	username="abbottroll"
+	password="abbottadmin"
+/>

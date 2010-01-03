@@ -1,0 +1,11 @@
+<lucene_search>
+  <index_directory/>
+<!--
+  <index_directory>
+	D:\big-files\gb-cat-index-v2
+  </index_directory>
+  <index_directory>D:\big-files\gb-cat-index-v2</index_directory>
+  <search_fields>cat_name, biz_name, rev_text</search_fields>
+  <display_fields>cat_id, cat_name, biz_count, rev_count</display_fields>
+-->
+</lucene_search>

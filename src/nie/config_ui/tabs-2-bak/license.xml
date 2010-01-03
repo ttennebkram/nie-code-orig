@@ -1,0 +1,67 @@
+	<!-- License -->
+	<!-- ======= -->
+	<section
+		title="License Key"
+		level="2"
+		help="find_map_basic_info.html"
+	>
+		<!--
+		<field type="vertical_spacer" />
+		-->
+		<field
+			type="vertical_spacer"
+		>
+			NIE Software License Key
+		</field>
+		<field type="vertical_spacer" />
+
+		<field
+			name="nie_lic_rev"
+			type="read_only"
+			label="Rev"
+			xpath="/nie_config/license/@rev"
+			default="1"
+		/>
+		<field
+			name="nie_lic_company"
+			label="Company"
+			xpath="/nie_config/license/@company"
+		/>
+		<field
+			name="nie_lic_start_date"
+			label="Start date or blank (dd-mon-yyyy)"
+			xpath="/nie_config/license/@start_date"
+			_is_special="TRUE"
+			default="01-jan-2000"
+		/>
+		<field
+			name="nie_lic_end_date"
+			label="End date (dd-mon-yyyy)"
+			xpath="/nie_config/license/@end_date"
+			_is_special="TRUE"
+			default="31-dec-2000"
+		/>
+
+		<field
+			name="nie_lic_server"
+			label="To run on Server"
+			xpath="/nie_config/license/@server"
+		/>
+
+		<field
+			name="nie_lic_key"
+			label="License Key (20 hex-digits)"
+			xpath="/nie_config/license/@key"
+			default="xxxx-xxxx-xxxx-xxxx-xxxx"
+		/>
+
+		<field type="vertical_spacer" />
+
+		<field
+			type="inline_button"
+			click_event_class="VL"
+		>
+			Verify License
+		</field>
+
+	</section>

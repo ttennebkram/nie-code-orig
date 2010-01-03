@@ -1,0 +1,30 @@
+Monitor can't handle it when there are CDATA sections in the parameters area
+STACK_TRACE: 2/4/09 4:18:17 PM PST QueueMonitorTask2.run: General Exception
+org.jdom.IllegalDataException: The data "<parameters>
+  <regex src="content" dst="href" keep="all" regex_group_number="2" allow_duplic
+ates="FALSE">
+        <![CDATA[
+                (url=&quot;([^&]+)&quot;)
+        ]]>
+</regex>
+</parameters>" is not legal for a JDOM CDATA section: CDATA cannot internally co
+
+
+NIE Data problems with work units, siphon?
+ERROR: 2/4/09 4:18:17 PM PST HTTPRetrieverV4.run: General exception mode=both ur
+l=http://207.56.169.28
+STACK_TRACE: 2/4/09 4:18:17 PM PST HTTPRetrieverV4.run: Stack Trace
+org.jdom.IllegalDataException: The data "<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML
+ 4.0 Transitional//EN">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+.... ENTIRE PAGE ....
+" is not legal for a JDOM CDATA section: 0x11 is not a legal XML character.
+        at org.jdom.CDATA.setText(CDATA.java:123)
+        at org.jdom.CDATA.<init>(CDATA.java:98)
+        at nie.pump.base.WorkUnit.addNamedField(WorkUnit.java:1225)
+        at nie.pump.base.WorkUnit.addNamedField(WorkUnit.java:984)
+        at nie.pump.processors.HTTPRetrieverV4.processWorkUnit(HTTPRetrieverV4.j
+ava:542)
+        at nie.pump.processors.HTTPRetrieverV4.run(HTTPRetrieverV4.java:325)
+        at java.lang.Thread.run(Thread.java:619)

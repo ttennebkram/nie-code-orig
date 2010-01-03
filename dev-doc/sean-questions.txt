@@ -1,0 +1,70 @@
+Miles
+Sean
+John
+Steve H
+??? Eric, Kevin, Aahz
+
+Exception vs Throwable
+
+Similar attempts:
+ETL
+Microsoft
+compared to that web browser thingy, Grease Monkey
+
+repeated errrors
+
+work unit vs system logging
+	what about when no work unit
+
+error logs, show stack traces
+
+setup errors
+
+named field operations: singular vs multiple by default
+
+severity of "none found"
+	example: remove this field, not found
+	example: match on this field
+
+caching strategy
+	config errors vs runtime errors
+
+policy on known bad work units that have no error queue
+	fall through
+	or keep processing
+	on the one hand, they are bogus, and may do damage if subseqeuent
+		steps don't skip them
+	on the other hand, a very small error may circumvent a lot of
+		processing, and take time to debug
+
+sever runtime errors
+	perhaps internal incosistencies / coding errors
+	key file is missing
+	disk space, lack of permissions, unreachable site
+		examples: csv vs http retrieve, vs http retriever cache
+	pop culter: don't show errors that the user has no ability to fix
+	different class
+	immediate fatal?
+
+I think I know: exit vs exception strategy
+
+Replicate if no error queue
+	pass to queue with error
+	or drop
+
+Language: xml vs more conventional vs special
+
+UI?
+
+sub xpumps, and using them to construct
+
+reprioritizing
+	forward vs back vs both
+	creating new copies
+	loops
+
+global settings
+
+default field naming
+
+flexibility of parameter names, tag names

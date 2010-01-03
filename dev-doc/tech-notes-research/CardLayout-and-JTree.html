@@ -1,0 +1,2247 @@
+
+ 
+
+ 
+
+ 
+
+ 
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+ 
+
+ 
+
+
+<title>JTree, CardLayout.</title>
+ 
+    <link rel="stylesheet" href="/css/default_developer.css" />
+
+<script type="text/javascript" language="JavaScript" src="/js/popUp.js"></script>
+<script language="javascript1.2" type="text/javascript" src="/js/sniff.js"></script>
+<script language="javascript1.2" type="text/javascript" src="/js/menucontent.js"></script>
+<script language="javascript1.2" type="text/javascript" src="/js/menucode.js"></script>
+<script language="JavaScript"><!-- var s_pageName="home page" //--></script>
+ 
+
+<!--
+<link rel="stylesheet" type="text/css" href="style.jsp">
+-->
+ 
+
+
+ 
+
+</head>
+<!--stopindex-->
+<body leftmargin="0" topmargin="0" marginheight="0" marginwidth="0" rightmargin="0" bgcolor="#ffffff" onload="prepmenus(); done=true">
+<a name="top"></a>
+
+
+
+<script language="JavaScript" src="/s_code_remote.js"></script>
+ 
+<!-- Custom Header Code-->
+
+    
+    
+<!-- BEGIN MASTHEAD -->
+<!-- BEGIN A1 COMPONENT V.0 -->
+
+<div class="a1">
+<div class="a1v0">
+<table cellpadding="0" cellspacing="0" border="0" width="100%">
+<tr valign="bottom">
+<td nowrap="nowrap">
+<a href="#skip2content"><img src="/im/a.gif" alt="Skip to Content" width="1" height="1" border="0"></a>
+<span class="toolbarlinks">
+<a href="http://developers.sun.com/global/mh/java/">Java</a>
+<a href="http://developers.sun.com/global/mh/solaris/" class="dividelink">Solaris</a>
+<a href="http://developers.sun.com/global/mh/communities/">Communities</a>
+<a href="http://developers.sun.com/global/mh/store/" class="lastlink">Sun Store</a>
+</span>
+</td><td align="right" nowrap="nowrap">
+<span class="toolbarlinks">
+<a href="http://developers.sun.com/global/join_sdn.html"><b>Join SDN</b></a>
+<a href="http://developers.sun.com/global/my_profile.html">My Profile</a>
+<a href="http://developers.sun.com/global/why_join.html" class="lastlink">Why Join?</a>
+</span>
+</td></tr>
+</table>
+</div>
+</div>
+
+<!-- END A1 COMPONENT V.0 -->
+
+<!-- BEGIN VNV1 COMPONENT V0  -->
+<script type='text/JavaScript' src='http://developers.sun.com/js/showHide.js'></script>
+<div class="vnv1" id="vnv1v0">
+<div class="cornerTL"><div class="cornerTR"><div class="cornerBL"><div class="cornerBR">
+
+<div class="vnv1search">
+	<table border="0" cellpadding="0" cellspacing="0" class="topnavlight">
+	<form action="http://developers.sun.com/search/onesearch/index.jsp" accept-charset="utf-8" method="GET">
+
+	<input type="hidden" name="charset" value="utf-8">
+	<input type="hidden" name="col" value="dev-reference">
+
+	<tr>
+	<td nowrap="nowrap"><span class="rightarrowwhite">&raquo;</span>&nbsp;<a href="http://developers.sun.com/global/search_tips.html">search tips</a>&nbsp;</td>
+	<td><input class="searchfield" name="qt" class="medium" size="7" onFocus="if( this.value==this.defaultValue ) this.value='';" value="Search"></td>
+	<td valign="middle" align="left"><input type="image" border="0" src="/im/vnv1_bttn_search.gif" alt="Submit Search"></td>
+
+	</tr></form>
+
+	</table>
+</div>
+
+<div class="vnv1topiclinks">
+
+<table cellpadding="1" cellspacing="0" border="0">
+<tr>
+<td rowspan="2"><a href="http://java.sun.com" title="java.sun.com"><img src="/im/a.gif" alt="Home Page" width="96" height="58" border="0" class="sunlogo"></a></td>
+<td colspan="12"><a href="http://developers.sun.com" title="developers.sun.com"><img src="/im/a.gif" alt="" width="250" height="32" border="0"></a></td>
+</tr>
+<tr valign="bottom">
+<td><img src="/im/a.gif" alt="" width="1" height="1" border="0" id="ip1"></td>
+<td class="navlinks" id="navlink1" onMouseOver="javascript:popfly(1);" onMouseOut="javascript:closefly();"><div onMouseOver="javascript:popfly(1);" onMouseOut="javascript:closefly();"><a id="glink1" onclick="if(window.s_account&&this.getAttribute('title')){s_linkType='o';s_linkName='Masthead Menu: '+this.getAttribute('title');s_prop15=s_pageName;s_prop16=this.getAttribute('title');s_lnk=s_co(this);s_gs(s_account);}" href="http://developers.sun.com/global/mh/api/index.html" title="See All APIs">APIs</a></div></td>
+<td><img src="/im/a.gif" alt="" width="1" height="1" border="0" id="ip2"></td>
+<td class="navlinks" id="navlink2" onMouseOver="javascript:popfly(2);" onMouseOut="javascript:closefly();"><div onMouseOver="javascript:popfly(2);" onMouseOut="javascript:closefly();"><a id="glink2" onclick="if(window.s_account&&this.getAttribute('title')){s_linkType='o';s_linkName='Masthead Menu: '+this.getAttribute('title');s_prop15=s_pageName;s_prop16=this.getAttribute('title');s_lnk=s_co(this);s_gs(s_account);}" href="http://developers.sun.com/global/mh/downloads/index.html" title="See All Downloads">Downloads</a></div></td>
+<td><img src="/im/a.gif" alt="" width="1" height="1" border="0" id="ip3"></td>
+<td class="navlinks" id="navlink3" onMouseOver="javascript:popfly(3);" onMouseOut="javascript:closefly();"><div onMouseOver="javascript:popfly(3);" onMouseOut="javascript:closefly();"><a id="glink3" onclick="if(window.s_account&&this.getAttribute('title')){s_linkType='o';s_linkName='Masthead Menu: '+this.getAttribute('title');s_prop15=s_pageName;s_prop16=this.getAttribute('title');s_lnk=s_co(this);s_gs(s_account);}" href="http://developers.sun.com/global/mh/tech/index.html" title="See All Technologies">Technologies</a></div></td>
+<td><img src="/im/a.gif" alt="" width="1" height="1" border="0" id="ip4"></td>
+<td class="navlinks" id="navlink4" onMouseOver="javascript:popfly(4);" onMouseOut="javascript:closefly();"><div onMouseOver="javascript:popfly(4);" onMouseOut="javascript:closefly();"><a id="glink4" onclick="if(window.s_account&&this.getAttribute('title')){s_linkType='o';s_linkName='Masthead Menu: '+this.getAttribute('title');s_prop15=s_pageName;s_prop16=this.getAttribute('title');s_lnk=s_co(this);s_gs(s_account);}" href="http://developers.sun.com/global/mh/products/index.html" title="See All Products">Products</a></div></td>
+<td><img src="/im/a.gif" alt="" width="1" height="1" border="0" id="ip5"></td>
+<td class="navlinks" id="navlink5" onMouseOver="javascript:popfly(5);" onMouseOut="javascript:closefly();"><div onMouseOver="javascript:popfly(5);" onMouseOut="javascript:closefly();"><a id="glink5" onclick="if(window.s_account&&this.getAttribute('title')){s_linkType='o';s_linkName='Masthead Menu: '+this.getAttribute('title');s_prop15=s_pageName;s_prop16=this.getAttribute('title');s_lnk=s_co(this);s_gs(s_account);}" href="http://developers.sun.com/global/mh/support/index.html" title="See All Support">Support</a></div></td>
+<td><img src="/im/a.gif" alt="" width="1" height="1" border="0" id="ip6"></td>
+<td class="navlinks" id="navlink6" onMouseOver="javascript:popfly(6);" onMouseOut="javascript:closefly();"><div onMouseOver="javascript:popfly(6);" onMouseOut="javascript:closefly();"><a id="glink6" onclick="if(window.s_account&&this.getAttribute('title')){s_linkType='o';s_linkName='Masthead Menu: '+this.getAttribute('title');s_prop15=s_pageName;s_prop16=this.getAttribute('title');s_lnk=s_co(this);s_gs(s_account);}" href="http://developers.sun.com/global/mh/suncom/index.html" title="See All Sun.com">Sun.com</a></div></td>
+</tr>
+</table>
+</div>
+
+</div></div></div></div>
+</div>
+
+<script type="text/javascript"> printmenus(); </script>
+
+<!-- END VNV1 COMPONENT V0  -->
+<!-- END MASTHEAD -->
+
+
+
+    <p>
+
+<!-- Custom Nav Code -->
+
+    
+    
+
+
+
+
+
+<!-- BEGIN VNV2 BREADCRUMB COMPONENT  -->
+<table border="0" cellpadding="0" cellspacing="0" width="100%" class="vatop">
+    <tr>
+    <td width="99%">
+        <div class="breadcrumb">
+            
+
+            <nobr><a href="http://developers.sun.com/">Developers Home</a> &gt;</nobr>
+            <nobr><a href="http://forum.java.sun.com">Developer Forums</a> &gt;</nobr>
+
+            
+            <!--<nobr><a href="index.jspa">Java Technology Forums</a> &gt;</nobr> -->
+
+            
+
+            
+
+            
+            <nobr><a href="category.jspa?categoryID=35">Desktop</a> &gt;</nobr>
+            
+            
+
+            
+            <nobr><a href="category.jspa?categoryID=7">Core GUI APIs</a> &gt;</nobr>
+            
+            
+
+            
+            <nobr><a href="forum.jspa?forumID=57&start=0">Swing</a> &gt;</nobr>
+            
+            
+
+            
+            
+            
+        </div>
+    </td>
+    <td><div class="breadcrumb"></div></td>
+    <td align="right" nowrap="nowrap"><div class="breadcrumb">
+    </div></td>
+    <tr>
+        <td colspan="2"><img src="im/a.gif" width="100%" height="1" border="0" alt=" " /></td>
+    </tr>
+</table>
+
+    <!-- END VNV2 BREADCRUMB COMPONENT  -->
+
+
+    <!-- BEGIN VNV3 PAGETITLE, two-level variation -->
+    
+    <div class="pagetitle2">Developer Forums</div>
+    <div class="pagetitle">JTree, CardLayout.</div>
+    
+    <!-- END VNV3 PAGETITLE, two-level variation -->
+
+    <!-- BEGIN AD PORTION -->
+    
+    <!-- END AD PORTION -->
+
+    <table border="0" cellspacing="0" cellpadding="6">
+    <tr>
+        <td width="170" valign="top">
+
+        
+
+        <table border="0" cellpadding="0" cellspacing="0" width="170">
+            <tr>
+                
+                <td class="headerbar3"><div class="headerpadding2"><span style="color:#fff;">Sun Forums</span></div></td>
+                
+            </tr>
+        </table>
+
+        <table border="0" cellpadding="0" cellspacing="0" width="170" class="navblue2">
+        <tr><td><div class="colpadding3">
+            <table border="0" cellpadding="0" cellspacing="0" width="100%" class="vatop">
+
+            
+
+            <tr>
+                <td colspan="2"><strong>Welcome</strong><br/><br/>
+                </td>
+            </tr>
+            <tr>
+            <td><span class="rightarrowblue">&raquo;</span>&nbsp;&nbsp;</td>
+            
+            <td width="100%"><a href="login!withRedirect.jspa?referrer=http%3A%2F%2Fforum.java.sun.com%2Fthread.jspa%3FthreadID%3D5117006%26messageID%3D9402570">Login</a></td></tr>
+            
+            </tr>
+        <tr>
+            <td><span class="rightarrowblue">&raquo;</span>&nbsp;&nbsp;</td>
+            <td width="100%"><a href="editwatches!default.jspa">Watch List</a></td>
+        </tr>
+
+        
+        <tr>
+            <td><span class="rightarrowblue">&raquo;</span>&nbsp;&nbsp;</td>
+            <td width="100%"><a href="http://developers.sun.com/forums/dukestars.jsp">Duke Stars Program</a></td>
+        </tr>
+        <tr>
+            <td><span class="rightarrowblue">&raquo;</span>&nbsp;&nbsp;</td>
+	    <td width="100%"><a href="myforums.jspa">My Forums</a></td>
+	</tr>
+        <tr>
+            <td><span class="rightarrowblue">&raquo;</span>&nbsp;&nbsp;</td>
+            <td width="100%"><a href="http://developers.sun.com/contact/feedback.jsp?referer=http://forum.java.sun.com&category=sdn&mailsubject=Forums%20or%20Community"> Feedback </a></td>
+        </tr>
+
+        
+
+            <tr>
+                <td colspan="2">&nbsp;</td>
+            </tr>
+
+            
+	
+		    		
+        </table>
+    </td>
+</tr>
+        </table>
+
+        <span class="sp10">&nbsp;</span><br />
+        <!-- END VNV14 LOGIN/NAV -->
+
+        <!-- BEGIN VTI3 EMBEDDED SEARCH, variation 2, left column version -->
+	<table border="0" cellpadding="0" cellspacing="0" width="170">
+            <tr><td class="headerbar3"><div class="headerpadding2"><span style="color:#fff;">
+            Search Forums</div></td></tr>
+	</table>
+
+	<table border="0" cellpadding="0" cellspacing="0" width="170" class="navblue2">
+            <tr><td><div class="colpadding3">
+                <form method="get" name="form1" action="http://onesearch.sun.com/search/onesearch/index.jsp">
+                <table border="0" cellpadding="0" cellspacing="0" width="100%" class="vatop">
+                    <tr>
+                        <td><input type="text" name="qt" id="fm6text1" class="medium"size="8" /></td>
+                        <td><input type="submit" border="0" class="buttonblue" value="&nbsp;&raquo;&nbsp;" onmouseover="this.style.color='#fbe249';" onmouseout="this.style.color='#FFF';" /></td>
+                    </tr>
+                </table>
+                
+                
+                <script>
+                    var subCat = eval("'siteforumid:java57'");
+                    document.write("<input type='hidden' name='subCat' value='"+subCat+"'>");
+                    document.write("<input type='hidden' name='site' value='dev'>");
+                    document.write("<input type='hidden' name='dftab' value='"+subCat+"'>");
+                    var chooseCat = "javaall";
+                    document.write("<input type='hidden' name='chooseCat' value='"+chooseCat+"'>");
+                    document.write("<input type='hidden' name='col' value='developer-forums'>");
+                </script>
+            </td>
+            </tr>
+	</table>
+	</form>
+
+
+	
+
+
+<!-- BEGIN LATEST DISCUSIONS -->
+
+    <!-- END LATEST DISCUSIONS -->
+
+
+    <!-- BEGIN POPULAR FORUMS -->
+    
+
+    <!-- END POPOLAR FORUMS -->
+
+    <!-- BEGIN RELATED LINKS -->
+    
+    <!-- END RELATED LINKS -->
+
+    <!-- BEGIN Popular Discussions -->
+    
+    
+    <!-- END Popular Discussions -->
+
+    <!-- BEGIN STATIC LINKS -->
+    
+
+    <!-- END STATIC LINKS -->
+
+
+	    
+
+    <span class="sp5">&nbsp;</span><br />
+    <span class="sp10">&nbsp;</span><br />
+    <!-- END VTI3 EMBEDDED SEARCH, variation 2, left column version -->
+    <!-- END LEFT COLUMN COMPONENTS -->
+
+</td>
+
+    <td><img src="im/a.gif" width="10" height="1" border="0" alt=" " /></td>
+    <td width="100%" valign="top">
+    <!-- BEGIN MAIN CONTENT -->
+
+
+ 
+<!-- BEGIN CENTER COLUMN COMPONENTS -->
+
+                                                                                
+<!--startindex-->
+<a name="skip2content"></a>
+<div id="sun-body">
+<!-- BEGIN MAIN CONTENT -->
+
+<table border="0" cellpadding="4" cellspacing="0" width="100%" class="vtop">
+<tr>
+<td>
+<a href="forum.jspa?forumID=57">Back to Forum</a>
+&nbsp; <a href="http://developers.sun.com/contact/feedback.jsp?referer=http://forum.java.sun.com?forumID=57&category=sdn&mailsubject=Forums%20or%20Community">Feedback About Forums</a>
+</td>
+
+<td align="right">
+ <!--  BEGIN VTI2 PAGINATION COMPONENT, variation 2 without number links -->
+
+            
+
+    <!--  END VTI2 PAGINATION COMPONENT, variation 2 without number links -->
+
+</td>
+
+</tr>
+</table>
+
+<!-- BEGIN G15 GENERIC CONTENT TABLE -->
+<table border="0" cellpadding="4" cellspacing="0" width="100%" class="vtop" bgcolor="#507C9A"><tr><td>
+<table border="0" cellpadding="2" cellspacing="0" width="100%" class="vtop">
+
+<tr bgcolor="#507C9A">
+
+<!-- BEGIN DUKE DOLLARS -->
+<td colspan="2">
+<table width="100%" border="0">
+<tr>
+<td><div class="pad5x10"><span style="color:#fff;">
+        
+
+
+
+</span></div>
+</td>
+
+<td align="right"><div class="pad5x10"><span style="color:#fff;">
+ 
+                This topic has
+                36
+                replies
+                on
+                3
+                pages.
+
+            
+
+            
+
+                &nbsp;&nbsp;
+
+                
+
+                
+                    
+
+                        <a href="thread.jspa?threadID=5117006&start=0&tstart=0"
+                         class="jive-current"
+                         ><font color="#ffffff">1</font></a>
+                        |
+
+                     
+
+                
+                    
+
+                        <a href="thread.jspa?threadID=5117006&start=15&tstart=0"
+                         class=""
+                         ><font color="#ffffff">2</font></a>
+                        |
+
+                     
+
+                
+                    
+
+                        <a href="thread.jspa?threadID=5117006&start=30&tstart=0"
+                         class=""
+                         ><font color="#ffffff">3</font></a>
+                        |
+
+                     
+
+                
+
+                
+
+                    
+                    <a href="thread.jspa?threadID=5117006&start=15&tstart=0"
+                     ><font color="#ffffff">Next &raquo;</font></a>
+
+                
+
+
+            
+</span></div></td>
+
+</tr>
+</table>
+</td>
+</tr>
+
+
+<tr bgcolor="#507C9A">
+<td colspan="2" align="right"><div class="pad5x10"><span style="color:#fff;">
+   	<img src="im/ic_email.gif" width="14" height="12" border="0" hspace="4" vspace="1" alt=" "><a href="emailfriend!default.jspa?threadID=5117006"><font color="#ffffff">E-mail this Topic</font></a> &nbsp;
+
+
+	<img src="im/ic_eye.gif" hspace="4" border="0" alt=" " />
+
+      <a href="watches!add.jspa?forumID=57&threadID=5117006"><font color="#ffffff">Watch this topic</font></a>
+      &nbsp;
+
+</span></div></td>
+
+</tr>
+
+
+
+
+    <div class="jive-message-list">
+
+    
+
+
+
+
+
+
+
+
+
+
+<tr bgcolor="#E4ECF0">
+<td><div class="pad5x10">
+
+
+		<img src="images/bronze-star.gif" title="Dukes Earned 6" />
+
+
+	<a href="profile.jspa?userID=316603"">orozcom</a>
+	
+
+
+<br/>
+
+Posts:383
+ <br />
+Registered: 11/2/01
+
+</div></td>
+
+<!-- END Author Name or Guest -->
+
+
+<td><div class="pad5x10"><b>
+JTree, CardLayout.
+&nbsp;&nbsp;
+    
+<br />
+Dec 18, 2006 10:28 AM
+
+</b>
+<br/>
+
+
+</div></td>
+<!-- END Subject -->
+
+<td><div class="pad5x10">
+
+	<a href="emailmessage!default.jspa?messageID=9402570" title="Click to email this message" />
+	<img src="im/ic_email.gif" width="14" height="12" border="0" hspace="4"
+vspace="1" alt="Click to email this message"/></a>
+	
+	
+	<br><br>
+        <form action="post!reply.jspa">
+	<input type="hidden" name="messageID" value="9402570">
+	<input type="submit" class="buttonblue" value="Reply &raquo;" onmouseover="this.style.color='#fbe249';" onmouseout="this.style.color='#FFF';"></form>
+
+ </div></td>
+<!-- END REPLY Button -->
+
+</tr>
+<!-- END Heading Row -->
+
+<!-- Begin message row -->
+<tr class="white">
+
+<td><div class="pad5x10">&nbsp;</div></td>
+<td><div class="pad5x10">
+Does anyone have an example of a JTree Selection to a CardLayout Panel?
+</div></td>
+<td><div class="pad5x10">&nbsp;</div></td>
+</tr>
+
+
+
+    </div>
+
+
+    <div class="jive-message-list">
+
+    
+
+
+
+
+
+
+
+
+
+
+<tr bgcolor="#E4ECF0">
+<td><div class="pad5x10">
+
+
+		<img src="images/bronze-star.gif" title="Dukes Earned 35" />
+
+
+	<a href="profile.jspa?userID=533524"">Andre_Uhres</a>
+	
+
+
+<br/>
+
+Posts:242
+ <br />
+Registered: 17.05.05
+
+</div></td>
+
+<!-- END Author Name or Guest -->
+
+
+<td><div class="pad5x10"><b>
+Re: JTree, CardLayout.
+&nbsp;&nbsp;
+    
+<br />
+Dec 18, 2006 11:34 AM
+
+	(reply 1 of 36)
+
+</b>
+<br/>
+
+
+</div></td>
+<!-- END Subject -->
+
+<td><div class="pad5x10">
+
+	<a href="emailmessage!default.jspa?messageID=9402709" title="Click to email this message" />
+	<img src="im/ic_email.gif" width="14" height="12" border="0" hspace="4"
+vspace="1" alt="Click to email this message"/></a>
+	
+	
+	<br><br>
+        <form action="post!reply.jspa">
+	<input type="hidden" name="messageID" value="9402709">
+	<input type="submit" class="buttonblue" value="Reply &raquo;" onmouseover="this.style.color='#fbe249';" onmouseout="this.style.color='#FFF';"></form>
+
+ </div></td>
+<!-- END REPLY Button -->
+
+</tr>
+<!-- END Heading Row -->
+
+<!-- Begin message row -->
+<tr class="white">
+
+<td><div class="pad5x10">&nbsp;</div></td>
+<td><div class="pad5x10">
+When I say yes, what helps it? Where is your problem?
+</div></td>
+<td><div class="pad5x10">&nbsp;</div></td>
+</tr>
+
+
+
+    </div>
+
+
+    <div class="jive-message-list">
+
+    
+
+
+
+
+
+
+
+
+
+
+<tr bgcolor="#E4ECF0">
+<td><div class="pad5x10">
+
+
+		<img src="images/bronze-star.gif" title="Dukes Earned 6" />
+
+
+	<a href="profile.jspa?userID=316603"">orozcom</a>
+	
+
+
+<br/>
+
+Posts:383
+ <br />
+Registered: 11/2/01
+
+</div></td>
+
+<!-- END Author Name or Guest -->
+
+
+<td><div class="pad5x10"><b>
+Re: JTree, CardLayout.
+&nbsp;&nbsp;
+    
+<br />
+Dec 18, 2006 1:01 PM
+
+	(reply 2 of 36)
+
+</b>
+<br/>
+
+
+</div></td>
+<!-- END Subject -->
+
+<td><div class="pad5x10">
+
+	<a href="emailmessage!default.jspa?messageID=9402863" title="Click to email this message" />
+	<img src="im/ic_email.gif" width="14" height="12" border="0" hspace="4"
+vspace="1" alt="Click to email this message"/></a>
+	
+	
+	<br><br>
+        <form action="post!reply.jspa">
+	<input type="hidden" name="messageID" value="9402863">
+	<input type="submit" class="buttonblue" value="Reply &raquo;" onmouseover="this.style.color='#fbe249';" onmouseout="this.style.color='#FFF';"></form>
+
+ </div></td>
+<!-- END REPLY Button -->
+
+</tr>
+<!-- END Heading Row -->
+
+<!-- Begin message row -->
+<tr class="white">
+
+<td><div class="pad5x10">&nbsp;</div></td>
+<td><div class="pad5x10">
+I just need the functionality of being able to click on a node on the left hand side of my GUI, and Display a Card from the cardLayout on the right side.<br> Example<br><pre>&lt;Device&gt;
+     &lt;Module&gt;
+            &lt;Status&gt;
+                    &lt;Device&gt;
+                     &lt;/Device&gt;
+                     &lt;Network&gt;
+                     &lt;/Network&gt;
+            &lt;/Status&gt;
+            &lt;Project Management&gt;
+            &lt;/Project Management&gt;
+            &lt;Administration&gt;
+                      &lt;Device&gt;
+                      &lt;/Device&gt;
+                      &lt;Network&gt;
+                      &lt;/Network&gt;
+            &lt;/Administration&gt;
+      &lt;/Module&gt;
+&lt;/Device&gt;
+</pre><br><br>So if I click on Administration a Card from the cardLayout is displayed. I want a card from each Node element. So, if I choose Administration--&gt; Network. I get a Card for the Network. <br><br>Some of the Cards have JTables in them. or even a JTabbedPane.<br><br>Here is the Structure<br><pre>--------------------------------------------------
+|                      |                         |
+|                      |                         |
+|                      |                         |
+|                      |                         |
+|                      |                         |
+--------------------------------------------------
+        ^              ^            ^
+        |              |            |
+     JTree             |      CardLayout
+                       |
+                  JSplitPane
+</pre>
+</div></td>
+<td><div class="pad5x10">&nbsp;</div></td>
+</tr>
+
+
+
+    </div>
+
+
+    <div class="jive-message-list">
+
+    
+
+
+
+
+
+
+
+
+
+
+<tr bgcolor="#E4ECF0">
+<td><div class="pad5x10">
+
+
+		<img src="images/bronze-star.gif" title="Dukes Earned 6" />
+
+
+	<a href="profile.jspa?userID=316603"">orozcom</a>
+	
+
+
+<br/>
+
+Posts:383
+ <br />
+Registered: 11/2/01
+
+</div></td>
+
+<!-- END Author Name or Guest -->
+
+
+<td><div class="pad5x10"><b>
+Re: JTree, CardLayout.
+&nbsp;&nbsp;
+    
+<br />
+Dec 18, 2006 1:30 PM
+
+	(reply 3 of 36)
+
+</b>
+<br/>
+
+
+</div></td>
+<!-- END Subject -->
+
+<td><div class="pad5x10">
+
+	<a href="emailmessage!default.jspa?messageID=9402883" title="Click to email this message" />
+	<img src="im/ic_email.gif" width="14" height="12" border="0" hspace="4"
+vspace="1" alt="Click to email this message"/></a>
+	
+	
+	<br><br>
+        <form action="post!reply.jspa">
+	<input type="hidden" name="messageID" value="9402883">
+	<input type="submit" class="buttonblue" value="Reply &raquo;" onmouseover="this.style.color='#fbe249';" onmouseout="this.style.color='#FFF';"></form>
+
+ </div></td>
+<!-- END REPLY Button -->
+
+</tr>
+<!-- END Heading Row -->
+
+<!-- Begin message row -->
+<tr class="white">
+
+<td><div class="pad5x10">&nbsp;</div></td>
+<td><div class="pad5x10">
+Oh, forgot. It may be better to call a class for each of the node elements. I am going to parse an xml file when I click on the node, and get the data to display in text fields. I will also need to put in some jBottons on the Panel so that I can save, edit, etc... on that particular xml file.
+</div></td>
+<td><div class="pad5x10">&nbsp;</div></td>
+</tr>
+
+
+
+    </div>
+
+
+    <div class="jive-message-list">
+
+    
+
+
+
+
+
+
+
+
+
+
+<tr bgcolor="#E4ECF0">
+<td><div class="pad5x10">
+
+
+		<img src="images/platinum-star.gif" title="Dukes Earned 1337" />
+
+
+	<a href="profile.jspa?userID=378758"">Michael_Dunn</a>
+	
+
+
+<br/>
+
+Posts:5,013
+ <br />
+Registered: 17/08/03
+
+</div></td>
+
+<!-- END Author Name or Guest -->
+
+
+<td><div class="pad5x10"><b>
+Re: JTree, CardLayout.
+&nbsp;&nbsp;
+    
+<br />
+Dec 18, 2006 1:39 PM
+
+	(reply 4 of 36)
+
+</b>
+<br/>
+
+
+</div></td>
+<!-- END Subject -->
+
+<td><div class="pad5x10">
+
+	<a href="emailmessage!default.jspa?messageID=9402895" title="Click to email this message" />
+	<img src="im/ic_email.gif" width="14" height="12" border="0" hspace="4"
+vspace="1" alt="Click to email this message"/></a>
+	
+	
+	<br><br>
+        <form action="post!reply.jspa">
+	<input type="hidden" name="messageID" value="9402895">
+	<input type="submit" class="buttonblue" value="Reply &raquo;" onmouseover="this.style.color='#fbe249';" onmouseout="this.style.color='#FFF';"></form>
+
+ </div></td>
+<!-- END REPLY Button -->
+
+</tr>
+<!-- END Heading Row -->
+
+<!-- Begin message row -->
+<tr class="white">
+
+<td><div class="pad5x10">&nbsp;</div></td>
+<td><div class="pad5x10">
+here's a simple example<br>(this is old, not sure where it came from)<br><br><pre><font color="navy"><b>import</b></font> java.awt.*;
+<font color="navy"><b>import</b></font> javax.swing.event.*;
+<font color="navy"><b>import</b></font> javax.swing.*;
+<font color="navy"><b>import</b></font> javax.swing.tree.*;
+<font color="navy"><b>import</b></font> java.util.*;
+<font color="navy"><b>class</b></font> Testing <font color="navy"><b>extends</b></font> JFrame
+<font color="navy">{</font>
+  CardLayout cl = <font color="navy"><b>new</b></font> CardLayout();
+  JPanel panel = <font color="navy"><b>new</b></font> JPanel(cl);
+  <font color="navy"><b>int</b></font> counter = 0;
+  <font color="navy"><b>public</b></font> Testing()
+  <font color="navy">{</font>
+    setSize(400,200);
+    setLocation(400,200);
+    setDefaultCloseOperation(EXIT_ON_CLOSE);
+    getContentPane().setLayout(<font color="navy"><b>new</b></font> GridLayout(1,2));
+    JTree tree = <font color="navy"><b>new</b></font> JTree();
+    getContentPane().add(<font color="navy"><b>new</b></font> JScrollPane(tree));
+    loadCardPanels((DefaultMutableTreeNode)((DefaultTreeModel)tree.getModel()).getRoot());
+    getContentPane().add(panel);
+    tree.addTreeSelectionListener(<font color="navy"><b>new</b></font> TreeSelectionListener()<font color="navy">{</font>
+      <font color="navy"><b>public</b></font> <font color="navy"><b>void</b></font> valueChanged(TreeSelectionEvent tse)<font color="navy">{</font>
+        <font color="navy"><b>if</b></font>(((TreeNode)tse.getPath().getLastPathComponent()).isLeaf())
+        <font color="navy">{</font>
+          cl.show(panel,((TreeNode)tse.getPath().getLastPathComponent()).toString());
+        <font color="navy">}</font><font color="navy">}</font><font color="navy">}</font>);
+  <font color="navy">}</font>
+  <font color="navy"><b>public</b></font> <font color="navy"><b>void</b></font> loadCardPanels(DefaultMutableTreeNode dmtn)
+  <font color="navy">{</font>
+    <font color="navy"><b>for</b></font>(<font color="navy"><b>int</b></font> x = 0; x &lt; dmtn.getChildCount(); x++)
+    <font color="navy">{</font>
+      <font color="navy"><b>if</b></font>(((DefaultMutableTreeNode)dmtn.getChildAt(x)).isLeaf())
+      <font color="navy">{</font>
+        String leaf = dmtn.getChildAt(x).toString();
+        JPanel jp = <font color="navy"><b>new</b></font> JPanel();
+        jp.add(<font color="navy"><b>new</b></font> JLabel(leaf+<font color="red">" (on Panel "</font>+counter+<font color="red">")"</font>));
+        panel.add(leaf,jp);
+        counter++;
+      <font color="navy">}</font>
+      <font color="navy"><b>else</b></font> loadCardPanels((DefaultMutableTreeNode)dmtn.getChildAt(x));
+    <font color="navy">}</font>
+  <font color="navy">}</font>
+  <font color="navy"><b>public</b></font> <font color="navy"><b>static</b></font> <font color="navy"><b>void</b></font> main(String[] args)<font color="navy">{</font><font color="navy"><b>new</b></font> Testing().setVisible(<font color="navy"><b>true</b></font>);<font color="navy">}</font>
+<font color="navy">}</font>
+</pre>
+</div></td>
+<td><div class="pad5x10">&nbsp;</div></td>
+</tr>
+
+
+
+    </div>
+
+
+    <div class="jive-message-list">
+
+    
+
+
+
+
+
+
+
+
+
+
+<tr bgcolor="#E4ECF0">
+<td><div class="pad5x10">
+
+
+		<img src="images/bronze-star.gif" title="Dukes Earned 6" />
+
+
+	<a href="profile.jspa?userID=316603"">orozcom</a>
+	
+
+
+<br/>
+
+Posts:383
+ <br />
+Registered: 11/2/01
+
+</div></td>
+
+<!-- END Author Name or Guest -->
+
+
+<td><div class="pad5x10"><b>
+Re: JTree, CardLayout.
+&nbsp;&nbsp;
+    
+<br />
+Dec 18, 2006 1:46 PM
+
+	(reply 5 of 36)
+
+</b>
+<br/>
+
+
+</div></td>
+<!-- END Subject -->
+
+<td><div class="pad5x10">
+
+	<a href="emailmessage!default.jspa?messageID=9402897" title="Click to email this message" />
+	<img src="im/ic_email.gif" width="14" height="12" border="0" hspace="4"
+vspace="1" alt="Click to email this message"/></a>
+	
+	
+	<br><br>
+        <form action="post!reply.jspa">
+	<input type="hidden" name="messageID" value="9402897">
+	<input type="submit" class="buttonblue" value="Reply &raquo;" onmouseover="this.style.color='#fbe249';" onmouseout="this.style.color='#FFF';"></form>
+
+ </div></td>
+<!-- END REPLY Button -->
+
+</tr>
+<!-- END Heading Row -->
+
+<!-- Begin message row -->
+<tr class="white">
+
+<td><div class="pad5x10">&nbsp;</div></td>
+<td><div class="pad5x10">
+This may work for me. I am still going to have to modify it, a little, but it  may do the trick. Let me play around with it, and I will get back to you.
+</div></td>
+<td><div class="pad5x10">&nbsp;</div></td>
+</tr>
+
+
+
+    </div>
+
+
+    <div class="jive-message-list">
+
+    
+
+
+
+
+
+
+
+
+
+
+<tr bgcolor="#E4ECF0">
+<td><div class="pad5x10">
+
+
+		<img src="images/bronze-star.gif" title="Dukes Earned 6" />
+
+
+	<a href="profile.jspa?userID=316603"">orozcom</a>
+	
+
+
+<br/>
+
+Posts:383
+ <br />
+Registered: 11/2/01
+
+</div></td>
+
+<!-- END Author Name or Guest -->
+
+
+<td><div class="pad5x10"><b>
+Re: JTree, CardLayout.
+&nbsp;&nbsp;
+    
+<br />
+Dec 19, 2006 5:26 AM
+
+	(reply 6 of 36)
+
+</b>
+<br/>
+
+
+</div></td>
+<!-- END Subject -->
+
+<td><div class="pad5x10">
+
+	<a href="emailmessage!default.jspa?messageID=9404119" title="Click to email this message" />
+	<img src="im/ic_email.gif" width="14" height="12" border="0" hspace="4"
+vspace="1" alt="Click to email this message"/></a>
+	
+	
+	<br><br>
+        <form action="post!reply.jspa">
+	<input type="hidden" name="messageID" value="9404119">
+	<input type="submit" class="buttonblue" value="Reply &raquo;" onmouseover="this.style.color='#fbe249';" onmouseout="this.style.color='#FFF';"></form>
+
+ </div></td>
+<!-- END REPLY Button -->
+
+</tr>
+<!-- END Heading Row -->
+
+<!-- Begin message row -->
+<tr class="white">
+
+<td><div class="pad5x10">&nbsp;</div></td>
+<td><div class="pad5x10">
+Actually, this doesn't work like I thought it would. I like that it does have the panels on the right hand side now, but I need to have the panel pre configured. I am actually getting data from xml files, and the panels will pretty much stay the same.<br><br>So instead of creating a panel when I click on the node. I need to parse some xml, and display a certain panel.<br><br>So, for example.<br><pre><font color="navy"><b>if</b></font> node name equals Status
+<font color="navy">{</font>
+     Display Status panel;
+<font color="navy">}</font>
+&nbsp;
+now where it becomes difficult is:
+&nbsp;
+<font color="navy"><b>if</b></font> node name equals Network.
+<font color="navy">{</font>
+     I will have to get the parent.
+     <font color="navy"><b>if</b></font> Parent equals Status
+      <font color="navy">{</font>
+             get the Network Status panel
+      <font color="navy">}</font>
+     <font color="navy"><b>else</b></font>
+     <font color="navy">{</font>
+            display the Network Administration panel
+     <font color="navy">}</font>
+<font color="navy">}</font>
+</pre><br><br>I would appreciate anyone that might have an example like this.
+</div></td>
+<td><div class="pad5x10">&nbsp;</div></td>
+</tr>
+
+
+
+    </div>
+
+
+    <div class="jive-message-list">
+
+    
+
+
+
+
+
+
+
+
+
+
+<tr bgcolor="#E4ECF0">
+<td><div class="pad5x10">
+
+
+		<img src="images/platinum-star.gif" title="Dukes Earned 1337" />
+
+
+	<a href="profile.jspa?userID=378758"">Michael_Dunn</a>
+	
+
+
+<br/>
+
+Posts:5,013
+ <br />
+Registered: 17/08/03
+
+</div></td>
+
+<!-- END Author Name or Guest -->
+
+
+<td><div class="pad5x10"><b>
+Re: JTree, CardLayout.
+&nbsp;&nbsp;
+    
+<br />
+Dec 19, 2006 9:59 AM
+
+	(reply 7 of 36)
+
+</b>
+<br/>
+
+
+</div></td>
+<!-- END Subject -->
+
+<td><div class="pad5x10">
+
+	<a href="emailmessage!default.jspa?messageID=9404701" title="Click to email this message" />
+	<img src="im/ic_email.gif" width="14" height="12" border="0" hspace="4"
+vspace="1" alt="Click to email this message"/></a>
+	
+	
+	<br><br>
+        <form action="post!reply.jspa">
+	<input type="hidden" name="messageID" value="9404701">
+	<input type="submit" class="buttonblue" value="Reply &raquo;" onmouseover="this.style.color='#fbe249';" onmouseout="this.style.color='#FFF';"></form>
+
+ </div></td>
+<!-- END REPLY Button -->
+
+</tr>
+<!-- END Heading Row -->
+
+<!-- Begin message row -->
+<tr class="white">
+
+<td><div class="pad5x10">&nbsp;</div></td>
+<td><div class="pad5x10">
+&gt; but I need to have the panel pre configured. <br><br>in the demo, the panels are pre-configured in loadCardPanels() then, on <br>clicking a leaf cl.show(...) displays the appropriate panel
+</div></td>
+<td><div class="pad5x10">&nbsp;</div></td>
+</tr>
+
+
+
+    </div>
+
+
+    <div class="jive-message-list">
+
+    
+
+
+
+
+
+
+
+
+
+
+<tr bgcolor="#E4ECF0">
+<td><div class="pad5x10">
+
+
+		<img src="images/bronze-star.gif" title="Dukes Earned 6" />
+
+
+	<a href="profile.jspa?userID=316603"">orozcom</a>
+	
+
+
+<br/>
+
+Posts:383
+ <br />
+Registered: 11/2/01
+
+</div></td>
+
+<!-- END Author Name or Guest -->
+
+
+<td><div class="pad5x10"><b>
+Re: JTree, CardLayout.
+&nbsp;&nbsp;
+    
+<br />
+Dec 20, 2006 10:35 AM
+
+	(reply 8 of 36)
+
+</b>
+<br/>
+
+
+</div></td>
+<!-- END Subject -->
+
+<td><div class="pad5x10">
+
+	<a href="emailmessage!default.jspa?messageID=9406906" title="Click to email this message" />
+	<img src="im/ic_email.gif" width="14" height="12" border="0" hspace="4"
+vspace="1" alt="Click to email this message"/></a>
+	
+	
+	<br><br>
+        <form action="post!reply.jspa">
+	<input type="hidden" name="messageID" value="9406906">
+	<input type="submit" class="buttonblue" value="Reply &raquo;" onmouseover="this.style.color='#fbe249';" onmouseout="this.style.color='#FFF';"></form>
+
+ </div></td>
+<!-- END REPLY Button -->
+
+</tr>
+<!-- END Heading Row -->
+
+<!-- Begin message row -->
+<tr class="white">
+
+<td><div class="pad5x10">&nbsp;</div></td>
+<td><div class="pad5x10">
+&gt;&gt;in the demo, the panels are pre-configured in loadCardPanels() then, on clicking a leaf cl.show(...) displays the appropriate panel <br><br>I am sorry but I am having a hard time following this code: <br>please explain or better yet give me an example in this.<br><br>Lets say I want a panel "Device", and another Panel "Network".<br><br>They both have a save button and some text fields on the panel.<br><br>How do I create the panel in loadCardPanels, and display that panel in c1.show()<br><br>I have to call the panel by name, because the tree model may change.
+</div></td>
+<td><div class="pad5x10">&nbsp;</div></td>
+</tr>
+
+
+
+    </div>
+
+
+    <div class="jive-message-list">
+
+    
+
+
+
+
+
+
+
+
+
+
+<tr bgcolor="#E4ECF0">
+<td><div class="pad5x10">
+
+
+		<img src="images/platinum-star.gif" title="Dukes Earned 1337" />
+
+
+	<a href="profile.jspa?userID=378758"">Michael_Dunn</a>
+	
+
+
+<br/>
+
+Posts:5,013
+ <br />
+Registered: 17/08/03
+
+</div></td>
+
+<!-- END Author Name or Guest -->
+
+
+<td><div class="pad5x10"><b>
+Re: JTree, CardLayout.
+&nbsp;&nbsp;
+    
+<br />
+Dec 20, 2006 12:27 PM
+
+	(reply 9 of 36)
+
+</b>
+<br/>
+
+
+</div></td>
+<!-- END Subject -->
+
+<td><div class="pad5x10">
+
+	<a href="emailmessage!default.jspa?messageID=9407045" title="Click to email this message" />
+	<img src="im/ic_email.gif" width="14" height="12" border="0" hspace="4"
+vspace="1" alt="Click to email this message"/></a>
+	
+	
+	<br><br>
+        <form action="post!reply.jspa">
+	<input type="hidden" name="messageID" value="9407045">
+	<input type="submit" class="buttonblue" value="Reply &raquo;" onmouseover="this.style.color='#fbe249';" onmouseout="this.style.color='#FFF';"></form>
+
+ </div></td>
+<!-- END REPLY Button -->
+
+</tr>
+<!-- END Heading Row -->
+
+<!-- Begin message row -->
+<tr class="white">
+
+<td><div class="pad5x10">&nbsp;</div></td>
+<td><div class="pad5x10">
+in loadCardPanels, if getChildAt(x) is a leaf:<br>a String leaf (identifier) is created<br>a JPanel is created<br>a JLabel with text of identifier is created and added to the created panel<br>the created panel is added to the cardlayout panel, with leaf as identifier<br><br>in valueChanged() of treeSelectionListener (again if it is a leaf), cardLayout.show uses<br>((TreeNode)tse.getPath().getLastPathComponent()).toString()<br>to produce the same string as<br>dmtn.getChildAt(x).toString();<br>which is used as the identifier (as in hashmap) to show the specified panel<br><br>not sure what you're asking about "a panel "Device", and another Panel "Network"."<br>are they both cardlayouts?, or both contained in a cardlayout?<br><br>can you put together a very simple demo program, as described with <br>Jtree, "Device","Network",textfields and save button, and run through the steps of <br>what you want to happen
+</div></td>
+<td><div class="pad5x10">&nbsp;</div></td>
+</tr>
+
+
+
+    </div>
+
+
+    <div class="jive-message-list">
+
+    
+
+
+
+
+
+
+
+
+
+
+<tr bgcolor="#E4ECF0">
+<td><div class="pad5x10">
+
+
+		<img src="images/bronze-star.gif" title="Dukes Earned 6" />
+
+
+	<a href="profile.jspa?userID=316603"">orozcom</a>
+	
+
+
+<br/>
+
+Posts:383
+ <br />
+Registered: 11/2/01
+
+</div></td>
+
+<!-- END Author Name or Guest -->
+
+
+<td><div class="pad5x10"><b>
+Re: JTree, CardLayout.
+&nbsp;&nbsp;
+    
+<br />
+Dec 20, 2006 5:22 PM
+
+	(reply 10 of 36)
+
+</b>
+<br/>
+
+
+</div></td>
+<!-- END Subject -->
+
+<td><div class="pad5x10">
+
+	<a href="emailmessage!default.jspa?messageID=9407490" title="Click to email this message" />
+	<img src="im/ic_email.gif" width="14" height="12" border="0" hspace="4"
+vspace="1" alt="Click to email this message"/></a>
+	
+	
+	<br><br>
+        <form action="post!reply.jspa">
+	<input type="hidden" name="messageID" value="9407490">
+	<input type="submit" class="buttonblue" value="Reply &raquo;" onmouseover="this.style.color='#fbe249';" onmouseout="this.style.color='#FFF';"></form>
+
+ </div></td>
+<!-- END REPLY Button -->
+
+</tr>
+<!-- END Heading Row -->
+
+<!-- Begin message row -->
+<tr class="white">
+
+<td><div class="pad5x10">&nbsp;</div></td>
+<td><div class="pad5x10">
+Yeah sure. I modified your program just a little. I loaded the tree that I need. <br><br>Here is the program. <br>run your program with this class<br><pre><font color="navy"><b>import</b></font> javax.swing.*;
+<font color="navy"><b>import</b></font> javax.swing.tree.*;
+&nbsp;
+<font color="darkgreen">/**
+ *
+ * @author orozcom
+ */</font>
+<font color="navy"><b>public</b></font> <font color="navy"><b>class</b></font> ConfigTree
+<font color="navy">{</font>
+    
+    <font color="darkgreen">/**
+     * Creates a new instance of ConfigTree
+     */</font>
+    <font color="navy"><b>public</b></font> ConfigTree()
+    <font color="navy">{</font>
+    <font color="navy">}</font>
+    
+    
+    <font color="navy"><b>public</b></font> Object buildTree()
+    <font color="navy">{</font>
+        <font color="darkgreen">/************ Start of JTree ***************/</font>
+        
+        DefaultMutableTreeNode top =
+                <font color="navy"><b>new</b></font> DefaultMutableTreeNode(<font color="red">"Devices"</font>);
+        
+        DefaultMutableTreeNode branch1 =
+                <font color="navy"><b>new</b></font> DefaultMutableTreeNode(<font color="red">"Module 1"</font>);         
+        top.add(branch1);        
+        
+        <font color="darkgreen">/*******************************
+         *          BRANCH 1           *
+         ******************************/</font>        
+        
+        DefaultMutableTreeNode node1_b1
+                =<font color="navy"><b>new</b></font> DefaultMutableTreeNode(<font color="red">"Status"</font>);
+        DefaultMutableTreeNode n1_node1_b1 =
+                <font color="navy"><b>new</b></font> DefaultMutableTreeNode(<font color="red">"Device"</font>);
+        DefaultMutableTreeNode n2_node1_b1 =
+                <font color="navy"><b>new</b></font> DefaultMutableTreeNode(<font color="red">"Network"</font>);
+        DefaultMutableTreeNode n3_node1_b1 =
+                <font color="navy"><b>new</b></font> DefaultMutableTreeNode(<font color="red">"Chassis"</font>);
+        DefaultMutableTreeNode n4_node1_b1 =
+                <font color="navy"><b>new</b></font> DefaultMutableTreeNode(<font color="red">"Resources"</font>);
+        node1_b1.add(n1_node1_b1);
+        node1_b1.add(n2_node1_b1);
+        node1_b1.add(n3_node1_b1);
+        node1_b1.add(n4_node1_b1);
+        
+        DefaultMutableTreeNode node2_b1 =
+                <font color="navy"><b>new</b></font> DefaultMutableTreeNode(<font color="red">"Project Editor"</font>);        
+        DefaultMutableTreeNode node3_b1 =
+                <font color="navy"><b>new</b></font> DefaultMutableTreeNode(<font color="red">"Project Manager"</font>);        
+        DefaultMutableTreeNode node4_b1 =
+                <font color="navy"><b>new</b></font> DefaultMutableTreeNode(<font color="red">"Administration"</font>);
+        DefaultMutableTreeNode n1_node4_b1 =
+                <font color="navy"><b>new</b></font> DefaultMutableTreeNode(<font color="red">"Device"</font>);
+        DefaultMutableTreeNode n2_node4_b1 =
+                <font color="navy"><b>new</b></font> DefaultMutableTreeNode(<font color="red">"Network"</font>);
+        DefaultMutableTreeNode n3_node4_b1 =
+                <font color="navy"><b>new</b></font> DefaultMutableTreeNode(<font color="red">"Users"</font>);
+        node4_b1.add(n1_node4_b1);
+        node4_b1.add(n2_node4_b1);
+        node4_b1.add(n3_node4_b1);
+        
+        DefaultMutableTreeNode node5_b1 =
+                <font color="navy"><b>new</b></font> DefaultMutableTreeNode(<font color="red">"Logging"</font>);          
+        
+        branch1.add(node1_b1);
+        branch1.add(node2_b1);
+        branch1.add(node3_b1);
+        branch1.add(node4_b1);
+        branch1.add(node5_b1);
+        
+        <font color="navy"><b>return</b></font> top;
+    <font color="navy">}</font>
+    
+<font color="navy">}</font>
+&nbsp;
+</pre><br><br>And<br><br>Just add this code into Testing.java<br><pre>ConfigTree test = <font color="navy"><b>new</b></font> ConfigTree();
+        
+DefaultMutableTreeNode mainTree = (DefaultMutableTreeNode)test.buildTree();
+JTree tree = <font color="navy"><b>new</b></font> JTree(mainTree);
+</pre>
+</div></td>
+<td><div class="pad5x10">&nbsp;</div></td>
+</tr>
+
+
+
+    </div>
+
+
+    <div class="jive-message-list">
+
+    
+
+
+
+
+
+
+
+
+
+
+<tr bgcolor="#E4ECF0">
+<td><div class="pad5x10">
+
+
+		<img src="images/platinum-star.gif" title="Dukes Earned 1337" />
+
+
+	<a href="profile.jspa?userID=378758"">Michael_Dunn</a>
+	
+
+
+<br/>
+
+Posts:5,013
+ <br />
+Registered: 17/08/03
+
+</div></td>
+
+<!-- END Author Name or Guest -->
+
+
+<td><div class="pad5x10"><b>
+Re: JTree, CardLayout.
+&nbsp;&nbsp;
+    
+<br />
+Dec 20, 2006 8:23 PM
+
+	(reply 11 of 36)
+
+</b>
+<br/>
+
+
+</div></td>
+<!-- END Subject -->
+
+<td><div class="pad5x10">
+
+	<a href="emailmessage!default.jspa?messageID=9407649" title="Click to email this message" />
+	<img src="im/ic_email.gif" width="14" height="12" border="0" hspace="4"
+vspace="1" alt="Click to email this message"/></a>
+	
+	
+	<br><br>
+        <form action="post!reply.jspa">
+	<input type="hidden" name="messageID" value="9407649">
+	<input type="submit" class="buttonblue" value="Reply &raquo;" onmouseover="this.style.color='#fbe249';" onmouseout="this.style.color='#FFF';"></form>
+
+ </div></td>
+<!-- END REPLY Button -->
+
+</tr>
+<!-- END Heading Row -->
+
+<!-- Begin message row -->
+<tr class="white">
+
+<td><div class="pad5x10">&nbsp;</div></td>
+<td><div class="pad5x10">
+I'me reading this that you're trying to show different panels with the same leaf name.<br><br>This seems to work OK, but there's gotta be an easier way<br>(click any of the leafs and its panel will display - showing parent/leaf as title)<br><br><pre><font color="navy"><b>import</b></font> javax.swing.*;
+<font color="navy"><b>import</b></font> javax.swing.tree.*;
+<font color="navy"><b>import</b></font> java.awt.*;
+<font color="navy"><b>import</b></font> javax.swing.event.*;
+<font color="navy"><b>import</b></font> javax.swing.*;
+<font color="navy"><b>import</b></font> javax.swing.tree.*;
+<font color="navy"><b>import</b></font> java.util.*;
+<font color="navy"><b>class</b></font> Testing <font color="navy"><b>extends</b></font> JFrame
+<font color="navy">{</font>
+  CardLayout cl = <font color="navy"><b>new</b></font> CardLayout();
+  JPanel panel = <font color="navy"><b>new</b></font> JPanel(cl);
+  <font color="navy"><b>public</b></font> Testing()
+  <font color="navy">{</font>
+    JPanel blankPanel = <font color="navy"><b>new</b></font> JPanel();
+    blankPanel.setBorder(BorderFactory.createTitledBorder(<font color="red">"Blank Panel"</font>));
+    panel.add(blankPanel,<font color="red">"0"</font>);
+    setSize(600,400);
+    setLocationRelativeTo(<font color="navy"><b>null</b></font>);
+    setDefaultCloseOperation(EXIT_ON_CLOSE);
+    getContentPane().setLayout(<font color="navy"><b>new</b></font> GridLayout(1,2));
+&nbsp;
+    ConfigTree test = <font color="navy"><b>new</b></font> ConfigTree();
+    DefaultMutableTreeNode mainTree = (DefaultMutableTreeNode)test.buildTree();
+    JTree tree = <font color="navy"><b>new</b></font> JTree(mainTree);
+&nbsp;
+    getContentPane().add(<font color="navy"><b>new</b></font> JScrollPane(tree));
+    loadCardPanels((DefaultMutableTreeNode)((DefaultTreeModel)tree.getModel()).getRoot());
+    getContentPane().add(panel);
+    tree.addTreeSelectionListener(<font color="navy"><b>new</b></font> TreeSelectionListener()<font color="navy">{</font>
+      <font color="navy"><b>public</b></font> <font color="navy"><b>void</b></font> valueChanged(TreeSelectionEvent tse)<font color="navy">{</font>
+        <font color="navy"><b>if</b></font>(((TreeNode)tse.getPath().getLastPathComponent()).isLeaf())
+        <font color="navy">{</font>
+          String cardLayoutID = ((NodeWithID)  ((DefaultMutableTreeNode)((TreePath)tse.getPath())
+                                 .getLastPathComponent()).getUserObject() ).ID;
+          cl.show(panel,cardLayoutID);
+        <font color="navy">}</font><font color="navy">}</font><font color="navy">}</font>);
+&nbsp;
+    cl.show(panel,<font color="red">"0"</font>);
+  <font color="navy">}</font>
+  <font color="navy"><b>public</b></font> <font color="navy"><b>void</b></font> loadCardPanels(DefaultMutableTreeNode dmtn)
+  <font color="navy">{</font>
+    <font color="navy"><b>for</b></font>(<font color="navy"><b>int</b></font> x = 0; x &lt; dmtn.getChildCount(); x++)
+    <font color="navy">{</font>
+      <font color="navy"><b>if</b></font>(((DefaultMutableTreeNode)dmtn.getChildAt(x)).isLeaf())
+      <font color="navy">{</font>
+        String cardLayoutID = ((NodeWithID)((DefaultMutableTreeNode)dmtn.getChildAt(x)).getUserObject()).ID;
+        JPanel jp = <font color="navy"><b>new</b></font> JPanel();
+        jp.setBorder(BorderFactory.createTitledBorder(cardLayoutID+<font color="red">" Panel"</font>));
+        panel.add(cardLayoutID,jp);
+      <font color="navy">}</font>
+      <font color="navy"><b>else</b></font> loadCardPanels((DefaultMutableTreeNode)dmtn.getChildAt(x));
+    <font color="navy">}</font>
+  <font color="navy">}</font>
+  <font color="navy"><b>public</b></font> <font color="navy"><b>static</b></font> <font color="navy"><b>void</b></font> main(String[] args)<font color="navy">{</font><font color="navy"><b>new</b></font> Testing().setVisible(<font color="navy"><b>true</b></font>);<font color="navy">}</font>
+<font color="navy">}</font>
+<font color="navy"><b>class</b></font> ConfigTree
+<font color="navy">{</font>
+    <font color="navy"><b>public</b></font> Object buildTree()
+    <font color="navy">{</font>
+        NodeWithID n0 = <font color="navy"><b>new</b></font> NodeWithID(<font color="red">"Devices"</font>,<font color="red">""</font>);
+        NodeWithID n1 = <font color="navy"><b>new</b></font> NodeWithID(<font color="red">"Module 1"</font>,n0.nodeName);
+        NodeWithID n2 = <font color="navy"><b>new</b></font> NodeWithID(<font color="red">"Status"</font>,n1.nodeName);
+        NodeWithID n3 = <font color="navy"><b>new</b></font> NodeWithID(<font color="red">"Device"</font>,n2.nodeName);
+        NodeWithID n4 = <font color="navy"><b>new</b></font> NodeWithID(<font color="red">"Network"</font>,n2.nodeName);
+        NodeWithID n5 = <font color="navy"><b>new</b></font> NodeWithID(<font color="red">"Chassis"</font>,n2.nodeName);
+        NodeWithID n6 = <font color="navy"><b>new</b></font> NodeWithID(<font color="red">"Resources"</font>,n2.nodeName);
+        NodeWithID n7 = <font color="navy"><b>new</b></font> NodeWithID(<font color="red">"Project Editor"</font>,n1.nodeName);
+        NodeWithID n8 = <font color="navy"><b>new</b></font> NodeWithID(<font color="red">"Project Manager"</font>,n1.nodeName);
+        NodeWithID n9 = <font color="navy"><b>new</b></font> NodeWithID(<font color="red">"Administration"</font>,n1.nodeName);
+        NodeWithID n10 = <font color="navy"><b>new</b></font> NodeWithID(<font color="red">"Device"</font>,n9.nodeName);
+        NodeWithID n11 = <font color="navy"><b>new</b></font> NodeWithID(<font color="red">"Network"</font>,n9.nodeName);
+        NodeWithID n12 = <font color="navy"><b>new</b></font> NodeWithID(<font color="red">"Users"</font>,n9.nodeName);
+        NodeWithID n13 = <font color="navy"><b>new</b></font> NodeWithID(<font color="red">"Logging"</font>,n1.nodeName);
+&nbsp;
+        DefaultMutableTreeNode top =
+                <font color="darkgreen">//new DefaultMutableTreeNode("Devices");</font>
+                <font color="navy"><b>new</b></font> DefaultMutableTreeNode(n0);
+        DefaultMutableTreeNode branch1 =
+                <font color="darkgreen">//new DefaultMutableTreeNode("Module 1");</font>
+                <font color="navy"><b>new</b></font> DefaultMutableTreeNode(n1);
+        top.add(branch1);
+        <font color="darkgreen">/*******************************
+         *          BRANCH 1           *
+         ******************************/</font>
+        DefaultMutableTreeNode node1_b1
+                <font color="darkgreen">//=new DefaultMutableTreeNode("Status");</font>
+                =<font color="navy"><b>new</b></font> DefaultMutableTreeNode(n2);
+        DefaultMutableTreeNode n1_node1_b1 =
+                <font color="darkgreen">//new DefaultMutableTreeNode("Device");</font>
+                <font color="navy"><b>new</b></font> DefaultMutableTreeNode(n3);
+        DefaultMutableTreeNode n2_node1_b1 =
+                <font color="darkgreen">//new DefaultMutableTreeNode("Network");</font>
+                <font color="navy"><b>new</b></font> DefaultMutableTreeNode(n4);
+        DefaultMutableTreeNode n3_node1_b1 =
+                <font color="darkgreen">//new DefaultMutableTreeNode("Chassis");</font>
+                <font color="navy"><b>new</b></font> DefaultMutableTreeNode(n5);
+        DefaultMutableTreeNode n4_node1_b1 =
+                <font color="darkgreen">//new DefaultMutableTreeNode("Resources");</font>
+                <font color="navy"><b>new</b></font> DefaultMutableTreeNode(n6);
+        node1_b1.add(n1_node1_b1);
+        node1_b1.add(n2_node1_b1);
+        node1_b1.add(n3_node1_b1);
+        node1_b1.add(n4_node1_b1);
+&nbsp;
+        DefaultMutableTreeNode node2_b1 =
+                <font color="darkgreen">//new DefaultMutableTreeNode("Project Editor");</font>
+                <font color="navy"><b>new</b></font> DefaultMutableTreeNode(n7);
+        DefaultMutableTreeNode node3_b1 =
+                <font color="darkgreen">//new DefaultMutableTreeNode("Project Manager");</font>
+                <font color="navy"><b>new</b></font> DefaultMutableTreeNode(n8);
+        DefaultMutableTreeNode node4_b1 =
+                <font color="darkgreen">//new DefaultMutableTreeNode("Administration");</font>
+                <font color="navy"><b>new</b></font> DefaultMutableTreeNode(n9);
+        DefaultMutableTreeNode n1_node4_b1 =
+                <font color="darkgreen">//new DefaultMutableTreeNode("Device");</font>
+                <font color="navy"><b>new</b></font> DefaultMutableTreeNode(n10);
+        DefaultMutableTreeNode n2_node4_b1 =
+                <font color="darkgreen">//new DefaultMutableTreeNode("Network");</font>
+                <font color="navy"><b>new</b></font> DefaultMutableTreeNode(n11);
+        DefaultMutableTreeNode n3_node4_b1 =
+                <font color="darkgreen">//new DefaultMutableTreeNode("Users");</font>
+                <font color="navy"><b>new</b></font> DefaultMutableTreeNode(n12);
+        node4_b1.add(n1_node4_b1);
+        node4_b1.add(n2_node4_b1);
+        node4_b1.add(n3_node4_b1);
+&nbsp;
+        DefaultMutableTreeNode node5_b1 =
+                <font color="darkgreen">//new DefaultMutableTreeNode("Logging");</font>
+                <font color="navy"><b>new</b></font> DefaultMutableTreeNode(n13);
+&nbsp;
+        branch1.add(node1_b1);
+        branch1.add(node2_b1);
+        branch1.add(node3_b1);
+        branch1.add(node4_b1);
+        branch1.add(node5_b1);
+&nbsp;
+        <font color="navy"><b>return</b></font> top;
+    <font color="navy">}</font>
+<font color="navy">}</font>
+<font color="navy"><b>class</b></font> NodeWithID
+<font color="navy">{</font>
+  String nodeName;
+  String ID;
+  <font color="navy"><b>public</b></font> NodeWithID(String nn,String parentName)
+  <font color="navy">{</font>
+    nodeName = nn;
+    ID = parentName+<font color="red">" - "</font>+nodeName;
+  <font color="navy">}</font>
+  <font color="navy"><b>public</b></font> String toString()<font color="navy">{</font><font color="navy"><b>return</b></font> nodeName;<font color="navy">}</font>
+<font color="navy">}</font>
+&nbsp;
+</pre>
+</div></td>
+<td><div class="pad5x10">&nbsp;</div></td>
+</tr>
+
+
+
+    </div>
+
+
+    <div class="jive-message-list">
+
+    
+
+
+
+
+
+
+
+
+
+
+<tr bgcolor="#E4ECF0">
+<td><div class="pad5x10">
+
+
+		<img src="images/bronze-star.gif" title="Dukes Earned 6" />
+
+
+	<a href="profile.jspa?userID=316603"">orozcom</a>
+	
+
+
+<br/>
+
+Posts:383
+ <br />
+Registered: 11/2/01
+
+</div></td>
+
+<!-- END Author Name or Guest -->
+
+
+<td><div class="pad5x10"><b>
+Re: JTree, CardLayout.
+&nbsp;&nbsp;
+    
+<br />
+Dec 21, 2006 5:54 AM
+
+	(reply 12 of 36)
+
+</b>
+<br/>
+
+
+</div></td>
+<!-- END Subject -->
+
+<td><div class="pad5x10">
+
+	<a href="emailmessage!default.jspa?messageID=9408455" title="Click to email this message" />
+	<img src="im/ic_email.gif" width="14" height="12" border="0" hspace="4"
+vspace="1" alt="Click to email this message"/></a>
+	
+	
+	<br><br>
+        <form action="post!reply.jspa">
+	<input type="hidden" name="messageID" value="9408455">
+	<input type="submit" class="buttonblue" value="Reply &raquo;" onmouseover="this.style.color='#fbe249';" onmouseout="this.style.color='#FFF';"></form>
+
+ </div></td>
+<!-- END REPLY Button -->
+
+</tr>
+<!-- END Heading Row -->
+
+<!-- Begin message row -->
+<tr class="white">
+
+<td><div class="pad5x10">&nbsp;</div></td>
+<td><div class="pad5x10">
+Yes, Yes, Yes! This is exactly what I need! Thanks so much! I will reward you the dukes. <br><br>Could I also get a little more help.  Now I need to create unique fields in each of the panels. Like have a few text fields and labels in one panel, and A table in another.<br><br>example.<br><br>in the Devices.Module 1.Status.Device panel. <br><br><pre>Header Label --&gt; Device Information  
+               Label --&gt;Name                         TextField --&gt;Yellowfin Demo 
+               Label --&gt;Description                  TextField --&gt;Beta Tag mapper 
+               Label --&gt;Location                     TextField --&gt;Jim<font color="navy">'s 13 slot rack </font>
+               Label --&gt;Contact                      TextField --&gt;Jim 
+               Label --&gt;Serial Number                TextField --&gt;
+</pre><br><br>but the panel in Logging is a JTable with different columns.<br><br>The data in the text fields I will parse from an xml file an put into these fields. <br><br>I will also need a save button on each of the panels so that I can save this information back to the xml file.
+</div></td>
+<td><div class="pad5x10">&nbsp;</div></td>
+</tr>
+
+
+
+    </div>
+
+
+    <div class="jive-message-list">
+
+    
+
+
+
+
+
+
+
+
+
+
+<tr bgcolor="#E4ECF0">
+<td><div class="pad5x10">
+
+
+		<img src="images/bronze-star.gif" title="Dukes Earned 6" />
+
+
+	<a href="profile.jspa?userID=316603"">orozcom</a>
+	
+
+
+<br/>
+
+Posts:383
+ <br />
+Registered: 11/2/01
+
+</div></td>
+
+<!-- END Author Name or Guest -->
+
+
+<td><div class="pad5x10"><b>
+Re: JTree, CardLayout.
+&nbsp;&nbsp;
+    
+<br />
+Dec 21, 2006 9:13 AM
+
+	(reply 13 of 36)
+
+</b>
+<br/>
+
+
+</div></td>
+<!-- END Subject -->
+
+<td><div class="pad5x10">
+
+	<a href="emailmessage!default.jspa?messageID=9408900" title="Click to email this message" />
+	<img src="im/ic_email.gif" width="14" height="12" border="0" hspace="4"
+vspace="1" alt="Click to email this message"/></a>
+	
+	
+	<br><br>
+        <form action="post!reply.jspa">
+	<input type="hidden" name="messageID" value="9408900">
+	<input type="submit" class="buttonblue" value="Reply &raquo;" onmouseover="this.style.color='#fbe249';" onmouseout="this.style.color='#FFF';"></form>
+
+ </div></td>
+<!-- END REPLY Button -->
+
+</tr>
+<!-- END Heading Row -->
+
+<!-- Begin message row -->
+<tr class="white">
+
+<td><div class="pad5x10">&nbsp;</div></td>
+<td><div class="pad5x10">
+I would kind of like something like this: <br><br>http://forum.java.sun.com/thread.jspa?threadID=697887&#38;start=10&#38;tstart=0<br><br>except I don't need to build my tree. I already have them prebuilt. I would like to have the  buttons on top to add, edit, save tags in the xml. And I would like it configured so that when you click on a certain node a panel is displayed that shows the information about that particuler info.
+</div></td>
+<td><div class="pad5x10">&nbsp;</div></td>
+</tr>
+
+
+
+    </div>
+
+
+    <div class="jive-message-list">
+
+    
+
+
+
+
+
+
+
+
+
+
+<tr bgcolor="#E4ECF0">
+<td><div class="pad5x10">
+
+
+		<img src="images/platinum-star.gif" title="Dukes Earned 1337" />
+
+
+	<a href="profile.jspa?userID=378758"">Michael_Dunn</a>
+	
+
+
+<br/>
+
+Posts:5,013
+ <br />
+Registered: 17/08/03
+
+</div></td>
+
+<!-- END Author Name or Guest -->
+
+
+<td><div class="pad5x10"><b>
+Re: JTree, CardLayout.
+&nbsp;&nbsp;
+    
+<br />
+Dec 21, 2006 9:35 AM
+
+	(reply 14 of 36)
+
+</b>
+<br/>
+
+
+</div></td>
+<!-- END Subject -->
+
+<td><div class="pad5x10">
+
+	<a href="emailmessage!default.jspa?messageID=9408959" title="Click to email this message" />
+	<img src="im/ic_email.gif" width="14" height="12" border="0" hspace="4"
+vspace="1" alt="Click to email this message"/></a>
+	
+	
+	<br><br>
+        <form action="post!reply.jspa">
+	<input type="hidden" name="messageID" value="9408959">
+	<input type="submit" class="buttonblue" value="Reply &raquo;" onmouseover="this.style.color='#fbe249';" onmouseout="this.style.color='#FFF';"></form>
+
+ </div></td>
+<!-- END REPLY Button -->
+
+</tr>
+<!-- END Heading Row -->
+
+<!-- Begin message row -->
+<tr class="white">
+
+<td><div class="pad5x10">&nbsp;</div></td>
+<td><div class="pad5x10">
+the code so far just displays an empty panel identified by the node/parent, <br>but each panel is different and needs to be built separately. The problem sounds <br>like how to load the separate panels in loadCardPanels().<br><br>just a thought (untested)<br>add a JPanel field to NodeWithID, and add additional constructor<br><pre><font color="navy"><b>class</b></font> NodeWithID
+<font color="navy">{</font>
+  JPanel panel;  
+  String nodeName;
+  String ID;
+  <font color="navy"><b>public</b></font> NodeWithID(String nn,String parentName)
+  <font color="navy">{</font>
+    nodeName = nn;
+    ID = parentName+<font color="red">" - "</font>+nodeName;
+  <font color="navy">}</font>
+  <font color="navy"><b>public</b></font> NodeWithID(String nn,String parentName, JPanel p)
+  <font color="navy">{</font>
+    panel = p;    
+    nodeName = nn;
+    ID = parentName+<font color="red">" - "</font>+nodeName;
+  <font color="navy">}</font>
+  <font color="navy"><b>public</b></font> String toString()<font color="navy">{</font><font color="navy"><b>return</b></font> nodeName;<font color="navy">}</font>
+<font color="navy">}</font>
+</pre><br><br>now, when NodeWithID (for the leafs) is created e.g.<br><pre>NodeWithID n3 = <font color="navy"><b>new</b></font> NodeWithID(<font color="red">"Device"</font>,n2.nodeName);
+</pre><br>becomes<br><pre>NodeWithID n3 = <font color="navy"><b>new</b></font> NodeWithID(<font color="red">"Device"</font>,n2.nodeName,<font color="navy"><b>new</b></font> StatusDevicePanel());
+</pre><br><br>and, in loadCardPanels()<br><pre><font color="navy"><b>if</b></font>(((DefaultMutableTreeNode)dmtn.getChildAt(x)).isLeaf())
+<font color="navy">{</font>
+  String cardLayoutID = ((NodeWithID)((DefaultMutableTreeNode)dmtn.getChildAt(x)).getUserObject()).ID;
+  JPanel jp = <font color="navy"><b>new</b></font> JPanel();
+  jp.setBorder(BorderFactory.createTitledBorder(cardLayoutID+<font color="red">" Panel"</font>));
+  panel.add(cardLayoutID,jp);
+<font color="navy">}</font>
+</pre><br>becomes<br><pre><font color="navy"><b>if</b></font>(((DefaultMutableTreeNode)dmtn.getChildAt(x)).isLeaf())
+<font color="navy">{</font>
+  NodeWithID node = (NodeWithID)((DefaultMutableTreeNode)dmtn.getChildAt(x)).getUserObject();
+  String cardLayoutID = node.ID;
+  panel.add(cardLayoutID,   node.panel    );
+<font color="navy">}</font>
+</pre><br><br>probably a few typos in the above, but should work
+</div></td>
+<td><div class="pad5x10">&nbsp;</div></td>
+</tr>
+
+
+
+    </div>
+
+
+
+</table>
+</td></tr></table>
+
+<table border="0" cellpadding="4" cellspacing="0" width="100%" class="vtop" bgcolor="#507C9A"><tr><td>
+<table border="0" cellpadding="2" cellspacing="0" width="100%" class="vtop">
+
+<tr bgcolor="#507C9A">
+
+<td align="right"><div class="pad5x10"><span style="color:#fff;">
+ 
+                This topic has
+                36
+                replies
+                on
+                3
+                pages.
+
+            
+
+            
+
+                &nbsp;&nbsp;
+
+                
+
+                
+                    
+
+                        <a href="thread.jspa?threadID=5117006&start=0&tstart=0"
+                         class="jive-current"
+                         ><font color="#ffffff">1</font></a>
+                        |
+
+                     
+
+                
+                    
+
+                        <a href="thread.jspa?threadID=5117006&start=15&tstart=0"
+                         class=""
+                         ><font color="#ffffff">2</font></a>
+                        |
+
+                     
+
+                
+                    
+
+                        <a href="thread.jspa?threadID=5117006&start=30&tstart=0"
+                         class=""
+                         ><font color="#ffffff">3</font></a>
+                        |
+
+                     
+
+                
+
+                
+
+                    
+                    <a href="thread.jspa?threadID=5117006&start=15&tstart=0"
+                     ><font color="#ffffff">Next &raquo;</font></a>
+
+                
+
+
+            
+</span></div></td>
+
+</tr>
+</table>
+
+</td></tr></table>
+
+
+<span class="sp10">&#160;</span><br />
+<a href="http://java.sun.com/siteinfo/conduct.html">Read the Developer Forums Code of Conduct</a><br><br>
+<img src="im/ic_email.gif" width="14" height="12" border="0" hspace="4" vspace="1" alt="Click to email this message"/> Email this Topic
+<br>
+<br>
+<img src="images/edit-16x16.gif" width="16" height="16" border="0" /> Edit this Topic
+<!-- END G15 GENERIC CONTENT TABLE -->
+</div>
+<!--stopindex-->
+ 
+<!-- Custom Footer Code -->
+
+    
+    
+
+    </td>
+</tr>
+<tr><td valign="bottom"><a href="http://www.jivesoftware.com/poweredby/" target="_new"><img src="im/ic_jive_forums.gif" alt="Powered by Jive Forums" width="74"
+height="24" border="0"></a></td>
+</tr>
+</table>
+
+ 
+    
+    <!-- END RIGHT COLUMN COMPONENTS -->
+<br /><img src="/im/a.gif" width="170" height="1" border="0" alt=" " /></td></tr>
+<tr><td rowspan="2" valign="bottom"><img src="/im/a.gif" width="170" height="1" border="0" alt=" " /><br />
+<!--  BEGIN CELL FOR OPTIONAL MASTHEAD CAPTION -->
+<!--  END CELL FOR OPTIONAL MASTHEAD CAPTION --></td></tr>
+<!-- END SPACER ROW -->
+</table>
+<!-- END WRAPPER TABLE, 3 COLUMN, LEFT/MAIN/RIGHT -->
+    <!-- BEGIN VNV5 FOOTER  -->
+<table border="0" cellpadding="0" cellspacing="10" width="100%">
+<tr>
+<td>
+<table border="0" cellpadding="0" cellspacing="0" width="100%" class="vatop">
+<tr>
+<td colspan="4" valign="top" class="grey3"><img src="/im/a.gif" width="1" height="2" border="0" alt="" /></td></tr>
+<tr>
+<td><img src="/im/a.gif" width="190" height="1" border="0" alt="" /><br />
+<a href="http://www.sun.com"><img src="/im/logo_sun_small_sdn.gif" width="61" height="29" border="0" alt="" vspace="5"/></a></td>
+<td width="100%" valign="top"><img src="/im/a.gif" width="350" height="1" border="0" alt="" /><br />
+<div class="footer">
+<a href="http://developers.sun.com/global/aboutsun.html">About Sun</a> &nbsp;|&nbsp;
+<a href="http://developers.sun.com/global/aboutsdn.html">About This Site</a> &nbsp;|&nbsp;
+<a href="http://developers.sun.com/global/newsletters.html">Newsletters</a> &nbsp;|&nbsp;
+<a href="http://developers.sun.com/global/contact.html">Contact Us</a> &nbsp;|&nbsp;
+<a href="http://developers.sun.com/global/employment.html">Employment</a><br />
+<a href="http://developers.sun.com/global/howtobuy.html">How to Buy</a> &nbsp;|&nbsp;
+<a href="http://developers.sun.com/global/licensing.html">Licensing</a> &nbsp;|&nbsp;
+<a href="http://developers.sun.com/global/termsofuse.html">Terms of Use</a> &nbsp;|&nbsp;
+<a href="http://developers.sun.com/global/privacy.html">Privacy</a> &nbsp;|&nbsp;
+<a href="http://developers.sun.com/global/trademarks.html">Trademarks</a>
+<br /><span class="sp10">&nbsp;</span><br />
+<br /><span class="sp10">&nbsp;</span><br />
+Copyright 1994-2006 Sun Microsystems, Inc.
+</div></td>
+<td><img src="/im/a.gif" width="40" height="1" border="0" alt="" /></td>
+<td valign="top"><div class="footer"><b><a href="http://developers.sun.com/global/aboutsdn.html">A Sun Developer Network Site</a></b></div>
+<div class="footer">
+<img src="/im/a.gif" width="170" height="1" border="0" alt="" /><br />
+Unless otherwise licensed, code in all technical manuals herein (including articles, FAQs, samples) is provided under this <a href="http://developers.sun.com/global/berkeley_license.html">License</a>.
+<br /><span class="sp5">&nbsp;</span><br />
+<a href="http://developers.sun.com/global/rss_sdn.html"><img src="/images/feed-icon-16x16.gif" width="16" height="16" align="top" border="0" alt="XML" /></a>&nbsp;<a href="http://developers.sun.com/global/content_feeds.html">Content Feeds</a>
+</div></td></tr>
+<tr><td colspan="4" valign="top" class="grey3"><img src="/im/a.gif" width="1" height="2" border="0" alt="" /></td></tr>
+</table>
+</td></tr>
+</table>
+<!-- END VNV5 FOOTER -->
+
+    </body></html>
+
+

@@ -1,0 +1,16 @@
+<database
+	vendor_tag="MySQL"
+	server_name="NIESearch2"
+	database_name="SearchTrack"
+	username="SearchTrack"
+	password="SearchTrack"
+	main_table="nie_log"
+	port=""
+>
+  <!-- Run a test query,
+	by default does a count(*) on main table by default
+	<test_query
+		is_count_query="TRUE"
+	/>
+  -->
+</database>

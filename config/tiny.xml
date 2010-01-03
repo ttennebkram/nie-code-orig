@@ -1,0 +1,64 @@
+<nie_config>
+
+	<!-- Passwords:
+		password = password_5 = master admin password, full control
+		no password = password_0 = guest, VERY limited access
+		levels 1 through 4 have varying levels of access and control
+	-->
+	<search_tuning
+		admin_password="test"
+		read_only_password="guest"
+	>
+
+
+		<!-- General Configuration -->
+		<!-- ===================== -->
+
+
+		<!-- Insert URL of NIE Server here  -->
+ 		<nie_server_url>
+			<!-- Mark's worstation, visible only in Sunnyvale -->
+			http://north:9001
+		</nie_server_url>
+
+		<!-- Information about the host search engine -->
+		<include location="search_engine.xml" />
+
+
+		<!-- Include the actual KEYWORD mappings, suggestions, ads, etc -->
+		<!-- ========================================================== -->
+		<!-- These are the actual Search Names terms and the URLs
+		     and advertisements that they relate to.
+		-->
+		<!-- SearchTuningconfig.DB_MAP_TOP_PATH -->
+		<fixed_redirection_map />
+		<!--
+		<include location="keyword_mappings.xml" />
+		-->
+
+
+		<!-- Some cosmetic defaults -->
+		<!-- ====================== -->
+		<!-- These files control the colors and fonts, etc. for:
+		     * Webmaster Suggests
+					(fonts, box background color and border, icon, etc)
+		     * Alternate Terms / Related Terms suggestions
+					(font and color, the wording of the heading)
+
+		     They do NOT control Advertisements, see User Data section above.
+		-->
+		<default_webmaster_suggests_box
+			width="100%"
+			_bgcolor="#CEFFFF"
+			bgcolor="#cccccc"
+			border_color="#000000"
+			border="1"
+		/>
+		<include location="defaults/default_webmaster_suggests_header.xml" />
+		<include location="defaults/default_webmaster_suggests_icon.xml" />
+		<include location="defaults/default_webmaster_suggests_doc_url.xml" />
+		<include location="defaults/default_alternate_suggestions_heading.xml" />
+
+
+	</search_tuning>
+</nie_config>

@@ -1,0 +1,15 @@
+<!-- configured for Miles Postgres database -->
+
+<database
+	vendor_tag="postgresql"
+	server_name="titan"
+	database_name="template1"
+	username="Administrator"
+	password="shad0w15"
+>
+	<!-- Run a test query,
+		by default does a count(*) on main table by default
+	<test_query />
+	-->
+
+</database>

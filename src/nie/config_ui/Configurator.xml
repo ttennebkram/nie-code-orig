@@ -1,0 +1,24 @@
+<form
+	action="..."
+	title="SearchTrack Config"
+>
+
+	<include location="tabs-1/basic.xml" />
+	<include location="tabs-1/license.xml" />
+	<include location="tabs-1/search-engine.xml" />
+	<include location="tabs-1/hidden-fields.xml" />
+	<include location="tabs-1/subsite-1.xml" />
+	<include location="tabs-1/subsite-2.xml" />
+	<include location="tabs-1/database.xml" />
+	<include location="tabs-1/patterns.xml" />
+	<!--
+	<include location="tabs-1/click-through.xml" />
+	-->
+	<include location="tabs-1/look-and-feel.xml" />
+	<include location="tabs-1/null-searches.xml" />
+	<!--
+	<include location="tabs-1/lucene.xml" />
+	-->
+	<include location="tabs-1/logging.xml" />
+
+</form>

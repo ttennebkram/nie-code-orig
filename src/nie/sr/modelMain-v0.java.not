@@ -1,0 +1,81 @@
+package nie.sr;
+
+public class modelMain extends SRModel
+{
+    public modelMain() throws SRException
+    {
+	if( getPageSize() == 0 ) {
+	    SRConfig.getSoleInstance().doDebugMsg( "modelMain", "modelMain", "Calling setPageSize from constructor." );
+	    setPageSize( 20 );
+	}
+
+	if( getPageStart() == 0 )
+	    setPageStart(1);
+    }
+
+    /***************************************************************
+     * Check if the data actually loaded in from the form - we might
+     * be missing some data...
+     **************************************************************/
+    
+    public boolean isLoaded()
+    {
+	return (getReportCode() != null) ||
+	   ( getFunctionCode() != null);
+    }
+    
+    /***************************************************************
+     * Convenience routine so that I don't have to keep casting the
+     * getView() call.
+     **************************************************************/
+    
+    public viewMain getMainView() { return (viewMain)getView(); };
+    
+    /***************************************************************
+     * Setters and Getters
+     **************************************************************/
+
+    public void setReportCode( String inReportCode )     { fReportCode = inReportCode; };
+    public void setSearchTerm( String inSearchTerm )     { fSearchTerm = inSearchTerm; };
+    public void setFilterCode( String inFilterCode )     { fFilterCode = inFilterCode; };
+    public void setFunctionCode( String inFunctionCode ) { fFunctionCode = inFunctionCode; };
+    public void setPageStart( String inPageStart )       { fPageStart = Integer.parseInt( inPageStart ); };
+    public void setPageStart( int inPageStart )          { fPageStart = inPageStart; };
+    public void setPageSize( String inPageSize )         { fPageSize = Integer.parseInt( inPageSize ); };
+    public void setPageSize( int inPageSize )            { fPageSize = inPageSize; }
+    public void setFilterParam( String inFilterParam )   { fFilterParam = inFilterParam; };
+
+    public void setDirection( String inDirection )
+    {
+	if( inDirection != null )
+	    fDirection = inDirection.toUpperCase();
+	else fDirection = inDirection;
+    }
+
+    public String getReportCode()        { return fReportCode; };
+    public String getFilterCode()        { return fFilterCode; };
+    public String getFunctionCode()      { return fFunctionCode; };
+    public String getDirection()         { return fDirection; }
+    public String getOppositeDirection() { return (fDirection.toUpperCase().compareTo("ASC") == 0) ? "DESC" : "ASC"; };
+    public String getSearchTerm()        { return fSearchTerm; };
+    public String getFilterParameter()   { return fFilterParam; };
+
+    public int getPageStart() { return ( fPageStart == 0 ) ? 1 : fPageStart; };
+    public int getPageSize() { return (fPageSize == 0) ? 20 : fPageSize ; };
+    public int getEndRow() { return getNextPageStart() - 1; };
+    public int getPrevPageStart() { return (getPageStart() - getPageSize()) < 1 ? 1 : (getPageStart() - getPageSize()); }
+    public int getNextPageStart() { return getPageStart() + getPageSize(); };
+
+    /***************************************************************
+     * Instance variables
+     **************************************************************/
+    
+    String fReportCode;
+    String fFilterCode;
+    String fFunctionCode;
+    String fDirection;
+    String fSearchTerm;
+
+    int fPageStart;
+    int fPageSize;
+}

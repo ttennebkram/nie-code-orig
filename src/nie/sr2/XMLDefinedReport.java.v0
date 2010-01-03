@@ -1,0 +1,3041 @@
+package nie.sr2;
+
+import java.util.*;
+import java.sql.*;
+import org.jdom.Element;
+import org.jdom.Comment;
+import nie.core.*;
+
+/**
+ * @author mbennett
+ *
+ * To change this generated comment edit the template variable "typecomment":
+ * Window>Preferences>Java>Templates.
+ * To enable and disable the creation of type comments go to
+ * Window>Preferences>Java>Code Generation.
+ */
+public class XMLDefinedReport
+	implements ReportInterface
+{
+
+	// Todo:
+	// reverse dns
+	// filter expressions
+	// optional filter if no cgi field
+	// \ column ID
+	// \ ! paging links
+	// cgi vars to clear when returning to main menu
+	// "TOP" N rows optimization
+	// \ overall content table
+	// \ settable desired row count by report, and enforceable
+	// utility to carefully check and add if needed the from, where,
+	// 	sort by, order by, etc. to clauses
+	// gropu by, vs breaks???
+	// desired table tag TABLE
+	// Easy settings for callpadding and cellspacing, alignment, width
+	// desired header row tag TR
+	// desired data row tag TR
+	// desired data cell TD
+	// desired header cell TH
+	// settable cell classes
+	// \ null value
+	// reformat of boolean
+	// reformat of numbers
+	// data types, reformat of dates, numbers, etc.
+	// sort options
+	// sort defs
+	// filter options, filter defs?
+	// \ filter fields, click data links
+	// link gen?: join text, like "... in last:"
+	// ?\ link targets (_blank, _top, etc.)
+	// \ external links, maybe with raw href??? but with parms?
+	// image links
+	// derived fields
+	// report breaks, before and after
+	// handling * and other arbitrary field list issues
+	// "content goes here"
+	// default settings, maybe a report that is used as a template
+	// \ Surround templates for look and feel
+	// named CSS sheets
+	// external vs embedded CSS
+	// later, named XSLT sheets
+	// . menu bar!
+	// security levels
+
+	// Far cosmetic:
+	// ---------------
+	// allow for no column headings
+	// allow for blank column headings
+	// allow XHTML tags in column headings
+	// spanning column headings?
+
+
+
+	private final static String kClassName = "XMLDefinedReport";
+	// We need this when referencing our class by name
+	public final static String kFullClassName = "nie.sr2." + kClassName;
+
+	public XMLDefinedReport(
+		JDOMHelper inReportDefinitionElement,
+		nie.sn.SearchTuningApp inMainApp,
+		String inShortReportName
+		)
+			throws ReportConfigException
+	{
+		final String kFName = "constructor";
+		final String kExTag = kClassName + '.' + kFName + ": ";
+
+		// We'd like at least a minimal report name
+		inShortReportName = NIEUtil.trimmedStringOrNull(
+			inShortReportName
+			);
+		if( null==inShortReportName )
+			throw new ReportConfigException( kExTag
+				+ "Null/empty report name passed in."
+				);
+		fShortReportName = inShortReportName;
+
+		// we need the main app for various info
+		if( null==inMainApp )
+			throw new ReportConfigException( kExTag
+				+ "Null application object passed in"
+				+ " for report " + getReportName()
+				);
+		fMainApp = inMainApp;
+
+		// we also need a report definition
+		if( null==inReportDefinitionElement )
+			throw new ReportConfigException( kExTag
+				+ "Null XML report definition passed in"
+				+ " for report " + getReportName()
+				);
+		fMainElem = inReportDefinitionElement;
+
+		// Fill in the cache
+		initCachedFields();
+
+	}
+
+	private void initCachedFields()
+		throws ReportConfigException
+	{
+		fUseCache = false;
+
+		generateSQL( null, null );
+
+		getTitle( null );
+		getLinkText( null );
+		getSubtitle( null );
+
+		// Do this one last
+		getShouldDoVariableSubstitutions();
+
+		// It's OK not to have them
+		// and it's not fatal if one of
+		// them is mangled
+		getSuggestedLinks();
+
+		fUseCache = true;
+	}
+
+
+	Element generateMainMenuLink(
+		AuxIOInfo inRequestInfo,
+		AuxIOInfo inResponseInfo
+		)
+			throws ReportException
+	{
+		final String kFName = "generateMainMenuLink";
+		final String kExTag = kClassName + '.' + kFName + ": ";
+
+		final String kLinkText = "Return to the Main Menu";
+
+		if( null == inRequestInfo
+			|| null == inResponseInfo
+			)
+		{
+			throw new ReportException( kExTag
+				+ "Null request/reponse object."
+				);
+		}
+
+		// Our eventual response, barring any exceptions
+		Element outElem = new Element( "a" );
+
+
+		// Get the link
+		////////////////////////////////////////////
+
+		// We use AuxIOInfo to build a link
+		AuxIOInfo newLinkInfo = new AuxIOInfo();
+		// Prime it with the basic URL we want
+		newLinkInfo.setBasicURL( getMainAppURL() );
+
+		// Copy over existing CGI values
+		// We have to say which fields we DON'T want
+		List excludeFields = new Vector();
+		excludeFields.add( ReportDispatcher.REPORT_NAME_CGI_FIELD );
+		excludeFields.add( XMLDefinedReport.START_ROW_CGI_FIELD_NAME );
+		excludeFields.add( XMLDefinedReport.DESIRED_ROW_COUNT_CGI_FIELD_NAME );
+		excludeFields.add( XMLDefinedReport.SORT_SPEC_CGI_FIELD_NAME );
+		excludeFields.add( XMLDefinedReport.FILTER_NAME_CGI_FIELD_NAME );
+		excludeFields.add( XMLDefinedReport.FILTER_PARAM_CGI_FIELD_NAME );
+		// Now do the copy
+		newLinkInfo.copyInCGIFields( inRequestInfo, excludeFields );
+
+		// Now get the full href back
+		String href = newLinkInfo.getFullCGIEncodedURL();
+
+		if( null==href )
+			throw new ReportException( kExTag
+				+ "Got back null href, this link will not be created."
+				);
+
+
+		// Now create the final XHTML element
+		// we use <div> if not an active link
+		outElem.setAttribute( "href", href );
+		// outElem.setAttribute( "class", "nie_menu_link" );
+		outElem.setAttribute(
+			"class", ReportDispatcher.NIE_REPORT_LINK_CSS_CLASS
+			);
+
+
+		// And add the display text
+		outElem.addContent( kLinkText );
+
+		// Return the tag!
+		return outElem;
+	}
+
+	Element generatePlainLinkToThisReport( AuxIOInfo inRequest )
+	{
+		// Create a new anchor tag
+		Element anchor = new Element( "a" );
+		anchor.setAttribute(
+			"class", ReportDispatcher.NIE_REPORT_LINK_CSS_CLASS
+			);
+
+		// Add the link text
+		anchor.addContent( getLinkText(null) );
+
+		// Create a repository for link info
+		AuxIOInfo linkInfo = new AuxIOInfo();
+		linkInfo.setBasicURL( getMainAppURL() );
+		linkInfo.copyInCGIFields( inRequest );
+
+		// Set the report name to us
+		linkInfo.setOrOverwriteCGIField(
+			ReportDispatcher.REPORT_NAME_CGI_FIELD,
+			getReportName()
+			);
+
+		// Get the full URL and add it to the anchor
+		String href = linkInfo.getFullCGIEncodedURL();
+		anchor.setAttribute( "href", href );
+
+
+		return anchor;
+	}
+	public Element generateFancyLinksToThisReport( AuxIOInfo inRequest )
+	{
+		final int kIndentPixels = 30; // 20
+
+		Element outElem = new Element( "table" );
+		// outElem.setAttribute( "border", "1" );
+		outElem.setAttribute( "cellpadding", "0" );
+		outElem.setAttribute( "cellspacing", "0" );
+
+		// for debug
+		// outElem.setAttribute( "border", "1" );
+
+
+		List links = getSuggestedLinks();
+		// If no links, just generate the title as a hyperlink
+		if( links.size() < 1 )
+		{
+			Element anchor = generatePlainLinkToThisReport( inRequest );
+
+			// Create a table cell for the link and add it
+			Element containerElem = JDOMHelper.findOrCreateElementByPath(
+				outElem,
+				"tr/td/@class=" + CONAINER_CELL_CSS_CLASS
+				,
+				true
+				);
+			containerElem.addContent( anchor );
+
+		}
+		// Else we do have some suggested links to present
+		else
+		{
+			// Put the header row up
+			Element titleElem = JDOMHelper.findOrCreateElementByPath(
+				outElem,
+				// "tr/th/@colspan=2/@align=left"
+				"tr/td/@colspan=2/@align=left"
+				+ "/@class=" + CONAINER_CELL_CSS_CLASS
+				+ "/div/@class="
+				+ ReportDispatcher.NIE_INACTIVE_REPORT_LINK_CSS_CLASS
+				,
+				true
+				);
+			titleElem.addContent( getLinkText(null) );
+
+			// For each link
+			for( int i=0; i<links.size(); i++ )
+			{
+				// Get the link
+				ReportLink link = (ReportLink) links.get( i );
+
+				// Create and link the row
+				Element row = JDOMHelper.findOrCreateElementByPath(
+					outElem, "tr[" + (i+2) + ']', true
+					);
+
+				// Add an indent cell, we don't need to save this
+				JDOMHelper.findOrCreateElementByPath(
+					row,
+					"td/@class=" + CONAINER_CELL_CSS_CLASS
+					+ "/@valign=top"
+					// + "/li"	// A link element
+					// see if an image tag would be more compact
+					+ "/img/@height=0/@width=" + kIndentPixels
+					// See if just a width will work
+					// + "/@width=" + kIndentPixels
+					,
+					true
+					);
+
+				// Add a cell on this row for the link
+				Element linkCell = JDOMHelper.findOrCreateElementByPath(
+					row,
+					"td[2]/@class=" + CONAINER_CELL_CSS_CLASS
+					+ "/@valign=top"
+					+ "/@width=100%"
+					,
+					true
+					);
+				// Get the link and add the link to it
+				Element linkElem = link.genertateRichLink(
+					inRequest, getReportName(), null
+					);
+				linkCell.addContent( linkElem );
+			}
+
+		}
+
+		// And we're done!
+		return outElem;
+
+	}
+
+
+
+
+
+
+	public Element runReport(
+			AuxIOInfo inRequestObject,
+			AuxIOInfo inResponseObject,
+			boolean inIsUsingATemplate
+		)
+			throws ReportException
+	{
+		final String kFName = "runReport";
+		final String kExTag = kClassName + '.' + kFName + ": ";
+		boolean debug = shouldDoDebugMsg( kFName );
+
+		// Whether or not to force a style element into the
+		// stream, even if we're not formulating the entire page
+		final boolean kForceCSS = true;
+
+		Hashtable lMasterValuesHash = null;
+		if( getShouldDoVariableSubstitutions() )
+		{
+			lMasterValuesHash = new Hashtable();
+
+			// Start assmbling the hash
+
+			// The cgi variables
+			Hashtable cgiHash = getAllRequestHashes( inRequestObject );
+			lMasterValuesHash.putAll( cgiHash );
+
+			// Todo: others...
+		}
+
+		String qry = null;
+		try
+		{
+			qry = generateSQL( lMasterValuesHash, inRequestObject );
+			if(debug)
+				debugMsg( kFName, "QRY=\"" + qry + "\"" );
+		}
+		catch( ReportConfigException e )
+		{
+			// This really shouldn't happen, by now this was
+			// tested by init cache, but anyway, recast as runtime now
+			throw new ReportException( kExTag
+				+ "Error generating SQL for this report."
+				+ " Error: " + e
+				);
+		}
+
+		// The two key points in the tree
+		Element outElem = null;
+		Element contentHanger = null;
+		String title = getTitle( lMasterValuesHash );
+
+		// Also, have the CSS stuff ready to go if we need it
+		Element styleElem = null;
+		String css = getCssStyleText();
+		if( null!=css )
+		{
+			// Add newlines to it for source readability
+			css = NIEUtil.NL + css + NIEUtil.NL;
+			// Todo: this should go inside HTML comments as well
+			// Create the style element and add the content
+			styleElem = new Element( "style" );
+			styleElem.setAttribute( "type", "text/css" );
+			Comment lComment = new Comment( css );
+			// styleElem.addContent( css );
+			styleElem.addContent( lComment );
+		}
+
+
+
+		// If no template, build from scratch
+		if( ! inIsUsingATemplate )
+		{
+			// The eventual answer
+			outElem = new Element( "html" );
+			// Build up the heading
+			Element headElem = new Element( "head" );
+			// Hold off adding it to the main doc until we see
+			// if we add anything
+			boolean haveAddedAnythingToHead = false;
+			// Add the CSS element, if any
+			if( null!=styleElem )
+			{
+				headElem.addContent( styleElem );
+				haveAddedAnythingToHead = true;
+			}
+			// Add the title, if any
+			if( null!=title )
+			{
+				Element titleElem = new Element( "title" );
+				titleElem.addContent( title );
+				headElem.addContent( titleElem );
+				haveAddedAnythingToHead = true;
+			}
+			// Only add the heading to the document if we've actually
+			// put something in it
+			if( haveAddedAnythingToHead )
+				outElem.addContent( headElem );
+	
+			// Start building the body tag
+			Element bodyElem = new Element( "body" );
+			outElem.addContent( bodyElem );
+
+			// We like the main layout centered
+			Element mainCenterElem = new Element( "center" );
+			bodyElem.addContent( mainCenterElem );
+			contentHanger = mainCenterElem;
+	
+		}
+		// Else there IS a template, so we build a much
+		// shorter document
+		else
+		{
+			// We like the main layout centered
+			Element mainCenterElem = new Element( "center" );
+			outElem = mainCenterElem;
+			contentHanger = mainCenterElem;
+
+			// Add the CSS element, if any
+			if( null!=styleElem && kForceCSS )
+			{
+				contentHanger.addContent( styleElem );
+			}
+		}
+
+
+		// Add the title, if any
+		if( null!=title )
+		{
+			Element titleElem = new Element( "h1" );
+			titleElem.setAttribute( "class", "nie_report_title" );
+			titleElem.addContent( title );
+			// bodyElem.addContent( titleElem );
+			contentHanger.addContent( titleElem );
+		}
+		// Add the subtitle, if any
+		String subtitle = getSubtitle( lMasterValuesHash );
+		if( null!=subtitle )
+		{
+			Element subtitleElem = new Element( "h2" );
+			subtitleElem.setAttribute( "class", "nie_report_subtitle" );
+			subtitleElem.addContent( subtitle );
+			// bodyElem.addContent( subtitleElem );
+			contentHanger.addContent( subtitleElem );
+		}
+
+
+		// The main-content table helps place the
+		// results grid, statistics message and
+		// paging links
+		Element mainContentTable = new Element( "table" );
+		mainContentTable.setAttribute( "class", "nie_main_content_table" );
+		// Add it to the overall content stream
+		// bodyElem.addContent( mainContentTable );
+		contentHanger.addContent( mainContentTable );
+		// NOTE:
+		// We hold off adding rows to this, so we can put them in
+		// the proper order AFTER the main loop runs
+
+
+
+		//
+		// RUN the query!!!
+		// ==================================================
+		// (and only build the headers if we had success)
+		//
+		//////////////////////////////////////////////////////
+
+		ResultSet results = null;
+		try
+		{
+
+			// This actually runs the query
+			results = getDBConfig().runQuery( qry );
+
+
+			// Start building the output document
+			Element resultsTableElem = new Element( "table" );
+			resultsTableElem.setAttribute( "class", "nie_results_table" );
+			// Hold off adding it until we know how well we did
+
+			List fields = getFieldObjects();
+
+			//
+			// Prepare Column Headings
+			// =================================
+			//
+			///////////////////////////////////////////////
+
+			// Add the header row
+			Element headerRowElem = new Element( "tr" );
+			headerRowElem.setAttribute( "class", "nie_header_row" );
+
+			int lReportColumnCount = 0;
+			// For each column
+			for( int i=0; i<fields.size(); i++ )
+			{
+				// Get the field definition
+				XMLDefinedField fieldDef =
+					(XMLDefinedField)fields.get(i);	// Zero-based
+
+				// Display, if we're supposed to
+				if( fieldDef.getShouldDisplay() )
+				{
+
+					// Get the element this header
+					Element headingElem =
+						fieldDef.generateHeaderElement();
+					if( null!=headingElem )
+					{
+						// Add the cell to the row
+						headerRowElem.addContent( headingElem );
+						// lReportColumnCount++;
+					}
+					// Else something is very wrong
+					else
+					{
+						errorMsg( kFName,
+							"No heading cell for field # " + (i+1)
+							+ " in report \"" + getReportName() + "\""
+							+ " Adding empty th cell."
+							// + " Report may be missing columns."
+							);
+						headerRowElem.addContent( new Element("th") );
+					}
+
+					// To avoid missing data below, we always put
+					// at least a holder in and allow the column
+					// count to increment
+					lReportColumnCount++;
+
+
+				}	// End if we are supposed to display
+			}
+			// Add the row to the table
+			resultsTableElem.addContent( headerRowElem );
+
+
+			// Some Pre-Loop Calculations
+			///////////////////////////////////////////
+			int desiredStartRow = getStartRow( inRequestObject );
+			int desiredRowCount = getDesiredRowCount( inRequestObject );
+			int desiredEndRow = -1;
+			if( desiredRowCount > 0 )
+				desiredEndRow = desiredStartRow + desiredRowCount - 1;
+			// Whether or not we even care about paging
+			// USUALLY desiredRowCount WILL BE > 0 so this
+			// will almost always be true, the other test is
+			// just in case somebody is looking at "all" results
+			// but for some reason starts in mid list
+			boolean isDoingPaging =
+				desiredRowCount > 0	// Usually TRUE
+				|| desiredStartRow > 1	// Backup sanity test
+				;
+
+			// Some state fields, easier to set them specifically
+			// then to try and derive them after the fact
+			int actualFirstRowDisplayed = -1;
+			int actualLastRowDisplayed = -1;
+			boolean hadAnotherRow = false;
+			boolean atEndOfRecords = false;
+
+			// This row count is the ACTUAL db results
+			// row counter
+			// It is used and carried forward in
+			// BOTH loops below
+			int rowCount = 0;
+
+			// we need this for even/odd stuff
+			// and if we displayed 5 records at a time
+			// record 6, though technically, would be the 1st
+			// record displayed on page 2, and would therefore
+			// be treated as odd dispaly-style-wise
+			int displayedRowCount = 0;
+
+			//
+			// Catch up to the start of the part we want
+			//
+			//////////////////////////////////////////////////
+			// Will skip if desiredStartRow == 1
+			// Remember, row count hasn't been incremented yet at the
+			// start of the loop
+			while( ! atEndOfRecords && (rowCount+1) < desiredStartRow )
+			{
+				if( ! results.next() )
+				{
+					atEndOfRecords = true;
+					break;
+				}
+				// OK, count this row
+				rowCount++;
+			}
+
+			/////////////////////////////////////////
+			//
+			//	****************************
+			//	*****    MAIN LOOP    ******
+			//	****************************
+			//
+			//////////////////////////////////////////
+			// Step through the results
+			// while( ! atEndOfRecords && results.next() )
+			while( ! atEndOfRecords )
+			{
+
+				// Do some break testing if end row is set
+				if( desiredEndRow > 0 )
+				{
+					// Remember, row count hasn't been incremented yet
+					// at the start of the loop
+					if( (rowCount+1) > desiredEndRow )
+						break;
+				}
+
+				// Attempt to goto the next record
+				if( ! results.next() )
+				{
+					atEndOfRecords = true;
+					break;
+				}
+				// OK, we have a record
+				rowCount++;
+
+				// This is the count of records displayed
+				// ON THIS PAGE
+				displayedRowCount++;
+
+				// Create the results row
+				Element rowElem = new Element( "tr" );
+				if( displayedRowCount % 2 == 0 )
+					rowElem.setAttribute( "class", "nie_even_row" );
+				else
+					rowElem.setAttribute( "class", "nie_odd_row" );
+
+				// For each column, mixed Zero and One based indexing
+				for( int i=0; i<fields.size(); i++ )
+				{
+					// Get the field definition
+					XMLDefinedField fieldDef =
+						(XMLDefinedField)fields.get(i);	// Zero-based
+
+					// Get the value
+					Object valueObject = results.getObject( i+1 ); // One-Based
+
+					// Display, if we're supposed to
+					if( fieldDef.getShouldDisplay() )
+					{
+
+						// Have the field class generate the display
+						// element that we need
+						Element valueElment =
+							fieldDef.generateDataElement(
+								valueObject,
+								inRequestObject
+								);
+
+
+						// Add, if we got something
+						if( null!=valueElment )
+						{
+							// Add the cell to the row
+							rowElem.addContent( valueElment );
+						}
+						// Else something is very wrong
+						else
+						{
+							errorMsg( kFName,
+								"No data cell for field # " + (i+1)
+								+ " in report \"" + getReportName() + "\""
+								+ " Adding empty td cell."
+								// + " Report may be missing columns."
+								);
+							rowElem.addContent( new Element("td") );
+						}
+
+					}	// End if should be displayed
+
+				}	// End for each field
+
+
+				// Add the row to the table
+				resultsTableElem.addContent( rowElem );
+
+				// Update our displayed statistics
+
+				// If this is the first actual row displayed
+				// then remember it
+				if( actualFirstRowDisplayed < 0 )
+					actualFirstRowDisplayed = rowCount;
+
+				// This is always the last one we've displayed
+				actualLastRowDisplayed = rowCount;
+
+
+			}	// End for each row
+
+			// Now add the results set to the main document
+			// bodyElem.addContent( resultsTableElem );
+			// No, will be added to mainContentTable
+
+			// We postpone doing the "stats" row until
+			// the paging logic has had a chance to set
+			// isShowingAllRecords 
+
+			// Paging Links
+			////////////////////////////////////////
+			Element pagingLinksRows = null;
+			boolean hasMoreRecords = false;	// arbitrary initial value
+			boolean hasPrevRecords = false;	// arbitrary initial value
+			boolean isShowingAllRecords = false;
+			if( isDoingPaging )
+			{
+
+				// Todo: Could actually figure out number
+				// of records for prev and next links
+				// overkill at this point
+
+				// First, figure out if there are more records
+				hasMoreRecords = false;	// arbitrary initial value
+				if( atEndOfRecords )
+				{
+					hasMoreRecords = false;	// redundant but clear
+				}
+				// Else we're not specifically at the end of records
+				// We need to try fetching one more record
+				else
+				{
+					// If there is another record, then we have more
+					if( results.next() )
+						hasMoreRecords = true;
+					// OK, we specifically checked and there are no more
+					else
+						hasMoreRecords = false;
+				}
+
+				// There are prev records if we're not starting
+				// at record 1
+				hasPrevRecords = (actualFirstRowDisplayed > 1);
+
+				// tell us whether we're showing all rows
+				if( ! hasPrevRecords && ! hasMoreRecords )
+					isShowingAllRecords = true;
+
+				// Add the paging links
+
+
+			}
+			// Else we're NOT doing paging
+			else
+			{
+				// Not much to do here
+
+				// we will assume all rows are shown
+				isShowingAllRecords = true;
+
+			}
+
+
+			// Create and add the "stats" message
+			////////////////////////////////////////////////////
+			// The stats row
+
+			Element statsRowElem = new Element( "tr" );
+			statsRowElem.setAttribute( "class", "nie_stats_row" );
+			// Add this row to the content
+			mainContentTable.addContent( statsRowElem );
+			// Now create the cell for the message
+			Element outerStatsCellElem = new Element( "td" );
+			// Add the cell to the row
+			statsRowElem.addContent( outerStatsCellElem );
+
+			// Now create the inner table for this cell
+			Element innerStatsTable = new Element( "table" );
+			// A hard coded style item
+			innerStatsTable.setAttribute( "width", "100%" );
+			// Add this table to the bounding cell
+			outerStatsCellElem.addContent( innerStatsTable );
+		
+			// Now create the bounding row
+			Element innerStatsRow = new Element( "tr" );
+			// And add that row to the table
+			innerStatsTable.addContent( innerStatsRow );
+
+			// Create the first cell, for the stats
+			Element innerStatsCell = new Element( "td" );
+			innerStatsCell.setAttribute( "align", "left" );
+			innerStatsCell.setAttribute( "class", "nie_stats_cell" );
+			// Add the cell to the row
+			innerStatsRow.addContent( innerStatsCell );
+
+			// Now figure out the message
+			// String statsMsg = null;
+			if( displayedRowCount < 1 )
+			{
+				if( desiredStartRow > 1 || ! isShowingAllRecords )
+				{
+					innerStatsCell.addContent(
+						"There are no more records to display."
+						);
+				}
+				else
+				{
+					innerStatsCell.addContent(
+						"There are no records to display."
+						);
+				}
+			}
+			else if( actualFirstRowDisplayed == actualLastRowDisplayed )
+			{
+				if( isShowingAllRecords )
+				{
+					// statsMsg = "Showing the only record.";
+					innerStatsCell.addContent(
+						"Showing the only record."
+						);
+				}
+				else
+				{
+					// statsMsg = "Showing record " + actualFirstRowDisplayed;
+					innerStatsCell.addContent(
+						"Showing record "
+						);
+					Element boldTag = new Element( "b" );
+					boldTag.setAttribute(
+						"class", STAT_NUMBER_CSS_CLASS
+						);
+					boldTag.addContent( "" + actualFirstRowDisplayed );
+					innerStatsCell.addContent( boldTag );
+				}
+			}
+			// Else displayed a range of rows
+			else
+			{
+//				statsMsg = "Showing records "
+//					+ actualFirstRowDisplayed
+//					+ " through "
+//					+ actualLastRowDisplayed
+//					;
+//				if( isShowingAllRecords )
+//					statsMsg += " (all records shown)";
+
+				// "Showing records "
+				innerStatsCell.addContent(
+					"Showing records "
+					);
+
+				// 1
+				Element boldTag1 = new Element( "b" );
+				boldTag1.setAttribute(
+					"class", STAT_NUMBER_CSS_CLASS
+					);
+				boldTag1.addContent( "" + actualFirstRowDisplayed );
+				innerStatsCell.addContent( boldTag1 );
+
+				// " through "
+				innerStatsCell.addContent(
+					" through "
+					);
+
+				// 10
+				Element boldTag2 = new Element( "b" );
+				boldTag2.setAttribute(
+					"class", STAT_NUMBER_CSS_CLASS
+					);
+				boldTag2.addContent( "" + actualLastRowDisplayed );
+				innerStatsCell.addContent( boldTag2 );
+
+				if( isShowingAllRecords )
+				{
+					Element iTag = new Element( "i" );
+					iTag.setAttribute(
+						"class", "nie_stats_qualifier"
+						);
+					iTag.addContent( " (all records shown)" );
+					innerStatsCell.addContent( iTag );
+				}
+
+			}
+
+
+			// Create the second cell, for the link to the main menu
+			Element innerMenuCell = new Element( "td" );
+			innerMenuCell.setAttribute( "align", "right" );
+			innerMenuCell.setAttribute( "class", "nie_menu_cell" );
+			// Add the cell to the row
+			innerStatsRow.addContent( innerMenuCell );
+
+			// Now get the main menu link
+			Element mainMenuElem = generateMainMenuLink(
+				inRequestObject, inResponseObject
+				);
+			// And add that to this cell
+			innerMenuCell.addContent( mainMenuElem );
+
+
+
+
+
+			// Then add the results table to the content table
+			///////////////////////////////////////////////////////
+			Element recordsTableRowElem = new Element( "tr" );
+			// recordsTableRowElem.setAttribute( "class", "nie_..." );
+			// Add this row to the content
+			mainContentTable.addContent( recordsTableRowElem );
+			// Now create the cell for the message
+			Element recordsTableCellElem = new Element( "td" );
+			recordsTableCellElem.setAttribute( "align", "center" );
+			recordsTableCellElem.setAttribute( "class",
+				CONAINER_CELL_CSS_CLASS
+				);
+			// Add the cell to the row
+			recordsTableRowElem.addContent( recordsTableCellElem );
+			// Now add the resutls table to the holding cell
+			recordsTableCellElem.addContent( resultsTableElem );
+
+
+			// Now add a horizontal rule
+			// First the row that will carry it
+			Element hrRow = new Element( "tr" );
+			// mainContentTable.addContent( hrRow );
+			resultsTableElem.addContent( hrRow );
+			// the cell in the row
+			Element hrCell = new Element( "td" );
+			hrCell.setAttribute( "class", "nie_hr_cell" );
+			hrCell.setAttribute( "valign", "top" );
+			// hrCell.setAttribute( "colspan", "2" );
+			hrCell.setAttribute( "colspan", ""+lReportColumnCount );
+			hrRow.addContent( hrCell );
+			// the hr attribute
+			Element hrElem = new Element( "hr" );
+			hrElem.setAttribute( "width", "100%" );
+			hrElem.setAttribute( "size", "1" );
+			hrElem.setAttribute( "noshade", "1" );
+			hrCell.addContent( hrElem );
+
+
+			// Then add the paging stuff, if any
+			//////////////////////////////////////////////////
+			if( isDoingPaging && ! isShowingAllRecords )
+			{
+				Element prevElem = generatePrevPageLink(
+					actualFirstRowDisplayed, desiredRowCount,
+					hasPrevRecords, inRequestObject
+					);
+				Element nextElem = generateNextPageLink(
+					actualLastRowDisplayed, desiredRowCount,
+					hasMoreRecords, inRequestObject
+					);
+
+				// Do it if at least one is not null, they BOTH should
+				// not be null, but if there was a problem, one might,
+				// but it will have generated warnings already
+				if( null != prevElem || null != nextElem )
+				{
+
+					// The stats row
+					Element pagingRowElem = new Element( "tr" );
+					pagingRowElem.setAttribute(
+						"class", "nie_paging_links_row"
+						);
+					// Add this row to the content
+					mainContentTable.addContent( pagingRowElem );
+					// Now create the single cell for this row
+					Element outerPagingCell = new Element( "td" );
+					// Attach it to the row
+					pagingRowElem.addContent( outerPagingCell );
+		
+					// Now create the inner table for this cell
+					Element innerTable = new Element( "table" );
+					// A hard coded style item
+					innerTable.setAttribute( "width", "100%" );
+					// Add this table to the bounding cell
+					outerPagingCell.addContent( innerTable );
+		
+					// Now create the top level row for the inner table
+					Element innerPagingRowElem = new Element( "tr" );
+					// Add that row to the table
+					innerTable.addContent( innerPagingRowElem );
+
+					// Now create the cell for the prev page message
+					Element prevCellElem = new Element( "td" );
+					prevCellElem.setAttribute(
+						"class", "nie_paging_links_cell"
+						);
+					// Another hard coded style item
+					prevCellElem.setAttribute(
+						"align", "left"
+						);
+					// Add this cell to the row
+					innerPagingRowElem.addContent( prevCellElem );
+					// Add the content to this cell
+					prevCellElem.addContent( prevElem );
+		
+					// Now create the cell for the next page message
+					Element nextCellElem = new Element( "td" );
+					nextCellElem.setAttribute(
+						"class", "nie_paging_links_cell"
+						);
+					// Another hard coded style item
+					nextCellElem.setAttribute(
+						"align", "right"
+						);
+					// Add this cell to the row
+					innerPagingRowElem.addContent( nextCellElem );
+					// Add the content to this cell
+					nextCellElem.addContent( nextElem );
+
+				}
+
+			}
+
+		}
+		catch( Exception e )
+		{
+			throw new ReportException( kExTag
+				+ "Error running report."
+				+ " Report = \"" + getReportName() + "\""
+				+ " SQL Query =\"" + qry + "\""
+				+ " Error: " + e
+				);
+		}
+
+		// Return the top HTML element
+		return outElem;
+
+	}
+
+	Element _OBS_runReport(
+			AuxIOInfo inRequestObject,
+			AuxIOInfo inResponseObject
+		)
+			throws ReportException
+	{
+		final String kFName = "runReport";
+		final String kExTag = kClassName + '.' + kFName + ": ";
+		boolean debug = shouldDoDebugMsg( kFName );
+
+		Hashtable lMasterValuesHash = null;
+		if( getShouldDoVariableSubstitutions() )
+		{
+			lMasterValuesHash = new Hashtable();
+
+			// Start assmbling the hash
+
+			// The cgi variables
+			Hashtable cgiHash = getAllRequestHashes( inRequestObject );
+			lMasterValuesHash.putAll( cgiHash );
+
+			// Todo: others...
+		}
+
+		String qry = null;
+		try
+		{
+			qry = generateSQL( lMasterValuesHash, inRequestObject );
+			if(debug)
+				debugMsg( kFName, "QRY=\"" + qry + "\"" );
+		}
+		catch( ReportConfigException e )
+		{
+			// This really shouldn't happen, by now this was
+			// tested by init cache, but anyway, recast as runtime now
+			throw new ReportException( kExTag
+				+ "Error generating SQL for this report."
+				+ " Error: " + e
+				);
+		}
+
+		// The eventual answer
+		Element outElem = new Element( "html" );
+		// Build up the heading
+		Element headElem = new Element( "head" );
+		// Hold off adding it to the main doc until we see
+		// if we add anything
+		boolean haveAddedAnythingToHead = false;
+		// Add the CSS text, if any
+		String css = getCssStyleText();
+		if( null!=css )
+		{
+			// Add newlines to it for source readability
+			css = NIEUtil.NL + css + NIEUtil.NL;
+			// Todo: this should go inside HTML comments as well
+			// Create the style element and add the content
+			Element styleElem = new Element( "style" );
+			styleElem.setAttribute( "type", "text/css" );
+			Comment lComment = new Comment( css );
+			// styleElem.addContent( css );
+			styleElem.addContent( lComment );
+			headElem.addContent( styleElem );
+			haveAddedAnythingToHead = true;
+		}
+		// Add the title, if any
+		String title = getTitle( lMasterValuesHash );
+		if( null!=title )
+		{
+			Element titleElem = new Element( "title" );
+			titleElem.addContent( title );
+			headElem.addContent( titleElem );
+			haveAddedAnythingToHead = true;
+		}
+		// Only add the heading to the document if we've actually
+		// put something in it
+		if( haveAddedAnythingToHead )
+			outElem.addContent( headElem );
+
+		// Start building the body tag
+		Element bodyElem = new Element( "body" );
+		outElem.addContent( bodyElem );
+		// We like the main layout centered
+		Element mainCenterElem = new Element( "center" );
+		bodyElem.addContent( mainCenterElem );
+
+		// Add the title, if any
+		String title2 = title; // getTitle();
+		if( null!=title2 )
+		{
+			Element titleElem = new Element( "h1" );
+			titleElem.setAttribute( "class", "nie_report_title" );
+			titleElem.addContent( title2 );
+			// bodyElem.addContent( titleElem );
+			mainCenterElem.addContent( titleElem );
+		}
+		// Add the subtitle, if any
+		String subtitle = getSubtitle( lMasterValuesHash );
+		if( null!=subtitle )
+		{
+			Element subtitleElem = new Element( "h2" );
+			subtitleElem.setAttribute( "class", "nie_report_subtitle" );
+			subtitleElem.addContent( subtitle );
+			// bodyElem.addContent( subtitleElem );
+			mainCenterElem.addContent( subtitleElem );
+		}
+
+
+		// The main-content table helps place the
+		// results grid, statistics message and
+		// paging links
+		Element mainContentTable = new Element( "table" );
+		mainContentTable.setAttribute( "class", "nie_main_content_table" );
+		// Add it to the overall content stream
+		// bodyElem.addContent( mainContentTable );
+		mainCenterElem.addContent( mainContentTable );
+		// NOTE:
+		// We hold off adding rows to this, so we can put them in
+		// the proper order AFTER the main loop runs
+
+
+
+		//
+		// RUN the query!!!
+		////////////////////////////////////////////////
+
+		ResultSet results = null;
+		try
+		{
+
+			// This actually runs the query
+			results = getDBConfig().runQuery( qry );
+
+
+			// Start building the output document
+			Element resultsTableElem = new Element( "table" );
+			resultsTableElem.setAttribute( "class", "nie_results_table" );
+			// Hold off adding it until we know how well we did
+
+			List fields = getFieldObjects();
+
+			// Prepare Column Headings
+			///////////////////////////////////////////////
+
+			// Add the header row
+			Element headerRowElem = new Element( "tr" );
+			headerRowElem.setAttribute( "class", "nie_header_row" );
+
+			int lReportColumnCount = 0;
+			// For each column
+			for( int i=0; i<fields.size(); i++ )
+			{
+				// Get the field definition
+				XMLDefinedField fieldDef =
+					(XMLDefinedField)fields.get(i);	// Zero-based
+				// Get the value for this header
+				String heading = fieldDef.getHeading();
+				// Display, if we're supposed to
+				if( fieldDef.getShouldDisplay() )
+				{
+					Element cellElem = new Element( "th" );
+					cellElem.setAttribute( "class", "nie_header_cell" );
+					// If there's text, add it
+					// Note that we ALWAYS create a cell, otherwise
+					// columns would be messed up
+					if( null!=heading )
+					{
+						cellElem.addContent( heading );
+						lReportColumnCount++;
+					}
+					else
+					{
+						errorMsg( kFName,
+							"No heading for field # " + (i+1)
+							+ " in report \"" + getReportName() + "\""
+							);
+					}
+					// Add the cell to the row
+					headerRowElem.addContent( cellElem );
+				}
+			}
+			// Add the row to the table
+			resultsTableElem.addContent( headerRowElem );
+
+
+			// Some Pre-Loop Calculations
+			///////////////////////////////////////////
+			int desiredStartRow = getStartRow( inRequestObject );
+			int desiredRowCount = getDesiredRowCount( inRequestObject );
+			int desiredEndRow = -1;
+			if( desiredRowCount > 0 )
+				desiredEndRow = desiredStartRow + desiredRowCount - 1;
+			// Whether or not we even care about paging
+			// USUALLY desiredRowCount WILL BE > 0 so this
+			// will almost always be true, the other test is
+			// just in case somebody is looking at "all" results
+			// but for some reason starts in mid list
+			boolean isDoingPaging =
+				desiredRowCount > 0	// Usually TRUE
+				|| desiredStartRow > 1	// Backup sanity test
+				;
+
+			// Some state fields, easier to set them specifically
+			// then to try and derive them after the fact
+			int actualFirstRowDisplayed = -1;
+			int actualLastRowDisplayed = -1;
+			boolean hadAnotherRow = false;
+			boolean atEndOfRecords = false;
+
+			// This row count is the ACTUAL db results
+			// row counter
+			// It is used and carried forward in
+			// BOTH loops below
+			int rowCount = 0;
+
+			// we need this for even/odd stuff
+			// and if we displayed 5 records at a time
+			// record 6, though technically, would be the 1st
+			// record displayed on page 2, and would therefore
+			// be treated as odd dispaly-style-wise
+			int displayedRowCount = 0;
+
+			// Catch up to the start of the part we want
+			//////////////////////////////////////////////////
+			// Will skip if desiredStartRow == 1
+			// Remember, row count hasn't been incremented yet at the
+			// start of the loop
+			while( ! atEndOfRecords && (rowCount+1) < desiredStartRow )
+			{
+				if( ! results.next() )
+				{
+					atEndOfRecords = true;
+					break;
+				}
+				// OK, count this row
+				rowCount++;
+			}
+
+			/////////////////////////////////////////
+			//
+			//	***** MAIN LOOP ******
+			//
+			//////////////////////////////////////////
+			// Step through the results
+			// while( ! atEndOfRecords && results.next() )
+			while( ! atEndOfRecords )
+			{
+
+				// Do some break testing if end row is set
+				if( desiredEndRow > 0 )
+				{
+					// Remember, row count hasn't been incremented yet
+					// at the start of the loop
+					if( (rowCount+1) > desiredEndRow )
+						break;
+				}
+
+				// Attempt to goto the next record
+				if( ! results.next() )
+				{
+					atEndOfRecords = true;
+					break;
+				}
+				// OK, we have a record
+				rowCount++;
+
+				// This is the count of records displayed
+				// ON THIS PAGE
+				displayedRowCount++;
+
+				// Create the results row
+				Element rowElem = new Element( "tr" );
+				if( displayedRowCount % 2 == 0 )
+					rowElem.setAttribute( "class", "nie_even_row" );
+				else
+					rowElem.setAttribute( "class", "nie_odd_row" );
+
+				// For each column, mixed Zero and One based indexing
+				for( int i=0; i<fields.size(); i++ )
+				{
+					// Get the field definition
+					XMLDefinedField fieldDef =
+						(XMLDefinedField)fields.get(i);	// Zero-based
+					// Get the value for that field
+					String strValue = results.getString( i+1 ); // One-based
+					// Display, if we're supposed to
+					if( fieldDef.getShouldDisplay() )
+					{
+						Element cellElem = new Element( "td" );
+						cellElem.setAttribute( "class", "nie_data_cell" );
+						// If there's text, add it
+						// Note that we ALWAYS create a cell, otherwise
+						// columns would be messed up
+						if( null!=strValue )
+							cellElem.addContent( strValue );
+						// Add the cell to the row
+						rowElem.addContent( cellElem );
+					}
+				}
+				// Add the row to the table
+				resultsTableElem.addContent( rowElem );
+
+				// Update our displayed statistics
+
+				// If this is the first actual row displayed
+				// then remember it
+				if( actualFirstRowDisplayed < 0 )
+					actualFirstRowDisplayed = rowCount;
+
+				// This is always the last one we've displayed
+				actualLastRowDisplayed = rowCount;
+
+
+			}	// End for each row
+
+			// Now add the results set to the main document
+			// bodyElem.addContent( resultsTableElem );
+			// No, will be added to mainContentTable
+
+			// We postpone doing the "stats" row until
+			// the paging logic has had a chance to set
+			// isShowingAllRecords 
+
+			// Paging Links
+			////////////////////////////////////////
+			Element pagingLinksRows = null;
+			boolean hasMoreRecords = false;	// arbitrary initial value
+			boolean hasPrevRecords = false;	// arbitrary initial value
+			boolean isShowingAllRecords = false;
+			if( isDoingPaging )
+			{
+
+				// Todo: Could actually figure out number
+				// of records for prev and next links
+				// overkill at this point
+
+				// First, figure out if there are more records
+				hasMoreRecords = false;	// arbitrary initial value
+				if( atEndOfRecords )
+				{
+					hasMoreRecords = false;	// redundant but clear
+				}
+				// Else we're not specifically at the end of records
+				// We need to try fetching one more record
+				else
+				{
+					// If there is another record, then we have more
+					if( results.next() )
+						hasMoreRecords = true;
+					// OK, we specifically checked and there are no more
+					else
+						hasMoreRecords = false;
+				}
+
+				// There are prev records if we're not starting
+				// at record 1
+				hasPrevRecords = (actualFirstRowDisplayed > 1);
+
+				// tell us whether we're showing all rows
+				if( ! hasPrevRecords && ! hasMoreRecords )
+					isShowingAllRecords = true;
+
+				// Add the paging links
+
+
+			}
+			// Else we're NOT doing paging
+			else
+			{
+				// Not much to do here
+
+				// we will assume all rows are shown
+				isShowingAllRecords = true;
+
+			}
+
+
+			// Create and add the "stats" message
+			////////////////////////////////////////////////////
+			// The stats row
+
+			Element statsRowElem = new Element( "tr" );
+			statsRowElem.setAttribute( "class", "nie_stats_row" );
+			// Add this row to the content
+			mainContentTable.addContent( statsRowElem );
+			// Now create the cell for the message
+			Element outerStatsCellElem = new Element( "td" );
+			// Add the cell to the row
+			statsRowElem.addContent( outerStatsCellElem );
+
+			// Now create the inner table for this cell
+			Element innerStatsTable = new Element( "table" );
+			// A hard coded style item
+			innerStatsTable.setAttribute( "width", "100%" );
+			// Add this table to the bounding cell
+			outerStatsCellElem.addContent( innerStatsTable );
+		
+			// Now create the bounding row
+			Element innerStatsRow = new Element( "tr" );
+			// And add that row to the table
+			innerStatsTable.addContent( innerStatsRow );
+
+			// Create the first cell, for the stats
+			Element innerStatsCell = new Element( "td" );
+			innerStatsCell.setAttribute( "align", "left" );
+			innerStatsCell.setAttribute( "class", "nie_stats_cell" );
+			// Add the cell to the row
+			innerStatsRow.addContent( innerStatsCell );
+
+			// Now figure out the message
+			// String statsMsg = null;
+			if( displayedRowCount < 1 )
+			{
+				if( desiredStartRow > 1 || ! isShowingAllRecords )
+				{
+					innerStatsCell.addContent(
+						"There are no more records to display."
+						);
+				}
+				else
+				{
+					innerStatsCell.addContent(
+						"There are no records to display."
+						);
+				}
+			}
+			else if( actualFirstRowDisplayed == actualLastRowDisplayed )
+			{
+				if( isShowingAllRecords )
+				{
+					// statsMsg = "Showing the only record.";
+					innerStatsCell.addContent(
+						"Showing the only record."
+						);
+				}
+				else
+				{
+					// statsMsg = "Showing record " + actualFirstRowDisplayed;
+					innerStatsCell.addContent(
+						"Showing record "
+						);
+					Element boldTag = new Element( "b" );
+					boldTag.setAttribute(
+						"class", STAT_NUMBER_CSS_CLASS
+						);
+					boldTag.addContent( "" + actualFirstRowDisplayed );
+					innerStatsCell.addContent( boldTag );
+				}
+			}
+			// Else displayed a range of rows
+			else
+			{
+//				statsMsg = "Showing records "
+//					+ actualFirstRowDisplayed
+//					+ " through "
+//					+ actualLastRowDisplayed
+//					;
+//				if( isShowingAllRecords )
+//					statsMsg += " (all records shown)";
+
+				// "Showing records "
+				innerStatsCell.addContent(
+					"Showing records "
+					);
+
+				// 1
+				Element boldTag1 = new Element( "b" );
+				boldTag1.setAttribute(
+					"class", STAT_NUMBER_CSS_CLASS
+					);
+				boldTag1.addContent( "" + actualFirstRowDisplayed );
+				innerStatsCell.addContent( boldTag1 );
+
+				// " through "
+				innerStatsCell.addContent(
+					" through "
+					);
+
+				// 10
+				Element boldTag2 = new Element( "b" );
+				boldTag2.setAttribute(
+					"class", STAT_NUMBER_CSS_CLASS
+					);
+				boldTag2.addContent( "" + actualLastRowDisplayed );
+				innerStatsCell.addContent( boldTag2 );
+
+				if( isShowingAllRecords )
+				{
+					Element iTag = new Element( "i" );
+					iTag.setAttribute(
+						"class", "nie_stats_qualifier"
+						);
+					iTag.addContent( " (all records shown)" );
+					innerStatsCell.addContent( iTag );
+				}
+
+			}
+
+
+			// Create the second cell, for the link to the main menu
+			Element innerMenuCell = new Element( "td" );
+			innerMenuCell.setAttribute( "align", "right" );
+			innerMenuCell.setAttribute( "class", "nie_menu_cell" );
+			// Add the cell to the row
+			innerStatsRow.addContent( innerMenuCell );
+
+			// Now get the main menu link
+			Element mainMenuElem = generateMainMenuLink(
+				inRequestObject, inResponseObject
+				);
+			// And add that to this cell
+			innerMenuCell.addContent( mainMenuElem );
+
+
+
+
+
+			// Then add the results table to the content table
+			///////////////////////////////////////////////////////
+			Element recordsTableRowElem = new Element( "tr" );
+			// recordsTableRowElem.setAttribute( "class", "nie_..." );
+			// Add this row to the content
+			mainContentTable.addContent( recordsTableRowElem );
+			// Now create the cell for the message
+			Element recordsTableCellElem = new Element( "td" );
+			recordsTableCellElem.setAttribute( "align", "center" );
+			recordsTableCellElem.setAttribute( "class",
+				CONAINER_CELL_CSS_CLASS
+				);
+			// Add the cell to the row
+			recordsTableRowElem.addContent( recordsTableCellElem );
+			// Now add the resutls table to the holding cell
+			recordsTableCellElem.addContent( resultsTableElem );
+
+
+			// Now add a horizontal rule
+			// First the row that will carry it
+			Element hrRow = new Element( "tr" );
+			// mainContentTable.addContent( hrRow );
+			resultsTableElem.addContent( hrRow );
+			// the cell in the row
+			Element hrCell = new Element( "td" );
+			hrCell.setAttribute( "class", "nie_hr_cell" );
+			hrCell.setAttribute( "valign", "top" );
+			// hrCell.setAttribute( "colspan", "2" );
+			hrCell.setAttribute( "colspan", ""+lReportColumnCount );
+			hrRow.addContent( hrCell );
+			// the hr attribute
+			Element hrElem = new Element( "hr" );
+			hrElem.setAttribute( "width", "100%" );
+			hrElem.setAttribute( "size", "1" );
+			hrElem.setAttribute( "noshade", "1" );
+			hrCell.addContent( hrElem );
+
+
+			// Then add the paging stuff, if any
+			//////////////////////////////////////////////////
+			if( isDoingPaging && ! isShowingAllRecords )
+			{
+				Element prevElem = generatePrevPageLink(
+					actualFirstRowDisplayed, desiredRowCount,
+					hasPrevRecords, inRequestObject
+					);
+				Element nextElem = generateNextPageLink(
+					actualLastRowDisplayed, desiredRowCount,
+					hasMoreRecords, inRequestObject
+					);
+
+				// Do it if at least one is not null, they BOTH should
+				// not be null, but if there was a problem, one might,
+				// but it will have generated warnings already
+				if( null != prevElem || null != nextElem )
+				{
+
+					// The stats row
+					Element pagingRowElem = new Element( "tr" );
+					pagingRowElem.setAttribute(
+						"class", "nie_paging_links_row"
+						);
+					// Add this row to the content
+					mainContentTable.addContent( pagingRowElem );
+					// Now create the single cell for this row
+					Element outerPagingCell = new Element( "td" );
+					// Attach it to the row
+					pagingRowElem.addContent( outerPagingCell );
+		
+					// Now create the inner table for this cell
+					Element innerTable = new Element( "table" );
+					// A hard coded style item
+					innerTable.setAttribute( "width", "100%" );
+					// Add this table to the bounding cell
+					outerPagingCell.addContent( innerTable );
+		
+					// Now create the top level row for the inner table
+					Element innerPagingRowElem = new Element( "tr" );
+					// Add that row to the table
+					innerTable.addContent( innerPagingRowElem );
+
+					// Now create the cell for the prev page message
+					Element prevCellElem = new Element( "td" );
+					prevCellElem.setAttribute(
+						"class", "nie_paging_links_cell"
+						);
+					// Another hard coded style item
+					prevCellElem.setAttribute(
+						"align", "left"
+						);
+					// Add this cell to the row
+					innerPagingRowElem.addContent( prevCellElem );
+					// Add the content to this cell
+					prevCellElem.addContent( prevElem );
+		
+					// Now create the cell for the next page message
+					Element nextCellElem = new Element( "td" );
+					nextCellElem.setAttribute(
+						"class", "nie_paging_links_cell"
+						);
+					// Another hard coded style item
+					nextCellElem.setAttribute(
+						"align", "right"
+						);
+					// Add this cell to the row
+					innerPagingRowElem.addContent( nextCellElem );
+					// Add the content to this cell
+					nextCellElem.addContent( nextElem );
+
+				}
+
+			}
+
+		}
+		catch( Exception e )
+		{
+			throw new ReportException( kExTag
+				+ "Error running report."
+				+ " Report = \"" + getReportName() + "\""
+				+ " SQL Query =\"" + qry + "\""
+				+ " Error: " + e
+				);
+		}
+
+		// Return the top HTML element
+		return outElem;
+
+	}
+
+
+
+
+
+
+
+	Element generatePrevPageLink(
+		int inCurrFirstRecord, int inNumRequested,
+		boolean hasPrevRecords, AuxIOInfo inRequest
+		)
+	{
+		final String kFName = "generatePrevPageLink";
+
+		final String kLinkText = "<< Prev";
+
+		String href = null;
+
+		if( hasPrevRecords )
+		{
+
+			// We use AuxIOInfo to build a link
+			AuxIOInfo newLinkInfo = new AuxIOInfo();
+			// Prime it with the basic URL we want
+			newLinkInfo.setBasicURL( getMainAppURL() );
+	
+			// Copy over existing CGI values
+			newLinkInfo.copyInCGIFields( inRequest );
+	
+			// Now figure out which row we want to ask for
+			int newRow = inCurrFirstRecord - inNumRequested;
+			if( newRow < 1 )
+				newRow = 1;
+
+			// If this would actually expose previous records,
+			// go ahead and create the link
+			if( newRow < inCurrFirstRecord )
+			{
+				// Put our new start row in place of any old one
+				newLinkInfo.setOrOverwriteCGIField(
+					START_ROW_CGI_FIELD_NAME,
+					"" + newRow
+					);
+		
+				// Now get the full href back
+				href = newLinkInfo.getFullCGIEncodedURL();
+	
+				if( null==href)
+					errorMsg( kFName,
+						"Got back null href, this link will not be active."
+						);
+			}
+		}
+
+		// Now create the final XHTML element
+		// we use <div> if not an active link
+		Element newTag = null;
+		if( null!=href )
+		{
+			newTag = new Element( "a" );
+			newTag.setAttribute( "href", href );
+			newTag.setAttribute( "class", ACTIVE_PAGING_CSS_CLASS );
+		}
+		// Inactive link
+		else
+		{
+			newTag = new Element( "div" );
+			newTag.setAttribute( "class", INACTIVE_PAGING_CSS_CLASS );
+		}
+		// And add the display text
+		newTag.addContent( kLinkText );
+
+		// Return the tag!
+		return newTag;
+
+	}
+
+
+	Element generateNextPageLink(
+		int inCurrLastRecord, int inNumRequested,
+		boolean hasMoreRecords, AuxIOInfo inRequest
+		)
+	{
+		final String kFName = "generateNextPageLink";
+
+		final String kLinkText = "Next >>";
+
+		String href = null;
+
+		if( hasMoreRecords )
+		{
+
+			// We use AuxIOInfo to build a link
+			AuxIOInfo newLinkInfo = new AuxIOInfo();
+			// Prime it with the basic URL we want
+			newLinkInfo.setBasicURL( getMainAppURL() );
+	
+			// Copy over existing CGI values
+			newLinkInfo.copyInCGIFields( inRequest );
+	
+			// Now figure out which row we want to ask for
+			int newRow = inCurrLastRecord + 1;
+
+			// Put our new start row in place of any old one
+			newLinkInfo.setOrOverwriteCGIField(
+				START_ROW_CGI_FIELD_NAME,
+				"" + newRow
+				);
+	
+			// Now get the full href back
+			href = newLinkInfo.getFullCGIEncodedURL();
+
+			if( null==href)
+				errorMsg( kFName,
+					"Got back null href, this link will not be active."
+					);
+		}
+
+		// Now create the final XHTML element
+		// we use <div> if not an active link
+		Element newTag = null;
+		if( null!=href )
+		{
+			newTag = new Element( "a" );
+			newTag.setAttribute( "href", href );
+			newTag.setAttribute( "class", ACTIVE_PAGING_CSS_CLASS );
+		}
+		// Else inactive link
+		else
+		{
+			newTag = new Element( "div" );
+			newTag.setAttribute( "class", INACTIVE_PAGING_CSS_CLASS );
+		}
+		// And add the display text
+		newTag.addContent( kLinkText );
+
+		// Return the tag!
+		return newTag;
+
+	}
+
+	XMLReportFilterInterface locateFilter( String inFieldID )
+	{
+		final String kFName = "locateFilter";
+		final boolean kCasen = false;
+
+		if( kCasen )
+			inFieldID = NIEUtil.trimmedStringOrNull( inFieldID );
+		else
+			inFieldID = NIEUtil.trimmedLowerStringOrNull( inFieldID );
+
+		if( null == inFieldID )
+		{
+			errorMsg( kFName,
+				"Null/empty filter name passed in, returning null."
+				);
+			return null;
+		}
+
+
+		XMLReportFilterInterface outFiler = null;
+
+
+
+		// Todo: First, lookup in filter objects
+
+
+		// Then lookup in fields
+		if( cFieldHash.containsKey( inFieldID ) )
+		{
+			XMLDefinedField tmpField =
+				(XMLDefinedField) cFieldHash.get( inFieldID );
+			if( tmpField != null && tmpField.getIsFilterField() )
+			{
+				outFiler = (XMLReportFilterInterface)tmpField;
+			}
+			// Else it's not a filter field
+			else
+			{
+				errorMsg( kFName,
+					"Requested filter field \"" + inFieldID + "\""
+					+ " is not a filter-field."
+					+ " Will return null field."
+					+ " Field=" + tmpField
+					);
+			}
+		}
+
+		// done
+		return outFiler;
+
+	}
+
+
+
+	String calculateAutomaticFilterString( AuxIOInfo inRequest )
+	{
+		final String kFName = "calculateAutomaticFilterString";
+
+		if( null == inRequest )
+		{
+			errorMsg( kFName,
+				"Null request object passed in, returning null."
+				);
+			return null;
+		}
+
+		String filterName = inRequest.getScalarCGIFieldTrimOrNull(
+			FILTER_NAME_CGI_FIELD_NAME
+			);
+
+		// No big deal if no filter
+		if( null == filterName )
+			return null;
+
+		// look it up
+		// (locate method will normalize if needed)
+		XMLReportFilterInterface filter = locateFilter( filterName );
+		if( null == filter )
+		{
+			errorMsg( kFName,
+				"Unable to locate a valid filter named \"" + filterName + "\""
+				+ ", returning null."
+				+ " Reminder: If you're trying to filter on a field but"
+				+ " don't want it to displayed, you should still include it"
+				+ " in the report and just set its "
+				+ XMLDefinedField.SHOULD_DISPLAY_ATTR
+				+ " attribute to FASLE."
+				);
+			return null;
+		}
+
+		String filterStr = filter.calculateFilterExpression( inRequest );
+		if( null == filterStr )
+			errorMsg( kFName,
+				"Null filter expression for filter \"" + filterName + "\""
+				+ ", returning null."
+				);
+
+		return filterStr;
+
+	}
+
+
+
+
+
+
+
+
+	// If -1, then they DON'T WANT row counts
+	// Todo: revisit in case this is a security issue, let it
+	// be settable and enforceable
+	int getStartRow( AuxIOInfo inRequest )
+	{
+		final String kFName = "getStartRow";
+		final int kDefaultStartRow = 1;
+		// ^^^ No this does not need to be a class constant
+		if( null==inRequest )
+		{
+			errorMsg( kFName,
+				"No request object given."
+				+ " Returning default start row of " + kDefaultStartRow
+				);
+			return kDefaultStartRow;
+		}
+		int outRow = inRequest.getIntFromCGIField(
+			START_ROW_CGI_FIELD_NAME, kDefaultStartRow
+			);
+		return outRow;
+	}
+
+	int getDesiredRowCount( AuxIOInfo inRequest )
+	{
+		final String kFName = "getDesiredRowCount";
+		if( null==inRequest )
+		{
+			errorMsg( kFName,
+				"No request object given."
+				+ " Returning default number of rows "
+				+ DEFAULT_DESIRED_ROW_COUNT
+				);
+			return DEFAULT_DESIRED_ROW_COUNT;
+		}
+		int outRows = inRequest.getIntFromCGIField(
+			DESIRED_ROW_COUNT_CGI_FIELD_NAME, DEFAULT_DESIRED_ROW_COUNT
+			);
+		// They may NOT want row counting
+		if( outRows <= 0 )
+			outRows = -1;
+		return outRows;
+	}
+	// Todo: settable row counts by report, and enforceable
+
+
+
+	String generateSQL(
+			Hashtable inValuesHash,
+			AuxIOInfo inRequest
+		)
+		throws ReportConfigException
+	{
+		final String kFName = "generateSQL";
+		final String kExTag = kClassName + '.' + kFName + ": ";
+		// if( ! fUseCache && null==cSqlText )
+		//{
+
+			cSqlText = getRawSQL();
+
+			if( null==cSqlText )
+			{
+				StringBuffer buff = new StringBuffer();
+
+				// Select
+				buff.append( "SELECT " );
+				if( null != getSelectModifier() )
+				{
+					buff.append( getSelectModifier() );
+					buff.append( ' ' );
+				}
+
+				// The field clause
+				buff.append( getSqlFieldsAsSelectString() );
+
+				// From
+				buff.append( " FROM " );
+				buff.append( getSqlFromString() );
+
+				// Where (join and filter)
+				String tmpStr = calculateSqlWhereString(
+					/* inValuesHash, */
+					inRequest
+					);
+				if( null!=tmpStr )
+				{
+					buff.append( " WHERE " );
+					buff.append( tmpStr );
+				}
+
+				// group by
+				tmpStr = getSqlGroupByString();
+				if( null!=tmpStr )
+				{
+					buff.append( " GROUP BY " );
+					buff.append( tmpStr );
+				}
+
+				// order by
+				tmpStr = getSqlOrderByString();
+				if( null!=tmpStr )
+				{
+					buff.append( " ORDER BY " );
+					buff.append( tmpStr );
+				}
+
+				// Add done!
+				cSqlText = new String( buff );
+			// }
+
+			if( null!=cSqlText && cSqlText.indexOf( '$' ) >= 0 )
+				fHaveSeenDollarSigns = true;
+		}	// Done caching logic
+
+
+		// statusMsg( kFName, "SQL = " + cSqlText );
+		// If no variable substitution, just return the query
+		// Or if we're just priming the cache and have no vars anyway
+		if( ! fUseCache || ! getShouldDoVariableSubstitutions() )
+		{
+			return cSqlText;
+		}
+		// If there IS var subst, apply it to the values
+		else
+		{
+			return NIEUtil.markupStringWithVariables(
+				cSqlText, inValuesHash
+				);
+		}
+	}
+
+	Hashtable getAllRequestHashes( AuxIOInfo inRequest )
+	{
+		final String kFName = "getAllRequestHashes";
+		Hashtable outHash = new Hashtable();
+		if( null == inRequest )
+		{
+			errorMsg( kFName,
+				"Null request object passed in. Returning empty hash."
+				);
+			return outHash;
+		}
+
+		Hashtable hash1 = getRequestAsSingletonHash( inRequest );
+		if( null == hash1 )
+		{
+			errorMsg( kFName,
+				"Null hash returned of values. Returning empty hash."
+				);
+			return outHash;
+		}
+
+		// Start buidling our list
+		outHash.put( REQUEST_VARS_HASH_NAME, hash1 );
+		// Get the two other versions and save those
+		Hashtable hash2 = NIEUtil.sqlEscapeStringHash( hash1, true );
+		if( null != hash2 )
+			outHash.put( REQUEST_VARS_HASH_NAME + SQL_ESC_SUFFIX,
+				hash2
+				);
+		Hashtable hash3 = NIEUtil.htmlEscapeStringHash( hash1, true );
+		if( null != hash3 )
+			outHash.put( REQUEST_VARS_HASH_NAME + HTML_ESC_SUFFIX,
+				hash3
+				);
+
+		return outHash;
+	}
+
+	Hashtable getRequestAsSingletonHash( AuxIOInfo inRequest )
+	{
+		final String kFName = "getRequestAsSingletonHash";
+		Hashtable outHash = new Hashtable();
+		if( null == inRequest )
+		{
+			errorMsg( kFName,
+				"Null request object passed in. Returning empty hash."
+				);
+			return outHash;
+		}
+		List keys = inRequest.getCGIFieldKeys();
+		if( null == keys )
+		{
+			errorMsg( kFName,
+				"Null key-set from request object. Returning empty hash."
+				);
+			return outHash;
+		}
+		for( Iterator it = keys.iterator(); it.hasNext(); )
+		{
+			String key = (String) it.next();
+			String value = inRequest.getScalarCGIField( key );
+			if( null==value )	// should not be possibe
+			{
+				errorMsg( kFName,
+					"Null value for key \"" + key + "\""
+					+ " Skipping."
+					);
+				continue;
+			}
+			outHash.put( key, value );
+		}
+
+		return outHash;
+
+	}
+
+	// It's OK not to have a subtitle
+	String getRawSQL()
+	{
+		if( ! fUseCache && null==cRawSql )
+		{
+			cRawSql = fMainElem.getTextByPathTrimOrNull(
+				RAW_SQL_PATH
+				);
+		}
+		return cRawSql;
+	}
+
+	String getReportName()
+	{
+		return fShortReportName;
+	}
+
+	public String getTitle( Hashtable inValuesHash )
+	{
+		if( ! fUseCache && null==cTitle )
+		{
+			final String kFName = "getTitle";
+			cTitle = fMainElem.getTextByPathTrimOrNull(
+				TITLE_PATH
+				);
+			if( null==cTitle )
+				cTitle = "Report: " + getReportName();
+
+			if( null!=cTitle && cTitle.indexOf( '$' ) >= 0 )
+				fHaveSeenDollarSigns = true;
+
+		}
+
+		// If no variable substitution, just return the query
+		// Or if we're just priming the cache and have no vars anyway
+		if( ! fUseCache
+			|| ! getShouldDoVariableSubstitutions()
+			|| null == inValuesHash
+			)
+		{
+			return cTitle;
+		}
+		// If there IS var subst, apply it to the values
+		else
+		{
+			return NIEUtil.markupStringWithVariables(
+				cTitle, inValuesHash
+				);
+		}
+
+	}
+
+	public String getLinkText( Hashtable inValuesHash )
+	{
+		if( ! fUseCache && null==cLinkText )
+		{
+			final String kFName = "getLinkTitle";
+			cLinkText = fMainElem.getTextByPathTrimOrNull(
+				LINK_TEXT_PATH
+				);
+			if( null==cLinkText )
+				cLinkText = getTitle( inValuesHash );
+
+			if( null!=cLinkText && cLinkText.indexOf( '$' ) >= 0 )
+				fHaveSeenDollarSigns = true;
+
+		}
+
+		// If no variable substitution, just return the query
+		// Or if we're just priming the cache and have no vars anyway
+		if( ! fUseCache
+			|| ! getShouldDoVariableSubstitutions()
+			|| null == inValuesHash
+			)
+		{
+			return cLinkText;
+		}
+		// If there IS var subst, apply it to the values
+		else
+		{
+			return NIEUtil.markupStringWithVariables(
+				cLinkText, inValuesHash
+				);
+		}
+
+	}
+	// It's OK not to have a subtitle
+	String getSubtitle( Hashtable inValuesHash )
+	{
+		if( ! fUseCache && null==cSubtitle )
+		{
+			final String kFName = "getSubitle";
+			cSubtitle = fMainElem.getTextByPathTrimOrNull(
+				SUBTITLE_PATH
+				);
+
+			if( null!=cSubtitle && cSubtitle.indexOf( '$' ) >= 0 )
+				fHaveSeenDollarSigns = true;
+
+		}
+		// return cSubtitle;
+
+
+		// If no variable substitution, just return the query
+		// Or if we're just priming the cache and have no vars anyway
+		if( ! fUseCache
+			|| ! getShouldDoVariableSubstitutions()
+			|| null == cSubtitle
+			|| null == inValuesHash
+			)
+		{
+			return cSubtitle;
+		}
+		// If there IS var subst, apply it to the values
+		else
+		{
+			return NIEUtil.markupStringWithVariables(
+				cSubtitle, inValuesHash
+				);
+		}
+
+
+
+	}
+
+	String getSelectModifier( /*Hashtable inValuesHash*/ )
+	{
+		if( ! fUseCache && null==cSelectModifier )
+		{
+			final String kFName = "getSelectModifier";
+			cSelectModifier = fMainElem.getTextByPathTrimOrNull(
+				SELECT_MODIFIER_PATH
+				);
+
+			// if( null!=cSubtitle && cSubtitle.indexOf( '$' ) >= 0 )
+			//	fHaveSeenDollarSigns = true;
+
+		}
+		return cSelectModifier;
+
+		/***
+		// If no variable substitution, just return the query
+		// Or if we're just priming the cache and have no vars anyway
+		if( ! fUseCache
+			|| ! getShouldDoVariableSubstitutions()
+			|| null == cSubtitle
+			|| null == inValuesHash
+			)
+		{
+			return cSubtitle;
+		}
+		// If there IS var subst, apply it to the values
+		else
+		{
+			return NIEUtil.markupStringWithVariables(
+				cSubtitle, inValuesHash
+				);
+		}
+		***/
+
+
+	}
+
+
+	String getSqlFromString()
+		throws ReportConfigException
+	{
+		if( ! fUseCache && null==cSqlFromString )
+		{
+			final String kFName = "getSqlFromString";
+			final String kExTag = kClassName + '.' + kFName + ": ";
+
+			cSqlFromString = getRawFrom();
+			if( null==cSqlFromString )
+				cSqlFromString = getDefaultTableName();
+
+			// Todo: EXPAND THIS!!!!
+
+		}
+		return cSqlFromString;
+	}
+
+
+	// It's OK not to have a subtitle
+	String getRawFrom()
+	{
+		if( ! fUseCache && null==cRawFrom )
+		{
+			cRawFrom = fMainElem.getTextByPathTrimOrNull(
+				RAW_FROM_PATH
+				);
+		}
+		return cRawFrom;
+	}
+
+
+	// OK to return null
+	String calculateSqlWhereString( AuxIOInfo inRequest )
+		throws ReportConfigException
+	{
+		final String kFName = "calculateSqlWhereString";
+
+		// if( ! fUseCache && null==cSqlWhere )
+		// {
+			int clauseCount = 0;
+
+			String tmpStr1 = getRawWhereJoin();
+			clauseCount += null!=tmpStr1 ? 1 : 0;
+			debugMsg( kFName, "Str1=\"" + tmpStr1 + "\"" );
+
+			String tmpStr2 = getRawWhereFilter();
+			clauseCount += null!=tmpStr2 ? 1 : 0;
+			debugMsg( kFName, "Str2=\"" + tmpStr2 + "\"" );
+
+			String tmpStr3 = null;
+			if( null != inRequest )
+			{
+				tmpStr3 = calculateAutomaticFilterString( inRequest );
+				clauseCount += null!=tmpStr3 ? 1 : 0;
+			}
+			debugMsg( kFName, "Str3=\"" + tmpStr3 + "\"" );
+
+			if( clauseCount < 1 )
+				return null;
+
+			StringBuffer outBuff = new StringBuffer();
+
+			if( null != tmpStr1 )
+			{
+				if( clauseCount > 1 )
+					outBuff.append( '(' );
+				outBuff.append( tmpStr1 );
+				if( clauseCount > 1 )
+					outBuff.append( ')' );
+			}
+
+			if( null != tmpStr2 )
+			{
+				if( outBuff.length() > 0 )
+					outBuff.append( " AND " );
+				if( clauseCount > 1 )
+					outBuff.append( '(' );
+				outBuff.append( tmpStr2 );
+				if( clauseCount > 1 )
+					outBuff.append( ')' );
+			}
+
+			if( null != tmpStr3 )
+			{
+				if( outBuff.length() > 0 )
+					outBuff.append( " AND " );
+				if( clauseCount > 1 )
+					outBuff.append( '(' );
+				outBuff.append( tmpStr3 );
+				if( clauseCount > 1 )
+					outBuff.append( ')' );
+			}
+
+			if( outBuff.length() > 0 )
+				return new String( outBuff );
+			else
+			{
+				errorMsg( kFName,
+					"Unexpected empty output buffer, returning null."
+					);
+				return null;
+			}
+
+			// Todo: EXPAND THIS!!!!
+
+		// }
+		// return cSqlWhere;
+	}
+
+
+
+	// It's OK not to have a subtitle
+	String getRawWhereJoin()
+	{
+		if( ! fUseCache && null==cRawWhereJoin )
+		{
+			cRawWhereJoin = fMainElem.getTextByPathTrimOrNull(
+				RAW_WHERE_JOIN_PATH
+				);
+		}
+		return cRawWhereJoin;
+	}
+	// It's OK not to have a subtitle
+	String getRawWhereFilter()
+	{
+		if( ! fUseCache && null==cRawWhereFilter )
+		{
+			cRawWhereFilter = fMainElem.getTextByPathTrimOrNull(
+				RAW_WHERE_FILTER_PATH
+				);
+		}
+		return cRawWhereFilter;
+	}
+	// Null is OK
+	String getSqlOrderByString()
+		throws ReportConfigException
+	{
+		if( ! fUseCache && null==cSqlOrderBy )
+		{
+			cSqlOrderBy = getRawOrderBy();
+
+			// Todo: EXPAND THIS!!!!
+
+		}
+		return cSqlOrderBy;
+	}
+
+	// It's OK not to have a subtitle
+	String getRawOrderBy()
+	{
+		if( ! fUseCache && null==cRawOrderBy )
+		{
+			cRawOrderBy = fMainElem.getTextByPathTrimOrNull(
+				RAW_ORDER_BY_PATH
+				);
+		}
+		return cRawOrderBy;
+	}
+	// Null is OK
+	String getSqlGroupByString()
+		throws ReportConfigException
+	{
+		if( ! fUseCache && null==cSqlGroupBy )
+		{
+			cSqlGroupBy = getRawGroupBy();
+
+			// Todo: EXPAND THIS!!!!
+
+		}
+		return cSqlGroupBy;
+	}
+
+	// It's OK not to have a subtitle
+	String getRawGroupBy()
+	{
+		if( ! fUseCache && null==cRawGroupBy )
+		{
+			cRawGroupBy = fMainElem.getTextByPathTrimOrNull(
+				RAW_GROUP_BY_PATH
+				);
+		}
+		return cRawGroupBy;
+	}
+
+	List getFieldObjects()
+		throws ReportConfigException
+	{
+		if( ! fUseCache && null==cFieldList )
+		{
+			final String kFName = "getFieldObjects";
+			final String kExTag = kClassName + '.' + kFName + ": ";
+
+			String reportName = getReportName();
+
+			List elements = fMainElem.findElementsByPath(
+				FIELD_ELEM_PATH
+				);
+			if( null==elements || elements.size()<1 )
+				throw new ReportConfigException( kExTag
+					+ "This report has no fields defined."
+					+ " Report = \"" + reportName + "\""
+					);
+
+			cFieldList = new Vector();
+			cFieldHash = new Hashtable();
+			// Loop throug the list, we also want a field counter
+			for( int i=0; i<elements.size(); i++ )
+			{
+				Element elem = (Element)elements.get(i);
+				// Instantiate an actual object from the XML elememt
+				XMLDefinedField newField = null;
+				try
+				{
+					newField = new XMLDefinedField(
+						elem, this, getMainApp()
+						);
+				}
+				catch( Exception e )
+				{
+					throw new ReportConfigException( kExTag
+						+ "Field # " + (i+1) + " is invalid."
+						+ " Report = \"" + reportName + "\""
+						+ " Error: " + e
+						);
+				}
+				// Add it to the list
+				// Note: we CAN have duplicate field names, that
+				// is perfectly valid in SQL, to repeat a field
+				cFieldList.add( newField );
+
+
+				// We also add these to a hash
+				String fieldID = newField.getFieldID();
+				// If we've not seen this before, then just add it
+				if( ! cFieldHash.containsKey( fieldID ) )
+				{
+					cFieldHash.put( fieldID, newField );
+				}
+				// Else we have seen this Field ID before
+				else
+				{
+					// Let's look at the previous one as well
+					XMLDefinedField oldField =
+						(XMLDefinedField)cFieldHash.get( fieldID )
+						;
+
+					// If the previous field was specifically set
+					// then it wins, first come first serve
+					if( oldField.getIsExplicitID() )
+					{
+						// We will take no action in terms of the hash
+						// but we might like to generate some warnings
+
+						// Is the new field ID specifically declared?
+						if( newField.getIsExplicitID() )
+						{
+							errorMsg( kFName,
+								"Two fields have both been declared"
+								+ " with the same specific ID."
+								+ " Field ID=\"" + fieldID + "\""
+								+ " Report = \"" + reportName + "\""
+								+ " The earliest field with this specific"
+								+ " ID will be kept; the later field will"
+								+ " not be referencable by name for things"
+								+ " like sorting and filtering, though its"
+								+ " data WILL still appear in the report"
+								+ " assuming that it is set as visible."
+								);
+						}
+						// Else the new field ID was NOT specifically declared
+						else
+						{
+							infoMsg( kFName,
+								"A subsequent field had an auto-generated"
+								+ " field ID that was the same as a previous"
+								+ " field's specifically set ID."
+								+ " Field ID=\"" + fieldID + "\""
+								+ " Report=\"" + reportName + "\""
+								+ " The eariler field will be kept;"
+								+ " the later field will"
+								+ " not be referencable by name for things"
+								+ " like sorting and filtering, though its"
+								+ " data WILL still appear in the report"
+								+ " assuming that it is set as visible."
+								);
+						}	// End else the new ID was not specific
+
+					}
+					// Else the old one was not specifically set
+					else
+					{
+
+						// If the newer/later field IS specifically
+						// set, we will keep it
+						if( newField.getIsExplicitID() )
+						{
+							// Keep the NEW ONE
+							cFieldHash.put( fieldID, newField );
+
+							infoMsg( kFName,
+								"A subsequent field has a specifically"
+								+ " declared ID that is the same as a previous"
+								+ " field's auto-generated ID."
+								+ " Field ID=\"" + fieldID + "\"."
+								+ " Report=\"" + reportName + "\""
+								+ " This later field with this specific"
+								+ " ID will be kept; the earlier field will"
+								+ " not be referencable by name for things"
+								+ " like sorting and filtering, though its"
+								+ " data WILL still appear in the report"
+								+ " assuming that it is set as visible."
+								);
+						}
+						// The newer field is NOT specifically declared
+						else
+						{
+							infoMsg( kFName,
+								"A subsequent field had an auto-generated"
+								+ " field ID that was the same as a previous"
+								+ " field's auto-generated ID."
+								+ " Field ID=\"" + fieldID + "\"."
+								+ " Report = \"" + reportName + "\""
+								+ " The eariler field will be kept;"
+								+ " the later field will"
+								+ " not be referencable by name for things"
+								+ " like sorting and filtering, though its"
+								+ " data WILL still appear in the report"
+								+ " assuming that it is set as visible."
+								);
+						}	// End else the newer field is not specific
+
+					}	// End else old field wasn't specifically declared
+
+				}	// End else we have seen this Field ID before
+
+			}	// Finished looping through the fields
+		}	// End if not using cache yet
+
+		// Return cached answer
+		return cFieldList;
+	}
+
+	String getSqlFieldsAsSelectString()
+		throws ReportConfigException
+	{
+		if( ! fUseCache && null==cSqlFieldsString )
+		{
+			final String kFName = "getSqlFieldsAsSelectString";
+			final String kExTag = kClassName + '.' + kFName + ": ";
+
+			// get the fields, and that routine will throw
+			// an exception if there's anything wrong
+			List fields = getFieldObjects();
+			// Loop through the fields, and we do need to
+			// know if we are first or not
+			StringBuffer buff = new StringBuffer();
+			for( int i=0; i<fields.size(); i++ )
+			{
+				XMLDefinedField field = (XMLDefinedField)fields.get(i);
+				// If not first, add the delimiter
+				if( i>0 )
+					buff.append( ", " );
+				// Now add the field name and possible SQL alias
+				String tmpStr = field.getSqlFieldsAsSelectString();
+				buff.append( tmpStr );
+			}
+			// Convert our buffer into its final String
+			cSqlFieldsString = new String( buff );
+		}
+		return cSqlFieldsString;
+	}
+
+
+
+
+	String getDefaultTableName()
+	{
+		return DBConfig.LOG_TABLE;
+	}
+
+	String getCssStyleSheetURI()
+	{
+		return DEFAULT_CSS_URI;
+	}
+	// Not getting a style sheet should not be a fatal error
+	// though we will log error messages
+	// Todo: let them load their own from elsewhere
+	String getCssStyleText()
+	{
+		final String kFName = "getCssStyleText";
+
+		String uri = getCssStyleSheetURI();
+		if( null==uri )
+		{
+			infoMsg( kFName,
+				"No CSS URI defined, returning null."
+				);
+			return null;
+		}
+
+		AuxIOInfo tmpAuxInfo = new AuxIOInfo();
+		tmpAuxInfo.setSystemRelativeBaseClassName(
+			kFullClassName
+			);
+		String answer = null;
+		try
+		{
+			answer = NIEUtil.fetchURIContentsChar(
+				uri,
+				getMainApp().getConfigFileURI(),
+				null, null,	// optUsername, optPassword,
+				tmpAuxInfo
+				);
+		}
+		catch( Exception e )
+		{
+			errorMsg( kFName,
+				"Error opening CSS URI \"" + uri + "\"."
+				+ " Returning null."
+				+ " Error: " + e
+				);
+			return null;
+		}
+		// Normalize and check
+		answer = NIEUtil.trimmedStringOrNull( answer );
+		if( null==answer )
+			errorMsg( kFName,
+				"Null/empty default CSS style sheet contents read"
+				+ " from URI \"" + uri + "\", returning null."
+				);
+
+		return answer;
+
+
+		// Good resource on tables and CSS, from Nick Sayer
+		// http://www.w3.org/TR/REC-CSS2/tables.html
+		// And overall CSS info
+		// http://www.w3.org/TR/REC-CSS2/cover.html#minitoc
+		// Selectors / pattern matching
+		// http://www.w3.org/TR/REC-CSS2/selector.html
+
+//		Inside HTML:
+//		<head>
+//			...
+//			<STYLE type="text/css">
+//				H1 { color: blue }
+//			</STYLE>
+//		</head>
+
+	}
+
+	boolean getShouldDoVariableSubstitutions()
+	{
+
+//		if( ! fUseCache )
+//		{
+//			cShouldDoVarSubst = fMainElem.getBooleanFromAttribute(
+//				SHOULD_DO_VAR_SUBST_ATTR, DEFAULT_SHOULD_DO_VAR_SUBST
+//				);
+//		}
+//		return cShouldDoVarSubst;
+
+		return fHaveSeenDollarSigns;
+	}
+
+
+	List getSuggestedLinks()
+	{
+		if( ! fUseCache && null==cSuggestedLinks )
+		{
+			final String kFName = "getSuggestedLinks";
+			final boolean kCasen = false;
+
+			// We always create a hash, it may remain empty
+			cSuggestedLinks = new Vector();
+
+			// Lookup the list of parameter elements
+			List tmpList = fMainElem.findElementsByPath(
+				LINKS_PATH );
+			// Loop through, if any; it's OK if there isn't
+			if( null!=tmpList && tmpList.size() > 0 )
+			{
+				for( int i = 0; i < tmpList.size(); i++ )
+				{
+					Element elem = (Element) tmpList.get( i );
+
+					ReportLink link = null;
+					try
+					{
+						link = new ReportLink(
+							elem, getMainApp()
+							);
+					}
+					catch( ReportConfigException e )
+					{
+						errorMsg( kFName,
+							"Could not instantiate suggested link # " + (i+1)
+							+ ", skipping."
+							+ " Error: " + e
+							);
+						continue;
+					}
+
+					// OK, add it
+					cSuggestedLinks.add( link );
+				}
+			}
+
+		}
+		return cSuggestedLinks;
+	}
+
+
+
+	nie.sn.SearchTuningApp getMainApp()
+	{
+		return fMainApp;
+	}
+
+	DBConfig getDBConfig()
+	{
+		return getMainApp().getDBConfig();
+	}
+
+	String getMainAppURL()
+	{
+		return getMainApp().getSearchNamesURL();
+	}
+
+
+
+
+	// This gets us to the logging object
+	private static RunLogInterface getRunLogObject()
+	{
+		return RunLogBasicImpl.getRunLogObject();
+	}
+	private static boolean statusMsg( String inFromRoutine, String inMessage )
+	{
+		return getRunLogObject().statusMsg( kClassName, inFromRoutine,
+			inMessage
+			);
+	}
+	private static boolean transactionStatusMsg( String inFromRoutine, String inMessage )
+	{
+		return getRunLogObject().transactionStatusMsg( kClassName, inFromRoutine,
+			inMessage
+			);
+	}
+	private static boolean shouldDoTransactionStatusMsg( String inFromRoutine )
+	{
+		return getRunLogObject().shouldDoTransactionStatusMsg( kClassName, inFromRoutine );
+	}
+	private static boolean infoMsg( String inFromRoutine, String inMessage )
+	{
+		return getRunLogObject().infoMsg( kClassName, inFromRoutine,
+			inMessage
+			);
+	}
+	private static boolean debugMsg( String inFromRoutine, String inMessage )
+	{
+		return getRunLogObject().debugMsg( kClassName, inFromRoutine,
+			inMessage
+			);
+	}
+	private static boolean shouldDoDebugMsg( String inFromRoutine )
+	{
+		return getRunLogObject().shouldDoDebugMsg( kClassName, inFromRoutine );
+	}
+	private static boolean traceMsg( String inFromRoutine, String inMessage )
+	{
+		return getRunLogObject().traceMsg( kClassName, inFromRoutine,
+			inMessage
+			);
+	}
+	private static boolean shouldDoTraceMsg( String inFromRoutine )
+	{
+		return getRunLogObject().shouldDoTraceMsg( kClassName, inFromRoutine );
+	}
+	private static boolean warningMsg( String inFromRoutine, String inMessage )
+	{
+		return getRunLogObject().warningMsg( kClassName, inFromRoutine,
+			inMessage
+			);
+	}
+	private static boolean errorMsg( String inFromRoutine, String inMessage )
+	{
+		return getRunLogObject().errorMsg( kClassName, inFromRoutine,
+			inMessage
+			);
+	}
+	private static boolean fatalErrorMsg( String inFromRoutine, String inMessage )
+	{
+		return getRunLogObject().fatalErrorMsg( kClassName, inFromRoutine,
+			inMessage
+			);
+	}
+
+
+
+	private JDOMHelper fMainElem;
+	private nie.sn.SearchTuningApp fMainApp;
+	private String fShortReportName;
+
+	boolean fUseCache;
+	boolean fHaveSeenDollarSigns;
+	List cSuggestedLinks;
+	String cTitle;
+	String cLinkText;
+	String cSubtitle;
+
+	String cRawSql;
+	String cSelectModifier;
+	String cRawFrom;
+
+	String cRawWhereJoin;
+	String cRawWhereFilter;
+	String cRawOrderBy;
+	String cRawGroupBy;
+
+	String cSqlFrom;
+	String cSqlWhere;
+	String cSqlOrderBy;
+	String cSqlGroupBy;
+
+
+
+	String cSqlText;
+	// the list of full XMLDefinedField objects
+	List cFieldList;
+	// The list of fields stored by their ID
+	Hashtable cFieldHash;
+	String cSqlFieldsString;
+	String cSqlFromString;
+	boolean cShouldDoVarSubst;
+
+	// Title and subtitle settings
+	private static final String TITLE_PATH = "title";
+	private static final String LINK_TEXT_PATH = "link_text";
+	private static final String SUBTITLE_PATH = "subtitle";
+
+	private static final String RAW_SQL_PATH = "raw_sql";
+
+	private static final String SELECT_MODIFIER_PATH = "select_modifier";
+	private static final String RAW_FROM_PATH = "raw_from";
+
+	private static final String RAW_WHERE_JOIN_PATH = "raw_where_join";
+	private static final String RAW_WHERE_FILTER_PATH =
+		"raw_where_filter";
+	private static final String LINKS_PATH =
+		"suggested_links/" + ReportLink.MAIN_ELEM_NAME;
+	private static final String RAW_ORDER_BY_PATH = "raw_sort";
+	private static final String RAW_GROUP_BY_PATH = "raw_grouping";
+
+
+	// Field tag related strings
+	private static final String FIELD_ELEM_PATH = "field";
+
+	// private static final String FIELD_HEADING_ATTR = "heading";
+	// private static final String FIELD_SQL_ALIAS_ATTR = "sql_alias";
+	// private static final String FIELD_SHOULD_DISPLAY_ATTR = "show";
+
+	static final String _x_SHOULD_DO_VAR_SUBST_ATTR =
+		"variable_substitutions";
+
+	// Desired starting and stopping row count
+	public static final String START_ROW_CGI_FIELD_NAME = "start_row";
+	public static final String DESIRED_ROW_COUNT_CGI_FIELD_NAME =
+		"num_rows";
+
+	public static final String SORT_SPEC_CGI_FIELD_NAME = "sort";
+	// public static final String FILTER_SPEC_CGI_FIELD_NAME = "filter";
+	public static final String FILTER_NAME_CGI_FIELD_NAME = "filter";
+	public static final String FILTER_PARAM_CGI_FIELD_NAME = "parm";
+
+	// Having to do with variable hashes
+	static final String REQUEST_VARS_HASH_NAME = "cgi";
+	static final String SQL_ESC_SUFFIX = "_sqlesc";
+	static final String HTML_ESC_SUFFIX = "_htmlesc";
+
+
+
+	// The default number of rows
+	static final int DEFAULT_DESIRED_ROW_COUNT = 25; // 25; // 25;
+
+	// We show fields by default
+	static final boolean _x_DEFAULT_SHOULD_DISPLAY_FIELD = true;
+
+	// Where CSS style sheets come from
+	public static final String DEFAULT_CSS_URI =
+		AuxIOInfo.SYSTEM_RESOURCE_PREFIX
+		+ "style_sheets/default_xml_defined_report.css"
+		;
+
+	static final boolean DEFAULT_SHOULD_DO_VAR_SUBST = true;
+
+	// Some of the class tags we use, others are hard coded if
+	// used only once
+	private static final String ACTIVE_PAGING_CSS_CLASS =
+		"nie_active_paging_link";
+	private static final String INACTIVE_PAGING_CSS_CLASS =
+		"nie_inactive_paging_link";
+	private static final String STAT_NUMBER_CSS_CLASS =
+		"nie_stat_number";
+	public static final String CONAINER_CELL_CSS_CLASS =
+		"nie_container_cell";
+
+
+
+
+
+
+}

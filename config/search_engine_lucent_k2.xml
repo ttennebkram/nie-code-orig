@@ -1,0 +1,130 @@
+<search_engine_info>
+  <!-- <case_sensitive_cgi_fields>true</case_sensitive_cgi_fields> -->
+  <vendor>Lucent K2 ISO-8859-1</vendor>
+  <search_term_field_name>queryText</search_term_field_name>
+  <search_url method="GET" use_careful_redirects="TRUE">
+    http://www1.alcatel-lucent.com/gsearch/search_null.jhtml
+  </search_url>
+  <search_url_test_drive_fields>
+    <field name="" value="" />
+    <field name="" value="" />
+    <field name="" value="" />
+    <field name="" value="" />
+    <field name="" value="" />
+    <field name="" value="" />
+    <field name="" value="" />
+    <field name="" value="" />
+    <field name="" value="" />
+    <field name="" value="" />
+  </search_url_test_drive_fields>
+  <search_form_option_fields>
+    <field name="collection" label="Section" skip_blank_name="TRUE">
+      <option value="" label="" />
+      <option value="" label="" />
+      <option value="" label="" />
+      <option value="" label="" />
+      <option value="" label="" />
+      <option value="" label="" />
+      <option value="" label="" />
+      <option value="" label="" />
+      <option value="" label="" />
+      <option value="" label="" />
+      <option value="" label="" />
+      <option value="" label="" />
+      <option value="" label="" />
+      <option value="" label="" />
+      <option value="" label="" />
+      <option value="" label="" />
+      <option value="" label="" />
+      <option value="" label="" />
+      <option value="" label="" />
+      <option value="" label="" />
+    </field>
+<!--
+  <field name="doctype" label="Document Type">
+    <option value="" label="All Documents" />
+    <option value="html" label="HTML Only" />
+    <option value="pdf" label="Adobe PDF" />
+    <option value="doc" label="Microsoft Word" />
+    <option value="ppt" label="Microsoft Power Point" />
+  </field>
+  <field name="language" label="Language">
+    <option value="" label="All Languages" />
+    <option value="en" label="English" />
+    <option value="fr" label="Fran&#231;ais / French" />
+    <option value="de" label="Deutsch / German" />
+  </field>
+-->
+    <field skip_blank_name="TRUE" name="" label="">
+      <option value="" label="" />
+      <option value="" label="" />
+      <option value="" label="" />
+      <option value="" label="" />
+      <option value="" label="" />
+      <option value="" label="" />
+      <option value="" label="" />
+      <option value="" label="" />
+      <option value="" label="" />
+      <option value="" label="" />
+      <option value="" label="" />
+      <option value="" label="" />
+      <option value="" label="" />
+      <option value="" label="" />
+      <option value="" label="" />
+      <option value="" label="" />
+      <option value="" label="" />
+      <option value="" label="" />
+      <option value="" label="" />
+      <option value="" label="" />
+    </field>
+  </search_form_option_fields>
+  <!--
+	<search_form_option_fields>
+		<field name="coll" label="Collections">
+			<option value="marketing" label="Marketing" />
+			<option value="faq" label="Tech Support FAQs" />
+		</field>
+		<field name="prod" label="Product">
+			<option value="big" label="Big Box" />
+			<option value="little" label="Little Box" />
+			<option value="tiny" label="Teeny Tiny Box" />
+			<option value="itty" label="Itty Bitty Box" />
+			<option value="baby" label="Baby Box" />
+		</field>
+	</search_form_option_fields>
+	-->
+  <!-- Modifiers go here, if neeeded -->
+  <suggestion_marker_text_modifiers after="TRUE" replace="FALSE" />
+  <suggestion_marker_text><![CDATA[</font></FORM></td></tr></table>]]></suggestion_marker_text>
+  <!-- LITERAL text -->
+  <markup_after><![CDATA[</td></tr> <tr><td>]]></markup_after>
+  <!--
+	<vendor>Verity / Search97</vendor>  
+	<search_term_field_name>queryText</search_term_field_name>
+	<search_url>
+		http://www.aopa.org/search97cgi/s97_cgi
+	</search_url>
+	<suggestion_marker_text>
+	<![CDATA[
+		< ! - - Search again - ->
+	]]>
+	</suggestion_marker_text>
+	<no_action_indicator_field>ResultStart</no_action_indicator_field>
+	<no_action_indicator_field>nie_no_op</no_action_indicator_field>
+	-->
+  <markup_before />
+  <results>
+    <forms enabled="TRUE">
+      <tweak_policy><![CDATA[That are using the same search URL (form's action)]]></tweak_policy>
+      <to_tweak_a />
+      <to_tweak_b />
+    </forms>
+    <doc_links enabled="TRUE">
+      <cgi_field />
+      <js_policy>Remove onClick (if present)</js_policy>
+      <policy>Any link found in the results</policy>
+      <to_tweak_a />
+      <to_tweak_b />
+    </doc_links>
+  </results>
+</search_engine_info>

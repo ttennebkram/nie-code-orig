@@ -1,0 +1,76 @@
+/*
+ * Created on Aug 24, 2003
+ *
+ * To change the template for this generated file go to
+ * Window>Preferences>Java>Code Generation>Code and Comments
+ */
+package nie.webui;
+
+import java.util.*;
+import org.jdom.Element;
+import nie.core.*;
+
+/**
+ * @author mbennett
+ *
+ * To change the template for this generated type comment go to
+ * Window>Preferences>Java>Code Generation>Code and Comments
+ */
+public interface UiXmlScreenHelperInterface
+{
+
+	public boolean verifySecurityLevelAccess(
+		AuxIOInfo inReuqestInfo
+		);
+
+	public String getTitle( Hashtable optVars );
+
+	public Element processRequest(
+			AuxIOInfo inRequestInfo, AuxIOInfo inResponseInfo,
+			boolean inIsStandaloneHTMLPage
+		) throws UIException;
+
+	Element processFormGen(
+			AuxIOInfo inRequestInfo, AuxIOInfo ioResponseInfo,
+			boolean inIsStandaloneHTMLPage
+		) throws UIException;
+
+	Element processDataSubmission(
+			AuxIOInfo inRequestObject, AuxIOInfo ioResponseObject,
+			boolean inIsStandaloneHTMLPage,
+			String inMode
+		) throws UIException;
+
+	// returns true if it correctly found the map to edit
+	// If it finds more than one then it returns false, indicating
+	// none more multiple were found
+	boolean augmentFormFromExistingData(
+			Element ioBlankForm, String optTargetPattern, int optTargetID
+		) throws UIException;
+
+	void augmentFormFromSystemDefaults( Element ioBlankForm
+		) throws UIException;
+
+	// mode is implicitly changing from submit to formgen
+	Element redisplayBadFormSubmission(
+			AuxIOInfo inRequestObject, AuxIOInfo inResponseObject,
+			boolean inIsStandaloneHTMLPage,
+			InvalidFormInputException optBadFieldException
+		) throws UIException;
+
+	void augmentFromFieldException(
+			Element ioBlankForm, InvalidFormInputException inBadFieldException
+		) throws UIException;
+
+	// Fill in field from submitted CGI parameters
+	// usually as part of REDISPLAYING a form that was just submitted,
+	// typically because of an input error
+	void augmentFormFromCGIInput(
+			Element ioBlankForm, AuxIOInfo inRequestObject
+		) throws UIException;
+
+
+	public static final String JAVA_HELPER_CLASS_PREFIX = "nie.webui.java_screens.";
+
+	// public Element generateFancyLinksToThisReport( AuxIOInfo inRequestInfo );
+}

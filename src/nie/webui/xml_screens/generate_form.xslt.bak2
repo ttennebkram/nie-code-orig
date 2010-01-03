@@ -1,0 +1,412 @@
+<?xml version="1.0"?>
+<xsl:stylesheet
+	xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
+	version="1.0">
+
+<!-- Variables that will be passed in to us -->
+<xsl:param name="title" />
+<xsl:param name="submit_link" />
+<xsl:param name="image_dir" />
+<xsl:param name="help_dir" />
+<xsl:param name="password" />
+<xsl:param name="operation" />
+
+
+<xsl:template match="/form">
+<html>
+
+<head>
+<!--
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<link rel="stylesheet" type="text/css" href="nie.css" />
+-->
+<title>
+<!--
+<xsl:value-of select="@title" />
+-->
+<xsl:value-of select="$title" />
+</title>
+</head>
+
+<body>
+<center>
+
+<h1 class="nie_form_title">
+	<!--
+	<xsl:value-of select="@title" />
+	-->
+
+	<!-- These should line up with constants in class UILink -->
+	<xsl:if test="$operation = 'add'">
+		Create
+	</xsl:if>
+	<xsl:if test="$operation = 'edit'">
+		Edit
+	</xsl:if>
+	<xsl:if test="$operation = 'delete'">
+		Confirm Deleition of
+	</xsl:if>
+	<xsl:if test="$operation = 'view'">
+		Viewing
+	</xsl:if>
+
+
+	<xsl:value-of select="$title" />
+</h1>
+
+<!-- Start the form outside the main table -->
+<form>
+<xsl:attribute name="action">
+	<xsl:value-of select="$submit_link" />
+</xsl:attribute>
+
+<input type="hidden" name="password">
+	<xsl:attribute name="value">
+		<xsl:value-of select="$password" />
+	</xsl:attribute>
+</input>
+<input type="hidden" name="operation">
+	<xsl:attribute name="value">
+		<xsl:value-of select="$operation" />
+	</xsl:attribute>
+</input>
+
+<!-- Overall Table -->
+<table _border="1" class="nie_main_content_table" cellpadding="2" cellspacing="2">
+
+	<!-- Display an error, if there is one -->
+	<xsl:if test="@error_msg">
+		<tr>
+		<td align="center" colspan="3">
+		<font color="red">
+			<b>
+			Error:
+
+			<xsl:value-of select="@error_msg" />
+			</b>
+		</font>
+		</td>
+		</tr>
+	</xsl:if>
+
+	<!-- The main sections of the form -->
+	<xsl:apply-templates select="section" />
+
+	<xsl:if test="$operation = 'add' or $operation = 'edit'">
+		<xsl:if test="//field/@is_required = 'TRUE'">
+			<tr>
+			<td align="center" colspan="3">
+			<sup>* indicates a required field</sup>
+			</td>
+			</tr>
+		</xsl:if>
+	</xsl:if>
+
+</table>
+
+    
+
+<!-- Add in the hidden fields -->
+<xsl:apply-templates select="//field[(@type='hidden')]" />
+
+</form>
+
+</center>
+</body>
+</html>
+</xsl:template>
+
+
+
+
+<!-- This template copies over XHTML tags we embed in the individual events
+     ======================================================================
+-->
+<xsl:template match="node() | @*">
+	<xsl:copy>
+		<xsl:apply-templates select="node() | @*"/>
+	</xsl:copy>
+</xsl:template>
+
+
+<!-- Sections
+====================
+-->
+
+<!-- For each SECTION -->
+<xsl:template match="section">
+	<tr>
+
+	<!-- Use a name and shade the section, if specified
+		or just use an HR tag
+	-->
+	<xsl:choose>
+		<!-- If title or help, do the fancy shaded bar -->
+		<xsl:when test="@title | @help">
+			<xsl:attribute name="class">nie_form_header_row</xsl:attribute>
+			<td colspan="3">
+				<table width="100%" cellpadding="0" cellspacing="0">
+				<tr>
+				<!-- Section Heading -->
+				<xsl:if test="@title">
+					<th align="left" class="nie_form_header_cell">
+						<xsl:value-of select="@title" />
+					</th>
+				</xsl:if>
+				<!-- Help Link -->
+				<xsl:if test="@help">
+
+					<td align="right" _class="nie_form_header_cell">
+						<a target="_blank">
+							<xsl:attribute name="onclick">ReportView = window.open('<xsl:value-of select="$help_dir" /><xsl:value-of select="@help" />','ReportView','scrollbars,resizeable,width=350,height=450');ReportView.focus();return false</xsl:attribute>
+							<xsl:attribute name="href">
+								<xsl:value-of select="$help_dir" />
+								<xsl:value-of select="@help" />
+							</xsl:attribute>
+							<img alt="Click for Popup Help" width="16" height="16" hspace="3" vspace="2" border="0">
+								<xsl:attribute name="src"><xsl:value-of select="$image_dir" />help-button-small.gif</xsl:attribute>
+							</img>
+							<!--
+							help
+							-->
+						</a>
+					</td>
+
+					<!-- as one line
+					<td align="right" _class="nie_form_header_cell"><a target="_blank"><xsl:attribute name="onclick">ReportView = window.open('<xsl:value-of select="$help_dir" /><xsl:value-of select="@help" />','ReportView','scrollbars,resizeable,width=300,height=400');ReportView.focus();return false</xsl:attribute><xsl:attribute name="href"><xsl:value-of select="$help_dir" /><xsl:value-of select="@help" /></xsl:attribute><img alt="Click for Popup Help" width="16" height="16" hspace="3" vspace="2" border="0"><xsl:attribute name="src"><xsl:value-of select="$image_dir" />help-button-small.gif</xsl:attribute></img></a></td>
+					-->
+
+
+				</xsl:if>
+				</tr>
+				</table>
+			</td>
+		</xsl:when>
+		<!-- Else just an HR tag -->
+		<xsl:otherwise>
+			<td colspan="3" class="nie_hr_cell">
+				<hr width="100%" size="1" noshade="1" />
+			</td>
+		</xsl:otherwise>
+	</xsl:choose>
+	</tr>
+
+	<!-- Add the fields and buttons
+		buttons always come after fields in this version
+	-->
+	<!--
+	<xsl:apply-templates select="field" />
+	-->
+	<!-- Non-hidden fields -->
+	<xsl:apply-templates select="field[not(@type) or not (@type='hidden')]" />
+	<tr>
+	<td colspan="3" align="right">
+		<xsl:apply-templates select="button" />
+	</td>
+	</tr>
+
+	<!-- Add the spacer -->
+	<tr>
+		<td class="nie_spacer_cell" />
+	</tr>
+</xsl:template>
+
+
+<!-- For each non-hidden FIELD -->
+<xsl:template match="field[not(@type) or not (@type='hidden')]">
+<tr>
+
+<!-- The Label Cell -->
+<td class="nie_form_label_cell" align="right">
+
+	<nobr>
+
+	<xsl:if test="@label">
+		<!-- And in red if this field is in error -->
+		<font>
+			<xsl:if test="@is_error = 'TRUE'">
+				<xsl:attribute name="color">red</xsl:attribute>
+			</xsl:if>
+			<xsl:value-of select="@label" />:
+		</font>
+	</xsl:if>
+
+	<!-- Op: <xsl:value-of select="$operation" /> -->
+
+	<!-- Required asterisk (and red if the field is in error) -->
+	<xsl:if test="$operation = 'add' or $operation = 'edit'">
+		<xsl:if test="@is_required = 'TRUE'">
+			<font>
+				<xsl:if test="@is_error = 'TRUE'">
+					<xsl:attribute name="color">red</xsl:attribute>
+				</xsl:if>
+				&#160;*
+				<!--
+				<sup>
+	
+				*
+				</sup>
+				-->
+			</font>
+		</xsl:if>
+	</xsl:if>
+
+	</nobr>
+
+</td>
+
+<!-- middle spacer cell-->
+<td class="nie_spacer_cell" />
+
+
+<!-- The input field -->
+<td class="nie_form_input_cell" valign="top" align="left">
+
+	<xsl:choose>
+
+	<!-- If we're editing or adding, render a full HTML control -->
+	<xsl:when test="$operation = 'add' or $operation = 'edit'">
+
+		<!-- Render the control -->
+		<xsl:choose>
+	
+			<!-- Text Area input box -->
+			<xsl:when test="@type = 'textarea'">
+			
+				<textarea cols="30">
+					<xsl:attribute name="name">
+						<xsl:value-of select="@name" />
+					</xsl:attribute>
+					<xsl:attribute name="rows">
+						<xsl:choose>
+							<xsl:when test="@rows">
+								<xsl:value-of select="@rows" />
+							</xsl:when>
+							<xsl:otherwise>
+								4
+							</xsl:otherwise>
+						</xsl:choose>
+					</xsl:attribute>
+					<xsl:value-of select="normalize-space(.)" />
+					<xsl:if test="not (normalize-space(.))" >
+						&#160;
+					</xsl:if>
+				</textarea>
+			</xsl:when>
+	
+			<!-- Drop down, select -->
+			<xsl:when test="@type = 'select' or @type = 'dropdown'">
+				<select>
+					<xsl:attribute name="name">
+						<xsl:value-of select="@name" />
+					</xsl:attribute>
+					
+					<!-- And now each option -->
+					<xsl:for-each select="option">
+						<option>
+							<!-- The value attribute, defaults to display text -->
+							<xsl:attribute name="value">
+								<xsl:choose>
+									<xsl:when test="@value">
+										<xsl:value-of select="@value" />
+									</xsl:when>
+									<xsl:otherwise>
+										<xsl:value-of select="normalize-space(.)" />
+									</xsl:otherwise>
+								</xsl:choose>
+							</xsl:attribute>
+							<!-- See if this should be selected -->
+							<!--
+							<xsl:if test="((@value) and @value=normalize-space(..)) or (not(@value) and normalize-space(.) and normalize-space(.)=normalize-space(..))">
+							-->
+							<xsl:if test="((@value) and @value=../text()) or (not(@value) and normalize-space(.) and normalize-space(.)=../text())">
+								<xsl:attribute name="selected">1</xsl:attribute>
+							</xsl:if>
+							<!-- And the text to display -->
+							<xsl:value-of select="normalize-space(.)" />
+						</option>
+					</xsl:for-each>
+					<!--
+					Debug: [<xsl:value-of select="text()" />]
+					-->
+				</select>
+			</xsl:when>
+	
+			<!-- Hidden fields handled in other section -->
+	
+			<!-- Default is a text box -->
+			<xsl:otherwise>
+	
+				<input size="40">
+					<xsl:attribute name="name">
+						<xsl:value-of select="@name" />
+					</xsl:attribute>
+					<xsl:if test="normalize-space(.)">
+						<xsl:attribute name="value">
+							<xsl:value-of select="normalize-space(.)" />
+						</xsl:attribute>
+					</xsl:if>
+				</input>
+	
+			</xsl:otherwise>
+		</xsl:choose>
+
+	</xsl:when>
+
+	<!-- Else we are not rendering a control, just displaying data -->
+	<xsl:otherwise>
+		<table><tr><td width="300" bgcolor="#f1f1f1">
+		<small><i>
+		<!--
+		<xsl:value-of select="normalize-space(.)" />
+		-->
+		<xsl:value-of select="text()" />
+		&#160;
+		</i></small>
+		</td></tr></table>
+	</xsl:otherwise>
+
+	</xsl:choose>
+
+
+	<!-- Asterisk was here, but had issues with vertical alignment and tall controls -->
+
+</td>
+</tr>
+
+</xsl:template>
+
+<!-- For each hidden FIELD -->
+<xsl:template match="field[(@type='hidden')]">
+<!--
+<xsl:template match="field">
+-->
+	<!--
+	<i><xsl:value-of select="@name" /></i><br/>
+	-->
+	<input type="hidden">
+		<xsl:attribute name="name">
+			<xsl:value-of select="@name" />
+		</xsl:attribute>
+		<xsl:if test="normalize-space(.)">
+			<xsl:attribute name="value">
+				<xsl:value-of select="normalize-space(.)" />
+			</xsl:attribute>
+		</xsl:if>
+	</input>
+</xsl:template>
+
+
+<!-- Foreach Button in this section (all in one big cell) -->
+<xsl:template match="button">
+	<xsl:if test="(not(@operation) and not(@skip_operation)) or ((@operation) and (@operation=$operation)) or ((@skip_operation) and not(@skip_operation=$operation))">
+		<input type="submit" name="button">
+			<xsl:attribute name="value">
+				<xsl:value-of select="normalize-space(.)" />
+			</xsl:attribute>
+		</input>
+	</xsl:if>
+</xsl:template>
+
+
+</xsl:stylesheet>

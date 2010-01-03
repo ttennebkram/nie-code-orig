@@ -1,0 +1,13 @@
+From FAST X10 site
+
+MS SQL Server 2000:
+
+    JDBC Driver:   com.microsoft.jdbc.sqlserver.SQLServerDriver
+    JDBCURL:   jdbc:microsoft:sqlserver://yourServer:1433; DatabaseName=yourData-BaseName (all on one line)
+    
+
+MS SQL Server 2005:
+
+    JDBC Driver:   com.microsoft.sqlserver.jdbc.SQLServerDriver
+    JDBCURL:   jdbc:sqlserver://servername;databaseName=X1;
+    

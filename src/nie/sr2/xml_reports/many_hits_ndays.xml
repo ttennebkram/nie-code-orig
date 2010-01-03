@@ -1,0 +1,89 @@
+<report>
+	<title>Searches that Returned the Most Matching Pages</title>
+	<subtitle>For the past $cgi.days day(s)</subtitle>
+
+	<link_text>Searches with Many Results in last:</link_text>
+	<link_text_compact>Many Results</link_text_compact>
+
+	<field
+		heading="Search Term(s)"
+		sql_alias="search"
+		null_value_display="(null search)"
+
+		is_report_link="TRUE"
+		link_report_name="search_details_ndays"
+		link_title="Click for Details"
+		do_link_if_null="TRUE"
+	>
+		NORMALIZED_QUERY
+	</field>
+
+	<field
+		_heading="Count"
+		heading="Num Searches"
+		sql_alias="num_times"
+	>
+		count(*)
+	</field>
+
+
+	<field
+		heading="Most Recently"
+		css_class="nie_datetime"
+		format_as="datetime"
+	>
+		max(START_TIME)
+	</field>
+
+	<field heading="Pages Found"
+		format_as="number"
+	>
+		max(NUM_RESULTS)
+	</field>
+
+	<field
+		heading="Mapped?"
+		format_as="boolean"
+	>
+		max(WAS_SEARCH_NAMES_TERM)
+	</field>
+
+	<raw_where_filter>
+		<![CDATA[
+			start_time >= $system.from_date
+			AND
+			TRANSACTION_TYPE = 1 
+		]]>
+
+		<!-- TRUNC(SYSDATE) - $cgi.days -->
+		<!-- oracle
+		<![CDATA[
+			start_time >= SYSDATE - $cgi.days
+			AND
+			TRANSACTION_TYPE = 1 
+		]]>
+		sql server, postgres, but broken in postgres because datetime - 0 truncats time
+		but a moot point now since we implemented $system.from_date
+		<![CDATA[
+			start_time >= CURRENT_TIMESTAMP - $cgi.days
+			AND
+			TRANSACTION_TYPE = 1 
+		]]>
+		-->
+	</raw_where_filter>
+
+	<raw_grouping>
+		NORMALIZED_QUERY
+		HAVING max(NUM_RESULTS) > 10
+	</raw_grouping>
+
+	<raw_sort>
+		max(NUM_RESULTS) desc,
+		max(START_TIME) desc
+	</raw_sort>
+
+
+	<include location="includes/standard_ndays_link_suggestions.xml" />
+
+</report>
+

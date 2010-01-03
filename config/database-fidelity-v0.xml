@@ -1,0 +1,8 @@
+<database
+	vendor_tag="PostgreSQL"
+	server_name="sv1.ideaeng.net"
+	port=""
+	database_name="fidelity_db"
+	username="fidelity"
+	password="fidelity"
+/>

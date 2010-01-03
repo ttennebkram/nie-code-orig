@@ -1,0 +1,16 @@
+The AOPA service is starting...
+The AOPA service could not be started.
+
+A system error has occurred.
+
+System error 1067 has occurred.
+
+The process terminated unexpectedly.
+
+
+Wrapper.exe - Application Error
+The instruction at "0x00409f9a" referenced memory at "0x000000d6". The memory could not be "read".
+
+
+
+D:\data\proj\SearchNames\sn098d\system\nt_service\Wrapper.exe -c D:\data\proj\SearchNames\sn098d\system\nt_service\config\template.nts

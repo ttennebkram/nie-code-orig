@@ -1,0 +1,25 @@
+<map>
+	<term>charts</term>
+	<term>airport charts</term>
+	<term>approach charts</term>
+	<term>landing charts</term>
+	<term>landings</term>
+	<term>diagrams</term>
+	<term>airport diagrams</term>
+
+	<term>jeppesen</term>
+	<term>jepesen</term>
+	<term>jeppsen</term>
+	<term>jepsen</term>
+	<term>jepson</term>
+	<term>jepsan</term>
+	<term>jeppessen</term>
+
+	<!-- Advertisements -->
+	<user_data_markup_items class="text_ad">
+		<include location="../ads/jeppesen.xml" />
+	</user_data_markup_items>
+
+	<!-- Currently no suggestions for this map -->
+
+</map>

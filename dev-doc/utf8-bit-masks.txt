@@ -1,0 +1,33 @@
+http://en.wikipedia.org/wiki/Utf-8#Description
+http://www1.tip.nl/~t876506/utf8tbl.html
+
+Legend for each Group
+Range (bits, decimal range, UTF-8 sequence length)
+Marker Bits bits(decimal)
+Bitmasks (with , byte groupings from the RIGHT)
+
+1-7 bits / 0-127 1 byte
+0 (zero marker)
+0111-1111
+
+8-11 bits / 2,047 2 bytes
+110(192)   10(128)
+0001-11,11 0011-1111
+
+12-16 bits / 65,535 3 bytes
+1110(224) 10(128)    10
+0000-1111 0011-11,11 0011-1111
+
+17-21 bits / 2,097,151 4 bytes
+1111-0(240) 10(128)    10         10
+0000-0111   0011-,1111 0011-11,11 0011-1111
+
+22-26 bits [2,097,152 - 67,108,863] 5 bytes
+1111-10 (248)
+1111-10   10 (128)   10         10         10
+0000-0011 00,11-1111 0011-,1111 0011-11,11 0011-1111
+
+27-31 bits [67,108,864 - 2,147,483,647] 6 bytes
+1111-110 (252)
+1111-110  10 (128)  10         10         10         10
+0000-0001 0011-1111 00,11-1111 0011-,1111 0011-11,11 0011-1111

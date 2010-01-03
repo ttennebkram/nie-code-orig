@@ -1,0 +1,125 @@
+	<!-- Hidden Fields -->
+	<!-- ============= -->
+	<section
+		title="Search Form Hidden Fields (opt)"
+		help="find_map_or_create.html"
+	>
+		<field type="vertical_spacer" />
+		<field
+			type="vertical_spacer"
+		>
+			Other values your Search Engine may require
+		</field>
+		<field type="vertical_spacer" />
+
+
+		<field
+			name="search_hidden_field_name_1"
+			label="Hidden Field Name # 1"
+			xpath="/nie_config/search_tuning/search_engine_info/search_url_test_drive_fields/field[1]/@name"
+		/>
+		<field
+			name="search_hidden_field_value_1"
+			label="CGI Value to send 1"
+			xpath="/nie_config/search_tuning/search_engine_info/search_url_test_drive_fields/field[1]/@value"
+		/>
+
+		<field
+			name="search_hidden_field_name_2"
+			label="Hidden Field Name # 2"
+			xpath="/nie_config/search_tuning/search_engine_info/search_url_test_drive_fields/field[2]/@name"
+		/>
+		<field
+			name="search_hidden_field_value_2"
+			label="Value 2"
+			xpath="/nie_config/search_tuning/search_engine_info/search_url_test_drive_fields/field[2]/@value"
+		/>
+
+		<field
+			name="search_hidden_field_name_3"
+			label="Hidden Field Name # 3"
+			xpath="/nie_config/search_tuning/search_engine_info/search_url_test_drive_fields/field[3]/@name"
+		/>
+		<field
+			name="search_hidden_field_value_3"
+			label="Value 3"
+			xpath="/nie_config/search_tuning/search_engine_info/search_url_test_drive_fields/field[3]/@value"
+		/>
+
+		<field
+			name="search_hidden_field_name_4"
+			label="Hidden Field Name # 4"
+			xpath="/nie_config/search_tuning/search_engine_info/search_url_test_drive_fields/field[4]/@name"
+		/>
+		<field
+			name="search_hidden_field_value_4"
+			label="Value 4"
+			xpath="/nie_config/search_tuning/search_engine_info/search_url_test_drive_fields/field[4]/@value"
+		/>
+
+		<field
+			name="search_hidden_field_name_5"
+			label="Hidden Field Name # 5"
+			xpath="/nie_config/search_tuning/search_engine_info/search_url_test_drive_fields/field[5]/@name"
+		/>
+		<field
+			name="search_hidden_field_value_5"
+			label="Value 5"
+			xpath="/nie_config/search_tuning/search_engine_info/search_url_test_drive_fields/field[5]/@value"
+		/>
+
+		<field
+			name="search_hidden_field_name_6"
+			label="Hidden Field Name # 6"
+			xpath="/nie_config/search_tuning/search_engine_info/search_url_test_drive_fields/field[6]/@name"
+		/>
+		<field
+			name="search_hidden_field_value_6"
+			label="Value 6"
+			xpath="/nie_config/search_tuning/search_engine_info/search_url_test_drive_fields/field[6]/@value"
+		/>
+
+		<field
+			name="search_hidden_field_name_7"
+			label="Hidden Field Name # 7"
+			xpath="/nie_config/search_tuning/search_engine_info/search_url_test_drive_fields/field[7]/@name"
+		/>
+		<field
+			name="search_hidden_field_value_7"
+			label="Value 7"
+			xpath="/nie_config/search_tuning/search_engine_info/search_url_test_drive_fields/field[7]/@value"
+		/>
+
+		<field
+			name="search_hidden_field_name_8"
+			label="Hidden Field Name # 8"
+			xpath="/nie_config/search_tuning/search_engine_info/search_url_test_drive_fields/field[8]/@name"
+		/>
+		<field
+			name="search_hidden_field_value_8"
+			label="Value 8"
+			xpath="/nie_config/search_tuning/search_engine_info/search_url_test_drive_fields/field[8]/@value"
+		/>
+
+		<field
+			name="search_hidden_field_name_9"
+			label="Hidden Field Name # 9"
+			xpath="/nie_config/search_tuning/search_engine_info/search_url_test_drive_fields/field[9]/@name"
+		/>
+		<field
+			name="search_hidden_field_value_9"
+			label="Value 9"
+			xpath="/nie_config/search_tuning/search_engine_info/search_url_test_drive_fields/field[9]/@value"
+		/>
+
+		<field
+			name="search_hidden_field_name_10"
+			label="Hidden Field Name # 10"
+			xpath="/nie_config/search_tuning/search_engine_info/search_url_test_drive_fields/field[10]/@name"
+		/>
+		<field
+			name="search_hidden_field_value_10"
+			label="Value 10"
+			xpath="/nie_config/search_tuning/search_engine_info/search_url_test_drive_fields/field[10]/@value"
+		/>
+	</section>

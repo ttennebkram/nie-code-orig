@@ -1,0 +1,196 @@
+Installation
+default, use Unicode
+Admin urls
+http://machine:7778
+https://machine:4443
+
+
+Import / Export
+SQL*LOADER / sqlldr.exe? / sqlload to get the data into oracle
+imp import, also parfile=(parameters)
+exp export
+REPORTS
+SQLPLUS
+
+
+D:\data\proj\SearchNames>sqlplus system/pwd@stack
+SQL*Plus: Release 9.2.0.1.0 - Production on Wed Sep 25 17:19:21 2002
+...
+SQL> select count(*) from searchlog;
+  COUNT(*)
+----------
+      1432
+
+
+Oracle client like sqlplus to remote server:
+
+Can't just connect with sqlplus.  You used to be able to specify a long
+commnad line string, including T: and a server name, this stopped working
+as of Oracle 8 I think.
+
+Now, run:
+Note: The file this creates may require tweaking when you're done.
+Programs / Oracle - OraHome92 / Configuration and Migration Tools
+	/ Net Configuration Assistant
+Define 2 things:
+1: a process to listen locally (do I need this?)
+	(*) Listener configuration
+	Add one, and just accept defaults
+2: define the alias that resolves to the remote resource
+	(*, 3rd radio button) Local Net Service Name configuration
+	add -> oracle 8i or later
+	-> service name (I think what it is on the remote machine)
+	-> tcp -> server name/ip address
+	-> final name (? exact phrase) (I think how you'll refer to it here)
+	Then it will ask to test, but it will fail, probably because
+	the login is different, so tell it to change the login, enter
+	new info, then try again.
+OR
+	Is it the 3rd radio button, Local Net Service Name configuration
+	then radio Add
+	Oracle 8i or later
+	??? Service Name: like ender_stack (server_dbname)
+	^^^ No, just "stack"
+	then tcp
+	host name: titan
+	port: use default
+	Yes, perform a test
+	????
+	titanstack
+
+OK, let's suppose this doesn't work.
+
+If it's a login issue, change your login.
+
+Or if something about not resolving something like SYSTEM or maybe SOURCE
+
+Tweak the file:
+
+	oracle-dir\network\ADMIN\tnsnames.ora
+	edit it, see below
+	then REBOOT (not sure how else to tweak it)
+
+Broken:
+STACK =
+  (DESCRIPTION =
+    (ADDRESS_LIST =
+      (ADDRESS = (PROTOCOL = TCP)(HOST = titan)(PORT = 1521))
+    )
+    (CONNECT_DATA =
+      (SERVICE_NAME = stack)
+    )
+  )
+
+Corrected:
+STACK =
+  (DESCRIPTION =
+    (ADDRESS_LIST =
+      (ADDRESS = (PROTOCOL = TCP)(HOST = titan)(PORT = 1521))
+    )
+    (CONNECT_DATA =
+      (SERVER = DEDICATED)
+      (SERVICE_NAME = stack.titan)
+    )
+  )
+
+The STACK seems to be your local name.
+The stack.titan is the "service name" on the remote server name
+
+
+
+
+Then:
+	sqlplus user/pwd@localname
+
+Importing a dump file:
+(it's exp and imp, not export and import)
+imp system/shad0w15@stack file=oracle-SearchTrack.dmp fromuser=kklop
+
+LOTS of warnings
+
+Exporting a dump file:
+exp system/pwd@stack file=ender-SearchTrack-dec-02.dmp tables=(nie_log)
+
+drivemanager.getconnection call
+@bigmama => windows box in Kevin's network
+change to IP address to Kevin's, does IP work?
+
+Kevin, Oracle
+	66.124.152.190 port 1521
+	SID = "stack"
+	login: mbennett / mbennett
+
+Under Start menu / Oracle... / Dev tools / windows SQL Plus
+
+For sql plus something like:
+sqlplus mbennett/mbennett@66.124.152.190:1521:stack
+^^^ no
+
+test query
+select count(*) from searchlog;
+
+Kevin:
+DriverManager.getConnection(
+"jdbc:oracle:thin:@bigmomma:1521:stack",
+Me:
+"jdbc:oracle:thin:@66.124.152.190:1521:stack"
+
+
+
+two other params
+username: kklop / kklop
+
+maybe mine would work as well
+
+pull down jdbc driver from Oracle
+
+oracle technology network
+right hand side
+downloads
+oracle jdbc driver
+
+Or kevin will send
+jdklibx whatever
+
+Oracle JDBC Driver and notesFrom: Kevin-Neil Klop [kklop@ideaeng.com]
+Sent: Monday, September 16, 2002 10:07 AM
+To: Mark Bennett
+Subject: Oracle JDBC Driver and notes
+I put the driver into jdk/jre/lib/ext directory, which makes it automatically available to Java and I didn’t have to muck around with CLASSPATH stuff that way.
+
+Notes for previous source code sent to you:
+
+In the DriverManager call, there is a JDBC URL that looks like:
+
+        Connection oracleConnection =
+            DriverManager.getConnection( "jdbc:oracle:thin:@bigmomma:1521:stack",
+                         "kklop",
+                         "kklop");
+
+You must change “bigmomma” to whatever DNS name you’ve assigned to my network.  The next two parameters (currently “kklop”) specify the user name and password (respectively) to use in the connection.
+
+Pretty much everything else in the file is standard JDBC stuff.
+
+Downloading:
+
+Express:
+http://otn.oracle.com/software/tech/java/sqlj_jdbc/htdocs/jdbc9201.html
+
+Detailed:
+www.oracle.com
+top right button, downloads
+Right column, down a ways
+heading: Technologies, Utilities and Drivers
+a little over a 3rd of the way down
+Oracle JDBC Drivers
+Oracle JDBC  Driver Downloads / Select a releast
+top one: Oracle9i Release 2 (9.2.0.1), does not have "new" next to it
+then:
+Java 1.2/1.3: classes12.zip
+Java 1.4: ojdbc14.jar
+
+Can put .zip in class path OR unzip and then jar it.
+
+Need login:
+mbennett@ie / mb
+

@@ -1,0 +1,1274 @@
+//package nie.processors;
+package nie.pump.processors;
+
+import org.jdom.*;
+import java.util.*;
+import nie.core.*;
+import nie.pump.base.*;
+import nie.pump.base.Queue;
+import nie.pump.operators.*;
+
+/**
+ * Title:        WorkUnitModifierV2
+ * Description:
+ * Copyright:    Copyright (c) 2001
+ * Company:      New Idea Engineering
+ * @author Kevin-Neil Klop and Mark Benett
+ * @version 2.0
+ *
+ * 2001/9/26 mbennett
+ * Changed to use work unit's functions
+ * Todo: NOT changed over yet
+ */
+
+// Subclass
+//class WorkUnitManglerAttributeComparator implements Comparator
+//{
+//	public int compare( Object inO1, Object inO2 )
+//	{
+//		Attribute lO1 = (Attribute)inO1;
+//		Attribute lO2 = (Attribute)inO2;
+//
+//		if( lO1.getName().compareTo( lO2.getName() ) == 0 )
+//			return lO1.getValue().compareTo( lO2.getValue() );
+//		return lO1.getName().compareTo( lO2.getName() );
+//	}
+//
+//	public boolean equals( Object inO1, Object inO2 )
+//	{
+//		return ((String)inO1).equals( (String)inO2 );
+//	}
+//}
+//
+//class WorkUnitManglerElementComparator implements Comparator
+//{
+//	public int compare( Object inObj1, Object inObj2 )
+//	{
+//		Element lElem1 = (Element)inObj1;
+//		Element lElem2 = (Element)inObj2;
+//
+//		String lContent = lElem1.getText();
+//		if( (lContent != null && lContent.compareTo( lElem2.getText() ) == 0 ) ||
+//			( lContent == null && lElem2.getText() == null ) )
+//		{
+//			TreeSet lAttributes1 = new TreeSet( WorkUnitMangler.fAttributeComparator );
+//			TreeSet lAttributes2 = new TreeSet( WorkUnitMangler.fAttributeComparator );
+//
+//			for( Iterator lIterator = lElem1.getAttributes().iterator(); lIterator.hasNext(); )
+//				lAttributes1.add( (Attribute)lIterator.next() );
+//			for( Iterator lIterator = lElem1.getAttributes().iterator(); lIterator.hasNext(); )
+//				lAttributes2.add( (Attribute)lIterator.next() );
+//
+//			///////
+//			//
+//			// There - now the attributes are in a sorted list... Now we can compare them.
+//			//
+//			///////
+//
+//			Iterator lIterator2 = lAttributes2.iterator();
+//			Iterator lIterator1 = lAttributes1.iterator();
+//			while( lIterator1.hasNext() && lIterator2.hasNext() )
+//			{
+//				Attribute lTestAttribute1 = (Attribute)lIterator1.next();
+//				Attribute lTestAttribute2 = (Attribute)lIterator2.next();
+//				if( WorkUnitMangler.fAttributeComparator.compare( lTestAttribute1, lTestAttribute2 ) != 0 )
+//					return WorkUnitMangler.fAttributeComparator.compare( lTestAttribute1, lTestAttribute2 );
+//			}
+//			if( lIterator1.hasNext() && !lIterator2.hasNext() )
+//				return 1;
+//			else if( !lIterator1.hasNext() && lIterator2.hasNext() )
+//				return -1;
+//
+//			return 0;
+//		}
+//		else if( lContent != null )
+//			return lContent.compareTo( lElem2.getText() );
+//		else
+//			return -1;
+//	}
+//
+//	public boolean equals( Object inObj1, Object inObj2 )
+//	{
+//		String lStr1 = (String)inObj1;
+//		String lStr2 = (String)inObj2;
+//
+//		return lStr1.equals( lStr2 );
+//	}
+//}
+
+public class WorkUnitModifierV2 extends Processor
+{
+	public String kClassName() { return "WorkUnitModifierV2"; }
+
+	public WorkUnitModifierV2 ( Application inApplication,
+			Queue[] inReadQueueList,
+			Queue[] inWriteQueueList,
+			Queue[] inUsesQueueList,
+			Element inParameter,
+			String inID )
+	{
+		super( inApplication, inReadQueueList, inWriteQueueList, inUsesQueueList, inParameter, inID );
+		final String kFName = "constructor";
+		fQueueList = inWriteQueueList;
+		if( inReadQueueList == null || inReadQueueList[0] == null )
+		{
+			fatalErrorMsg( kFName, "You must specify an input queue to " + inID );
+			System.exit( -1 );
+		}
+
+		fReadQueue = inReadQueueList[0];
+
+		if( inWriteQueueList == null || inWriteQueueList[0] == null )
+		{
+			fatalErrorMsg( kFName, "You must specify an output queue to " + inID );
+			System.exit( -1 );
+		}
+
+		fWriteQueue = inWriteQueueList[0];
+		fInstructions = null;
+		//fElementComparator = new WorkUnitManglerElementComparator();
+		//fAttributeComparator = new WorkUnitManglerAttributeComparator();
+		if( inParameter == null ) {
+			fatalErrorMsg( kFName, "No processing instructions given to " + inID + "." );
+			System.exit(1);
+		}
+		else
+			fInstructions = ((Element)inParameter.clone()).getChildren();
+	}
+
+	public void run()
+	{
+		try
+		{
+			while( true )
+			{
+			    mWorkUnit = null;
+				boolean _lShouldQueue = true;
+				// ^^^ not yet implemented
+				// WorkUnit lWorkUnit = dequeue( fReadQueue );
+				mWorkUnit = dequeue( fReadQueue );
+
+				_lShouldQueue = processWorkUnit( mWorkUnit );
+
+				//if( lShouldQueue )
+				//	enqueue( fWriteQueue, lWorkUnit );
+//				if( ! lShouldQueue )
+//					System.err.println( "Warning: ModWU: run:"
+//						+ " Got failure from dispatched operation."
+//						+ " It may just be that a field is missing."
+//						);
+
+				// For now, always enqueue the results
+				enqueue( fWriteQueue, mWorkUnit );
+
+				mWorkUnit = null;
+			}
+		}
+		catch( InterruptedException ie )
+		{
+		    // this is ok
+		}
+	}
+
+	boolean processWorkUnit( WorkUnit inWU )
+	{
+		final String kFName = "processWorkUnit";
+
+		boolean success = true;
+
+		for( Iterator it = fInstructions.iterator(); it.hasNext(); )
+		{
+			Element lElement = (Element)it.next();
+			String lInstruction = lElement.getName();
+			if( lInstruction.equals( COPY_FIELD_INSTRUCTION ) )
+				success = copyField( lElement, inWU ) && success;
+			else if( lInstruction.equals( DELETE_FIELD_INSTRUCTION ) )
+				success = deleteField( lElement, inWU ) && success;
+			else if( lInstruction.equals( DELETE_ATTRIBUTES_INSTRUCTION ) )
+				success = deleteFieldAttributes( lElement, inWU ) && success;
+			else if( lInstruction.equals( RENAME_FIELD_INSTRUCTION ) )
+				success = renameField( lElement, inWU ) && success;
+
+			
+			// new commands
+			else if( lInstruction.equals( MOVE_UNDER_INSTRUCTION ) )
+				success = moveUnderField( lElement, inWU ) && success;
+			else if( lInstruction.equals( GET_URL_EXTENSION_INSTRUCTION ) )
+				success = doGetURLExtension( lElement, inWU ) && success;
+			else if( lInstruction.equals( GET_FILE_EXTENSION_INSTRUCTION ) )
+				success = doGetFileExtension( lElement, inWU ) && success;
+			else if( lInstruction.equals( ZAP_BAD_CHARS_INSTRUCTION ) )
+				success = doRemoveBadCharacters( lElement, inWU ) && success;
+			else if( lInstruction.equals( REMOVE_COMMAS_INSTRUCTION ) )
+				success = doRemoveCommas( lElement, inWU ) && success;
+
+			else if( lInstruction.equals(COUNT_FIELD_INSTRUCTION)
+				|| lInstruction.equals(COUNT_FIELD_SHORT_INSTRUCTION)
+				)
+				success = doCountField( lElement, inWU ) && success;
+
+			else if( lInstruction.equals(MIN_FIELD_INSTRUCTION)
+				|| lInstruction.equals(MIN_FIELD_SHORT_INSTRUCTION)
+				)
+				success = doMinField( lElement, inWU ) && success;
+
+			else if( lInstruction.equals(MAX_FIELD_INSTRUCTION)
+				|| lInstruction.equals(MAX_FIELD_SHORT_INSTRUCTION)
+				)
+				success = doMaxField( lElement, inWU ) && success;
+
+
+			else if( lInstruction.equals( TO_UPPERCASE_INSTRUCTION ) )
+				success = doToUpper( lElement, inWU ) && success;
+			else if( lInstruction.equals( TO_LOWERCASE_INSTRUCTION ) )
+				success = doToLower( lElement, inWU ) && success;
+
+			else if( lInstruction.equals( FLATTEN_XML_TEXT ) )
+				success = doFlattenToXmlText( lElement, inWU ) && success;
+
+			else if( lInstruction.equals( FLATTEN_PLAIN_TEXT ) )
+				success = doFlattenToPlainText( lElement, inWU ) && success;
+
+			else if( lInstruction.equals( NEW_FIELD_INSTRUCTION ) )
+				success = doNewField( lElement, inWU ) && success;
+
+			//else if( lInstruction.equals( REMOVE_DUPLICATES_INSTRUCTION ) )
+			//	lShouldQueue = removeDuplicates( lElement, inWU );
+			//else if( lInstruction.equals( SELECT_QUEUE_INSTRUCTION ) )
+			//	lShouldQueue = selectQueue( lElement, inWU );
+			else
+				mWorkUnit.errorMsg( this, kFName, "unknown directive: '" +
+					lInstruction + "'"
+					);
+		}
+
+		return success;
+	}
+
+	// Todo: make return type meaningful
+	// would need meaningful return value from work unit method as well
+	private boolean copyField( Element inElement, WorkUnit inWorkUnit )
+	{
+		final String kFName = "copyField";
+
+		String lSourceFieldName = getSourceFieldName( inElement );
+		String lDestinationFieldName = getDestinationFieldName( inElement );
+		if( lSourceFieldName.equals( lDestinationFieldName ) )
+		{
+			mWorkUnit.errorMsg( this, kFName, "WorkUnitMod:copyField:"
+				+ " source and destination fields must be different"
+				+ ", both were set to '" + lDestinationFieldName + "'"
+				);
+			return false;
+		}
+		inWorkUnit.copyNamedFields( lSourceFieldName, lDestinationFieldName );
+		return true;
+	}
+
+	// The inElement is the control element, not the record we're
+	// working on
+	private boolean deleteField( Element inElement, WorkUnit inWorkUnit )
+	{
+		// Do we want to keep one instance?
+		int lKeepWhich = getKeepWhich( inElement );
+		return deleteField( inElement, inWorkUnit, lKeepWhich );
+	}
+	private boolean deleteField( Element inElement, WorkUnit inWorkUnit,
+		int inKeepWhich )
+	{
+
+		// What field to delete
+		String lSourceFieldName = getSourceFieldName( inElement );
+
+		// Call WorkUnit's delete function
+		int result = inWorkUnit.deleteUserDataFieldMulti( lSourceFieldName,
+			inKeepWhich );
+
+		return ( result > 0 ? true : false ) ;
+	}
+
+	// Does all matching fields, removes all their attributes
+	private boolean deleteFieldAttributes( Element inElement, WorkUnit inWorkUnit )
+	{
+		final String kFName = "deleteFieldAttributes";
+		if( inWorkUnit.getIsUserDataFlat() ) {
+			mWorkUnit.errorMsg( this, kFName,
+				"Can only remove attributes from top level TREE fields." );
+			return false;
+		}
+		// What field to delete
+		String lSourceFieldName = getSourceFieldName( inElement );
+		List fields = inWorkUnit.getUserFields( lSourceFieldName );
+		if( null==fields || fields.isEmpty() ) {
+			mWorkUnit.errorMsg( this, kFName,
+				"No matching field(s) named \"" + lSourceFieldName + "\""
+				+ " Reminder: only supports simple field names, no XPATH/YPATH or recursion."
+				);
+			return false;
+		}
+		boolean result = false;
+		for( Iterator it = fields.iterator(); it.hasNext() ; ) {
+			Element field = (Element) it.next();
+			// Avoid concurrent modification stuff
+			List tmpAttrs = new Vector();
+			tmpAttrs.addAll( field.getAttributes() );
+			for( Iterator it2 = tmpAttrs.iterator(); it2.hasNext() ; ) {
+				Attribute attr = (Attribute) it2.next();
+				field.removeAttribute( attr );
+				result = true;
+			}
+		}
+		if( ! result )
+			mWorkUnit.errorMsg( this, kFName,
+				"No attributes found to remove in field(s) named \"" + lSourceFieldName + "\""
+				);
+
+		return result;
+	}
+
+	private boolean renameField( Element inElement, WorkUnit inWorkUnit )
+	{
+		// Todo: maybe reimplement with a real rename, would need work unit
+		// method to support that
+		// copyField( inElement, inWorkUnit );
+		// deleteField( inElement, inWorkUnit, 0 );
+
+		return inWorkUnit.renameField(
+			getSourceFieldName( inElement ),
+			getDestinationFieldName( inElement )
+			);
+
+	}
+
+
+	private boolean moveUnderField( Element inElement, WorkUnit inWorkUnit )
+	{
+		final String kFName = "deleteFieldAttributes";
+		if( inWorkUnit.getIsUserDataFlat() ) {
+			mWorkUnit.errorMsg( this, kFName,
+				"Only support for level TREE fields." );
+			return false;
+		}
+		// What field to move
+		String lSrcField = getSourceFieldName( inElement, false );
+		if( null == lSrcField ) {
+			mWorkUnit.warningMsg( this, kFName,
+				"No source field provided, will move ALL nodes" );
+			// return false;
+		}
+		String lDstField = getDestinationFieldName( inElement );
+		if( null == lDstField ) {
+			mWorkUnit.errorMsg( this, kFName,
+				"No destination field provided" );
+			return false;
+		}
+		if( null != lSrcField && lDstField.equalsIgnoreCase(lSrcField) ) {
+			mWorkUnit.errorMsg( this, kFName,
+				"Destination and source fields have the same name \"" + lSrcField + "\"" );
+			return false;
+		}
+
+		Element mainNode = inWorkUnit.getUserData();
+
+		// We need to use temp lists to avoid concurrent mods
+		List oldContent = new Vector();
+		oldContent.addAll( mainNode.getContent() );
+		List newContent = new Vector();
+		// List subContent = new Vector();
+
+		// lastTop is the last node we found to move content under
+		Element lastTop = null;
+
+		boolean movedSomething = false;
+
+		// For all the content
+		for( Iterator it = oldContent.iterator(); it.hasNext(); ) {
+			// Text, Element, Comment, ProcessingInstruction, CDATA, and EntityRef objects.
+			Object item = it.next();
+			// Is it an element?
+			if( item instanceof Element ) {
+			    // Cast it and pluck it
+				Element newElem = (Element) item;
+				newElem.detach();
+				String name = newElem.getName();
+				// Is this the destination field?
+				if( name.equalsIgnoreCase(lDstField) ) {
+					lastTop = newElem;
+					newContent.add( lastTop );
+				}
+				else {
+					// We have a field we want to move
+				    // Is it one of our targets to move?
+				    // Either matches name of source, OR no source given means *
+					if( null==lSrcField || lSrcField.equalsIgnoreCase(name) ) {
+						// Put it under the last destination we found
+						if( null!=lastTop ) {
+							lastTop.addContent( newElem );
+							movedSomething = true;
+						}
+						// Or leave it at the top and complain
+						else {
+							newContent.add( newElem );
+							mWorkUnit.errorMsg( this, kFName,
+								"Found a source node"
+								+ " \"" + name + "\""
+								+ " before the first destination node"
+								+ " \"" + lDstField + "\""
+								+ "; node will not be moved."
+								);
+						}
+					}
+					// Else don't move this field, add to the top
+					else {
+						newContent.add( newElem );
+					}
+				}
+			}
+			// Else not an element
+			// We still need to do something with it
+			else {
+				// issue .detach() for node types that support it
+				// All: Text, Element, Comment, ProcessingInstruction, CDATA, and EntityRef objects.
+				// .detach(): Comment, ProcessingInstruction, and EntityRef
+				if( item instanceof Comment )
+					((Comment)item).detach();
+				else if( item instanceof ProcessingInstruction )
+					((ProcessingInstruction)item).detach();
+				else if( item instanceof EntityRef )
+					((EntityRef)item).detach();
+				// We only "move" this if the source was not specified / null
+				if( null==lSrcField ) {
+					// Put it under the last destination we found
+					if( null!=lastTop ) {
+						// lastTop.addContent( item );
+						// ^^^ type specific
+						if( item instanceof Comment ) {
+							lastTop.addContent( (Comment)item );
+							movedSomething = true;
+						}
+						else if( item instanceof ProcessingInstruction ) {
+							lastTop.addContent( (ProcessingInstruction)item );
+							movedSomething = true;
+						}
+						else if( item instanceof EntityRef ) {
+							lastTop.addContent( (EntityRef)item );
+							movedSomething = true;
+						}
+						else if( item instanceof Text ) {
+							lastTop.addContent( (Text)item );
+							movedSomething = true;
+						}
+						else if( item instanceof String ) {
+							lastTop.addContent( (String)item );
+							movedSomething = true;
+						}
+						else if( item instanceof CDATA ) {
+							lastTop.addContent( (CDATA)item );
+							movedSomething = true;
+						}
+						else {
+							mWorkUnit.errorMsg( this, kFName,
+								"Unhandled child node type"
+								+ " \"" + item.getClass().getName() + "\""
+								+ "; node will not be DROPPED/lost."
+								);
+						}
+					}
+					// Or leave it at the top and complain
+					else {
+						newContent.add( item );
+						mWorkUnit.warningMsg( this, kFName,
+							"Found a source node of type "
+							+ " \"" + item.getClass().getName() + "\""
+							+ " before the first destination node"
+							+ " \"" + lDstField + "\""
+							+ "; node will not be moved."
+							);
+					}
+				}
+				// OK, just move these over "in place"
+				else {
+					newContent.add( item );
+				}
+			}	// end else not an Element
+		}	// end for all the content
+
+		// set content of main node to new content
+		mainNode.setContent( newContent );
+
+		if( ! movedSomething ) {
+			mWorkUnit.warningMsg( this, kFName,
+				"Didn't move anything."
+				+ " Destination set to \"" + lDstField + "\""
+				+ ( null==lSrcField
+					? ", and null-source would match all other data."
+					: ", source set to \"" + lSrcField + "\"."
+					)
+				);
+		}
+
+		return movedSomething;
+	}
+
+
+	private boolean doGetURLExtension( Element inCmdElement, WorkUnit inWU )
+	{
+		final String kFName = "doGetURLExtension";
+		String lSourceFieldName = getSourceFieldName( inCmdElement );
+		String lDestinationFieldName = getDestinationFieldName( inCmdElement );
+		if( lSourceFieldName.equals( lDestinationFieldName ) )
+		{
+			mWorkUnit.errorMsg( this, kFName,
+				"source and destination fields must be different"
+				+ ", both were set to '" + lDestinationFieldName + "'"
+				);
+			return false;
+		}
+
+		boolean result = false;
+		List srcValues = inWU.getUserFieldsText( lSourceFieldName );
+		if( srcValues.size() < 1 )
+		    mWorkUnit.errorMsg( this, kFName, 
+				"no field values found"
+				+ ", field=" + lSourceFieldName
+				);
+		for( Iterator it = srcValues.iterator(); it.hasNext(); )
+		{
+			String srcString = (String)it.next();
+			String dstString = NIEUtil.extractExtensionFromURL( srcString );
+			if( dstString != null )
+			{
+				inWU.addNamedField( lDestinationFieldName, dstString );
+				result = true;
+			}
+		}
+		return result;
+	}
+
+	private boolean doGetFileExtension( Element inCmdElement, WorkUnit inWU )
+	{
+		final String kFName = "doGetFileExtension";
+		String lSourceFieldName = getSourceFieldName( inCmdElement );
+		String lDestinationFieldName = getDestinationFieldName( inCmdElement );
+		if( lSourceFieldName.equals( lDestinationFieldName ) )
+		{
+		    mWorkUnit.errorMsg( this, kFName,
+				"source and destination fields must be different"
+				+ ", both were set to '" + lDestinationFieldName + "'"
+				);
+			return false;
+		}
+
+		boolean result = false;
+		List srcValues = inWU.getUserFieldsText( lSourceFieldName );
+		if( srcValues.size() < 1 )
+		    mWorkUnit.errorMsg( this, kFName,
+				"no field values found"
+				+ ", field=" + lSourceFieldName
+				);
+		for( Iterator it = srcValues.iterator(); it.hasNext(); )
+		{
+			String srcString = (String)it.next();
+			String dstString = NIEUtil.extractFileExtension( srcString );
+			if( dstString != null )
+			{
+				inWU.addNamedField( lDestinationFieldName, dstString );
+				result = true;
+			}
+		}
+		return result;
+	}
+
+	private boolean doRemoveBadCharacters( Element inCmdElement, WorkUnit inWU )
+	{
+		final String kFName = "doRemoveBadCharacters";
+		String lSourceFieldName = getSourceFieldName( inCmdElement );
+		String lDestinationFieldName = getDestinationFieldName( inCmdElement );
+		if( lSourceFieldName.equals( lDestinationFieldName ) )
+		{
+		    mWorkUnit.errorMsg( this, kFName,
+				"source and destination fields must be different"
+				+ ", both were set to '" + lDestinationFieldName + "'"
+				);
+			return false;
+		}
+
+		String replStr = inCmdElement.getAttributeValue( NEW_CHAR_ATTR_NAME );
+		char replChar = ' ';
+		boolean haveReplChar = false;
+		if( replStr != null && replStr.length() > 0 )
+		{
+			if( replStr.equals( "\\n" ) )
+			{
+				replChar = '\n';
+				haveReplChar = true;
+			}
+			else if( replStr.equals( "\\t" ) )
+			{
+				replChar = '\t';
+				haveReplChar = true;
+			}
+			else
+			{
+				if( replStr.length() > 1 )
+				{
+				    mWorkUnit.errorMsg( this, kFName,
+					"replacement character must be only one char long, or \\t or \\n"
+					+ ", new_char=\"" + replStr + "\""
+					);
+					return false;
+				}
+				replChar = replStr.charAt( 0 ) ;
+				haveReplChar = true;
+			}
+
+		}
+
+		boolean result = false;
+		List srcValues = inWU.getUserFieldsText( lSourceFieldName );
+		if( srcValues.size() < 1 )
+		    mWorkUnit.errorMsg( this, kFName,
+				"no field values found"
+				+ ", field=" + lSourceFieldName
+				);
+		for( Iterator it = srcValues.iterator(); it.hasNext(); )
+		{
+			String srcString = (String)it.next();
+			String dstString = null;
+			if( haveReplChar )
+				 dstString = NIEUtil.zapChars( srcString, replChar );
+			else
+				 dstString = NIEUtil.zapChars( srcString );
+			if( dstString != null )
+			{
+				inWU.addNamedField( lDestinationFieldName, dstString );
+				result = true;
+			}
+		}
+		return result;
+
+	}
+
+
+	private boolean doRemoveCommas( Element inCmdElement, WorkUnit inWU )
+	{
+		final String kFName = "doRemoveCommas";
+		String lSourceFieldName = getSourceFieldName( inCmdElement );
+		String lDestinationFieldName = getDestinationFieldName( inCmdElement );
+		if( lSourceFieldName.equals( lDestinationFieldName ) )
+		{
+		    mWorkUnit.errorMsg( this, kFName,
+				"source and destination fields must be different"
+				+ ", both were set to '" + lDestinationFieldName + "'"
+				);
+			return false;
+		}
+
+		List srcValues = inWU.getUserFieldsText( lSourceFieldName );
+		if( srcValues.size() < 1 )
+		    mWorkUnit.errorMsg( this, kFName,
+				"no field values found"
+				+ ", field=" + lSourceFieldName
+				);
+		boolean result = false;
+		for( Iterator it = srcValues.iterator(); it.hasNext(); )
+		{
+			String srcString = (String)it.next();
+			StringBuffer buff = new StringBuffer();
+			for( int i=0; i<srcString.length() ; i++ ) {
+				char c = srcString.charAt( i );
+				if( ',' != c )
+					buff.append( c );
+			}
+
+			if( buff.length() > 0 )
+			{
+				inWU.addNamedField( lDestinationFieldName, new String(buff) );
+				result = true;
+			}
+		}
+		return result;
+
+	}
+
+
+
+
+	private boolean doCountField( Element inCmdElement, WorkUnit inWU )
+	{
+		final String kFName = "doCountField";
+		String lSourceFieldName = getSourceFieldName( inCmdElement );
+		String lDestinationFieldName = getDestinationFieldName( inCmdElement );
+		if( lSourceFieldName.equals( lDestinationFieldName ) )
+		{
+		    mWorkUnit.errorMsg( this, kFName,
+				"source and destination fields must be different"
+				+ ", both were set to '" + lDestinationFieldName + "'"
+				);
+			return false;
+		}
+
+		List srcValues = inWU.getUserFields( lSourceFieldName );
+		int count = 0;
+		if( srcValues != null )
+			count = srcValues.size();
+		String countStr = "" + count;
+
+		inWU.addNamedField( lDestinationFieldName, countStr );
+		return true;
+	}
+
+	private boolean doMaxField( Element inCmdElement, WorkUnit inWU )
+	{
+		final String kFName = "doMaxField";
+		String lSourceFieldName = getSourceFieldName( inCmdElement );
+		String lDestinationFieldName = getDestinationFieldName( inCmdElement );
+		if( lSourceFieldName.equals( lDestinationFieldName ) )
+		{
+		    mWorkUnit.errorMsg( this, kFName,
+				"source and destination fields must be different"
+				+ ", both were set to '" + lDestinationFieldName + "'"
+				);
+			return false;
+		}
+
+		List srcValues = inWU.getUserFields( lSourceFieldName );
+
+		double ans = Double.MIN_VALUE;
+		String ansStr = null;
+		if( null != srcValues ) {
+			boolean hadAValue = false;
+			for( Iterator it = srcValues.iterator() ; it.hasNext() ; ) {
+				Element elem = (Element) it.next();
+				String valStr = elem.getTextNormalize();
+				valStr = NIEUtil.trimmedStringOrNull( valStr );
+				if( null==valStr ) {
+				    mWorkUnit.errorMsg( this, kFName,
+						"Ignoring null/empty number field " + elem );
+					continue;
+				}
+				try {
+					double thisOne = Double.parseDouble( valStr );
+					hadAValue = true;
+					if( thisOne > ans )
+						ans = thisOne;
+				}
+				catch( NumberFormatException e ) {
+				    mWorkUnit.errorMsg( this, kFName,
+						"Error parsing number " + valStr + ": " + e );
+					continue;
+				}
+			}
+			if( hadAValue ) {
+				ansStr = "" + ans;
+				if( ansStr.endsWith(".0") )
+					ansStr = ansStr.substring( 0, ansStr.length()-2 );
+			}
+		}
+
+		if( null!=ansStr ) {
+			inWU.addNamedField( lDestinationFieldName, ansStr );
+			return true;
+		}
+		else
+			return false;
+
+	}
+
+	private boolean doMinField( Element inCmdElement, WorkUnit inWU )
+	{
+		final String kFName = "doMinField";
+		String lSourceFieldName = getSourceFieldName( inCmdElement );
+		String lDestinationFieldName = getDestinationFieldName( inCmdElement );
+		if( lSourceFieldName.equals( lDestinationFieldName ) )
+		{
+		    mWorkUnit.errorMsg( this, kFName,
+				"source and destination fields must be different"
+				+ ", both were set to '" + lDestinationFieldName + "'"
+				);
+			return false;
+		}
+
+		List srcValues = inWU.getUserFields( lSourceFieldName );
+
+		double ans = Double.MAX_VALUE;
+		String ansStr = null;
+		if( null != srcValues ) {
+			boolean hadAValue = false;
+			for( Iterator it = srcValues.iterator() ; it.hasNext() ; ) {
+				Element elem = (Element) it.next();
+				String valStr = elem.getTextNormalize();
+				valStr = NIEUtil.trimmedStringOrNull( valStr );
+				if( null==valStr ) {
+				    mWorkUnit.errorMsg( this, kFName,
+						"Ignoring null/empty number field " + elem );
+					continue;
+				}
+				try {
+					double thisOne = Double.parseDouble( valStr );
+					hadAValue = true;
+					if( thisOne < ans )
+						ans = thisOne;
+				}
+				catch( NumberFormatException e ) {
+				    mWorkUnit.errorMsg( this, kFName,
+						"Error parsing number " + valStr );
+					continue;
+				}
+			}
+			if( hadAValue ) {
+				ansStr = "" + ans;
+				// System.err.println( "ansStr=\"" + ansStr + "\"" );
+				if( ansStr.endsWith(".0") )
+					ansStr = ansStr.substring( 0, ansStr.length()-2 );
+			}
+		}
+
+		if( null!=ansStr ) {
+			inWU.addNamedField( lDestinationFieldName, ansStr );
+			return true;
+		}
+		else
+			return false;
+
+	}
+
+	private boolean doToUpper( Element inCmdElement, WorkUnit inWU )
+	{
+		final String kFName = "doToUpper";
+		String lSourceFieldName = getSourceFieldName( inCmdElement );
+		String lDestinationFieldName = getDestinationFieldName( inCmdElement );
+		if( lSourceFieldName.equals( lDestinationFieldName ) )
+		{
+		    mWorkUnit.errorMsg( this, kFName,
+				"source and destination fields must be different"
+				+ ", both were set to '" + lDestinationFieldName + "'"
+				);
+			return false;
+		}
+
+		boolean result = false;
+//		List srcValues = JDOMHelper.getTextListByPathNotNullTrim(
+//			inCmdElement, lSourceFieldName
+//			);
+		List srcValues = inWU.getUserFieldsText( lSourceFieldName );
+		if( srcValues.size() < 1 )
+		    mWorkUnit.errorMsg( this, kFName,
+				"no field values found"
+				+ ", field=" + lSourceFieldName
+				);
+		for( Iterator it = srcValues.iterator(); it.hasNext(); )
+		{
+			String srcString = (String)it.next();
+			String dstString = srcString.toUpperCase();
+			if( dstString != null )
+			{
+				inWU.addNamedField( lDestinationFieldName, dstString );
+				result = true;
+			}
+		}
+		return result;
+	}
+
+
+	private boolean doToLower( Element inCmdElement, WorkUnit inWU )
+	{
+		final String kFName = "doToLower";
+		String lSourceFieldName = getSourceFieldName( inCmdElement );
+		String lDestinationFieldName = getDestinationFieldName( inCmdElement );
+		if( lSourceFieldName.equals( lDestinationFieldName ) )
+		{
+		    mWorkUnit.errorMsg( this, kFName,
+				"source and destination fields must be different"
+				+ ", both were set to '" + lDestinationFieldName + "'"
+				);
+			return false;
+		}
+
+		boolean result = false;
+		List srcValues = inWU.getUserFieldsText( lSourceFieldName );
+		if( srcValues.size() < 1 )
+		    mWorkUnit.errorMsg( this, kFName,
+				"no field values found"
+				+ ", field=" + lSourceFieldName
+				);
+		for( Iterator it = srcValues.iterator(); it.hasNext(); )
+		{
+			String srcString = (String)it.next();
+			String dstString = srcString.toLowerCase();
+			if( dstString != null )
+			{
+				inWU.addNamedField( lDestinationFieldName, dstString );
+				result = true;
+			}
+		}
+		return result;
+		// TODO: !!! add concurrent mod workaround in doFlattenToXmlText to these others
+	}
+
+
+
+	
+	private boolean doFlattenToPlainText( Element inCmdElement, WorkUnit inWU )
+	{
+		final String kFName = "doFlattenToPlainText";
+		String lSourceFieldName = getSourceFieldName( inCmdElement );
+		String lDestinationFieldName = getDestinationFieldName( inCmdElement );
+		if( lSourceFieldName.equals( lDestinationFieldName ) )
+		{
+		    mWorkUnit.errorMsg( this, kFName,
+				"source and destination fields must be different"
+				+ ", both were set to '" + lDestinationFieldName + "'"
+				);
+			return false;
+		}
+
+		boolean result = false;
+		List srcValues = inWU.getUserFields( lSourceFieldName );
+		if( srcValues.size() < 1 )
+		    mWorkUnit.errorMsg( this, kFName,
+				"no field values found"
+				+ ", field=" + lSourceFieldName
+				);
+		List newList = new Vector();
+		for( Iterator it = srcValues.iterator(); it.hasNext(); )
+		{
+			Element srcElem = (Element)it.next();
+			String dstString = null;
+			// try {
+				// dstString = JDOMHelper.JDOMToString( srcElem, false );
+				// dstString = srcElem.getText();
+				dstString = JDOMHelper.getTreeText( srcElem, true );
+
+			// }
+			// catch( JDOMHelperException e ) {
+			//	System.err.println( "Error converting element to string: " + e );
+			// }
+			if( dstString != null )
+			{
+				// inWU.addNamedField( lDestinationFieldName, dstString );
+				newList.add( dstString );
+				result = true;
+			}
+		}
+		for( Iterator it2 = newList.iterator() ; it2.hasNext() ; ) {
+			String dstString = (String) it2.next();
+			inWU.addNamedField( lDestinationFieldName, dstString );
+		}
+		return result;
+	}
+
+	private boolean doFlattenToXmlText( Element inCmdElement, WorkUnit inWU )
+	{
+		final String kFName = "doFlattenToXmlText";
+		String lSourceFieldName = getSourceFieldName( inCmdElement );
+		String lDestinationFieldName = getDestinationFieldName( inCmdElement );
+		if( lSourceFieldName.equals( lDestinationFieldName ) )
+		{
+		    mWorkUnit.errorMsg( this, kFName,
+				"source and destination fields must be different"
+				+ ", both were set to '" + lDestinationFieldName + "'"
+				);
+			return false;
+		}
+
+		boolean result = false;
+		List srcValues = inWU.getUserFields( lSourceFieldName );
+		if( srcValues.size() < 1 )
+		    mWorkUnit.errorMsg( this, kFName,
+				"no field values found"
+				+ ", field=" + lSourceFieldName
+				);
+		List newList = new Vector();
+		for( Iterator it = srcValues.iterator(); it.hasNext(); )
+		{
+			Element srcElem = (Element)it.next();
+			String dstString = null;
+			// try {
+				dstString = JDOMHelper.JDOMToString( srcElem, false );
+			// }
+			// catch( JDOMHelperException e ) {
+			//	System.err.println( "Error converting element to string: " + e );
+			// }
+			if( dstString != null )
+			{
+				// inWU.addNamedField( lDestinationFieldName, dstString );
+				newList.add( dstString );
+				result = true;
+			}
+		}
+		for( Iterator it2 = newList.iterator() ; it2.hasNext() ; ) {
+			String dstString = (String) it2.next();
+			inWU.addNamedField( lDestinationFieldName, dstString );
+		}
+		return result;
+	}
+
+
+
+
+
+	private boolean doNewField( Element inCmdElement, WorkUnit inWU )
+	{
+		final String kFName = "doNewField";
+		String lDestinationFieldName = getDestinationFieldName( inCmdElement );
+
+		boolean result = true;
+
+		// First we need to Instantiate the expression tree
+
+		// Todo: this should really be cached
+
+		StrTreeInterface newOp = null;
+		// Either constructor can throw an exception
+		try
+		{
+			// create a tree evaluator from this element
+			// Force it to treat this element as a top level
+			// group operator, so that it's children will be run
+			// and evaluated
+			newOp = new StrTreeEvaluator( inCmdElement, false );
+		}
+		catch(Exception e)
+		{
+		    mWorkUnit.stackTrace( this, kFName, e,
+				"error instanting operator for conditional tag"
+				);
+			// e.printStackTrace( System.err );
+			// stackTrace( kFName, e, "Syetem Error" );
+			// System.exit( -1 );
+			inWU.setIsValidRecord( false );
+			result = false;
+			return result;
+		}
+		// And triple check that we got soemthing
+		// This should never happen
+		if( newOp == null )
+		{
+		    mWorkUnit.errorMsg( this, kFName,
+				"error instanting operator for string expression tag"
+				+ ", constructor returned a null"
+				);
+			// System.exit( -1 );
+			inWU.setIsValidRecord( false );
+			result = false;
+			return result;
+		}
+
+		// Now Run it!
+		String newContent = null;
+		try
+		{
+			newContent = newOp.evaluate( inWU );
+		}
+		catch(OpTreeException e)
+		{
+		    mWorkUnit.stackTrace( this, kFName, e,
+				"Got exception while evaluating"
+				);
+			inWU.setIsValidRecord( false );
+			result = false;
+			newContent = null;
+			return result;
+		}
+
+		// If we got something back, add it to the work unit
+		if( newContent != null )
+			inWU.addNamedField( lDestinationFieldName, newContent );
+
+		return result;
+	}
+
+
+
+//	private boolean removeDuplicates( Element inElement, WorkUnit inWorkUnit )
+//	{
+//		String lSourceFieldName = inElement.getAttributeValue( SOURCE_FIELD_ATTRIBUTE );
+//		TreeSet lTable = new TreeSet( fElementComparator );
+//		List lChildren = inWorkUnit.getUserData().getChildren( lSourceFieldName );
+//		for( Iterator lIterator = lChildren.iterator(); lIterator.hasNext(); )
+//		{
+//			Element lElement = (Element) lIterator.next();
+//			lTable.add( lElement );
+//		}
+//
+//		inWorkUnit.deleteUserDataFieldMulti( lSourceFieldName );
+//
+//		for( Iterator lIterator = lTable.iterator(); lIterator.hasNext(); )
+//		{
+//			Element lElement = (Element)lIterator.next();
+//			inWorkUnit.getUserData().addContent( lElement );
+//		}
+//
+//		return true;
+//	}
+
+//	private boolean selectQueue( Element inElement, WorkUnit inWorkUnit )
+//	{
+//		String lSourceFieldName = inElement.getAttributeValue( SOURCE_FIELD_ATTRIBUTE );
+//		String lShouldDelete = inElement.getAttributeValue( SHOULD_DELETE_ATTRIBUTE );
+//
+//		Element lElement = inWorkUnit.getUserData().getChild( lSourceFieldName );
+//		if( lElement == null )
+//			return true;
+//
+//		String lQueueNumber = lElement.getTextTrim();
+//		int lQueueNumberInt = Integer.parseInt( lQueueNumber );
+//		if( lQueueNumberInt == 0 )
+//			return false;
+//
+//		if( lQueueNumberInt - 1 > fQueueList.length )
+//		{
+//			System.err.println( "WorkManger was given a queue that exceeds the number of output queues." );
+//			return false;
+//		}
+//
+//		Queue lQueue = fQueueList[ lQueueNumberInt - 1 ];
+//		if( lQueue != null )
+//			lQueue.enqueue( inWorkUnit );
+//		return false;
+//	}
+
+	String getSourceFieldName( Element inElem )
+	{
+	    return getSourceFieldName( inElem, true );
+	}
+
+	String getSourceFieldName( Element inElem, boolean inComplainIfMissing )
+	{
+		final String kFName = "getSourceFieldName";
+		String tmpString = inElem.getAttributeValue(
+				SOURCE_FIELD_ATTR_NAME
+				);
+		if( tmpString == null )
+			tmpString = inElem.getAttributeValue(
+					SOURCE_FIELD_ATTR_SHORT_NAME
+					);
+		tmpString = NIEUtil.trimmedStringOrNull( tmpString );
+		if( null == tmpString && inComplainIfMissing )
+		{
+			fatalErrorMsg( kFName,
+				"WorkUnitModifier: Must specify a source field" +
+				" with attr of " + SOURCE_FIELD_ATTR_NAME + " or " +
+				SOURCE_FIELD_ATTR_SHORT_NAME
+				);
+			System.exit(1);
+		}
+		return tmpString;
+	}
+
+	String getDestinationFieldName( Element inElem )
+	{
+		final String kFName = "getDestinationFieldName";
+		String tmpString = inElem.getAttributeValue(
+				DESTINATION_FIELD_ATTR_NAME
+				);
+		if( tmpString == null )
+			tmpString = inElem.getAttributeValue(
+					DESTINATION_FIELD_ATTR_SHORT_NAME
+					);
+		if( tmpString == null || tmpString.trim().equals("") )
+		{
+			fatalErrorMsg( kFName,
+				"WorkUnitModifier: Must specify a destination field" +
+				" with attr of " + DESTINATION_FIELD_ATTR_NAME + " or " +
+				DESTINATION_FIELD_ATTR_SHORT_NAME
+				);
+			System.exit(1);
+		}
+		return tmpString.trim();
+	}
+
+	private int getKeepWhich( Element inElem )
+	{
+
+		String tmpString = inElem.getAttributeValue(
+			KEEP_WHICH_ATTR_NAME
+			);
+		if( tmpString == null )
+			return DEFAULT_KEEP_WHICH;
+		tmpString = tmpString.trim().toLowerCase();
+		if( tmpString.equals("") )
+			return DEFAULT_KEEP_WHICH;
+
+		// first = 1
+		if( tmpString.equals("first") )
+			return 1;
+		// last = -1
+		if( tmpString.equals("last") )
+			return -1;
+		// none = 0
+		if( tmpString.equals("none") )
+			return 0;
+
+		// All special cases have been handled
+		// Now it's time to convert the string
+		// to an integer
+
+		int retValue = DEFAULT_KEEP_WHICH;
+		try
+		{
+			retValue = Integer.parseInt( tmpString );
+		}
+		catch(Exception e)
+		{
+			retValue = DEFAULT_KEEP_WHICH;
+		}
+
+		return retValue;
+
+	}
+
+
+	static final String COPY_FIELD_INSTRUCTION = "copy_field";
+	static final String DELETE_FIELD_INSTRUCTION = "delete_field";
+	static final String DELETE_ATTRIBUTES_INSTRUCTION = "delete_attributes";
+	static final String RENAME_FIELD_INSTRUCTION = "rename_field";
+	//static final String REMOVE_DUPLICATES_INSTRUCTION = "remove_duplicates";
+	//static final String SELECT_QUEUE_INSTRUCTION = "select_queue";
+	static final String GET_URL_EXTENSION_INSTRUCTION = "get_url_extension";
+	static final String GET_FILE_EXTENSION_INSTRUCTION = "get_file_extension";
+	static final String ZAP_BAD_CHARS_INSTRUCTION = "zap_chars";
+	static final String REMOVE_COMMAS_INSTRUCTION = "remove_commas";
+
+	static final String COUNT_FIELD_INSTRUCTION = "count_field";
+	static final String COUNT_FIELD_SHORT_INSTRUCTION = "count";
+
+	static final String MIN_FIELD_INSTRUCTION = "minimum";
+	static final String MIN_FIELD_SHORT_INSTRUCTION = "min";
+
+	static final String MAX_FIELD_INSTRUCTION = "maximum";
+	static final String MAX_FIELD_SHORT_INSTRUCTION = "max";
+
+	static final String TO_UPPERCASE_INSTRUCTION = "to_upper_case";
+	static final String TO_LOWERCASE_INSTRUCTION = "to_lower_case";
+	static final String FLATTEN_XML_TEXT = "flatten_to_xml_text";
+	static final String FLATTEN_PLAIN_TEXT = "flatten_to_plain_text";
+
+	static final String NEW_FIELD_INSTRUCTION = "new_field";
+
+	static final String MOVE_UNDER_INSTRUCTION = "move_under";
+
+
+	static final String SOURCE_FIELD_ATTR_NAME = "source_field";
+	static final String SOURCE_FIELD_ATTR_SHORT_NAME = "src";
+	static final String DESTINATION_FIELD_ATTR_NAME = "destination_field";
+	static final String DESTINATION_FIELD_ATTR_SHORT_NAME = "dst";
+	//static final String SHOULD_DELETE_ATTRIBUTE = "should_delete";
+	// Used when deleting fields
+	static final String KEEP_WHICH_ATTR_NAME = "keep_which";
+	static final String NEW_CHAR_ATTR_NAME = "new_char";
+
+	// For the delete operation, the default is to not keep
+	// any of them, delete ALL of them, delete all = keep none = 0
+	static final int DEFAULT_KEEP_WHICH = 0;
+
+	//static Comparator fElementComparator;
+	//static Comparator fAttributeComparator;
+
+	Queue fReadQueue;
+	Queue fWriteQueue;
+	Queue fQueueList[];
+	WorkUnit mWorkUnit;
+	List fInstructions;
+}

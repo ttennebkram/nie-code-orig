@@ -1,0 +1,711 @@
+package nie.sn;
+
+import nie.core.*;
+
+
+/**
+ * @author mbennett
+ *
+ * This class encapsulate all the parts of a clickable link
+ * that will be used to log data to our search track database
+ * 
+ * Currently this is mostly a "bucket", we will add more logic later
+ * 
+ * Examples:
+ * - Log a click-through
+ * - Log user feedback
+ * - Log an advertisement click through
+ */
+public class SearchNavLoggingLink extends LoggingLink
+{
+
+	private final static String kClassName = "SearchNavLoggingLink";
+
+	public void _SearchNavLoggingLink(
+		SearchTuningConfig inSNConfig,
+		AuxIOInfo inRequestObj
+		)
+		throws SearchLoggerException
+	{
+		final String kFName = "constructor";
+		final String kExTag = kClassName + '.' + kFName + ": ";
+
+		if( null == inSNConfig )
+			throw new SearchLoggerException( kExTag
+				+ "Null application configuration"
+				);
+		// Store it
+		fInitConfig = inSNConfig;
+
+		if( null == inRequestObj )
+			throw new SearchLoggerException( kExTag
+				+ "Null request object"
+				);
+		// Store it
+		fRequestObj = inRequestObj;
+
+		// Start working on a set of cgi vars
+		fCGIFields = new AuxIOInfo();
+
+	}
+
+	
+	public String generateURL()
+		throws SearchLoggerException
+	{
+		final String kFName = "generateURL";
+		final String kExTag = kClassName + '.' + kFName + ": ";
+
+		String lMainURL = getMainConfig().getSearchNamesURL();
+		if( null == lMainURL )
+			throw new SearchLoggerException( kExTag
+				+ "No search names application URL to log to; please check configuration."
+				);
+
+		// Start working on a set of cgi vars
+		// AuxIOInfo cgiFields = new AuxIOInfo();
+
+		// Check this before you call any of the addXXX() methods or
+		// you might get null pointer bs
+		if( null == fRequestObj )
+			throw new SearchLoggerException( kExTag
+				+ "Null/empty request object."
+				);
+
+		// Add some variables to it
+		setContext();
+		setSiteID();
+		setReferingID();
+
+		// We need a URL to redirect to when we're done logging
+		if( ! fHaveSetDestinationURL )
+			throw new SearchLoggerException( kExTag
+				+ "No destination URL set."
+				);
+
+		// some sanity checks
+		if( ! fHaveSetTransType )
+			throw new SearchLoggerException( kExTag
+				+ "No transaction type set."
+				);
+
+		if( SearchLogger.TRANS_TYPE_ADVERTISEMENT_CLICK_THROUGH == cTransType )
+			if( ! fHaveSetAdID || ! fHaveSetAdURL )
+				throw new SearchLoggerException( kExTag
+					+ "Missing advertising data."
+					);
+
+
+		// addQueryInfo( cgiFields );
+
+		// ... etc ....
+
+
+
+		// We need to prep the URL for adding (possibly additional) cgi variables
+
+		// If it doesn't end in a ?
+		if( ! lMainURL.endsWith( "?" ) )
+		{
+			// and it does NOT have one anywhere in it, just add it
+			if( lMainURL.indexOf( '?' ) < 0 )
+			{
+				lMainURL += '?';
+			}
+			// Else it DOES have a question mark somewhere, very odd
+			else
+			{
+
+				// We should warn about this, at least once
+				if( ! fHaveIssuedOddQuestionMarkPlacementWarning )
+				{
+					warningMsg( kFName,
+						"Main URL contains a CGI question mark that is not at the end."
+						+ " Will try adding & instead, but you may want to double check."
+						+ " This warning will only be issued once."
+						);
+					fHaveIssuedOddQuestionMarkPlacementWarning = true;
+				}
+
+				// so presumably we already have some CGI vars
+				// we should prepare to add ours to the end of it
+				if( ! lMainURL.endsWith( "&" ) )
+				{
+					lMainURL += '&';
+				}
+
+			}	// End else it DID have question mark somewhere in it
+		}
+		// Else it DOES end in a question mark already
+		// so NOTHING else to do, leave it alone, it's exactly what we want
+
+
+		String fieldBuff = fCGIFields.getCGIFieldsAsEncodedBuffer();
+		if( null==fieldBuff || fieldBuff.equals("") )
+			throw new SearchLoggerException( kExTag
+				+ "No CGI field buffer."
+				);
+
+		// We're done!
+		// Just concat the two and return it!
+		return lMainURL + fieldBuff;
+
+	}
+
+
+	public void setTransactionType( int inTransType )
+		throws SearchLoggerException
+	{
+		final String kFName = "addTransactionType";
+		final String kExTag = kClassName + '.' + kFName + ": ";
+
+		if( fHaveSetTransType )
+			throw new SearchLoggerException( kExTag
+				+ "Have already set transaction type."
+				);
+
+		if( inTransType <= SearchLogger.TRANS_TYPE_UNKNOWN )
+			throw new SearchLoggerException( kExTag
+				+ "Missing/invalid transaction type set."
+				);
+
+		String cgiFieldName = null;
+		try
+		{
+			cgiFieldName = getLogTableDef().getCGIFieldName(
+				SearchLogger.TRANS_TYPE_DB_FIELD
+				);
+		}
+		catch( SearchLoggerException e1 )
+		{
+			throw new SearchLoggerException( kExTag
+				+ "Log table definition error:" + e1
+				);
+		}
+		catch( DBConfigException e2 )
+		{
+			throw new SearchLoggerException( kExTag
+				+ "Couldn't get CGI field name. Error: " + e2
+				);
+		}
+		fCGIFields.addCGIField(
+			cgiFieldName,
+			inTransType
+			);
+		// Cache it
+		cTransType = inTransType;
+		// Remember that we've set it
+		fHaveSetTransType = true;
+
+	}
+
+	public void setQueryText( String inQueryText )
+	{
+		final String kFName = "setQueryText";
+		if( null == inQueryText )
+		{
+			errorMsg( kFName, "Null query text, nothing to save." );
+			return;
+		}
+		if( null != getMainConfig() )
+		{
+			SearchEngineConfig se = getMainConfig().getSearchEngine();
+			if( null != se )
+			{
+				String lQueryCGIField = se.getQueryField();
+				if( null != lQueryCGIField )
+				{
+					fCGIFields.addCGIField(
+						lQueryCGIField,
+						inQueryText
+						);
+				}
+			}
+			else
+			{
+				errorMsg( kFName, "No search engine config." );
+			}
+		}
+		else
+		{
+			errorMsg( kFName, "No search tuning config." );
+		}
+	}
+
+	private void setReferingID()
+		throws SearchLoggerException
+	{
+		final String kFName = "setReferingID";
+		final String kExTag = kClassName + '.' + kFName + ": ";
+
+		if( fHaveSetRefID )
+			throw new SearchLoggerException( kExTag
+				+ "Have already set refering ID."
+				);
+
+		String cgiFieldName = null;
+		try
+		{
+			cgiFieldName = getLogTableDef().getCGIFieldName(
+				SearchLogger.REF_ID_DB_FIELD
+				);
+		}
+		catch( SearchLoggerException e1 )
+		{
+			throw new SearchLoggerException( kExTag
+				+ "Log table definition error:" + e1
+				);
+		}
+		catch( DBConfigException e2 )
+		{
+			throw new SearchLoggerException( kExTag
+				+ "Couldn't get CGI field name. Error: " + e2
+				);
+		}
+		fCGIFields.addCGIField(
+			cgiFieldName,
+			fRequestObj.getTransactionID()
+			);
+		fHaveSetRefID = true;
+	}
+
+
+
+
+
+
+	private void setContext()
+		throws SearchLoggerException
+	{
+		final String kFName = "setContext";
+		final String kExTag = kClassName + '.' + kFName + ": ";
+
+		if( fHaveSetContext )
+			throw new SearchLoggerException( kExTag
+				+ "Have already set context."
+				);
+
+		// Add in the sn_context=log_event
+		fCGIFields.addCGIField(
+			SnRequestHandler.NIE_CONTEXT_REQUEST_FIELD,
+			SnRequestHandler.SN_CONTEXT_DIRECT_LOG_TRANSACTION
+			);
+
+		fHaveSetContext = true;
+	}
+
+	public void setDestinationURL( String inURL )
+		throws SearchLoggerException
+	{
+		final String kFName = "addDestinationURL";
+		final String kExTag = kClassName + '.' + kFName + ": ";
+
+		if( fHaveSetDestinationURL )
+			throw new SearchLoggerException( kExTag
+				+ "Have already set destination URL given, not stored."
+				);
+
+
+		inURL = NIEUtil.trimmedStringOrNull( inURL );
+		if( null == inURL )
+			throw new SearchLoggerException( kExTag
+				+ "Null/empty destination URL given, not stored."
+				);
+
+//		String cgiFieldName = null;
+//		try
+//		{
+//			cgiFieldName = getLogTableDef().getCGIFieldName(
+//				SearchLogger.DESTINATION_URL_CGI_FIELD
+//				);
+//		}
+//		catch( SearchLoggerException e1 )
+//		{
+//			throw new SearchLoggerException( kExTag
+//				+ "Log table definition error:" + e1
+//				);
+//		}
+//		catch( DBConfigException e2 )
+//		{
+//			throw new SearchLoggerException( kExTag
+//				+ "Couldn't get CGI field name. Error: " + e2
+//				);
+//		}
+
+		// NO! this is not part of the database definition
+		String cgiFieldName = SearchLogger.DESTINATION_URL_CGI_FIELD;
+
+		fCGIFields.addCGIField(
+			cgiFieldName,
+			inURL
+			);
+
+
+		cDestURL = inURL;
+		fHaveSetDestinationURL = true;
+
+	}
+
+
+
+
+	private void setSiteID()
+		throws SearchLoggerException
+	{
+		final String kFName = "addSiteID";
+		final String kExTag = kClassName + '.' + kFName + ": ";
+
+		if( fHaveSetSiteID )
+			throw new SearchLoggerException( kExTag
+				+ "Have already set site ID."
+				);
+
+		int lSiteID = getConfiguredSiteID();
+
+		if( lSiteID <= 0 )
+			throw new SearchLoggerException( kExTag
+				+ "Missing site ID."
+				);
+
+		String cgiFieldName = null;
+		try
+		{
+			cgiFieldName = getLogTableDef().getCGIFieldName(
+				SearchLogger.SITE_ID_DB_FIELD
+				);
+		}
+		catch( SearchLoggerException e1 )
+		{
+			throw new SearchLoggerException( kExTag
+				+ "Log table definition error:" + e1
+				);
+		}
+		catch( DBConfigException e2 )
+		{
+			throw new SearchLoggerException( kExTag
+				+ "Couldn't get CGI field name. Error: " + e2
+				);
+		}
+		fCGIFields.addCGIField(
+			cgiFieldName,
+			lSiteID
+			);
+		fHaveSetSiteID = true;
+	}
+
+
+
+
+
+
+	// We log the advertisement code and the URL
+	// Todo: text ads don't need the graphic URL, but later we might want it?
+	// Unimplemented in text-only add
+	// ADVERTISEMENT_IMAGE_URL_DB_FIELD
+
+	public void setAdvertisementID( String inAdvertisementID )
+		throws SearchLoggerException
+	{
+		final String kFName = "setAdvertisementID";
+		final String kExTag = kClassName + '.' + kFName + ": ";
+
+		if( fHaveSetAdID )
+			throw new SearchLoggerException( kExTag
+				+ "Have already set advertisement ID."
+				);
+
+		inAdvertisementID = NIEUtil.trimmedStringOrNull( inAdvertisementID );
+		if( null == inAdvertisementID )
+			throw new SearchLoggerException( kExTag
+				+ "Null/empty advertisement ID."
+				);
+
+		String cgiFieldName = null;
+		try
+		{
+			cgiFieldName = getLogTableDef().getCGIFieldName(
+				SearchLogger.ADVERTISEMENT_ID_DB_FIELD
+				);
+		}
+		catch( SearchLoggerException e1 )
+		{
+			throw new SearchLoggerException( kExTag
+				+ "Log table definition error:" + e1
+				);
+		}
+		catch( DBConfigException e2 )
+		{
+			throw new SearchLoggerException( kExTag
+				+ "Couldn't get CGI field name. Error: " + e2
+				);
+		}
+		fCGIFields.addCGIField(
+			cgiFieldName,
+			inAdvertisementID
+			);
+		fHaveSetAdID = true;
+
+
+	}
+
+	public void setAdvertisementURL( String inAdvertisementURL )
+		throws SearchLoggerException
+	{
+		final String kFName = "setAdvertisementURL";
+		final String kExTag = kClassName + '.' + kFName + ": ";
+
+		if( fHaveSetAdURL )
+			throw new SearchLoggerException( kExTag
+				+ "Have already set advertisement URL."
+				);
+
+		inAdvertisementURL = NIEUtil.trimmedStringOrNull( inAdvertisementURL );
+		if( null == inAdvertisementURL )
+			throw new SearchLoggerException( kExTag
+				+ "Null/empty advertisement URL."
+				);
+
+		String cgiFieldName = null;
+		try
+		{
+			cgiFieldName = getLogTableDef().getCGIFieldName(
+				SearchLogger.ADVERTISEMENT_URL_DB_FIELD
+				);
+		}
+		catch( SearchLoggerException e1 )
+		{
+			throw new SearchLoggerException( kExTag
+				+ "Log table definition error:" + e1
+				);
+		}
+		catch( DBConfigException e2 )
+		{
+			throw new SearchLoggerException( kExTag
+				+ "Couldn't get CGI field name. Error: " + e2
+				);
+		}
+		fCGIFields.addCGIField(
+			cgiFieldName,
+			inAdvertisementURL
+			);
+		fHaveSetAdURL = true;
+	}
+
+
+
+
+
+
+//	public void setReferingTransaction( long inTransID )
+//	{
+//		fRefID = inTransID;
+//	}
+
+	// A little weird
+	// During init the main app can't always give us the config
+	private SearchTuningConfig getMainConfig() {
+		return fInitConfig;
+
+		/***
+		SearchTuningConfig answer = fMainApp.getSearchTuningConfig();
+		if( null != answer ) {
+			fInitConfig = null;
+			return answer;
+		}
+		else
+			return fInitConfig;
+		***/
+	}
+
+
+	private int getConfiguredSiteID()
+	{
+		int answer = -1;
+		SearchLogger logger = getMainConfig().getSearchLogger();
+		if( null != logger )
+			answer = logger.getConfiguredSiteID();
+		return answer;
+	}
+
+	private DBTableDef getLogTableDef()
+		throws SearchLoggerException
+	{
+		final String kFName = "cacheLogTableDef";
+		final String kExTag = kClassName + '.' + kFName + ": ";
+
+		// A bit convoluted, but we should not cache this
+		// in case the server is reconfigured
+		// Application -> Search Logger -> DB config
+		// Then get the log table config, passing in the DB config
+
+		// Get the search logger from the application
+		SearchLogger logger = getMainConfig().getSearchLogger();
+		if( null == logger )
+			throw new SearchLoggerException( kExTag
+				+ "No search logger configured (to get the DB config from)"
+				);
+
+		// Get the database configuration from the logger
+		DBConfig lDBConfig = logger.getDBConfig();
+		if( null == lDBConfig )
+			throw new SearchLoggerException( kExTag
+				+ "No logger configured (to get table definition from)"
+				);
+
+		// Get the table definition, passing in the DB config
+		DBTableDef outLogTableDef = null;
+		try
+		{
+			outLogTableDef = DBTableDef.getTableDef(
+				logger.getLogTableName(),
+				lDBConfig
+				);
+		}
+		catch( DBConfigException e )
+		{
+			throw new SearchLoggerException( kExTag
+				+ "Unable to get table definition for search log."
+				+ " Error: " + e
+				);
+		}
+
+		// We're done!
+		return outLogTableDef;
+
+	}
+
+
+	// The main application
+	SearchTuningApp _fMainApp;
+	SearchTuningConfig fInitConfig;
+
+
+
+	// The buffer for holding all of the CGI fields in
+	// a fresh AuxIOInfo structure
+	private AuxIOInfo fCGIFields;
+
+	// What transaction
+	private int cTransType;
+
+	// The ID that this will refer back to
+	// private long fRefID;
+	// NO, get from request obj
+
+	// The existing request that we are preparing links for
+	// we will pull some info from it
+	private AuxIOInfo fRequestObj;
+
+	// Where a person should be redirected after this link has been invoked
+	private String cDestURL;
+	// The advertisement code, campaign code, etc.
+	private String fAdvertisementID;
+	// The advertisers URL
+	private String fAdvertisementURL;
+
+	// have we set the sn_context to direct logging
+	private boolean fHaveSetContext;
+	// Variables indicating what we've seen to date
+	private boolean _fHaveSetTransType;
+	// the URL we would go to after a direct log action
+	private boolean fHaveSetDestinationURL;
+
+	private boolean fHaveSetSiteID;
+	private boolean fHaveSetRefID;
+	private boolean fHaveSetAdID;
+	private boolean fHaveSetAdURL;
+	// private boolean fHaveSetAdGraphicURL;
+
+
+	// Flags to make sure we don't fill the log with warning messages
+	// Warning about suspicious placement of quetion mark in search names URL
+	private static boolean fHaveIssuedOddQuestionMarkPlacementWarning;
+	// Warning about no configured site ID
+	private static boolean fHaveIssuedNoSiteIDWarning;
+	// If there was no site ID cgi field found
+	private static boolean fHaveIssuedNoSiteIDCGIFieldWarning;
+	// Was there a problem getting the log table definition
+	private static boolean fHaveIssuedNoLogTableDefWarning;
+	// Missing request object, this should be caught in constructor
+	private static boolean fHaveIssuedNoRequestObjWarning;
+	// Missing CGI field name for referring ID
+	private static boolean fHaveIssuedMissingCGIFieldNameForRefIDWarning;
+	// Missing CGI field for transaction type
+	private static boolean fHaveIssuedMissingCGIFieldNameForTransTypeWarning;
+
+
+
+
+	///////////////////////////////////////////////////////////
+	//
+	//  Logging
+	//
+	////////////////////////////////////////////////////////////
+
+	// This gets us to the logging object
+	private static RunLogInterface getRunLogObject()
+	{
+		return RunLogBasicImpl.getRunLogObject();
+	}
+	private static boolean statusMsg( String inFromRoutine, String inMessage )
+	{
+		return getRunLogObject().statusMsg( kClassName, inFromRoutine,
+			inMessage
+			);
+	}
+	private static boolean transactionStatusMsg( String inFromRoutine, String inMessage )
+	{
+		return getRunLogObject().transactionStatusMsg( kClassName, inFromRoutine,
+			inMessage
+			);
+	}
+	private static boolean shouldDoTransactionStatusMsg( String inFromRoutine )
+	{
+		return getRunLogObject().shouldDoTransactionStatusMsg( kClassName, inFromRoutine );
+	}
+	private static boolean infoMsg( String inFromRoutine, String inMessage )
+	{
+		return getRunLogObject().infoMsg( kClassName, inFromRoutine,
+			inMessage
+			);
+	}
+	private static boolean debugMsg( String inFromRoutine, String inMessage )
+	{
+		return getRunLogObject().debugMsg( kClassName, inFromRoutine,
+			inMessage
+			);
+	}
+	private static boolean shouldDoDebugMsg( String inFromRoutine )
+	{
+		return getRunLogObject().shouldDoDebugMsg( kClassName, inFromRoutine );
+	}
+	private static boolean traceMsg( String inFromRoutine, String inMessage )
+	{
+		return getRunLogObject().traceMsg( kClassName, inFromRoutine,
+			inMessage
+			);
+	}
+	private static boolean shouldDoTraceMsg( String inFromRoutine )
+	{
+		return getRunLogObject().shouldDoTraceMsg( kClassName, inFromRoutine );
+	}
+	private static boolean warningMsg( String inFromRoutine, String inMessage )
+	{
+		return getRunLogObject().warningMsg( kClassName, inFromRoutine,
+			inMessage
+			);
+	}
+	private static boolean errorMsg( String inFromRoutine, String inMessage )
+	{
+		return getRunLogObject().errorMsg( kClassName, inFromRoutine,
+			inMessage
+			);
+	}
+	private static boolean fatalErrorMsg( String inFromRoutine, String inMessage )
+	{
+		return getRunLogObject().fatalErrorMsg( kClassName, inFromRoutine,
+			inMessage
+			);
+	}
+
+}

@@ -1,0 +1,11 @@
+<database
+	vendor_tag="Oracle"
+	server_name="10.0.4.8"
+	_server_name="10.0.4.1"
+	port=""
+	database_name="xe"
+	_database_name="users"
+	__database_name="abbottroll"
+	username="abbottroll"
+	password="abbottadmin"
+/>

@@ -1,0 +1,4 @@
+http://localhost:9000/?sn_context=admin&command=ping
+http://localhost:9000/?sn_context=admin&command=showall
+http://localhost:9000/?sn_context=admin&command=shutdown&admin_password=test
+http://localhost:9000/?sn_context=admin&command=refresh&admin_password=test

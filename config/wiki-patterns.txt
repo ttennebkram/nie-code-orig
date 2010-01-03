@@ -1,0 +1,10 @@
+Results stats:
+Many:
+<p class='mw-search-numberresults'>Showing below results <b>1 - 20</b> of <b>
+Few:
+<p class='mw-search-numberresults'>Showing below results <b>1 -
+None:
+<span class="mw-headline">No page text matches</span>
+
+Placement:
+<input type="submit" value="Search" name="fulltext" /></form>

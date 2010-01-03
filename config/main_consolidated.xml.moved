@@ -1,0 +1,586 @@
+<nie_config>
+  
+
+	
+  <license rev="1" company="New Idea Engineering, Inc." start_date="1-may-2004" end_date="18-jun-2004" server="north" key="3cb3-7a12-802f-e42b" nie_lic_rev="1" nie_lic_company="New Idea Engineering, Inc." nie_lic_start_date="1-may-2004" nie_lic_end_date="18-jun-2004" nie_lic_server="north" nie_lic_key="3cb3-7a12-802f-e42b" />
+  
+
+	
+  <run_logging _location="D:\data\proj\niecode\misc_non_cvs\logs\niesrv.log" keep="100">
+    
+
+    <!--
+<verbosity class="_SearchTuningConfig" method="updateMapping" level="debug"/>
+<verbosity class="_CreateMapForm" method="processFieldModes" level="debug"/>
+<verbosity class="XMLDefinedReport" method="runReport" level="debug"/>
+<verbosity class="XMLDefinedReport" method="calculateSqlWhereString" level="debug"/>
+<verbosity class="XMLDefinedReport" method="calculateAutomaticFilterString" level="debug"/>
+<verbosity class="XMLDefinedField" method="calculateFilterExpression" level="debug"/>
+<verbosity class="_XMLDefinedField" level="debug"/>
+-->
+    
+	
+  </run_logging>
+  
+
+	
+  <!-- Do database init right up front -->
+  
+	
+  <!--
+	<include location="database_connection_postgresql.xml" />
+	<include location="database_connection_oracle.xml" />
+	<include location="../dev-doc/issues/miles_db.xml" />
+	<include location="miles_db_oracle.xml" />
+	-->
+  
+	
+  <database vendor_tag="sqlserver" server_name="x titan" database_name="SearchTrack" username="mbennett" password="farts4me" main_table="nie_log" port="" db_vendor_tag="sqlserver" db_server_name="x titan" db_port="" db_database="SearchTrack" db_username="mbennett" db_password="farts4me">
+    
+	
+    <!-- Run a test query,
+		by default does a count(*) on main table by default
+	<test_query />
+	-->
+    
+
+
+  </database>
+  
+
+	
+  <!-- We want to log queries and advertisement clicks -->
+  
+	
+  <search_tracking>
+    
+
+	
+    <report_settings>
+      
+
+		
+      <!--
+		<surround_template>
+			http://ideaeng.com/sn/aopa-report-template.html
+		</surround_template>
+		<marker_text replace="TRUE">
+			<![CDATA[
+				REPORT GOES HERE
+			]]>
+		</marker_text>
+		-->
+      
+
+		
+      <!--
+		<surround_template>
+			http://ideaeng.com/search/sr-template.html
+		</surround_template>
+		<marker_text replace="TRUE">
+			<![CDATA[
+				search reports go here
+			]]>
+		</marker_text>
+		-->
+      
+
+		
+      <reports_directory>
+			myreports
+		</reports_directory>
+      
+
+		
+      <!--
+			report dir =
+			css =
+			report menu definitiohn =
+		-->
+      
+	
+    </report_settings>
+    
+
+	
+    <data_logging site_id="10">
+      
+
+		
+      <proxy_settings>
+        
+			
+        <!-- aopa pattern -->
+        
+			
+        <!--
+			<docs_found_pattern>
+			<![CDATA[
+				"</I></B> matched <B><I>
+			]]>
+			</docs_found_pattern>
+			-->
+        
+
+
+			
+        <!-- nie free find pattern -->
+        
+			
+        <docs_found_pattern match_both="FALSE">
+			<![CDATA[
+				>Found
+			]]>
+			</docs_found_pattern>
+        
+
+			
+        <!-- two valid patterns
+			<font class=search-count face="arial,verdana,geneva,lucida" size="1"><small>Found
+
+			</font><br>Found
+			-->
+        
+
+			
+        <!-- Indicator of NO documents found
+				Ignored if above pattern matches
+			-->
+        
+			
+        <no_docs_found_pattern>
+				No pages were found that match your query.
+			</no_docs_found_pattern>
+        
+
+		
+      </proxy_settings>
+      
+
+		
+      <!-- Search Track needs to talk to a database -->
+      
+		
+      <!-- moved up <include location="database_connection.xml" /> -->
+      
+
+	
+    </data_logging>
+    
+
+  </search_tracking>
+  
+
+	
+  <!-- Passwords:
+		password = password_5 = master admin password, full control
+		no password = password_0 = guest, VERY limited access
+		levels 1 through 4 have varying levels of access and control
+	-->
+  
+	
+  <search_tuning admin_password="test" read_only_password="guest">
+    
+	
+    <!--
+		password_1="one"
+		password_2="two"
+		password_3="three"
+		password_4="four"
+	-->
+    
+
+
+		
+    <!-- General Configuration -->
+    
+		
+    <!-- ===================== -->
+    
+
+
+		
+    <!-- Insert URL of NIE Server here  -->
+    
+ 		
+    <nie_server_url>
+      <!-- Mark's worstation, visible only in Sunnyvale -->
+      http://north:9001
+    </nie_server_url>
+    
+ 		
+    <!-- was <search_names_url> -->
+    
+
+		
+    <!--
+		<search_names_url_test_drive>
+		<![CDATA[
+			http://north:9000?pageid=r&mode=ALL&id=36902671
+		]]>
+		</search_names_url_test_drive>
+		-->
+    
+
+		
+    <!-- Information about the host search engine -->
+    
+		
+    <search_engine_info>
+      
+
+      <!-- <case_sensitive_cgi_fields>true</case_sensitive_cgi_fields> -->
+      
+
+	
+      <vendor>NIE / FreeFind</vendor>
+        
+	
+      <search_term_field_name>query</search_term_field_name>
+      
+	
+      <search_url>http://search.freefind.com/find.html</search_url>
+      
+	
+      <_search_url>
+	<![CDATA[
+		http://search.freefind.com/find.html?pageid=r&mode=ALL&id=36902671
+	]]>
+	</_search_url>
+      
+
+	
+      <search_url_test_drive_fields>
+        
+		
+        <field name="id" value="36902671" search_hidden_field_name_1="id" search_hidden_field_value_1="36902671" />
+        
+		
+        <field name="pageid" value="r" search_hidden_field_name_2="pageid" search_hidden_field_value_2="r" />
+        
+		
+        <field name="mode" value="ALL" search_hidden_field_name_3="mode" search_hidden_field_value_3="ALL" />
+        
+		
+        <field name="x" value="" search_hidden_field_name_4="x" search_hidden_field_value_4="" />
+        
+	
+        <field name="" value="" search_hidden_field_name_5="" search_hidden_field_value_5="" />
+      </search_url_test_drive_fields>
+      
+
+
+      <search_form_option_fields>
+        
+  
+        <field name="collection" label="Section" search_form_option_field_name_1="collection" search_form_option_field_desc_1="Section">
+          
+    
+          <option value="" label="Entire Site" ssearch_form_option_field_1_value_1="" search_form_option_field_1_value_1_desc="Entire Site" />
+          
+    
+          <option value="sales" label="Sales" ssearch_form_option_field_1_value_2="sales" search_form_option_field_1_value_2_desc="Sales" />
+          
+    
+          <option value="mkt" label="Marketing" ssearch_form_option_field_1_value_3="mkt" search_form_option_field_1_value_3_desc="Marketing" />
+          
+    
+          <option value="support" label="Support" ssearch_form_option_field_1_value_4="support" search_form_option_field_1_value_4_desc="Support" />
+          
+    
+          <option value="faq" label="FAQ" ssearch_form_option_field_1_value_5="faq" search_form_option_field_1_value_5_desc="FAQ" />
+          
+  
+        </field>
+        
+  
+        <field name="doctype" label="Document Type">
+          
+    
+          <option value="" label="All Documents" />
+          
+    
+          <option value="html" label="HTML Only" />
+          
+    
+          <option value="pdf" label="Adobe PDF" />
+          
+    
+          <option value="doc" label="Microsoft Word" />
+          
+    
+          <option value="ppt" label="Microsoft Power Point" />
+          
+  
+        </field>
+        
+  
+        <field name="language" label="Language">
+          
+    
+          <option value="" label="All Languages" />
+          
+    
+          <option value="en" label="English" />
+          
+    
+          <option value="fr" label="Français / French" />
+          
+    
+          <option value="de" label="Deutsch / German" />
+          
+  
+        </field>
+        
+
+      </search_form_option_fields>
+      
+
+	
+      <!--
+	<search_form_option_fields>
+		<field name="coll" label="Collections">
+			<option value="marketing" label="Marketing" />
+			<option value="faq" label="Tech Support FAQs" />
+		</field>
+		<field name="prod" label="Product">
+			<option value="big" label="Big Box" />
+			<option value="little" label="Little Box" />
+			<option value="tiny" label="Teeny Tiny Box" />
+			<option value="itty" label="Itty Bitty Box" />
+			<option value="baby" label="Baby Box" />
+		</field>
+	</search_form_option_fields>
+	-->
+      
+
+	
+      <!-- Modifiers go here, if neeeded -->
+      
+	
+      <suggestion_marker_text_modifiers />
+      
+
+	
+      <suggestion_marker_text>&lt;/font&gt;&lt;/FORM&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</suggestion_marker_text>
+      
+
+	
+      <!-- LITERAL text -->
+      
+	
+      <markup_after>&lt;/td&gt;&lt;/tr&gt; &lt;tr&gt;&lt;td&gt;</markup_after>
+      
+
+	
+      <!--
+	<vendor>Verity / Search97</vendor>  
+	<search_term_field_name>queryText</search_term_field_name>
+	<search_url>
+		http://www.aopa.org/search97cgi/s97_cgi
+	</search_url>
+	<suggestion_marker_text>
+	<![CDATA[
+		< ! - - Search again - ->
+	]]>
+	</suggestion_marker_text>
+	<no_action_indicator_field>ResultStart</no_action_indicator_field>
+	<no_action_indicator_field>nie_no_op</no_action_indicator_field>
+	-->
+      
+
+
+      <markup_before></markup_before>
+    </search_engine_info>
+    
+
+
+
+		
+    <!-- Include the actual KEYWORD mappings, suggestions, ads, etc -->
+    
+		
+    <!-- ========================================================== -->
+    
+		
+    <!-- These are the actual Search Names terms and the URLs
+		     and advertisements that they relate to.
+		-->
+    
+		
+    <!-- SearchTuningconfig.DB_MAP_TOP_PATH -->
+    
+		
+    <!--
+		<include location="keyword_mappings.xml" />
+		<fixed_redirection_map />
+		-->
+    
+		
+    <db_redirection_map />
+    
+
+
+		
+    <!-- Some cosmetic defaults -->
+    
+		
+    <!-- ====================== -->
+    
+		
+    <!-- These files control the colors and fonts, etc. for:
+		     * Webmaster Suggests
+					(fonts, box background color and border, icon, etc)
+		     * Alternate Terms / Related Terms suggestions
+					(font and color, the wording of the heading)
+
+		     They do NOT control Advertisements, see User Data section above.
+		-->
+    
+		
+    <default_webmaster_suggests_box width="100%" _bgcolor="#CEFFFF" bgcolor="#cccccc" border_color="#000000" border="1" wms_box_bgcolor="#cccccc" wms_box_border_color="#000000" />
+    
+		
+    <default_webmaster_suggests_header text="The AOPA Webmaster suggests:" color="#000084" size="+1" markup_before="&lt;b&gt;" markup_after="&lt;/b&gt;" face="'MS Sans Serif',Geneva,sans-serif" wms_slogan_text="The AOPA Webmaster suggests:" wms_slogan_color="#000084" />
+    
+		
+    <!--
+		<include location="defaults/default_webmaster_suggests_icon.xml" />
+		-->
+    
+		
+    <default_webmaster_suggests_doc_url show_url="false" />
+    
+		
+    <default_alternate_suggestions_heading text="You might also want to check out:" color="#330088" size="-1" markup_before="&lt;b&gt;" markup_after="&lt;/b&gt;" face="'MS Sans Serif',Geneva,sans-serif" alt_slogan_text="You might also want to check out:" alt_slogan_color="#330088" />
+    
+
+		
+    <!-- Declare User Data Classes (Advertisements) -->
+    
+		
+    <!-- ========================================== -->
+    
+		
+    <!-- You need to have this file if you will be displaying
+		     Advertisements or Sponsored Links.
+		     Your results list will be "marked up" with these ads when there
+		     is a keyword match.
+
+		     This is just the declaration of the TYPE of Ad you will be displaying.
+		     You must declare:
+		     * What is this type of ad is called (ex: text_ad, banner_ad, etc.)
+		     * How it will look (by pointing to an XSLT style sheet)
+		     * Where it will show up in the results (with text patterns)
+
+		     Note: This file does NOT contain the data for the actual Ads,
+		     that data is stored in the mappings.
+		-->
+    
+		
+    <!--
+		-->
+    
+		
+    <markup_data_classes>
+      
+
+	
+      <!-- Declare each type of Ad you will use,
+		and what that type of Ad is called
+	-->
+      
+	
+      <markup class="text_ad" java_class="AdLoggingMarkup" sub_class="right_column_text_ad" short_description="Right Column Text Ad" ui_edit_screen="CreateTextAdForm" log_exposures="TRUE" log_clicks="TRUE">
+        
+
+		
+        <!-- Where to place the Ad in the results list -->
+        
+
+
+		
+        <!-- AOPA
+		<marker_text replace="TRUE">
+		<![CDATA[
+</tr>
+                    
+                    <tr>
+                      <td align="center" valign="top" class="bgFooter">
+		]]>
+		</marker_text>
+		-->
+        
+
+		
+        <!-- NIE Test -->
+        
+		
+        <marker_text>
+		<![CDATA[
+			<div class=search-results>
+		]]>
+		</marker_text>
+        
+
+		
+        <!-- AOPA old?
+		<marker_text>
+		<![CDATA[
+</CENTER>
+</FONT>
+
+
+	</TD>
+		]]>
+		</marker_text>
+		-->
+        
+
+		
+        <!-- What the Ad should look like -->
+        
+		
+        <xslt_formatting location="style_sheets/text_ad.xslt" />
+        
+		
+        <!--
+		<xslt_formatting
+			location="D:\data\Customer\AOPA\fix_ad_url/text_ad.xslt"
+		/>
+		-->
+        
+		
+        <!-- Or use inline literal CDATA text -->
+        
+
+	
+      </markup>
+      
+	
+      <!-- declare other types of ads
+	<markup class="banner_ad" ....>
+		<pattern.... top of page>
+		<xslt = banner_ad.xslt>
+	</markup>
+	-->
+      
+
+
+    </markup_data_classes>
+    
+
+
+	
+    <search_tracking>
+      <data_logging site_id="">
+        <proxy_settings>
+          <docs_found_pattern match_both="" pat_match_both=""></docs_found_pattern>
+          <no_docs_found_pattern></no_docs_found_pattern>
+        </proxy_settings>
+      </data_logging>
+    </search_tracking>
+  </search_tuning>
+  
+
+</nie_config>

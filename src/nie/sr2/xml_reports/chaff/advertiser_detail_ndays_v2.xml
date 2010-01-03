@@ -1,0 +1,207 @@
+<report>
+	<title>Advertisement Activity Details</title>
+	<subtitle>
+		Exposures and Click-throughs in the past $cgi.days day(s)
+	</subtitle>
+
+	<select_modifier>
+		distinct
+	</select_modifier>
+
+	<field
+		heading="Ad Code"
+		sql_alias="ad_code"
+		is_filter_field="TRUE"
+	>
+		ADVERTISEMENT_CODE_SENT
+	</field>
+	<!--
+		is_report_link="TRUE"
+		link_title="Activity for this Advertiser"
+		link_report_name="advertiser_detail_ndays"
+		link_report_filter_field="xyz"
+	-->
+
+	<field
+		heading="Search Term(s)"
+		sql_alias="search"
+		null_value_display="(null search)"
+
+		is_report_link="TRUE"
+		link_report_name="search_details_ndays"
+		link_title="Click to see all searches for this term"
+		do_link_if_null="TRUE"
+	>
+		NORMALIZED_QUERY
+	</field>
+
+	<field 
+		db_vendor="oracle"
+		heading="# of Exposures"
+		sql_alias="exposures"
+	>
+		<![CDATA[
+	   (
+	   		  select count(*) 
+			  from nie_log b
+			  where
+			  	   a.ADVERTISEMENT_CODE_SENT = b.ADVERTISEMENT_CODE_SENT
+			  	   and a.NORMALIZED_QUERY = b.NORMALIZED_QUERY
+				   and b.TRANSACTION_TYPE = 4
+			   	   and b.start_time >= SYSDATE - $cgi.days
+		)
+		]]>
+	</field>
+	<!-- Postgresql -->
+	<field
+		except_db_vendor="oracle"
+		heading="# of Exposures"
+		sql_alias="exposures"
+	>
+		<![CDATA[
+	   (
+	   		  select count(*) 
+			  from nie_log b
+			  where
+			  	   a.ADVERTISEMENT_CODE_SENT = b.ADVERTISEMENT_CODE_SENT
+			  	   and a.NORMALIZED_QUERY = b.NORMALIZED_QUERY
+				   and b.TRANSACTION_TYPE = 4
+				   and b.start_time >= CURRENT_TIMESTAMP - $cgi.days
+		)
+		]]>
+	</field>
+
+	<field
+		db_vendor="oracle"
+		heading="# of Clicks"
+		sql_alias="clicks"
+	>
+		<![CDATA[
+	   (
+	   		  select count(*) 
+			  from nie_log c
+			  where
+			  	   a.ADVERTISEMENT_CODE_SENT = c.ADVERTISEMENT_CODE_SENT
+			  	   and a.NORMALIZED_QUERY = c.NORMALIZED_QUERY
+				   and c.TRANSACTION_TYPE = 5
+				   and c.start_time >= SYSDATE - $cgi.days
+		)
+		]]>
+	</field>
+	<!-- Postgresql -->
+	<field
+		except_db_vendor="oracle"
+		heading="# of Clicks"
+		sql_alias="clicks"
+	>
+		<![CDATA[
+	   (
+	   		  select count(*) 
+			  from nie_log c
+			  where
+			  	   a.ADVERTISEMENT_CODE_SENT = c.ADVERTISEMENT_CODE_SENT
+			  	   and a.NORMALIZED_QUERY = c.NORMALIZED_QUERY
+				   and c.TRANSACTION_TYPE = 5
+				   and c.start_time >= CURRENT_TIMESTAMP - $cgi.days
+		)
+		]]>
+	</field>
+
+	<field
+		db_vendor="oracle"
+		heading="% Click-through"
+		sql_alias="rate"
+		css_class="nie_percentage"
+		format_as="percentage"
+		min_decimal_places="2"
+	>
+		<![CDATA[
+		   (
+		   		  select count(*) 
+				  from nie_log c
+				  where
+				  	   a.ADVERTISEMENT_CODE_SENT = c.ADVERTISEMENT_CODE_SENT
+					   and c.TRANSACTION_TYPE = 5
+			  	   	   and a.NORMALIZED_QUERY = c.NORMALIZED_QUERY (+)
+					   and c.start_time >= SYSDATE - $cgi.days
+			)
+			/
+			(
+			   (
+			   		  select count(*) 
+					  from nie_log b
+					  where
+					  	   a.ADVERTISEMENT_CODE_SENT = b.ADVERTISEMENT_CODE_SENT
+			  	   		   and a.NORMALIZED_QUERY = b.NORMALIZED_QUERY
+						   and b.TRANSACTION_TYPE = 4
+						   and b.start_time >= SYSDATE - $cgi.days
+				)
+			+ 0.00000001
+			)
+
+		]]>
+	</field>
+	<!-- Postgresql -->
+	<field
+		except_db_vendor="oracle"
+		heading="% Click-through"
+		sql_alias="rate"
+		css_class="nie_percentage"
+		format_as="percentage"
+		min_decimal_places="2"
+	>
+		<![CDATA[
+		   (
+		   		  select count(*) 
+				  from nie_log c
+				  		right outer join nie_log a
+			  	  		on c.NORMALIZED_QUERY = a.NORMALIZED_QUERY
+				  where
+				  	   a.ADVERTISEMENT_CODE_SENT = c.ADVERTISEMENT_CODE_SENT
+					   and c.TRANSACTION_TYPE = 5
+					   and c.start_time >= CURRENT_TIMESTAMP - $cgi.days
+			)
+			/
+			(
+			   (
+			   		  select count(*) 
+					  from nie_log b
+					  where
+					  	   a.ADVERTISEMENT_CODE_SENT = b.ADVERTISEMENT_CODE_SENT
+			  	   		   and a.NORMALIZED_QUERY = b.NORMALIZED_QUERY
+						   and b.TRANSACTION_TYPE = 4
+						   and b.start_time >= CURRENT_TIMESTAMP - $cgi.days
+				)
+			+ 0.00000001
+			)
+
+		]]>
+	</field>
+
+	<!-- Advertisement Hyperlink -->
+	<field
+		heading="The Advertiser's URL"
+		is_external_link="TRUE"
+		link_title="Goto Advertiser's site (in a new window)"
+	>
+		ADVERTISEMENT_HREF
+	</field>
+
+	<raw_from>
+		nie_log a
+	</raw_from>
+
+	<raw_where_filter>
+		 a.ADVERTISEMENT_CODE_SENT is not null
+		 and
+		 a.NORMALIZED_QUERY is not null
+	</raw_where_filter>
+
+	<raw_sort>
+	  a.ADVERTISEMENT_CODE_SENT,
+	  a.NORMALIZED_QUERY
+	</raw_sort>
+
+	<include location="includes/standard_ndays_link_suggestions.xml" />
+
+</report>

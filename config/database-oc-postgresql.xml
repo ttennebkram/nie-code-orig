@@ -1,0 +1,8 @@
+<database
+	vendor_tag="PostgreSQL"
+	server_name="cp1.ideaeng.net"
+	port=""
+	database_name="ocdb"
+	username="ocusr"
+	password="ocpw"
+/>

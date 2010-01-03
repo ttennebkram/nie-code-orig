@@ -1,0 +1,69 @@
+PostgreSQL Literal As established Unix/postgresql user
+	(yourlogin = Unix login, ex: mbennett)
+	psql -d yourlogin -U yourlogin
+	create user acmeusr with password 'acmepw' createdb;
+	\q
+	psql -d template1 -U acmeusr
+	create database acmedb;
+	\q
+
+PostgreSQL Literal As ROOT if FIRST time
+	su
+	su postgresql
+	psql -d template1
+	create user acmeusr with password 'acmepw' createdb;
+	\q
+	psql -d template1 -U acmeusr
+	create database acmedb;
+
+MySQL Literal (replace passwords!)
+	mysql -uroot -p(niepw) mysql
+	create database acmedb;
+	create user 'acmeusr' identified by 'acmepw';
+	grant all on acmedb.* to 'acmeusr';
+	flush privileges;
+	quit;
+
+
+MySQL
+	OLD Literal (replace passwords!)
+		mysqladmin -uroot -p(niepw) create abbott
+		mysql -uroot -p(niepw) mysql
+		create user 'abbott' identified by 'abbottadmin';
+
+	Admin / Create DB
+		cd c:\mysql\bin
+		mysqladmin -uroot -ppassword create dbname
+	Admin / get into MySQL command prompt
+		mysql -uroot -ppass mysql
+	Admin / Create User and Grant Privs ( Inside MySQL )
+		CREATE USER `name'@'machine' IDENTIFIED BY `password';
+		CREATE DATABASE dbname;
+		GRANT ALL on dbname.* TO `user'@'hostname';  (or just user)
+		FLUSH PRIVILEGES;  (PRIVILEDGES?)
+
+Oracle 10g Express
+	default DB might be called "xe" and might hard to change in Express
+	http://www.oracle.com/technology/software/products/database/xe/htdocs/102xewinsoft.html
+		Mark's login: mbennett.ideaeng@gmail.com / nie pooch 15
+	http://127.0.0.1:8080/apex
+		SYSTEM / s15
+	Remote: http://10.0.4.8:8080/apex
+		NEED TO ENABLE non-local access
+		From local web login
+		Tasks / Manage HTTP access (link on right)
+		radio: Availablee from local server and remote clients/Apply Ch
+
+MySQL Misc
+	Access DB
+		mysql -uroot -ppass dbname (system is mysql)
+	Run a Script
+		mysql -urroot -ppass DBName < script.sql
+	Show Databases
+		SHOW DATABASES;
+	Misc
+		Can combine with create db then use db
+			then add identified by to grant stmt.
+		SELECT user FROM mysql.user;
+		...
+		CREATE INDEX ..

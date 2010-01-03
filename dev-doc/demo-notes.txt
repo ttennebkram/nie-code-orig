@@ -1,0 +1,16 @@
+http://ender/wikipedia.html
+http://ender:9050/login
+	nie std
+	OR
+
+band of angels
+
+net use z: \\ender\e$
+	/user:ender\adminstrator l3M
+	OR
+	/savecred
+
+z:\ = wikipedia.html
+OR
+z:\stdemo
+etc

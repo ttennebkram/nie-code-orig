@@ -1,0 +1,79 @@
+x Login: tsnadmin.tibco.com
+end user goest to http[S]://tsn.tibco.com/
+
+
+once logged in I'm at:
+httpS://tsn.tibco.com/tibco/....
+
+Orig search form:
+httpS://tsn.tibco.com/tibco/SearchResults?query=&from=/tibco/Technical+KnowledgeBase&id=3au04&summ=no&squery=Product%20%3ccontains>%20*%20AND%20ProductVersion%20<contains>%20*%20
+
+Now search form says:
+https://tsn.tibco.com/kb/verityproxy?query=charlie&from=......&squery=.....";
+network routed to on port 9019
+well TSNRP01 does that.. it receives a HTTPS request and proxies it into the TSN DMZ as a HTTP request
+
+
+Start form:
+https://tsn.tibco.com/PortalApps/KB/search/testsearch.jsp
+
+submits to
+https://tsn.tibco.com/kb/verityproxy/?url=/tibco/SearchResults%3fquery%3d" + frmKBSearch.query.value +"%26from%3d"+ frmKBSearch.from.value +"%26id%3d"+ frmKBSearch.id.value+"%26summ%3dno" + "%26squery%3d" + squery + "&action=GO";
+
+redirects to
+http://tsnpb11.tibco.com/tibco/SearchResults?url=%2Ftibco%2FSearchResults%3Fquery%3Dtest%26from%3D%2Ftibco%2FTechnical+KnowledgeBase%26id%3D3au04%26summ%3Dno%26squery%3DProduct+%3Ccontains%3E+*+AND+ProductVersion+%3Ccontains%3E+*&action=GO
+
+
+Our search URL is:
+http://tsn.tibco.com/tibco/SearchResults
+
+
+
+
+Search form: http://tsnadmin.tibco.com/kb/
+
+
+
+	//parent.window.frames.tsnBrowse.location.href =
+"/tibco/SearchResults?query=" + frmKBSearch.query.value +"&from="+
+frmKBSearch.from.value +"&id="+ frmKBSearch.id.value+"&summ=no"	+ "&squery="
++ squery;
+
+	parent.window.frames.tsnBrowse.location.href =
+"https://tsn.tibco.com/kb/verityproxy?query=" + frmKBSearch.query.value
++"&from="+ frmKBSearch.from.value +"&id="+ frmKBSearch.id.value+"&summ=no"	+
+"&squery=" + squery;
+
+
+
+tsnadmin.tibco.com:9019
+
+
+
+Search engine:  https://tsn.tibco.com/tibco/SearchResults?query=...
+	https://tsn.tibco.com/tibco/SearchResults?query=...
+	OR
+	http://tsnpb11.tibco.com/tibco/SearchResults?query=...
+
+
+
+
+
+goto http://tsnadmin.tibco.com/kb/
+
+
+
+
+1. I can modify the JSP pages in production
+2. the production forms will post to
+https://tsn.tibco.com/kb/verityproxy?query=
+3. this URL will be redirected to tsnAdmin:9010
+4. The verity proxy can then redirect to 
+https://tsn.tibco.com/tibco/SearchResults?query=...
+
+
+milne2001: https://tsn.tibco.com/tibco/SearchResults?query=...
+miles_b_kehoe: what is MY url..
+miles_b_kehoe: ah i have it
+james_milne2001: not sure what you mean? the incoming URL?
+miles_b_kehoe: tsnadmin.tibco.com:9019

@@ -1,0 +1,9 @@
+Database GUIs, Free Toad Clone, Oracle DBA GUI, MySQL, SQL Console, etc
+
+Java based Toad clone:
+Oracle SQL Developer (ALSO works with OTHER DATABASES as well !!!)
+http://www.orafaq.com/wiki/SQL_Developer
+http://www.oracle.com/technology/products/database/sql_developer/index.html
+
+MySQL GUI
+http://dev.mysql.com/downloads/gui-tools/5.0.html

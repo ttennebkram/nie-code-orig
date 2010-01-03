@@ -1,0 +1,93 @@
+See also:
+http://www-db.stanford.edu/~ullman/fcdb/oracle/or-time.html
+
+table: "log"
+    Change start_time from timestamp to date
+    Change end_time from timestamp to date
+
+Problems with myPrepStmt.setDate()
+Workaround:
+GregorianCalendar gc = new GregorianCalendar(1972,3,31);
+Timestamp myTimestamp =
+new Timestamp(gc.getTime().getTime());
+//gc.getTime().getTime() returns a long
+
+
+Here's some useful information on date and time.  Note that these are
+ORACLE/SQL functions and, so, will probably entail modifying our code for
+other databses:
+
+to_date( string, 'format' );
+to_char( date, 'format' );
+
+Formatting codes are:
+
+MM  Number of the month: 12
+RM  Roman numeral month: XII
+MON Three letter abbreviation of month: AUG
+MONTH month fully spelled out: AUGUST, padded with blanks to 9 characters
+DDD Number of days in year since Jan 1: 354
+DD  Number of days in month: 23
+D   Number of days in week: 6
+DY  Three letter abbreviation of day: FRI
+DAY Day fully spelled out, padded to 9 characters
+YYYY Full four digit year: 1946
+Y,YYY Year, with comma
+SYYYY Signed year: 1000 B.C. = -1000
+YYY Last three digits of year: 946
+YY  Last two digits of year: 46
+Y   Last one digit of year: 6
+IYYY Four digit year from ISO standard*
+IYY Three digit year fom ISO standard*
+IY  Two digit year from ISO standard*
+I   One digit year from ISO standard*
+RR  Last two digits of year relative to current date
+RRRR    Rounded year, accepting either two orr four digit input
+CC  Century (20 for 1999)
+SCC Signed century (BC dates prefaced with - )
+YEAR Year spelled out: NINETEEN-FORTY-SIX
+SYEAR YEAR with - before BC Dates
+Q   Number of Quarter: 3
+WW  Number of weeks in year where week 1 starts on the first day of the year
+IW  Number of weeks in year from ISO standard
+W   Number of weeks in month whjere weeks 1 starts on the first day of the
+month
+J   Julian - days since the epoch began (epoch began on Dec 31, 4712 B.C.)
+HH  Hours of day, always 1-12
+HH12 Same as HH
+HH24 Hours of day, 24 hour clock
+MI  Minutes of the hour : 59
+SS  Seconds of the minute : 59
+SSSS Seconds since midnight, always 0-86399
+FF  Fractional seconds as in HH.MI.SS.FF
+X   Local radix character
+/,-:.; punctuation to be incorporated in display for O_CHAR or ignored in
+format for TO_DATE
+A.M. Displays A.M. Or P.M. Depending on the time of day
+P.M. Same effect as A.M.
+AM OR PM same as A.M. But without the periods
+B.C. Displays A.D. Or B.C. Depending on the date
+A.D. Same as B.C.
+BC OR AD Same as B.C. But without the periods
+E   Abbreviated era namefor asian calendars
+EE  Full eraname for asian calendars
+TZD Daylight Savings time information
+TZH Time zone hour
+
+From "Oracle 9i: The Complete Reference" by Oracle Press.
+On 10/09/2002 18:15, "Mark Bennett" <mbennett@ideaeng.com> wrote:
+
+> Need schema changes.
+> 
+> Need info on Date (+time) stuff.
+> 
+> Thanks,
+> Mark
+> 
+> 
+
+-- 
+Kevin-Neil Klop
+VP New Idea Engineering
+http://www.ideaeng.com
+

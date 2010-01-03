@@ -1,0 +1,137 @@
+	<!-- Search Engine -->
+	<!-- ============= -->
+	<section
+		title="Search Engine"
+		help="find_map_or_create.html"
+	>
+
+		<field type="vertical_spacer" />
+		<field
+			type="vertical_spacer"
+		>
+			Existing Search Engine
+		</field>
+
+		<field type="vertical_spacer" />
+
+		<field
+			type="vertical_spacer"
+			font_size_increment="0"
+		>
+			Auto-Detect search engine settings from search form
+		</field>
+		<field
+			name="search_form_url"
+			label="Search form URL"
+			default="http://"
+			is_special="TRUE"
+		/>
+
+		<field type="vertical_spacer" />
+
+		<field
+			type="inline_button"
+			label="Retrieve and analyze the search form"
+			click_event_class="DetectSearchSettings"
+		>
+			Auto-Detect Search Settings
+		</field>
+
+		<field type="vertical_spacer" />
+
+		<field
+			type="inline_button"
+			label="Clear settings below and try again"
+			click_event_class="ClearAndDetectSearchSettings"
+		>
+			Clear and Retry
+		</field>
+
+		<field type="vertical_spacer" />
+
+		<field
+			type="vertical_spacer"
+			font_size_increment="0"
+		>
+			Review and Adjust Settings
+		</field>
+		<field
+			name="search_url"
+			label="Search Engine URL (w/ CGI and port)"
+			default="http://"
+			xpath="/nie_config/search_tuning/search_engine_info/search_url"
+		/>
+
+		<field
+			name="search_method"
+			label="Form Submit Method"
+			type="select"
+			default="GET"
+			xpath="/nie_config/search_tuning/search_engine_info/search_url/@method"
+		>
+			<option>GET</option>
+			<option>POST</option>
+		</field>
+
+		<field
+			name="search_vendor"
+			label="Search Engine Vendor"
+			xpath="/nie_config/search_tuning/search_engine_info/vendor"
+		/>
+
+		<field
+			name="search_field"
+			label="Search Term Form Field"
+			default="query"
+			xpath="/nie_config/search_tuning/search_engine_info/search_term_field_name"
+		/>
+
+		<!--
+		<field type="vertical_spacer" />
+		<field
+			type="vertical_spacer"
+			font_size_increment="0"
+		>
+			Disable SearchTrack if a particular field is present
+		</field>
+		<field
+			type="vertical_spacer"
+			font_size_increment="0"
+		>
+			(Example: disable logging for pages 2 and on of search results)
+		</field>
+		<field
+			name="take_no_action_field"
+			label="No-Action indicator CGI field"
+			xpath="/nie_config/search_tuning/search_engine_info/no_action_indicator_field"
+		/>
+		-->
+
+
+		<field type="vertical_spacer" />
+		<field
+			type="vertical_spacer"
+		>
+			Please review other Search Engine releated tabs
+		</field>
+		<field
+			type="vertical_spacer"
+			font_size_increment="0"
+		>
+			* Search Form Hidden Fields
+		</field>
+		<field
+			type="vertical_spacer"
+			font_size_increment="0"
+		>
+			* Sub-Site Search (2 tabs)
+		</field>
+		<field
+			type="vertical_spacer"
+			font_size_increment="0"
+		>
+			* Patterns
+		</field>
+		<field type="vertical_spacer" />
+
+	</section>

@@ -1,0 +1,64 @@
+application stacks, etc.
+
+Apache, Jakarta, Tomcat, Catalina, Jasper, Coyote
+Apache = foundation (and httpd web server?)
+Jakarta = Java branch of Apache projects
+Tomcat = main server
+Catalina = Tomcat's JVM ?
+Jasper = Tomcat's JSP handler
+Coyote = Tomcat's HTTP connector
+http://www.wellho.net/forum/The-Java-Programming-language/Apache-Jakarta-Tomcat-Catalina-Coyote-Jasper.html
+
+? old Python one?  Medusa?
+
+Catalina...
+
+BEA WebLogic
+
+Sun... ?
+
+From Solr doc:
+* Jetty (embedded)
+	JettyPlus http://jetty.mortbay.org/jetty5/plus/index.html
+	JettyJBoss
+	JettyJOnAS
+* Tomcat
+* Resin
+* JBoss
+* IBM WebSphere
+
+Springs...
+
+FAST: Tiles
+
+Java API's you might need: (from JettyPlus)
+ * Java Transaction API (JTA) and Resource references, eg DataSources
+ * Java Naming and Directory Interface API (JNDI)
+ * Log4J
+ * Java Authentication and Authorization Service (JAAS)
+ * Java Mail  
+others
+JDBC
+
+JNDI: Java Naming and Directory Interface API
+LDAP and DNS, Active Directory?
+also maybe configuration options?
+http://java.sun.com/products/jndi/
+
+Log4J vs java.util.logging (1.4+), Log4J has log rotation built in, etc.
+http://articles.techrepublic.com.com/5100-10878_11-1046694.html
+
+- - - - - - -
+
+LAMP (PHP)
+
+Python:
+DJango
+http://www.djangoproject.com/
+Zope / Plone...
+
+Ruby: Rails
+
+
+
+CMS: DNN, Drupal and Joomla

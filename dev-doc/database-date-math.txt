@@ -1,0 +1,82 @@
+From http://book.itzero.com/read/others/0602/OReilly.SQL.Cookbook.Dec.2005_html/0596009763/sqlckbk-CHP-9-SECT-4.html
+
+Recipe 9.4. Determining the First and Last Day of a Month
+Problem
+
+You want to determine the first and last days for the current month.
+Solution
+
+The solutions presented here are for finding first and last days for the current month. Using the current month is arbitrary. With a bit of adjustment, you can make the solutions work for any month.
+
+DB2
+
+Use the DAY function to return the number of days into the current month the current date represents. Subtract this value from the current date, and then add 1 to get the first of the month. To get the last day of the month, add one month to the current date, then subtract from it the value returned by the DAY function as applied to the current date:
+
+	1 select (current_date - day(current_date) day +1 day) firstday,
+	2        (current_date +1 month -day(current_date) day) lastday
+	3   from t1
+
+
+Oracle
+
+Use the function TRUNC to find the first of the month, and the function LAST_DAY to find the last day of the month:
+
+	1 select trunc(sysdate,'mm') firstday,
+	2        last_day(sysdate) lastday
+	3   from dual
+
+
+	
+
+Using TRUNC as decribed here will result in the loss of any time-of-day component, whereas LAST_DAY will preserve the time of day.
+
+PostgreSQL
+
+Use the DATE_TRUNC function to truncate the current date to the first of the current month. Once you have the first day of the month, add one month and subtract one day to find the end of the current month:
+
+	1 select firstday,
+	2        cast(firstday + interval '1 month'
+	3                      - interval '1 day' as date) as lastday
+	4   from (
+	5 select cast(date_trunc('month',current_date) as date) as firstday
+	6   from t1
+	7        ) x
+
+
+MySQL
+
+Use the DATE_ADD and DAY functions to find the number of days into the month the current date is. Then subtract that value from the current date and add 1 to find the first of the month. To find the last day of the current month, use the LAST_DAY function:
+
+	1 select date_add(current_date,
+	2                 interval -day(current_date)+1 day) firstday,
+	3        last_day(current_date) lastday
+	4   from t1
+
+
+SQL Server
+
+Use the DATEADD and DAY functions to find the number of days into the month represented by the current date. Then subtract that value from the current date and add 1 to find the first of the month. To get the last day of the month, add one month to the current date, and then subtract from that result the value returned by the DAY function applied to the current date, again using the functions DAY and DATEADD:
+
+	1 select dateadd(day,-day(getdate( ))+1,getdate( )) firstday,
+	2        dateadd(day,
+	3                -day(getdate( )),
+	4                dateadd(month,1,getdate( ))) lastday
+	5   from t1
+
+
+Discussion
+DB2
+
+To find the first day of the month, use the DAY function. The DAY function conveniently returns the day of the month for the date passed. If you subtract the value returned by DAY(CURRENT_DATE) from the current date, you get the last day of the prior month; add one day to get the first day of the current month. To find the last day of the month, add one month to the current date. That will get you the same number of days into the following month as you are into the current month (the math will still work out if the following month is shorter than the current). Then subtract the value returned by DAY(CURRENT_DATE) to get the last day of the current month.
+Oracle
+
+To find the first day of the current month, use the TRUNC function with "mm" as the second argument to "truncate" the current date down to the first of the month. To find the last day of the current month, simply use the LAST_DAY function.
+PostgreSQL
+
+To find the first day of the current month, use the DATE_TRUNC function with "month" as the second argument to "truncate" the current date down to the first of the month. To find the last day of the current month, add one month to the first day of the month, and then subtract one day.
+MySQL
+
+To find the first day of the month, use the DAY function. The DAY function conveniently returns the day of the month for the date passed. If you subtract the value returned by DAY(CURRENT_DATE) from the current date, you get the last day of the prior month; add one day to get the first day of the current month. To find the last day of the current month, simply use the LAST_DAY function.
+SQL Server
+
+To find the first day of the month, use the DAY function. The DAY function conveniently returns the day of the month for the date passed. If you subtract the value returned by DAY(GETDATE( )) from the current date, you get the last day of the prior month; add one day to get the first day of the current month. To find the last day of the current month, use the DATEADD function. Add one month to the current date, then subtract from it the value returned by DAY(GETDATE( )) to get the last day of the current month.

@@ -1,0 +1,92 @@
+MANY problems with Fidelity
+
+Confusing but OK
+------------------
+Using Frames
+Deeply nested tables
+
+Broken SearchTrack item # 1
+---------------------------
+Some queries redirect to a second search engine AND there are relative
+paths to images and CSS that our BASE tag still points to orig.
+
+FIX was to add <base_url> as sibling option to <search_url>
+
+Broken SearchTrack item # 2
+---------------------------
+When a MULTI-WORD query is redirected, the 302 location header leaves
+spaces UN-encoded, and this seems to break Java, although not browsers.
+
+Fidelity and inquira continue to uncover weird / interesting problems.
+
+I *think* I've found a Java bug, although I'll have to dig further, but I know the COMBINATION of TWO things that causes a PROBLEM for SearchTrack.
+
+Queries that meet BOTH of these criteria will appear to "hang":
+1: The query has spaces
+AND
+2: It happens to do a redirect to http://personal.fidelity.com (although this is hard to see if using frames)
+
+SOME Fidelity queries are redirected to a second server, THEY control that, we don't.
+
+Here are some examples:
+
+OK, a single word
+http://search.fidelity.com/search/getSearchResults?question=cancer
+
+OK, two words, but RESULTS are still on search.fidelity.com
+http://search.fidelity.com/search/getSearchResults?question=fidelity+investing
+
+Break # 1, NOW FIXED
+OK, REDIRECTS to personal.fidelity.com, LOOK AT ADDRESS BAR when viewing results list
+http://search.fidelity.com/search/getSearchResults?question=401k
+
+Break # 2, still broken 7/1/08
+This one BREAKS because: multi word AND redirects to personal.fidelity.com
+http://search.fidelity.com/search/getSearchResults?question=retirement+planning
+Problem is caused by redirect where the location: http header field doesn't have the space escaped.
+Same problem whether I replace the space with a plus sign (+) or hex encoded percent twenty (%20)
+
+
+
+
+bsd%telnet search.fidelity.com 80 | tee 401k-fid.out
+Trying 155.199.9.94...
+Connected to search.retail.fidelity.com.
+Escape character is '^]'.
+GET /search/getSearchResults?question=401k HTTP/1.0
+
+HTTP/1.1 302 Found
+Server: FWS/7.0
+Date: Mon, 16 Jun 2008 19:25:09 GMT
+Expires: 0
+Cache-control: no-cache
+Pragma: no-cache
+P3p: CP="UNI DEM GOV FIN STA COM NAV PRE INT ONL CUR ADM DEV PSA PSD CUSi IVDi I
+VAi TELi CONi TAI OUR OTRi"
+Set-cookie: MC=6LXhDWXc7NqkrU42DR_qbqoFHVsSAkhWvhQKBCgQIABSrAABqjMGBAAAAQAGBUhWv
+hQAP03; path=/; domain=.fidelity.com; expires=Tue, 16-Jun-2009 19:25:08 GMT
+Content-length: 0
+Content-type: text/html
+Location: http://personal.fidelity.com/global/search/inquira/content/401k_3.shtm
+l?question=401k&guid=2ec7f4e50d44a743:1c6a657:11a77c7ff5a:50a9&appServer=http://
+search.fidelity.com
+Content-language: en
+Set-cookie: JSESSIONID=0000ZWDTD2IXD77DSTPe_xs5stS:-1; Path=/search
+Connection: close
+
+Connection closed by foreign host.
+
+
+
+http://personal.fidelity.com
+
+/global/search/inquira/content/401k_3.shtml?question=401k&appServer=http://search.fidelity.com
+
+&guid=2ec7f4e50d44a743:1c6a657:11a77c7ff5a:50a9
+
+
+Content-language: en
+Set-cookie: JSESSIONID=0000ZWDTD2IXD77DSTPe_xs5stS:-1; Path=/search
+Connection: close
+
+Connection closed by foreign host.

@@ -1,0 +1,13 @@
+<database
+	vendor_tag="postgresql"
+	server_name="polaris"
+	_server_name="127.0.0.1"
+	port="5432"
+	database_name="SearchTrack"
+	username="mbennett"
+	password="4fuckit"
+	main_table="nie_log"
+>
+	<test_query />
+
+</database>

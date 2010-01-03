@@ -1,0 +1,70 @@
+.nie_report_title {color:#000080;}
+.nie_report_subtitle {color:#000080;}
+
+.nie_stat_number {color:#000080;}
+.nie_stats_qualifier {font-size:smaller;}
+
+.nie_container_cell { padding:0px; spacing:0px }
+.nie_hr_cell { padding:0px; spacing:0px }
+
+.nie_datetime
+{
+	font-size:-1;
+	font-family: monospace;
+	padding: 2px;
+	vertical-align: bottom
+}
+.nie_percentage
+{
+	font-family: monospace;
+	text-align: right;
+	font-size:-1;
+	padding: 2px;
+	vertical-align: bottom
+	/* white-space: pre */
+}
+
+.nie_header_row
+{
+	text-align: left;
+	vertical-align: bottom;
+	font-weight: bold;
+	color:white;
+	background-color:#000080;
+	border: 2px solid black 
+}
+
+.nie_even_row {background-color:#dddddd; }
+
+.nie_inactive_paging_link
+{
+	font-family:sans-serif;
+	font-size:smaller;
+	color:gray;
+}
+.nie_active_paging_link
+{
+	font-family:sans-serif;
+	font-size:smaller;
+}
+.nie_menu_link
+{
+	font-family:sans-serif;
+	font-size:smaller;
+}
+.nie_report_link, .nie_inactive_report_link
+{
+	font-family:sans-serif;
+	font-size:smaller;
+}
+
+
+/* table and row settings do not seem to inherrit */
+.nie_header_cell { padding:3px; }
+.nie_data_cell { padding:2px; }
+
+.nie_special_term, .nie_special_data_cell
+{
+	font-style:italic;
+}
+

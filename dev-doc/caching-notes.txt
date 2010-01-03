@@ -1,0 +1,25 @@
+Several types of "caching" done
+
+0: Config is maintained in memory and we will NOT notice changes on disk
+	can request reload, or just restart
+
+1: Many classes self config from an in memory XML JDOM
+	we normalize and copy these over to class fields just once
+		and in many classes this is done via an explict "use cache"
+		state during init, then the rest of the time we just 
+		return the member field
+
+2: We maintain mappings in both memory and the DB
+	So if an entry is removed or changed, we need to update
+		both places
+
+3: Caching is done for some dynamically loaded report types
+	xml and java reports
+	these are the reports READY to run
+
+4.a: Activity Trend reports also cache their RESULTS
+	both in memory and on disk (under the config directory)
+	under sr2.java_reports
+AND
+4.b: a central "cron" runs those reports to self cache sometimes
+	and that is a different hierarchy of classes in the sr2.util

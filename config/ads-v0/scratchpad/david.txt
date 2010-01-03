@@ -1,0 +1,53 @@
+How about changing the background color to something other than the Google
+color (maybe a light gray or tan color).  Also, arial font if appropriate.
+
+* A list of key words and phrases that should trigger the ad :
+Keyword/Advertiser(s)/Code
+GPS - Garmin (GAR), UPS (UPS), Bendix/King (B/K), Sporty's (SPT), King
+Schools (KNG)
+Aircraft - Cessna (CES), Piper (PIP), Lancair (LAN), Cirrus (CIR), Diamond
+(DIA)
+Charts - Jeppesen (JEP),
+Insurance - AOPAI (AOPI), AVEMCO (AVM)
+Financing - MBNA (MBNA)
+Training - American Flyers (AM FLY), King Schools (KNG), Flight Safety (FS),
+Sportys (SPT)
+
+
+* A title: 3 to 5 words (or 25 characters)
+GARMIN
+Bendix/King
+UPS Avionics
+Sporty's Catalog
+King Schools
+Cessna Aircraft
+Piper Aircraft
+Lancair Aircraft
+Cirrus Aircraft
+Diamond Aircraft
+
+* Description: 8 to 13 words (or 70 characters)
+GARMIN:  Save up to $100 on new Garmin GPS units.
+UPS:  Save $500!  Trade your Apollo Loran in for a GX 55 GPS.
+BENDIX/KING:  Get $2,000 on Skywatch Trade-In.
+SPORTYS:  Save $100 on Garmin Handheld GPS.
+KING:  Save $25 on your next catalog order from the King Schools
+CESSNA:  0% financing on new 182 Skylane through 2003.
+PIPER:  0% financing and 3 year service plan on all models.
+LANCAIR:  Test fly the new Columbia at your local dealer
+CIRRUS:  $2,000 savings on your purchase of a new Cirrus aircraft
+DIAMOND:  Take a virtual tour of the new Diamond DA 40 aircraft.
+
+ * A URL to display (up to 35 characters)
+GARMIN:   www.garmin.com <http://www.garmin.com>
+Bendix/King:  www.endix/king.com <http://www.endix/king.com>
+UPS:  www.upsavionics.com <http://www.upsavionics.com>
+Sportys:  www.sportys.com <http://www.sportys.com>
+King Schools:  www.kingschools.com <http://www.kingschools.com>
+Cessna:  www.cessna.com <http://www.cessna.com>
+Piper:  www.piper.com <http://www.piper.com>
+Lancair:  www.lancair.com <http://www.lancair.com>
+Cirrus:  www.cirrus.com <http://www.cirrus.com>
+Diamond:  www.diamond.com <http://www.diamond.com>
+
+

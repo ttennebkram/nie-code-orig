@@ -1,0 +1,22 @@
+Steps for creating a package:
+* update the main README file
+* create the JAR file of our files (see below)
+* update supporting jars, IF NEEDED, usually it isn't
+* copy the latest todo.txt file into system\dev-doc
+	Maybe skim and update it it first, this is a COPY of it
+* test that it runs!
+* zip it up
+* upload it
+* let folks know it's there
+
+
+To create the NIE jar file:
+
+CD to main-project-dir\classes
+
+And then
+
+jar cvf ..\your-package-dir\system\jar_files\searchnames.jar nie
+
+So we care jar'ing from classes\nie down.
+And we're putting the results into the package\system\jar_files directory.

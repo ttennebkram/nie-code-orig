@@ -1,0 +1,5 @@
+INSERT INTO userinfo (user_id, user_name, password, security_level )
+VALUES (0, 'administrator', 'aopaflyshigh', 100);
+
+INSERT INTO userinfo (user_id, user_name, password, security_level )
+VALUES (1, 'user', 'keepemflying', 0 );

@@ -1,0 +1,15 @@
+ERROR: 4/16/03 5:51:10 PM PDT DBConfigException.constructor: Called with message
+ "DBTableDef.instantiateTableInDatabase: Unable to generate SQL statements to cr
+eate table"nie_user_info". Reason: nie.core.JDOMHelperException: Error processin
+g data with style sheet: java.io.FileNotFoundException: NIEUtil.findInputFile: C
+ould not locate file "system:system/db/transform/gen_sql_drop_and_create_table.x
+slt""
+ERROR: 4/16/03 5:51:11 PM PDT DBConfig.createDBTable: Unable to create database
+table "nie_user_info". Exception was: nie.core.DBConfigException: DBTableDef.ins
+tantiateTableInDatabase: Unable to generate SQL statements to create table"nie_u
+ser_info". Reason: nie.core.JDOMHelperException: Error processing data with styl
+e sheet: java.io.FileNotFoundException: NIEUtil.findInputFile: Could not locate
+file "system:system/db/transform/gen_sql_drop_and_create_table.xslt"
+
+I had added an xslt file to the src tree but did not do a refresh/update
+in Eclipse, so it wasn't copied over into the classes tree.

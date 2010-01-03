@@ -1,0 +1,986 @@
+
+
+
+
+
+
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+<title>Understanding the TreeModel</title>
+<meta name="collection" content="reference">
+<meta name="description" content="This article focuses mainly on the relationship between JTree and the TreeModel interface. But similar thinking applies to using a JTable or a JList component. The article comes with a downloadable sample program that shows exactly how JTree and TreeModel can be used together in a program.">
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+<meta name="archive" content="false">
+<meta name="date" content="2003-04-12">
+<link rel="stylesheet" href="/css/default_developer.css" />
+
+
+<script type="text/javascript" language="JavaScript" src="/js/popUp.js"></script>
+<script language="javascript1.2" type="text/javascript" src="/js/sniff.js"></script>
+<script language="javascript1.2" type="text/javascript" src="/js/menucontent.js"></script>
+<script language="javascript1.2" type="text/javascript" src="/js/menucode.js"></script>
+<script language="javascript1.2" type="text/javascript" src="/js/developer.js"></script>
+
+
+</head>
+<!--stopindex-->
+<body leftmargin="0" topmargin="0" marginheight="0" marginwidth="0" rightmargin="0" bgcolor="#ffffff" onload="prepmenus(); done=true">
+
+<a name="top"></a>
+<!-- BEGIN GENERIC MASTHEAD -->
+
+
+<!-- BEGIN A1 COMPONENT V.0 -->
+<div class="a1 a1r2">
+<div class="a1v0">
+<a href="#skip2content" class="skiplink">Skip to Content</a>
+<span class="toolbarlinks">
+<a href="/global/mh/java/">Java</a>
+<a href="/global/mh/solaris/">Solaris</a>
+<a href="/global/mh/communities/" class="dividelink">Communities</a>
+<a href="http://developers.sun.com/global/my_profile.html">My SDN Account</a>
+<a href="http://developers.sun.com/global/join_sdn.html" class="dividelink">Join SDN</a>
+</span>
+</div>
+</div>
+<!-- END A1 COMPONENT V.0 -->
+
+
+
+<!-- BEGIN A2 COMPONENT V.1 -->
+<div class="a2w0">
+<div class="a2" id="a2v1">
+<div class="a2w1"><div class="a2w2"><div class="a2w3"><div class="a2w4">
+<div class="a2topiclinks">
+<div class="a2search">
+<form action="http://developers.sun.com/search/onesearch/index.jsp" accept-charset="utf-8" method="GET">
+<input type="hidden" name="charset" value="utf-8"><input type="hidden" name="col" value="developer-reference">
+<span class="rightarrowwhite">&raquo;</span>&nbsp;<a href="http://developers.sun.com/global/search_tips.html">search tips</a>&nbsp;
+<input class="searchfield" name="qt" class="medium" size="7" onFocus="if( this.value==this.defaultValue ) this.value=;" value="Search">
+<input id="searchbttn" type="image" border="0" src="/im/a2_bttn_search.gif" alt="Submit Search">
+</form>
+</div>
+<a href="http://java.sun.com" title="Home Page" id="sunlogo"><img src="/im/a.gif" alt="Home Page" width="98" height="58" border="0" /></a>
+<a href="http://developers.sun.com" title="Sun Developer Network"><img src="/im/a.gif" id="venuespacer" alt="Sun Developer Network" width="400" height="33" border="0" /></a>
+<ul id="mtopics">
+<li id="mtopic1"><a id="glink1" class="tpclink a2menu" title="See All APIs" href="/global/mh/api/index.html">APIs</a></li>
+<li id="mtopic2"><a id="glink2" class="tpclink a2menu" title="See All Downloads" href="/global/mh/downloads/index.html">Downloads</a></li>
+<li id="mtopic3"><a id="glink3" class="tpclink a2menu" title="See All Technologies &amp; Solutions" href="/global/mh/tech/index.html">Technologies</a></li>
+<li id="mtopic4"><a id="glink4" class="tpclink a2menu" title="See All Products" href="/global/mh/products/index.html">Products</a></li>
+<li id="mtopic5"><a id="glink5" class="tpclink a2menu" title="See All Support" href="/global/mh/support/index.html">Support</a></li>
+<li id="mtopic6"><a id="glink6" class="tpclink a2menu" title="See All Training" href="/global/mh/training/index.html">Training</a></li>
+<li id="mtopic7"><a id="glink7" class="tpclink a2menu" title="See All Sun.com" href="/global/mh/suncom/index.html">Sun.com</a></li>
+</ul>
+</div>
+</div></div></div></div>
+</div></div>
+<!-- END A2 COMPONENT V.1 -->
+
+
+
+
+
+
+
+
+
+<!-- END GENERIC MASTHEAD -->
+<!-- BEGIN BREADCRUMB -->
+<table border="0" cellpadding="0" cellspacing="0" width="100%" class="vatop">
+<tr>
+<td>      
+<div class="breadcrumb">
+<a href="http://developers.sun.com/index.html">Developers Home</a> &gt; <a href="http://developers.sun.com/prodtech/index.html">Products & Technologies</a> &gt; <a href="http://java.sun.com/index.jsp">Java Technology</a> &gt; <a href="http://java.sun.com/j2se/index.jsp">J2SE</a> &gt; <a href="http://java.sun.com/j2se/desktopjava/index.jsp">Desktop Java</a> &gt; <a href="http://java.sun.com/products/jfc/index.jsp">JFC</a> &gt; <a href="http://java.sun.com/products/jfc/news.html">News & Updates</a> &gt; <a href="http://java.sun.com/products/jfc/tsc/index.html">The Swing Connection</a> &gt; <a href="http://java.sun.com/products/jfc/tsc/reference/index.html">Reference</a> &gt; <a href="http://java.sun.com/products/jfc/tsc/reference/techart/index.html">Technical Articles and Tips</a> &gt;
+</div>
+</td>
+<td align="right" nowrap="nowrap"><div class="breadcrumb">
+</div></td></tr>
+<tr><td colspan="2"><img src="/im/a.gif" width="770" height="1" border="0" alt=" " /></td></tr>
+</table>
+<span class="sp5">&nbsp;</span><br />     
+<!-- END BREADCRUMB -->
+<!-- BEGIN PAGETITLE -->
+<div class="pagetitle2">Article</div>
+<div class="smallpagetitle"><h1>Understanding the TreeModel</h1></div>
+<!-- END PAGETITLE -->
+<!-- BEGIN WRAPPER TABLE, 2 COLUMN, MAIN/RIGHT -->
+<table border="0" cellpadding="10" cellspacing="0" width="100%">
+<tr><td width="100%" valign="top">
+<!-- BEGIN CENTRAL COLUMN COMPONENTS -->
+<!--startindex-->
+<!-- ============ -->
+<!-- MAIN CONTENT -->
+<!-- ============ -->
+<a name="skip2content"></a>
+<!--  BEGIN VCD4 PFV  -->
+<table border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td class="smaller" valign="top"><em></em></td>
+<td width="10">&nbsp;</td>
+<td align="right" valign="bottom"><div class="sitelinks" style="padding:0px;">
+<table border="0" cellpadding="0" cellspacing="0">
+<tr>
+<td valign="bottom" align="right">&nbsp;</td>
+<td valign="bottom" class="smaller" nowrap="nowrap"><a href="/jsp_utils/PrintPage.jsp" target="printFriendlyView" onclick="openPopup('','printFriendlyView',710,650,'no',1,1,0,0,0,0); return true;"><img src="/im/ic_print.gif" width="14" height="12" alt="Print-friendly Version" border="0" hspace="4" />Print-friendly Version</a><br></td>
+</tr></table></div>
+</td></tr>
+</table>
+<!--  END VCD4 PFV -->
+<table width="100%" border="0">
+<tr align="left" valign="top"> 
+<td height="336"><!-- #BeginEditable "Insert%20Content%20Here" -->
+<div align="center"><font size="+3" color="#000080"><b>Understanding 
+the TreeModel</b></font></b></font></i></font></font> 
+<font color="#C60063"><br>
+</font><br>
+</div>
+<!-- BEGIN FRAGMENT | HR TAG -->
+<div class="contentdivider"><table border="0" cellpadding="0" cellspacing="0" width="100%" class="grey4"><tr><td><img src="/im/a.gif" width="1" height="4" border="0" alt=" " /></td></tr></table></div>
+<!-- END FRAGMENT | HR TAG -->
+<p> </p>
+<p align="center"> <b><font color="#330099">By Eric Armstrong, Tom 
+Santos, and Steve Wilson</font></b> 
+<p><b> <font color="#330099"><img id="Picture520" height=111 width=86 src="/products/jfc/tsc/articles/jtree/images/tree_mid.gif"  vspace=0 hspace=10 align=LEFT border=0  alt="tree_mid" ></font></b>In 
+Swing, many components can be used with objects that implement corresponding 
+models.</p>
+<p>For example, Swing's JTree component can be used with an object 
+that implements the TreeModel interface. Similarly, a JTable can 
+be used with a TableModel, and a JList can be used with a ListModel.</p>
+<p>But in each of these cases, a model interface is used mainly to 
+define accessor methods. It defines no operations to manipulate 
+the structure of the data -- no methods to insert or remove data 
+items, or to change the order of data in the model.</p>
+<p>That makes implementing a model and using it with one of these 
+components somewhat different from using a more conventional MVC 
+(model-view-controller) architecture.</p>
+<p>But that difference allows greater flexibility. It means you can 
+use JTree, JTable, or JList with an existing data structure without 
+having to make violent modifications to to that structure to make 
+it conform to the required interface.</p>
+<p>This article focuses mainly on the relationship between JTree and 
+the TreeModel interface. But similar thinking applies to using a 
+JTable or a JList component. 
+<p>The article comes with a downloadable sample program that shows 
+exactly how JTree and TreeModel can be used together in a program.
+<!-- BEGIN FRAGMENT | HR TAG -->
+<div class="contentdivider"><table border="0" cellpadding="0" cellspacing="0" width="100%" class="grey4"><tr><td><img src="/im/a.gif" width="1" height="4" border="0" alt=" " /></td></tr></table></div>
+<!-- END FRAGMENT | HR TAG -->
+<h2><font color="#000080">TreeModel Basics</font> </h2>
+<p>If you have an existing tree-based data structure, you can use 
+it with a JTree without having to change your data model significantly. 
+This is important to remember. There are many possible representations 
+of tree structures, and there are many possible operations on them. 
+But JTree makes no assumptions about which operations are available, 
+so you are free to use an existing tree structure with a JTree -- 
+including your operating system's directory tree! (For more information 
+on this topic, see the article in this issue titled &quot;<a href="/products/jfc/tsc/articles/treetable1/index.html" target=""><i>Creating 
+TreeTables in Swing</i></a>.</p>
+<h3>The TreeModel Interface Defined </h3>
+<p>Although the JTree architecture defines a TreeModel<code></code> 
+interface, it defines no operations that affect the structure of 
+the tree. Looking over the methods defined in the interface, you 
+can see a variety of accessor methods, one method for changing the 
+data associated with a node, and none at all for adding nodes, removing 
+them, or shifting their position in the tree.</p>
+Here is how Swing defines the TreeModel<code></code> interface: 
+<!-- BEGIN VCD7 CODE SAMPLE COMPONENT  -->
+<table border="0" cellpadding="10" cellspacing="0" width="100%" class="grey4">
+<tr><td><pre>    public Object  getRoot();
+
+    public boolean isLeaf(Object node);
+    public int     getChildCount(Object parent);
+    public Object  getChild(Object parent, int index);
+    public int     getIndexOfChild(Object parent, Object child);
+    public void    valueForPathChanged(TreePath path, Object newValue);
+    void addTreeModelListener(TreeModelListener l);
+    void removeTreeModelListener(TreeModelListener l);</pre></td></tr></table>
+<span class="sp20"> </span><br />
+<!-- END VCD7 CODE SAMPLE COMPONENT  -->
+<!-- BEGIN FRAGMENT | HR TAG -->
+<div class="contentdivider"><table border="0" cellpadding="0" cellspacing="0" width="100%" class="grey4"><tr><td><img src="/im/a.gif" width="1" height="4" border="0" alt=" " /></td></tr></table></div>
+<!-- END FRAGMENT | HR TAG -->
+<h2><font color="#000080">Turning a Weakness into a Strength</font></h2>
+<p>At first glance, that seems weird. How can a &quot;model&quot; 
+leave out manipulation operations? But this apparent weakness quickly 
+turns into a strength. The problem with defining a tree model is 
+that there are many fully functional subsets of the possible operations 
+on a tree. For example, let's say you define a tree model, and that 
+you want to be able to add a sublist node either at the beginning 
+or end of a node's sublist. There are at several possible combinations 
+of methods that would achieve that goal. You could implement insert-first 
+and insert-last, or you could implement insert-first and move-to-last, 
+or you could implement append-to-end and move-to-first. Any of those 
+pairs would be sufficient to make sure you can insert a new node 
+either at the beginning or end of a list. The following table shows 
+these three possible combinations of operations:<br>
+</p>
+<blockquote> 
+<p> 
+<table border="1" cellspacing="0" width="75%" align="center">
+<tr> 
+<td width="6%"><b>&nbsp;</b></td>
+<td width="46%"><b>Operation #1</b></td>
+<td width="48%"><b>Operation #2</b></td>
+</tr>
+<tr> 
+<td width="6%">1</td>
+<td width="46%">Insert as first sublist node</td>
+<td width="48%">Insert as last sublist node</td>
+</tr>
+<tr> 
+<td width="6%">2</td>
+<td width="46%">Insert as first sublist node</td>
+<td width="48%">Move node to end of its list</td>
+</tr>
+<tr> 
+<td width="6%">3</td>
+<td width="46%">Append as last sublist node</td>
+<td width="48%">Move node to beginning of its list</td>
+</tr>
+</table>
+<div align="center"><br>
+</div>
+<p></p>
+</blockquote>
+<p>Any two of these operations are sufficient to allow the client-developer 
+to get a node to the desired final positions. But which two should 
+the tree model define? This kind of question arises repeatedly in 
+the design of a tree object. Clearly, it would not be ideal for 
+the tree model to define <i>every</i> possible operation on a tree. 
+It would then be an onerous task for the developer to define a new 
+model object, because of the many methods that would have to be 
+defined.</p>
+<p>But there is no &quot;standard&quot; subset of operations. The 
+state of the art at the moment is that every component library which 
+includes an MVC-based tree component defines a wildly different 
+subset of the possible operations. The typical result, if you have 
+an existing tree structure, is that you have to perpetrate extreme 
+violence on it to make it a suitable model for a given component 
+library.</p>
+<p>Suppose, for example, that your structure implements &quot;insert 
+as first sublist&quot; and &quot;move node to end.&quot; If the 
+component you plan to use defines its tree model using &quot;insert 
+as last sublist node&quot; and &quot;move node to beginning,&quot; 
+you have your work cut out for you. You not only have to define 
+the new methods required by the interface; you also have to redefine 
+the old ones, to make sure they generate the events required by 
+the view-component.</p>
+<p>Like JList and JTable, JTree rushes to the rescue by the simple 
+expedient of not defining <i>any</i> structure manipulations on 
+the model. You are free to define any tree-structure operations 
+that make sense, and therefore are free to use any existing tree 
+object for the underlying data structure. The FileExplorer example 
+that follows uses the tree structure defined by the operating system's 
+directory hierarchy. The example shows you how to add listeners 
+on the JTree component to find events of interest, manipulate the 
+underlying data structure (in this case, the directory tree), and 
+then fire off the events that tell JTree that the structure has 
+changed.</p>
+<!-- BEGIN FRAGMENT | HR TAG -->
+<div class="contentdivider"><table border="0" cellpadding="0" cellspacing="0" width="100%" class="grey4"><tr><td><img src="/im/a.gif" width="1" height="4" border="0" alt=" " /></td></tr></table></div>
+<!-- END FRAGMENT | HR TAG -->
+<h2><font color="#000080"><a name="example_app"></a>Example: The FileExplorer 
+Browser</font></h2>
+<p>To help you examine the principles and programming techniques described 
+in this article, we've provided a sample program named <i>FileExplorer.java</i>, 
+which implements a simple directory browser called FileExplorer. 
+You can view the <i>FileExplorer.java</i> program as a series of 
+text files, or you can download the program in an executable version, 
+complete with all the source and class files that were used to compile 
+it. 
+<p> 
+<p> 
+<p> 
+<p> 
+<p> 
+<p> 
+<p> 
+<p> 
+<p>To see the source code for the various files that make up the FileExplorer 
+sample program, follow these links: 
+<ul>
+<li><a target="" href="/products/jfc/tsc/articles/jtree/src/FileExplorer.txt"><i>FileExplorer.java</i></a></li>
+<li><i><a target="" href="/products/jfc/tsc/articles/jtree/src/AbstractTreeModel.txt">AbstractTreeModel.java</a></i></li>
+<li><a target="" href="/products/jfc/tsc/articles/jtree/src/DirectoryModel.txt"><i>DirectoryModel.java</i></a></li>
+<li><i><a target="" href="/products/jfc/tsc/articles/jtree/src/DirectoryRenderer.txt">DirectoryRenderer.java</a></i></li>
+<li><a target="" href="/products/jfc/tsc/articles/jtree/src/FileSystemModel.txt"><i>FileSystemModel.java</i></a></li>
+<li><i><a target="" href="/products/jfc/tsc/articles/jtree/src/FileSystemTreePanel.txt">FileSystemTreePanel.java</a></i></li>
+<li><i><a target="" href="/products/jfc/tsc/articles/jtree/src/TreeModelSupport.txt">TreeModelSupport.java</a></i></li>
+</ul>
+<p>You can also download a zipped file containing all the preceding 
+source files, a <i>fileexplorer.jar</i> file, and an executable 
+version of the program. To do that, follow this link:</p>
+<blockquote> 
+<p><a href="/products/jfc/tsc/articles/jtree/downloads/FileExplorer.zip"><i>FileExplorer.zip</i></a></p>
+</blockquote>
+<p>When you excecute the <i>FileExplorer.java</i>program, it displays 
+a FileExplorer browser has a left pane and a right pane, as shown 
+in the following illustration. The left pane contains a tree-structured 
+file hierarchy. It shows all files in a directory, as well as any 
+folders that the directory contains. When a folder is selected in 
+the left pane, the right pane shows a table of information about 
+the files in the directory.</p>
+<p align="CENTER"><img src="/products/jfc/tsc/articles/jtree/images/UsingJTree-1.gif" width="414" height="232"></p>
+<p></p>
+<br>
+<!-- BEGIN FRAGMENT | HR TAG -->
+<div class="contentdivider"><table border="0" cellpadding="0" cellspacing="0" width="100%" class="grey4"><tr><td><img src="/im/a.gif" width="1" height="4" border="0" alt=" " /></td></tr></table></div>
+<!-- END FRAGMENT | HR TAG -->
+<blockquote> 
+<p><b><i>NOTE:</i></b><i> The FileExplorer is a demonstration application 
+that has been kept as simple as possible. To make a real utility 
+out of it, you would have to add many additional trimmings.</i> 
+</p>
+</blockquote>
+<!-- BEGIN FRAGMENT | HR TAG -->
+<div class="contentdivider"><table border="0" cellpadding="0" cellspacing="0" width="100%" class="grey4"><tr><td><img src="/im/a.gif" width="1" height="4" border="0" alt=" " /></td></tr></table></div>
+<!-- END FRAGMENT | HR TAG -->
+<h3><font color="#000080"><a name="implementing"></a>Implementing 
+the TreeModel interface</font></h3>
+<p>The first step in using JTree with an existing model is to implement 
+the <code>swing.tree.TreeModel</code> interface. You can add that 
+interface to an existing class, implement it on an adapter that 
+delegates to the existing tree structure (or subclasses that data 
+object), or use the interface on a &quot;parallel&quot; tree model 
+object that simply reports changes you make to the real tree. But, 
+however you slice it, you need to implement that interface.</p>
+<blockquote>
+<!-- BEGIN FRAGMENT | HR TAG -->
+<div class="contentdivider"><table border="0" cellpadding="0" cellspacing="0" width="100%" class="grey4"><tr><td><img src="/im/a.gif" width="1" height="4" border="0" alt=" " /></td></tr></table></div>
+<!-- END FRAGMENT | HR TAG -->
+<p><b>NOTE:</b> <i>The FileExplorer uses the &quot;parallel&quot; 
+approach because that strategy lets you create an adapter that 
+bridges the tree model and the underlying data tree (in this case, 
+the directory structure) without having to modify any of the code 
+that works with the underlying data tree.</i></p>
+<br>
+<!-- BEGIN FRAGMENT | HR TAG -->
+<div class="contentdivider"><table border="0" cellpadding="0" cellspacing="0" width="100%" class="grey4"><tr><td><img src="/im/a.gif" width="1" height="4" border="0" alt=" " /></td></tr></table></div>
+<!-- END FRAGMENT | HR TAG -->
+</blockquote>
+<h3><font color="#000080">Creating a JTree object</font></h3>
+<p> 
+<p>After creating a model, you instantiate a JTree object that uses 
+the model by invoking the <code>JTree(TreeModel)</code> constructor. 
+Then you register event listeners with the JTree component to handle 
+the events you are interested in. When the program handles a user 
+event, it makes two calls: one to the underlying data structure 
+to make the change, and another to the TreeModel-adapter to report 
+the change. The TreeModel object then notifies the JTree of the 
+change.<br>
+</p>
+<table border="0" width="593" align="center">
+<tr> 
+<td align="LEFT" valign="TOP" width="273"> 
+<p>The diagram on the right shows the steps needed to create 
+a JTree object. They work like this:</p>
+<ol>
+<li>The app registers mouse and keystroke listeners with the 
+JTree. 
+<li>The application receives events from the JTree and determines 
+the action to take. 
+<li>The application changes the underlying data model (in 
+this case, the file system). 
+<li>The application reports the change to the TreeModel adapter. 
+<li>The TreeModel adapter notifies its listeners (JTree) of 
+the change. 
+<li>JTree asks the TreeModel adapter for data to display. 
+<li>The adapter delegates the data request. 
+<li>The underlying data object (file system) passes back the 
+data. 
+<li>The adapter sends the data back to the JTree. 
+</ol>
+<blockquote> 
+<p><b></b></p>
+</blockquote>
+</td>
+<td align="CENTER" valign="MIDDLE" width="310"><img src="/products/jfc/tsc/articles/jtree/images/using_j_tree.gif" align="LEFT" width="323" height="410"></td>
+</tr>
+</table>
+<p>The remainder of this article describes these steps in detail, 
+showing how to use a JTree with an existing tree data structure. 
+In this case, the FileExplorer example included with the Swing class 
+library uses a JTree to display the directory tree managed by your 
+operating system.</p>
+<blockquote>
+<!-- BEGIN FRAGMENT | HR TAG -->
+<div class="contentdivider"><table border="0" cellpadding="0" cellspacing="0" width="100%" class="grey4"><tr><td><img src="/im/a.gif" width="1" height="4" border="0" alt=" " /></td></tr></table></div>
+<!-- END FRAGMENT | HR TAG -->
+<p><b>NOTE:</b> <i>You get a cleaner design if the TreeModel adapter 
+does the work of changing the data. But this diagram serves to 
+illustrate the very important point that changing the data and 
+notifying the JTree of the component of the change are two very 
+distinct steps.</i></p>
+<!-- BEGIN FRAGMENT | HR TAG -->
+<div class="contentdivider"><table border="0" cellpadding="0" cellspacing="0" width="100%" class="grey4"><tr><td><img src="/im/a.gif" width="1" height="4" border="0" alt=" " /></td></tr></table></div>
+<!-- END FRAGMENT | HR TAG -->
+</blockquote>
+<h3><font color="#000080"><a name="requirements"></a>TreeModel requirements</font></h3>
+<p>There are two aspects of the TreeModel interface that you need 
+to pay attention to: the <i>explicit</i> requirements and the <i>implicit</i> 
+requirements. The explicit requirements are the methods defined 
+in the interface. You saw those in the previous section. The JTree 
+component uses those methods to access the model's data, to change 
+the data stored at a node, and to register a TreeModel listener 
+-- which defines the implicit requirements for the interface.</p>
+<p>When the JTree component is created, it registers itself with the 
+model as a <code>TreeModelListener</code>. Implicitly, then, the 
+TreeModel is expected to perform the following notifications, as 
+defined in <code>swing.event.TreeModelListener</code>:</p>
+<blockquote> 
+<!-- BEGIN VCD7 CODE SAMPLE COMPONENT  -->
+<table border="0" cellpadding="10" cellspacing="0" width="100%" class="grey4">
+<tr><td><pre>void treeNodesChanged(TreeModelEvent e);
+
+void treeNodesInserted(TreeModelEvent e);
+
+void treeNodesRemoved(TreeModelEvent e);
+
+void treeStructureChanged(TreeModelEvent e);</pre></td></tr></table>
+<span class="sp20"> </span><br />
+<!-- END VCD7 CODE SAMPLE COMPONENT  -->
+</blockquote>
+<p>As you can see, the TreeModel is expected to generate events when 
+a nodes are changed, inserted, or removed, as well as when more 
+global structure changes occur. To encapsulate the event information, 
+the model needs to generate <code>swing.event.TreeModelEvent</code> 
+objects.</p>
+<!-- BEGIN FRAGMENT | HR TAG -->
+<div class="contentdivider"><table border="0" cellpadding="0" cellspacing="0" width="100%" class="grey4"><tr><td><img src="/im/a.gif" width="1" height="4" border="0" alt=" " /></td></tr></table></div>
+<!-- END FRAGMENT | HR TAG -->
+<h2><a name="using_abstract_tree_model"></a><font color="#000080">Using 
+AbstractTreeModel</font></h2>
+<p>To minimize the work you need to do, you can subclass <code>swing.tree.AbstractTreeModel</code>. 
+This class extends <code>swing.tree.TreeModelSupport</code>, which 
+handles the registration of tree model listeners and event notifications. 
+Since it also declares the <code>TreeModel</code> interface, leaving 
+you to implement the methods in that interface (except for the listener 
+registration methods, which are already handled by <code>TreeModelSupport</code>.)</p>
+<p>The following class diagram shows these relationships. Since FileExplorer 
+also uses a JTable to display the files in a directory, the diagram 
+shows the parallel relationships that exist in the use of the JTable 
+component.</p>
+<p align="CENTER"><img src="/products/jfc/tsc/articles/jtree/images/file_explorer_usage.gif" width="511" height="538"></p>
+<p>As this diagram illustrates, <code>AbstractTreeModel</code> inherits 
+concrete implementations of <code>addTreeModelListener</code> and 
+<code>removeTreeModelListener</code> from the <code>TreeModelSupport</code> 
+class, which takes care of the listener-registration methods required 
+by the <code>TreeModel</code> interface. The <code>TreeModelSupport</code> 
+class also provides the event-notification methods <code>fireTreeNodesChanged</code>, 
+<code>fireTreeNodesInserted</code>, <code>fireTreeNodesRemoved</code>, 
+and <code>fireTreeStructureChanged</code>.</p>
+<p>That leaves the accessor methods to be implemented by the application-specific 
+model, <code>FileSystemModel</code>: <code>getRoot</code>, <code>getChild</code>, 
+<code>getChildCount</code>, <code>getIndexOfChild</code>, and <code>isLeaf</code>. 
+If the tree is editable, the application-specific model must also 
+provide semantics for <code>valueForPathChanged</code>. Otherwise, 
+this method can be given a null-implementation.</p>
+<blockquote>
+<!-- BEGIN FRAGMENT | HR TAG -->
+<div class="contentdivider"><table border="0" cellpadding="0" cellspacing="0" width="100%" class="grey4"><tr><td><img src="/im/a.gif" width="1" height="4" border="0" alt=" " /></td></tr></table></div>
+<!-- END FRAGMENT | HR TAG -->
+<p><b>NOTE: </b>Because the <code>TreeModelSupport</code> class 
+is separate from <code>AbstractTreeModel</code>, you can either 
+subclass <code>AbstractTreeModel</code> to create an adapter, 
+or add the <code>TreeModel</code> interface on an existing class 
+and then delegate the registration and notification behaviors 
+to a <code>TreeModelSupport</code> object.</p>
+<!-- BEGIN FRAGMENT | HR TAG -->
+<div class="contentdivider"><table border="0" cellpadding="0" cellspacing="0" width="100%" class="grey4"><tr><td><img src="/im/a.gif" width="1" height="4" border="0" alt=" " /></td></tr></table></div>
+<!-- END FRAGMENT | HR TAG -->
+</blockquote>
+<p>The <code>FileExplorer</code> class creates an instance of <code>FileSystemModel</code>, 
+which it passes to an instance of <code>FileSystemTreePanel</code>. 
+The object-passing is shown in the diagram by the black dot, which 
+indicates that an object of the class <code>FileSystemModel</code> 
+is passed to the <code>FileSystemTreePanel</code>. The arrow at 
+the target end shows where the <code>FileSystemTreePanel</code> 
+keeps the passed object (in the <code>model</code> attribute). The 
+<code>FileSystemTreePanel</code>, in turn, creates a <code>JTree</code> 
+object, and passes its <code>model</code> object to the <code>JTree</code> 
+instance. As shown in the diagram, the type of the <code>JTree</code>'s 
+<code>model</code> object is <code>TreeModel</code>, which completes 
+the circle -- the <code>FileSystemModel</code> object is created 
+from a class that implements <code>TreeModel</code>, and is ultimately 
+stored in a variable defined with that type.</p>
+<p>The tree view is on the left side of the <code>FileExplorer</code> 
+app. On the right side is the table of files and their properties, 
+which follows the same pattern: The <code>FileExplorer</code> class 
+creates an instance of <code>DirectoryModel</code>, which subclasses 
+<code>AbstractTableModel</code>. This <code>TableModel</code> object 
+is then passed to an instance of <code>JTable</code>.</p>
+<!-- BEGIN FRAGMENT | HR TAG -->
+<div class="contentdivider"><table border="0" cellpadding="0" cellspacing="0" width="100%" class="grey4"><tr><td><img src="/im/a.gif" width="1" height="4" border="0" alt=" " /></td></tr></table></div>
+<!-- END FRAGMENT | HR TAG -->
+<h3><font color="#000080">Identifying Leaf Nodes</font></h3>
+<p>In a tree like this one, where some nodes (directory nodes) can 
+have children and other nodes (file nodes) cannot, <code>isLeaf()</code> 
+is implemented to distinguish the kinds of nodes. In this case, 
+the nodes are cast to type <code>File</code>, and <code>isFile()</code> 
+is returned to identify leaf nodes. Here is the code for <code>isLeaf()</code>:</p>
+<pre>    public boolean isLeaf( Object node ) {
+
+        return ((File)node).isFile();
+
+    }</pre>
+<p>In a tree where any node can have children, however, <code>isLeaf()</code> 
+could simply return <code>true</code>. 
+<p>&nbsp;
+<!-- BEGIN FRAGMENT | HR TAG -->
+<div class="contentdivider"><table border="0" cellpadding="0" cellspacing="0" width="100%" class="grey4"><tr><td><img src="/im/a.gif" width="1" height="4" border="0" alt=" " /></td></tr></table></div>
+<!-- END FRAGMENT | HR TAG -->
+<h3><font color="#000080">Handling JTree Events</font></h3>
+<p>When a directory in the left pane is clicked, the app needs to 
+change the table of information displayed in the right pane. To 
+do that, registers a tree selection listener, like this:</p>
+<pre>    fileTree.getTree().addTreeSelectionListener
+
+                  ( new TreeListener( directoryModel ) );</pre>
+<p>The DirectoryModel object is passed to the TreeListener for use 
+in the update process. Here is the code for the DirectoryModel class:</p>
+<!-- BEGIN VCD7 CODE SAMPLE COMPONENT  -->
+<table border="0" cellpadding="10" cellspacing="0" width="100%" class="grey4">
+<tr><td><pre>    protected static class TreeListener implements TreeSelectionListener {
+
+        DirectoryModel model;
+        public TreeListener( DirectoryModel mdl ) {
+            model = mdl;
+        }
+        public void valueChanged( TreeSelectionEvent e ) {
+
+<font color="#000000">            if (e.getNewLeadSelectionPath() == null) return;
+</font>            File fileSysEntity = (File)e.getPath().getLastPathComponent();
+            if ( fileSysEntity.isDirectory() ) {
+                model.setDirectory( fileSysEntity );
+            }
+            else {
+                model.setDirectory( null );
+            }
+        }
+    }</pre></td></tr></table>
+<span class="sp20"> </span><br />
+<!-- END VCD7 CODE SAMPLE COMPONENT  -->
+<p>This code identifies the <code>File</code> object that was selected 
+by the user. (The <code>getPath()</code> method returns a <code>TreePath</code> 
+object, which contains an array of <code>Object</code>s. The first 
+object in the array comes from the root of the tree. The last object 
+in the array is the selected item. The items between the root and 
+the selected item identify the path to the object, in the same way 
+that directory names identify a path to a file. (In this case, since 
+the tree represents the system file structure, the path objects 
+<i>are</i> directories.)</p>
+<blockquote>
+<!-- BEGIN FRAGMENT | HR TAG -->
+<div class="contentdivider"><table border="0" cellpadding="0" cellspacing="0" width="100%" class="grey4"><tr><td><img src="/im/a.gif" width="1" height="4" border="0" alt=" " /></td></tr></table></div>
+<!-- END FRAGMENT | HR TAG -->
+<p><b>NOTE: </b>The <code>valueChanged()</code> method reports changes 
+in the current selection. As a result, <tt>getNewLeadSelectionPath()</tt> 
+can return <code>null</code> whenever the currently selected item 
+has been deleted. A second event is then generated which identifies 
+the new selection after the delete takes place. Although the FileExplorer 
+app does not handle deletes, you should get in the habit of coding</p>
+<pre>    <font color="#000000">if (e.getNewLeadSelectionPath() == null) return;</font> </pre>
+<p>at the start of a <tt>valueChanged()</tt> method for TreeSelectionEvents.</p>
+<!-- BEGIN FRAGMENT | HR TAG -->
+<div class="contentdivider"><table border="0" cellpadding="0" cellspacing="0" width="100%" class="grey4"><tr><td><img src="/im/a.gif" width="1" height="4" border="0" alt=" " /></td></tr></table></div>
+<!-- END FRAGMENT | HR TAG -->
+</blockquote>
+<p>The <code>getLastPathComponent()</code> method returns the last 
+object in the path, which is then cast to a <code>File</code> object. 
+If the <code>File</code> object is a directory, it is sent to the 
+<code>DirectoryModel</code> for display. Otherwise, the <code>DirectoryModel</code> 
+is messaged with <code>null</code>, which clears the display in 
+the right pane.</p>
+<blockquote>
+<!-- BEGIN FRAGMENT | HR TAG -->
+<div class="contentdivider"><table border="0" cellpadding="0" cellspacing="0" width="100%" class="grey4"><tr><td><img src="/im/a.gif" width="1" height="4" border="0" alt=" " /></td></tr></table></div>
+<!-- END FRAGMENT | HR TAG -->
+<p><b>NOTE:</b> When the user has changed the current selection, 
+but has not deleted a node, the TreeSelectionEvent contains the 
+difference in the selection. In other words, it contains old nodes 
+that are no longer selected as well as newly selected nodes.When 
+you are concerned with multiple-node selections, you can invoke 
+the TreeSelectionEvent method <tt>isAddedPath(TreePath)</tt> on 
+each of the items returned by its <tt>getPaths()</tt> method to 
+find out which were added and which were removed. Or you can use 
+the JTree <tt>getSelectionModel()</tt> method to obtain the object 
+which is maintaining the current selection list, and then use 
+its <tt>getSelectionPaths()</tt> method to get an array of selected 
+TreePaths. Simple apps which aren't concerned with multiple-node 
+selections (like FileExplorer) simply use the first selected node, 
+which is returned by the TreeSelection event <tt>getPath()</tt> 
+method.</p>
+<!-- BEGIN FRAGMENT | HR TAG -->
+<div class="contentdivider"><table border="0" cellpadding="0" cellspacing="0" width="100%" class="grey4"><tr><td><img src="/im/a.gif" width="1" height="4" border="0" alt=" " /></td></tr></table></div>
+<!-- END FRAGMENT | HR TAG -->
+</blockquote>
+<!-- BEGIN FRAGMENT | HR TAG -->
+<div class="contentdivider"><table border="0" cellpadding="0" cellspacing="0" width="100%" class="grey4"><tr><td><img src="/im/a.gif" width="1" height="4" border="0" alt=" " /></td></tr></table></div>
+<!-- END FRAGMENT | HR TAG -->
+<h3><font color="#000080">Reporting Changes to the Model</font></h3>
+<p>The <code>FileExplorer</code> example does not currently make any 
+changes to the file system. Some useful extensions to it might allow 
+typing to on a filename to rename the file, or dragging a file to 
+a new location. After the changes are made to the underlying file 
+system, the JTree view needs to be notified. To do that you create 
+a <code>TreeModelEvent</code> object and then notify listeners, 
+passing the event object as data.</p>
+<p>Once again, the easiest way to notify listeners is to use one of 
+the methods defined in the <code>TreeModelSupport</code> class, 
+<code>fireTreeNodesChanged</code>, <code>fireTreeNodesInserted</code>, 
+<code>fireTreeNodesRemoved</code>, or <code>fireTreeStructureChanged</code>. 
+These methods invoke the appropriate method in each of the registered 
+listeners in order to notify them of the change, where the appropriate 
+method is one of the following:</p>
+<blockquote> 
+<!-- BEGIN VCD7 CODE SAMPLE COMPONENT  -->
+<table border="0" cellpadding="10" cellspacing="0" width="100%" class="grey4">
+<tr><td><pre>void treeNodesChanged(TreeModelEvent e);
+
+void treeNodesInserted(TreeModelEvent e);
+
+void treeNodesRemoved(TreeModelEvent e);
+
+void treeStructureChanged(TreeModelEvent e);</pre></td></tr></table>
+<span class="sp20"> </span><br />
+<!-- END VCD7 CODE SAMPLE COMPONENT  -->
+</blockquote>
+<p>The only thing left to understand is how to create a TreeModelEvent. 
+Depending on the type of notification you are making, you will use 
+one of the two types of TreeModelEvent constructors shown here:</p>
+<!-- BEGIN VCD7 CODE SAMPLE COMPONENT  -->
+<table border="0" cellpadding="10" cellspacing="0" width="100%" class="grey4">
+<tr><td><pre>    public TreeModelEvent(Object source, Object[] path, 
+
+         int[] childIndices, Object[] children)
+
+    public TreeModelEvent(Object source, TreePath path, 
+
+         int[] childIndices, Object[] children)
+
+    ---------------------------------------------------
+
+    public TreeModelEvent(Object source, Object[] path)
+
+    public TreeModelEvent(Object source, TreePath path)</pre></td></tr></table>
+<span class="sp20"> </span><br />
+<!-- END VCD7 CODE SAMPLE COMPONENT  -->
+<p>Note that there are essentially two kinds of constructors -- one 
+type specifies child nodes, the other doesn't. Within each type, 
+you have a choice of specifying either a TreePath or an array of 
+Objects to specify a target node. But the important distinction 
+is whether or not you specify children. The following list summarizes 
+the rules you need to know to create the right tree model event:</p>
+<ol>
+<li>When making a nodes-changed, nodes-inserted, or nodes-removed 
+notification you <i>always</i> specify children. So you use one 
+of the top two constructors.<br>
+<br>
+<li>Only when you are making a structure-changed notification do 
+you use the simple constructor that does not specify children.<br>
+<br>
+<li>In all cases, the <tt>path</tt> argument points to the <i>parent</i> 
+of the changes. If nodes were inserted, the path points to the 
+parent node under which the inserts took place. Similarly for 
+deletes or changes.<br>
+<br>
+<li>Since children are specified as indexes under a single parent, 
+it follows that a single insert/delete/change notification only 
+covers one node's sublist. Changes to multiple lists require multiple 
+notifications.<br>
+<br>
+<li>In order to notify a listener of multiple inserts and deletes, 
+or to identify changes at multiple levels in the tree, you use 
+<tt>treeStructureChanged()</tt> and use the simple, no-children 
+TreeModelEvent. In this case, the path argument specifies a node 
+in the tree that did <i>not</i> change, and which has all of the 
+other changes below it.<br>
+<br>
+<li>When specifying changes, the indexes specify the list positions 
+which will be replaced with the specified children Objects, so 
+they become the new children of the parent node specified by <i>path</i>. 
+In this case, the order of the indexes is immaterial, but the 
+usual practice is to specify them from low to high.<br>
+<br>
+<li>When specifying inserts, the indexes specify the list positions 
+in the <i>final</i> list, after the inserts have taken place. 
+The indexes <i>must</i> be specified from lowest to highest.<br>
+<br>
+<li>When specifying deletes, the indexes specify the list positions 
+in the <i>initial</i> list, before the deletes have taken place. 
+Again, the indexes <i>must</i> be specified from lowest to highest. 
+(Tree model listeners like JTree process them from back to front, 
+so that one delete does not change the index position of another 
+deleted item.) 
+</ol>
+<p>For more information on this subject, see the <a href="/products/jfc/swingdoc-api-1.1.1/javax/swing/tree/TreeModel.html">TreeModel</a> 
+and <a href="/products/jfc/swingdoc-api-1.1.1/javax/swing/event/TreeModelEvent.html">TreeModelEvent</a> 
+APIs. The API comments in these modules describe the process in 
+even greater detail.<br>
+</p>
+<!-- BEGIN FRAGMENT | HR TAG -->
+<div class="contentdivider"><table border="0" cellpadding="0" cellspacing="0" width="100%" class="grey4"><tr><td><img src="/im/a.gif" width="1" height="4" border="0" alt=" " /></td></tr></table></div>
+<!-- END FRAGMENT | HR TAG -->
+<h2><font color="#000080"><a name="using_default_tree_model"></a>Using 
+the Default Tree Model</font></h2>
+<p>Now that you have seen how to add a JTree view to an existing tree 
+structure, you may be interested in knowing how to use the default 
+tree model to create a new tree structure. The remainder of this 
+write-up discusses that process.</p>
+<p>Unfortunately, although JTree creates a default tree model when 
+you use the null constructor <code>JTree()</code>, its not so easy 
+to add nodes to that model or manipulate it in other ways. To do 
+so, you first obtain the default model currently in use by coding:</p>
+<blockquote> 
+<pre>DefaultTreeModel t = (DefaultTreeModel) myTree.getTreeModel();</pre>
+</blockquote>
+<p>The cast from the <code>TreeModel</code> returned by <code>getTreeModel()</code> 
+to a <code>DefaultTreeModel</code> succeeds as long as the JTree 
+was created with the null constructor or with any of the constructors 
+that specify an <code>Object</code> value, an array of <code>Object</code>s, 
+a <tt>TreeNode</tt>, or a <code>Hashtable</code>. Each of those 
+constructors creates an instance of <code>DefaultTreeModel</code> 
+wrapped around the specified object(s). The cast may fail, however, 
+if the<code> JTree(TreeModel)</code> constructor was used to create 
+a <code>JTree</code> with something other than the default tree 
+model..</p>
+<p>Once you have a DefaultTreeModel object, you can use the following 
+TreeModel methods to access specific data values:</p>
+<!-- BEGIN VCD7 CODE SAMPLE COMPONENT  -->
+<table border="0" cellpadding="10" cellspacing="0" width="100%" class="grey4">
+<tr><td><pre>    public Object  getRoot();
+
+    public int     getChildCount(Object parent);
+
+    public Object  getChild(Object parent, int index);
+
+    public int     getIndexOfChild(Object parent, Object child);</pre></td></tr></table>
+<span class="sp20"> </span><br />
+<!-- END VCD7 CODE SAMPLE COMPONENT  -->
+<p>All of these methods <i>return</i> data values, however. You want 
+to add new nodes and do other structure maipulations. There are 
+basically two kinds of things you might want to do. You might want 
+to add nodes to an otherwise static tree, building it one time in 
+order to display it, or you might want to do ongoing modifications 
+to the tree structure dynamically. Those two cases are discussed 
+below.</p>
+<!-- BEGIN FRAGMENT | HR TAG -->
+<div class="contentdivider"><table border="0" cellpadding="0" cellspacing="0" width="100%" class="grey4"><tr><td><img src="/im/a.gif" width="1" height="4" border="0" alt=" " /></td></tr></table></div>
+<!-- END FRAGMENT | HR TAG -->
+<h3><font color="#000080">Adding Nodes to a Static Tree</font></h3>
+<p>Its fairly easy to create a static tree for JTree to display. To 
+do that, you create a tree structure using <code>DefaultMutableTreeNode</code> 
+objects and then pass the root of that tree to a JTree constructor. 
+Here is how the SwingSet demo program builds up a tree structure 
+by creating multiple <code>DefaultMutableTreeNode</code> object:s 
+and linking them together:</p>
+<blockquote> 
+<!-- BEGIN VCD7 CODE SAMPLE COMPONENT  -->
+<table border="0" cellpadding="10" cellspacing="0" width="100%" class="grey4">
+<tr><td><pre>DefaultMutableTreeNode root = new DefaultMutableTreeNode(&quot;Music&quot;);
+DefaultMutableTreeNode category;
+DefaultMutableTreeNode composer;	
+DefaultMutableTreeNode style;	
+DefaultMutableTreeNode album;	
+// Classical
+category = new DefaultMutableTreeNode(&quot;Classical&quot;);	
+top.add(category);	
+// Beethoven	
+category.add(composer = new DefaultMutableTreeNode(&quot;Beethoven&quot;));	
+composer.add(style = new DefaultMutableTreeNode(&quot;Concertos&quot;));	
+style.add(new DefaultMutableTreeNode(&quot;No. 1 - C Major&quot;));	
+...		
+composer.add(style = new DefaultMutableTreeNode(&quot;Quartets&quot;));	
+style.add(new DefaultMutableTreeNode(&quot;Six String Quartets&quot;));
+...
+JTree tree = new JTree(root);</pre></td></tr></table>
+<span class="sp20"> </span><br />
+<!-- END VCD7 CODE SAMPLE COMPONENT  -->
+</blockquote>
+<p>Note that object was needed for each level of the tree (category, 
+composer, and so on) so that nodes could be added to the list created 
+at that level. For example, the line</p>
+<blockquote> 
+<pre>category.add(composer = new DefaultMutableTreeNode(&quot;Beethoven&quot;));	</pre>
+</blockquote>
+<p>adds a new composer object under the current category and the same 
+time maintains a reference to the composer object so that nodes 
+can be added under <i>it</i>. This is a good model to follow to 
+create and display a simple tree structure. <br>
+<br>
+<!-- BEGIN FRAGMENT | HR TAG -->
+<div class="contentdivider"><table border="0" cellpadding="0" cellspacing="0" width="100%" class="grey4"><tr><td><img src="/im/a.gif" width="1" height="4" border="0" alt=" " /></td></tr></table></div>
+<!-- END FRAGMENT | HR TAG -->
+<h3><font color="#000080">Dynamically Modifying a Tree</font></h3>
+<p>The <code>add()</code> method in the <code>DefaultMutableTreeNode</code> 
+class is good for appending items to the end of a list. This class 
+defines many other useful operations, including:</p>
+<!-- BEGIN VCD7 CODE SAMPLE COMPONENT  -->
+<table border="0" cellpadding="10" cellspacing="0" width="100%" class="grey4">
+<tr><td><pre>         getParent() insert(node, index)
+
+         getNextSibling() removeFromParent()
+
+         getPreviousSibling() removeAllChildren()
+
+         getFirstChild() removeChild(index)
+
+         getChildAfter(node) removeChild(node)</pre></td></tr></table>
+<span class="sp20"> </span><br />
+<!-- END VCD7 CODE SAMPLE COMPONENT  -->
+<p>The get-methods in this list all return <code>DefaultMutableTreeNode</code> 
+objects. So once you have one, you're golden. The trick, though, 
+is to get the first <code>DefaultMutableTreeNode</code>. The answer 
+lies in knowing that a <code>DefaultTreeModel</code> created by 
+the zero-argument <tt>JTree()</tt> constructor is, in fact, composed 
+of <code>DefaultMutableTreeNode</code> objects.</p>
+<p>You can get the root node from a <code>DefaultTreeModel</code>, 
+<code>t</code>, using:</p>
+<blockquote> 
+<pre>DefaultMutableTreeNode root = 
+    (DefaultMutableTreeNode) t.getRoot();</pre>
+</blockquote>
+<p>Once again you must cast the result, since <code>getRoot()</code> 
+returns an <code>Object</code> (which happens to be stored in the 
+tree model as a TreeNode). But since that object is really a <code>DefaultMutableTreeNode</code>, 
+the cast succeeds.</p>
+<blockquote>
+<!-- BEGIN FRAGMENT | HR TAG -->
+<div class="contentdivider"><table border="0" cellpadding="0" cellspacing="0" width="100%" class="grey4"><tr><td><img src="/im/a.gif" width="1" height="4" border="0" alt=" " /></td></tr></table></div>
+<!-- END FRAGMENT | HR TAG -->
+<p><b>NOTE: </b>The cast works as long as you are using a <code>JTree</code> 
+that was created with the <code>DefaultTreeModel</code>. If the 
+<code>JTree</code> was creating using the <code>JTree(TreeModel)</code> 
+constructor and some class that does not store <code>DefaultMutableTreeNode</code> 
+objects, the cast will fail.</p>
+<!-- BEGIN FRAGMENT | HR TAG -->
+<div class="contentdivider"><table border="0" cellpadding="0" cellspacing="0" width="100%" class="grey4"><tr><td><img src="/im/a.gif" width="1" height="4" border="0" alt=" " /></td></tr></table></div>
+<!-- END FRAGMENT | HR TAG -->
+</blockquote>
+<p>However, when you make a change using a <code>DefaultMutableTreeNode</code>, 
+you also need to inform the <code>DefaultTreeModel</code> that it 
+has changed! To that, you use the following <code>DefaultTreeModel</code> 
+methods:</p>
+<!-- BEGIN VCD7 CODE SAMPLE COMPONENT  -->
+<table border="0" cellpadding="10" cellspacing="0" width="100%" class="grey4">
+<tr><td><pre>    reload()
+
+    nodesWereInserted()
+
+    nodesWereRemoved()
+
+    nodesChanged()
+
+    nodeStructureChanged()</pre></td></tr></table>
+<span class="sp20"> </span><br />
+<!-- END VCD7 CODE SAMPLE COMPONENT  -->
+<p>Since <code>DefaultMutableTreeNode</code> objects implement <code>swing.tree.MutableTreeNode</code>, 
+you can avoid the two-step process of making changes <i>and</i> 
+notifying the model of them by using the following methods, which 
+make changes directly to the <code>DefaultTreeModel</code>:</p>
+<blockquote> 
+<pre>public void insertNodeInto(MutableTreeNode newChild,
+
+                           MutableTreeNode parent, int index){
+
+public void removeNodeFromParent(MutableTreeNode node) {</pre>
+</blockquote>
+<p>To do anything interactive, you will need to intercept user events 
+and make changes directed by the user. To get the <code>DefaultMutableTreeNode</code> 
+associated with a given mouse click you will need to use the JTree 
+method <code>getPathforLocation()</code> or <code>getClosestPathForLocation()</code>, 
+either of which returns a <code>TreePath</code> object. The <code>TreePath</code> 
+objects defined by the <code>DefaultTreeModel</code> consist of 
+an array of <code>DefaultMutableTreeNode</code> objects, where the 
+first object is the root, and the last is the target node. To get 
+the <code>TreeNode</code> object for the target node, you need code 
+like this:</p>
+<blockquote> 
+<pre>TreePath p = JTree.getPathForLocation(x,y);
+
+DefaultMutableTreeNode node = 
+
+          (DefaultMutableTreeNode) p.getLastPathComponent(); </pre>
+</blockquote>
+<p>This code gets the tree path object for a pair of x,y coordinates. 
+It then gets the last element in that path and casts it to a <code>DefaultMutableTreeNode</code>, 
+which you can then use for structure manipulations. Again, remember 
+to inform the model if you make changes directly from the node! 
+</p>
+<!-- BEGIN FRAGMENT | HR TAG -->
+<div class="contentdivider"><table border="0" cellpadding="0" cellspacing="0" width="100%" class="grey4"><tr><td><img src="/im/a.gif" width="1" height="4" border="0" alt=" " /></td></tr></table></div>
+<!-- END FRAGMENT | HR TAG -->
+<h2><font color="#000080"><a name="summary"></a>Summary</font></h2>
+<p>If you have an existing tree structure, it is easier to attach 
+a JTree view to it than it use to construct a JTree and use its 
+default tree model. When you are attaching to an existing tree structure, 
+you don't have to worry about <code>TreeNode</code>, <code>MutableTreeNode</code>, 
+or <code>DefaultMutableTreeNode</code> objects. Instead, you can 
+ignore all that and concentrate on the data objects in your structure. 
+So it's easy to create a static tree, and it's easy to add a JTree 
+view to an existing tree. When you want to create a default tree 
+and manipulate it, however, the process can be tricky. So be careful. 
+<!-- #EndEditable --></td>
+</tr>
+</table>
+<!-- =================== -->
+<!-- END OF MAIN CONTENT -->
+<!-- =================== -->
+<!--stopindex-->
+<!-- END CENTRAL COLUMN COMPONENTS -->
+</td><td valign="top">
+<!-- BEGIN RIGHT COLUMN COMPONENTS -->
+<!-- END RIGHT COLUMN COMPONENTS -->
+</td></tr>
+<!-- BEGIN SPACER ROW -->
+<tr><td><img src="/im/a.gif" width="560" height="1" border="0" alt=" " /></td><td><img src="/im/a.gif" width="170" height="1" border="0" alt=" " /></td></tr>
+<!-- END SPACER ROW -->
+</table>
+<!-- END WRAPPER TABLE, 2 COLUMN, MAIN/RIGHT -->
+<!-- BEGIN VNV5 FOOTER  -->
+<table border="0" cellpadding="0" cellspacing="10" width="100%">
+<tr>
+<td>
+<table border="0" cellpadding="0" cellspacing="0" width="100%" class="vatop">
+<tr>
+<td colspan="4" valign="top" class="grey3"><img src="/im/a.gif" width="1" height="2" border="0" alt="" /></td></tr>
+<tr>
+<td><img src="/im/a.gif" width="190" height="1" border="0" alt="" /><br />
+<a href="http://www.sun.com"><img src="/im/logo_sun_small_sdn.gif" width="61" height="29" border="0" alt="" vspace="5"/></a></td>
+<td width="100%" valign="top"><img src="/im/a.gif" width="350" height="1" border="0" alt="" /><br />
+<div class="footer">
+<a href="http://developers.sun.com/global/aboutsun.html">About Sun</a> &nbsp;|&nbsp;
+<a href="http://developers.sun.com/global/aboutsdn.html">About This Site</a> &nbsp;|&nbsp;
+<a href="http://developers.sun.com/global/newsletters.html">Newsletters</a> &nbsp;|&nbsp;
+<a href="http://developers.sun.com/global/contact.html">Contact Us</a> &nbsp;|&nbsp;
+<a href="http://developers.sun.com/global/employment.html">Employment</a><br />
+<a href="http://developers.sun.com/global/howtobuy.html">How to Buy</a> &nbsp;|&nbsp;
+<a href="http://developers.sun.com/global/licensing.html">Licensing</a> &nbsp;|&nbsp;
+<a href="http://developers.sun.com/global/termsofuse.html">Terms of Use</a> &nbsp;|&nbsp;
+<a href="http://developers.sun.com/global/privacy.html">Privacy</a> &nbsp;|&nbsp;
+<a href="http://developers.sun.com/global/trademarks.html">Trademarks</a>
+<br /><span class="sp10">&nbsp;</span><br />
+<br /><span class="sp10">&nbsp;</span><br />
+Copyright <span id="copyDate" class="cssDate"></span> Sun Microsystems, Inc.
+</div></td>
+<td><img src="/im/a.gif" width="40" height="1" border="0" alt="" /></td>
+<td valign="top"><div class="footer"><b><a href="http://developers.sun.com/global/aboutsdn.html">A Sun Developer Network Site</a></b></div>
+<div class="footer">
+<img src="/im/a.gif" width="170" height="1" border="0" alt="" /><br />
+Unless otherwise licensed, code in all technical manuals herein (including articles, FAQs, samples) is provided under this <a href="http://developers.sun.com/global/berkeley_license.html">License</a>.
+<br /><span class="sp5">&nbsp;</span><br />
+<a href="http://developers.sun.com/global/rss_sdn.html"><img src="/im/button_xml.gif" width="36" height="14" align="top" border="0" alt="XML" /></a>&nbsp;<a href="http://developers.sun.com/global/content_feeds.html">Content Feeds</a>
+</div></td></tr>
+<tr><td colspan="4" valign="top" class="grey3"><img src="/im/a.gif" width="1" height="2" border="0" alt="" /></td></tr>
+</table>
+</td></tr>
+</table>
+<!-- END VNV5 FOOTER -->
+</body>
+<script language="JavaScript" src="/js/omi/jsc/s_code_remote.js"></script></html>
+
+
+

@@ -1,0 +1,131 @@
+<form
+	action="..."
+	title="Create Directed Results"
+
+	cgi_add_record_carry_over_field="term"
+	cgi_edit_or_add_key_field="term"
+	multiple_match_selector_report="ListMapsForTerm3"
+	object_id_field="map_id"
+
+>
+
+	<section
+		title="Basic Information"
+		help="create_map_basic_info.html"
+	>
+		<field
+			name="term"
+			label="Search Term(s)"
+			type="textarea"
+			rows="3"
+			is_required="TRUE"
+		/>
+		<field
+			name="map_id"
+			type="hidden"
+		/>
+	</section>
+
+	<section
+		title="Suggested Web Page"
+		help="create_map_suggested_web_page.html"
+	>
+		<field
+			name="url_01"
+			label="URL"
+			is_required="TRUE"
+		/>
+
+		<!-- this button text/value must align with
+			CreateMapForm.processDataSubmission
+			AND
+			webui.xml_screens.generate_form.xslt
+		-->
+		<field
+			type="inline_button"
+		>
+			Check URL &gt;
+		</field>
+
+		<field
+			name="title_01"
+			label="Title"
+			is_required="TRUE"
+		/>
+		<field
+			name="desc_01"
+			label="Description"
+			type="textarea"
+			rows="3"
+		/>
+		<field
+			name="url_id_01"
+			type="hidden"
+		/>
+	</section>
+
+	<section
+		title="Related Terms"
+		help="create_map_related_terms.html"
+	>
+		<field
+			name="related_terms"
+			label="Related Term(s)"
+			type="textarea"
+			rows="2"
+		/>
+		<field
+			name="related_terms_heading"
+			label="Intro Text"
+			type="select"
+		>
+			<option value="(null)">(default)</option>
+			<option>You might also want to check out:</option>
+			<option>Did you mean:</option>
+			<option>Related Terms:</option>
+			<option>Related Products:</option>
+			<option>See Also:</option>
+			<option>Accessories:</option>
+			<option>Other helpful links:</option>
+		</field>
+		<field
+			name="related_terms_color"
+			label="Text Color"
+			type="select"
+		>
+			<option value="(null)">(default)</option>
+			<option value="#000000">Black</option>
+			<option value="#800000">Dark Red</option>
+			<option value="#FF0000">Red</option>
+			<option value="#000080">Dark Blue</option>
+			<option value="#008000">Dark Green</option>
+		</field>
+	</section>
+
+	<section>
+		<field type="hidden" name="mode">
+			submit
+		</field>
+		<!-- placeholder -->
+		<field type="hidden" name="return_url" />
+
+		<!-- Submit buttons -->
+		<button skip_operation="view">
+			&lt; Cancel
+		</button>
+		<button operation="add">
+			OK Create &gt;
+		</button>
+		<button operation="edit">
+			OK Save Changes &gt;
+		</button>
+		<button operation="delete">
+			OK Delete &gt;
+		</button>
+		<button operation="view">
+			Return &gt;
+		</button>
+	</section>
+
+
+</form>

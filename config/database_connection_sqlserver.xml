@@ -1,0 +1,14 @@
+<database
+	vendor_tag="sqlserver"
+	server_name="titan"
+	database_name="SearchTrack"
+	username="mbennett"
+	password="farts4me"
+	main_table="nie_log"
+>
+	<!-- Run a test query,
+		by default does a count(*) on main table by default
+	<test_query />
+	-->
+
+</database>

@@ -1,0 +1,212 @@
+<report>
+	<title>Number of Searches per Day</title>
+	<subtitle>For the past $cgi.days day(s)</subtitle>
+
+	<link_text>Searches per Day in last:</link_text>
+	<link_text_compact>Activity</link_text_compact>
+
+	<stats_label>
+		Total Searches:
+	</stats_label>
+
+	<!-- The Date / Day -->
+
+	<!-- this is just a date, not date+time -->
+	<!-- Oracle -->
+	<field
+		db_vendor="oracle"
+		heading="Days w/ Searches"
+		css_class="nie_datetime"
+		format_as="date"
+		format_template="Dy mm/dd/yy"
+	>
+		trunc(START_TIME)
+	</field>
+	<!-- PostgreSQL -->
+	<!-- see also cast and interval functions -->
+	<field
+		db_vendor="postgresql"
+		heading="Days w/ Searches"
+		css_class="nie_datetime"
+		format_as="date"
+		format_template="Dy mm/dd/yy"
+	>
+		date_trunc('day',START_TIME)
+	</field>
+	<!-- MS SQL Server -->
+	<field
+		db_vendor="sqlserver"
+		heading="Days w/ Searches"
+		css_class="nie_datetime"
+		format_as="date"
+		format_template="Dy mm/dd/yy"
+	>
+		convert(datetime, convert(integer, START_TIME-0.5) )
+	</field>
+	<!-- MySQL -->
+	<field
+		db_vendor="mysql"
+		heading="Days w/ Searches"
+		css_class="nie_datetime"
+		format_as="date"
+		format_template="Dy mm/dd/yy"
+	>
+		cast( date_format( START_TIME, '%Y-%m-%d' ) AS DATETIME )
+	</field>
+
+
+	<field heading="Num Searches"
+		display_sum="TRUE"
+		sql_alias="num_searches"
+		_display_avg="true"
+		_display_min="true"
+		_display_max="true"
+		_display_count="true"
+	>
+		count(*)
+	</field>
+
+	<!-- Earliest, Time only, not date+time -->
+	<field
+		heading="Earliest"
+		css_class="nie_datetime"
+		format_as="time"
+	>
+		min(START_TIME)
+	</field>
+
+	<!-- Average date/time this day -->
+
+	<!-- Oracle -->
+	<field
+		db_vendor="oracle"
+		heading="Average"
+		format_as="time"
+	>
+		<!-- We need to fold in the day into the calculation -->
+		trunc(START_TIME) + avg( START_TIME - trunc(START_TIME) )
+	</field>
+	<!-- PostgreSQL -->
+	<field
+		db_vendor="postgresql"
+		heading="Average"
+		format_as="time"
+	>
+		<!-- We need to fold in the day into the calculation -->
+		date_trunc('day',START_TIME) + avg( START_TIME - date_trunc('day',START_TIME) )
+	</field>
+	<!-- MS Sql Server -->
+	<field
+		db_vendor="sqlserver"
+		heading="Average"
+		format_as="time"
+	>
+		avg( convert(float, START_TIME) )
+	</field>
+	<!-- MySQL -->
+	<field
+		db_vendor="mysql"
+		heading="Average"
+		format_as="time"
+	>
+		FROM_UNIXTIME(AVG(UNIX_TIMESTAMP(START_TIME)))
+	</field>
+
+	<!-- Most Recent -->
+	<field
+		heading="Latest"
+		css_class="nie_datetime"
+		format_as="time"
+	>
+		max(START_TIME)
+	</field>
+
+	<!-- WHERE ... -->
+	<!-- ========= -->
+	<raw_where_filter>
+		<![CDATA[
+			start_time >= $system.from_date_truncated
+			AND
+			TRANSACTION_TYPE = 1 
+		]]>
+	</raw_where_filter>
+
+
+	<!-- GROUP BY ... -->
+	<!-- ============ -->
+
+	<!-- Oracle -->
+	<raw_grouping
+		db_vendor="oracle"
+	>
+		trunc(START_TIME)
+	</raw_grouping>
+	<!-- PostgreSQL -->
+	<raw_grouping
+		db_vendor="postgresql"
+	>
+		date_trunc('day', START_TIME )
+	</raw_grouping>
+	<!-- MS SQL Server -->
+	<raw_grouping
+		db_vendor="sqlserver"
+	>
+		convert(datetime, convert(integer, START_TIME-0.5) )
+	</raw_grouping>
+	<!-- MySQL -->
+	<raw_grouping
+		db_vendor="mysql"
+	>
+		cast( date_format( START_TIME, '%Y-%m-%d' ) AS DATETIME )
+	</raw_grouping>
+
+	<!-- ORDER BY ... -->
+	<!-- ============ -->
+
+	<!-- Oracle -->
+	<raw_sort
+		db_vendor="oracle"
+	>
+		trunc(START_TIME) DESC
+	</raw_sort>
+	<!-- PostgreSQL -->
+	<raw_sort
+		db_vendor="postgresql"
+	>
+		date_trunc( 'day', START_TIME) DESC
+	</raw_sort>
+	<!-- MS SQL Server -->
+	<raw_sort
+		db_vendor="sqlserver"
+	>
+		convert(datetime, convert(integer, START_TIME-0.5) ) DESC
+	</raw_sort>
+	<!-- MySQL -->
+	<raw_sort
+		db_vendor="mysql"
+	>
+		cast( date_format( START_TIME, '%Y-%m-%d' ) AS DATETIME ) DESC
+	</raw_sort>
+
+	<suggested_links>
+		<link>
+			<!-- <text>week</text> -->
+			<text>W</text>
+			<title>week</title>
+			<parameter name="days" value="7" />
+		</link>
+		<link>
+			<!-- <text>month</text> -->
+			<text>M</text>
+			<title>month</title>
+			<parameter name="days" value="30" />
+		</link>
+		<link>
+			<!-- <text>year</text> -->
+			<text>Y</text>
+			<title>year</title>
+			<parameter name="days" value="365" />
+		</link>
+	</suggested_links>
+
+</report>

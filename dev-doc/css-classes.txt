@@ -1,0 +1,43 @@
+nie.sn.CSSClassNames
+
+These are the ones used in SearchTrack Markups
+
+	// Results list markup, wms = Web Master Suggests
+	// USED BY OUR MARKUP
+	public static final String WMS_SLOGAN_FONT = "nie_wms_slogan";
+	public static final String ALT_SLOGAN_FONT = "nie_alt_term_slogan";
+	public static final String ALT_TERM = "nie_alt_term";
+	public static final String WMS_BOX1 = "nie_wms_outer_table";
+	public static final String WMS_BOX2 = "nie_wms_inner_table";
+	public static final String WMS_ICON = "nie_wms_icon";
+
+The rest are used mostly by our own reporting UI, etc.
+
+
+OR you can have use use YOUR own css class tags.
+
+Can be done in the UI or by editing config files.
+
+Configurator
+In the newer versions there is a "Look and Feel" section where you can directly set CSS names.
+
+OR
+You can do this by editing the files in the defaults/ directory:
+
+For example:
+
+default_webmaster_suggests_header.xml
+
+<default_webmaster_suggests_header
+        text="The Webmaster suggests:"
+        color="#000084"
+        size="+1"
+        markup_before="&lt;b&gt;"
+        markup_after="&lt;/b&gt;"
+        face="'MS Sans Serif',Geneva,sans-serif"
+        class="your_box_class"
+/>
+
+(the spaces and indenting are just for readbility, it would actually be all jumbled on one line)
+
+Notice the last line, the class="your_box_class"

@@ -1,0 +1,20 @@
+Check that TCP/IP is enanbled
+	and check port
+	default is 1433 but can change, like maybe 1500
+
+netstat to see if it's running
+	I'm not sure this works...
+
+telnet localhost port
+
+http://www.websina.com/bugzero/errors/sql-server-connection-error.html
+
+To check the enabled protocols for a server, follow these steps:
+   1. In SQL Server 2000, start the SQL Server Network Utility
+	svrnetcn.exe
+   2. On the General tab, select the instance of Microsoft SQL Server on which to load an installed server network library.
+   3. Make sure that TCP/IP appears in the Enabled Protocols list.
+   4. To find the port number, in the Enabled Protocols list, click TCP/IP, and then click Properties. The Properties dialog box displays the port number. 
+There is an known bug: SQL Server May Not Listen on TCP/IP Sockets When TCP/IP is the Only Protocol 
+
+

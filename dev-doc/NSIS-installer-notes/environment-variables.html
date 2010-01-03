@@ -1,0 +1,230 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<!-- header.skel.php: begin -->
+<html>
+
+<head>
+
+<title>NSIS Archive</title>
+
+    
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" href="/media/template/nsis.css" type="text/css">
+
+</head>
+
+<body leftmargin="0" topmargin="0" marginwidth="0" marginheight="0">
+
+<table width="778" height="100%" class="maintable" cellspacing="0" cellpadding="0" align="center">
+
+<tr><td colspan="2" height="22">
+ <table width="778">
+   <tr>
+     <td class="auser"><strong>Logged in as:</strong> <i>not logged in</i> ( <a href="login.php?page=156">login</a> )</td>
+     <td class="alinks">
+ 	          [ <a href="picklist.php">Pick List</a> ] [ <a href="search.php">Search</a> ] [ <a href="../index.php">NSIS Site</a> ] [ <a href="http://nsis.sourceforge.net/archive/nsisweb.php">Home</a> ]
+     </td>
+   </tr>
+ </table>
+<tr></td>
+
+  <tr>
+    <td width="150" height="100" class="top"><a href="/index.php"><img src="/media/template/left.gif" width="150" height="100" border="0"></a></td>
+    <td width="628" height="100" class="top"><h1 class="header">NSIS Archive</td>
+  </tr>
+
+  <tr>
+    <td class="content" colspan="2">
+
+<!-- header.skel.php: end --><!-- user_page.skel.php: begin -->
+Navigation: <a href="browse.php">Browse</a> &gt; <a href="/archive/nsisweb.php?page=11&instances=0">Useful Functions</a></a>
+<hr class="aline">
+<table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr>
+    <td class="atitle">
+      Setting Environment Variables    </td>
+    <td>
+      <a href="edit.php?pageid=137&instances=0,11,156"><img src="images/edit2.png" name="edit2" width="20" height="20" border="0" alt="Edit this page"></a> | <a href="delete.php?instanceid=156"><img src="images/cut2.png" name="cut2" width="20" height="20" border="0" alt="Remove this page instance from the Archive"></a> | <a href="picklist.php?action=pick&instanceid=156"><img src="images/copy2.png" name="copy2" width="20" height="20" border="0" alt="Add this page to your pick list"></a> | <a href="/archive/nsisweb.php?page=11&instances=0"><img src="images/up2.png" name="up2" width="20" height="20" border="0" alt="View the parent of this page"></a>    </td>
+  </tr>
+</table>
+<hr class="aline">
+<table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr>
+    <td align="left" valign="top">
+      Written by <a href="profile.php?userid=2">KiCHiK</a> 2003-02-21 02:23:35    </td>
+    <td align="right" valign="top">
+      Last updated by <a href="profile.php?userid=2">KiCHiK</a> 2003-06-02 05:18:17    </td>
+  </tr>
+  <tr><td><br><br></td></tr>
+  <tr><td colspan="2" align="left" valign="top" class="apage">
+<!-- user_page.skel.php: source -->
+If you want to change the path environment variable see: <a href="http://nsis.sourceforge.net/archive/viewpage.php?pageid=91" target="_blank">Path Manipulation</a>.<br><br>If you want to set an environment variable only for the installer process and its sub-processes use:<br><br><a href="savescript.php?pageid=137&script=1" target="_blank"><img border="0" src="images/disk.gif" width="19" height="19" class="aicon">Save this script</a><br><pre class="afixfont"><span class="ahlabel">System:</span><span class="ahnumber">:</span><span class="ahinstruction">Call</span> <span class="ahstring">'Kernel32::SetEnvironmentVariableA(t, t) i("name", "value").r0'</span>
+<span class="ahinstruction">StrCmp</span> <span class="ahvar">$0</span> <span class="ahnumber">0</span> error
+  <span class="ahinstruction">ExecWait</span> ProgThatReadsEnv.exe
+  <span class="ahinstruction">Goto</span> done
+<span class="ahlabel">error:</span>
+  <span class="ahinstruction">MessageBox</span> <span class="ahparam">MB_OK</span> <span class="ahstring">"Can't set environment variable"</span>
+<span class="ahlabel">done:</span></pre>If you want to set an environment variable that will stick for every other process and after reboots too you should use the functions below. To use them either save them as a .NSH file and include them in your script, or just copy paste them in your script. If you choose to save them as a .NSH file use:<br><br><a href="savescript.php?pageid=137&script=2" target="_blank"><img border="0" src="images/disk.gif" width="19" height="19" class="aicon">Save this script</a><br><pre class="afixfont"><span class="ahprepro"><b>!include</b></span> WriteEnvStr.nsh <span class="ahcomment"># or the name you chose
+</span><span class="ahcomment"># ...
+</span><span class="ahattribute">Section</span> <span class="ahstring">"Add Env Var"</span>
+  <span class="ahinstruction">Push</span> MyEnvVar
+  <span class="ahinstruction">Push</span> MyEnvVarValue
+  <span class="ahinstruction">Call</span> WriteEnvStr
+<span class="ahattribute">SectionEnd</span>
+<span class="ahcomment"># ...
+</span><span class="ahattribute">Section</span> uninstall
+  <span class="ahcomment"># remove the variable
+</span>  <span class="ahinstruction">Push</span> MyEnvVar
+  <span class="ahinstruction">Call</span> un.DeleteEnvStr
+<span class="ahattribute">SectionEnd</span>
+</pre>If you want the environment variable to be avaiable to all of the users using the computer define ALL_USERS before you include WriteEnvStr.nsh (or before the part of the script holding these functions if you didn't save it as a .NSH file). For example:<br><br><a href="savescript.php?pageid=137&script=3" target="_blank"><img border="0" src="images/disk.gif" width="19" height="19" class="aicon">Save this script</a><br><pre class="afixfont"><span class="ahprepro"><b>!define</b></span> ALL_USERS
+<span class="ahprepro"><b>!include</b></span> WriteEnvStr.nsh <span class="ahcomment"># or the name you chose
+</span></pre><h3>The functions</h3><b>Note:</b> under Windows 9x a reboot is required for changes to take affect. The reboot flag will be set by these functions if a reboot is required.<br><b>Warning:</b> this script will only work on NSIS 2.0b2 and above!<br><br><a href="savescript.php?pageid=137&script=4" target="_blank"><img border="0" src="images/disk.gif" width="19" height="19" class="aicon">Save this script</a><br><pre class="afixfont"><span class="ahprepro"><b>!include</b></span> WinMessages.nsh
+
+<span class="ahprepro"><b>!ifdef</b></span> ALL_USERS
+<span class="ahprepro"><b>  !define</b></span> WriteEnvStr_RegKey \
+     'HKLM "SYSTEM\CurrentControlSet\Control\Session Manager\Environment"'
+<span class="ahprepro"><b>!else</b></span>
+<span class="ahprepro"><b>  !define</b></span> WriteEnvStr_RegKey 'HKCU "Environment"'
+<span class="ahprepro"><b>!endif</b></span>
+
+<span class="ahcomment">#
+</span><span class="ahcomment"># WriteEnvStr - Writes an environment variable
+</span><span class="ahcomment"># Note: Win9x systems requires reboot
+</span><span class="ahcomment">#
+</span><span class="ahcomment"># Example:
+</span><span class="ahcomment">#  Push "HOMEDIR"           # name
+</span><span class="ahcomment">#  Push "C:\New Home Dir\"  # value
+</span><span class="ahcomment">#  Call WriteEnvStr
+</span><span class="ahcomment">#
+</span><span class="ahattribute">Function</span> WriteEnvStr
+  <span class="ahinstruction">Exch</span> <span class="ahvar">$1</span> <span class="ahcomment">; $1 has environment variable value
+</span>  <span class="ahinstruction">Exch</span>
+  <span class="ahinstruction">Exch</span> <span class="ahvar">$0</span> <span class="ahcomment">; $0 has environment variable name
+</span>  <span class="ahinstruction">Push</span> <span class="ahvar">$2</span>
+  
+  <span class="ahinstruction">Call</span> IsNT
+  <span class="ahinstruction">Pop</span> <span class="ahvar">$2</span>
+  <span class="ahinstruction">StrCmp</span> <span class="ahvar">$2</span> <span class="ahnumber">1</span> WriteEnvStr_NT
+    <span class="ahcomment">; Not on NT
+</span>    <span class="ahinstruction">StrCpy</span> <span class="ahvar">$2</span> <span class="ahvar">$WINDIR</span> <span class="ahnumber">2</span> <span class="ahcomment">; Copy drive of windows (c:)
+</span>    <span class="ahinstruction">FileOpen</span> <span class="ahvar">$2</span> <span class="ahstring">"<span class="ahvar">$2</span>\autoexec.bat"</span> a
+    <span class="ahinstruction">FileSeek</span> <span class="ahvar">$2</span> <span class="ahnumber">0</span> END
+    <span class="ahinstruction">FileWrite</span> <span class="ahvar">$2</span> <span class="ahstring">"<span class="ahvar">$\r</span><span class="ahvar">$\n</span>SET <span class="ahvar">$0</span>=<span class="ahvar">$1</span><span class="ahvar">$\r</span><span class="ahvar">$\n</span>"</span>
+    <span class="ahinstruction">FileClose</span> <span class="ahvar">$2</span>
+    <span class="ahinstruction">SetRebootFlag</span> <span class="ahparam">true</span>
+    <span class="ahinstruction">Goto</span> WriteEnvStr_done
+
+<span class="ahlabel">  WriteEnvStr_NT:</span>
+      WriteRegExpandStr <span class="ahvar">${WriteEnvStr_RegKey}</span> <span class="ahvar">$0</span> <span class="ahvar">$1</span>
+      <span class="ahinstruction">SendMessage</span> <span class="ahvar">${HWND_BROADCAST}</span> <span class="ahvar">${WM_WININICHANGE}</span> <span class="ahnumber">\</span>
+        <span class="ahnumber">0</span> <span class="ahstring">"STR:Environment"</span> <span class="ahparam">/TIMEOUT</span><span class="ahnumber">=</span><span class="ahnumber">5000</span>
+  
+<span class="ahlabel">  WriteEnvStr_done:</span>
+    <span class="ahinstruction">Pop</span> <span class="ahvar">$2</span>
+    <span class="ahinstruction">Pop</span> <span class="ahvar">$1</span>
+    <span class="ahinstruction">Pop</span> <span class="ahvar">$0</span>
+<span class="ahattribute">FunctionEnd</span>
+
+<span class="ahcomment">#
+</span><span class="ahcomment"># un.DeleteEnvStr - Removes an environment variable
+</span><span class="ahcomment"># Note: Win9x systems requires reboot
+</span><span class="ahcomment">#
+</span><span class="ahcomment"># Example:
+</span><span class="ahcomment">#  Push "HOMEDIR"           # name
+</span><span class="ahcomment">#  Call un.DeleteEnvStr
+</span><span class="ahcomment">#
+</span><span class="ahattribute">Function</span> un.DeleteEnvStr
+  <span class="ahinstruction">Exch</span> <span class="ahvar">$0</span> <span class="ahcomment">; $0 now has the name of the variable
+</span>  <span class="ahinstruction">Push</span> <span class="ahvar">$1</span>
+  <span class="ahinstruction">Push</span> <span class="ahvar">$2</span>
+  <span class="ahinstruction">Push</span> <span class="ahvar">$3</span>
+  <span class="ahinstruction">Push</span> <span class="ahvar">$4</span>
+  <span class="ahinstruction">Push</span> <span class="ahvar">$5</span>
+  
+  <span class="ahinstruction">Call</span> un.IsNT
+  <span class="ahinstruction">Pop</span> <span class="ahvar">$1</span>
+  <span class="ahinstruction">StrCmp</span> <span class="ahvar">$1</span> <span class="ahnumber">1</span> DeleteEnvStr_NT
+    <span class="ahcomment">; Not on NT
+</span>    <span class="ahinstruction">StrCpy</span> <span class="ahvar">$1</span> <span class="ahvar">$WINDIR</span> <span class="ahnumber">2</span>
+    <span class="ahinstruction">FileOpen</span> <span class="ahvar">$1</span> <span class="ahstring">"<span class="ahvar">$1</span>\autoexec.bat"</span> r
+    <span class="ahinstruction">GetTempFileName</span> <span class="ahvar">$4</span>
+    <span class="ahinstruction">FileOpen</span> <span class="ahvar">$2</span> <span class="ahvar">$4</span> w
+    <span class="ahinstruction">StrCpy</span> <span class="ahvar">$0</span> <span class="ahstring">"SET <span class="ahvar">$0</span>="</span>
+    <span class="ahinstruction">SetRebootFlag</span> <span class="ahparam">true</span>
+    
+<span class="ahlabel">    DeleteEnvStr_dosLoop:</span>
+      <span class="ahinstruction">FileRead</span> <span class="ahvar">$1</span> <span class="ahvar">$3</span>
+      <span class="ahinstruction">StrLen</span> <span class="ahvar">$5</span> <span class="ahvar">$0</span>
+      <span class="ahinstruction">StrCpy</span> <span class="ahvar">$5</span> <span class="ahvar">$3</span> <span class="ahvar">$5</span>
+      <span class="ahinstruction">StrCmp</span> <span class="ahvar">$5</span> <span class="ahvar">$0</span> DeleteEnvStr_dosLoop
+      <span class="ahinstruction">StrCmp</span> <span class="ahvar">$5</span> <span class="ahstring">""</span> DeleteEnvStr_dosLoopEnd
+      <span class="ahinstruction">FileWrite</span> <span class="ahvar">$2</span> <span class="ahvar">$3</span>
+      <span class="ahinstruction">Goto</span> DeleteEnvStr_dosLoop
+    
+<span class="ahlabel">    DeleteEnvStr_dosLoopEnd:</span>
+      <span class="ahinstruction">FileClose</span> <span class="ahvar">$2</span>
+      <span class="ahinstruction">FileClose</span> <span class="ahvar">$1</span>
+      <span class="ahinstruction">StrCpy</span> <span class="ahvar">$1</span> <span class="ahvar">$WINDIR</span> <span class="ahnumber">2</span>
+      <span class="ahinstruction">Delete</span> <span class="ahstring">"<span class="ahvar">$1</span>\autoexec.bat"</span>
+      <span class="ahinstruction">CopyFiles</span> <span class="ahparam">/SILENT</span> <span class="ahvar">$4</span> <span class="ahstring">"<span class="ahvar">$1</span>\autoexec.bat"</span>
+      <span class="ahinstruction">Delete</span> <span class="ahvar">$4</span>
+      <span class="ahinstruction">Goto</span> DeleteEnvStr_done
+
+<span class="ahlabel">  DeleteEnvStr_NT:</span>
+    <span class="ahinstruction">DeleteRegValue</span> <span class="ahvar">${WriteEnvStr_RegKey}</span> <span class="ahvar">$0</span>
+    <span class="ahinstruction">SendMessage</span> <span class="ahvar">${HWND_BROADCAST}</span> <span class="ahvar">${WM_WININICHANGE}</span> <span class="ahnumber">\</span>
+      <span class="ahnumber">0</span> <span class="ahstring">"STR:Environment"</span> <span class="ahparam">/TIMEOUT</span><span class="ahnumber">=</span><span class="ahnumber">5000</span>
+  
+<span class="ahlabel">  DeleteEnvStr_done:</span>
+    <span class="ahinstruction">Pop</span> <span class="ahvar">$5</span>
+    <span class="ahinstruction">Pop</span> <span class="ahvar">$4</span>
+    <span class="ahinstruction">Pop</span> <span class="ahvar">$3</span>
+    <span class="ahinstruction">Pop</span> <span class="ahvar">$2</span>
+    <span class="ahinstruction">Pop</span> <span class="ahvar">$1</span>
+    <span class="ahinstruction">Pop</span> <span class="ahvar">$0</span>
+<span class="ahattribute">FunctionEnd</span>
+
+<span class="ahcomment">#
+</span><span class="ahcomment"># [un.]IsNT - Pushes 1 if running on NT, 0 if not
+</span><span class="ahcomment">#
+</span><span class="ahcomment"># Example:
+</span><span class="ahcomment">#   Call IsNT
+</span><span class="ahcomment">#   Pop $0
+</span><span class="ahcomment">#   StrCmp $0 1 +3
+</span><span class="ahcomment">#     MessageBox MB_OK "Not running on NT!"
+</span><span class="ahcomment">#     Goto +2
+</span><span class="ahcomment">#     MessageBox MB_OK "Running on NT!"
+</span><span class="ahcomment">#
+</span><span class="ahprepro"><b>!macro</b></span> IsNT UN
+<span class="ahattribute">Function</span> <span class="ahvar">${UN}</span>IsNT
+  <span class="ahinstruction">Push</span> <span class="ahvar">$0</span>
+  <span class="ahinstruction">ReadRegStr</span> <span class="ahvar">$0</span> <span class="ahparam">HKLM</span> <span class="ahnumber">\</span>
+    <span class="ahstring">"SOFTWARE\Microsoft\Windows NT\CurrentVersion"</span> CurrentVersion
+  <span class="ahinstruction">StrCmp</span> <span class="ahvar">$0</span> <span class="ahstring">""</span> <span class="ahnumber">0</span> IsNT_yes
+  <span class="ahcomment">; we are not NT.
+</span>  <span class="ahinstruction">Pop</span> <span class="ahvar">$0</span>
+  <span class="ahinstruction">Push</span> <span class="ahnumber">0</span>
+  <span class="ahinstruction">Return</span>
+
+<span class="ahlabel">  IsNT_yes:</span>
+    <span class="ahcomment">; NT!!!
+</span>    <span class="ahinstruction">Pop</span> <span class="ahvar">$0</span>
+    <span class="ahinstruction">Push</span> <span class="ahnumber">1</span>
+<span class="ahattribute">FunctionEnd</span>
+<span class="ahprepro"><b>!macroend</b></span>
+<span class="ahprepro"><b>!insertmacro</b></span> IsNT ""
+<span class="ahprepro"><b>!insertmacro</b></span> IsNT "un."</pre><!-- user_page.skel.php: end -->
+  </td></tr>
+</table>
+<!-- footer.skel.php: begin -->
+    </td>
+  </tr>
+  <tr>
+    <td colspan="2" height="40" class="alogo">
+      <a href="http://sourceforge.net"><img src="http://sourceforge.net/sflogo.php?group_id=22049&amp;type=1" alt="SourceForge Logo" border="0"></a>
+    </td>
+  </tr> 
+</table>
+</body> 
+</html>
+<!-- footer.skel.php: end -->

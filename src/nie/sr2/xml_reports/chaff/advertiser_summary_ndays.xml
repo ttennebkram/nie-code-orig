@@ -1,0 +1,122 @@
+<report>
+	<title>Summary of Advertisers' Activity</title>
+	<subtitle>
+		Exposures and Click-throughs in the past $cgi.days day(s)
+	</subtitle>
+
+	<link_text>Advertisers' Activity in last:</link_text>
+
+	<field
+		heading="Ad Code"
+		sql_alias="ad_code"
+		is_report_link="TRUE"
+		link_title="Click to see Activity for this Advertiser"
+		link_report_name="advertiser_detail_ndays"
+	>
+		unique ADVERTISEMENT_CODE_SENT
+	</field>
+
+	<!--
+	<field
+		heading="Search Term"
+		sql_alias="query"
+	>
+		NORMALIZED_QUERY
+	</field>
+	-->
+
+	<field
+		heading="# of Exposures"
+		sql_alias="exposures"
+	>
+		<![CDATA[
+	   (
+	   		  select count(*) 
+			  from nie_log b
+			  where
+			  	   a.ADVERTISEMENT_CODE_SENT = b.ADVERTISEMENT_CODE_SENT
+				   and b.start_time >= SYSDATE - $cgi.days
+				   and b.TRANSACTION_TYPE = 4
+		)
+		]]>
+	</field>
+	<field
+		heading="# of Clicks"
+		sql_alias="clicks"
+	>
+		<![CDATA[
+	   (
+	   		  select count(*) 
+			  from nie_log c
+			  where
+			  	   a.ADVERTISEMENT_CODE_SENT = c.ADVERTISEMENT_CODE_SENT
+				   and c.start_time >= SYSDATE - $cgi.days
+				   and c.TRANSACTION_TYPE = 5
+		)
+		]]>
+	</field>
+
+	<!-- Advertisement Hyperlink -->
+	<!--
+	<field
+		heading="Advertisement URL"
+		is_external_link="TRUE"
+	>
+		ADVERTISEMENT_HREF
+	</field>
+	-->
+
+	<raw_from>
+		nie_log a
+	</raw_from>
+
+	<raw_where_filter>
+		a.ADVERTISEMENT_CODE_SENT is not null
+		<!--
+		and
+		a.NORMALIZED_QUERY is not null
+		-->
+	</raw_where_filter>
+
+	<raw_sort>
+	 	a.ADVERTISEMENT_CODE_SENT
+	 	<!--
+	 	,
+	 	a.NORMALIZED_QUERY
+		-->
+	</raw_sort>
+
+	<!--
+	<include location="includes/standard_ndays_link_suggestions.xml" />
+	-->
+
+	<suggested_links>
+		<link>
+			<text>day</text>
+			<title>day</title>
+			<parameter name="days" value="1" />
+		</link>
+		<link>
+			<text>week</text>
+			<title>week</title>
+			<parameter name="days" value="7" />
+		</link>
+		<link>
+			<text>month</text>
+			<title>month</title>
+			<parameter name="days" value="30" />
+		</link>
+		<link>
+			<text>quarter</text>
+			<title>quarter</title>
+			<parameter name="days" value="90" />
+		</link>
+		<link>
+			<text>year</text>
+			<title>year</title>
+			<parameter name="days" value="365" />
+		</link>
+	</suggested_links>
+
+
+</report>

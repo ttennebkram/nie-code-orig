@@ -1,0 +1,47 @@
+From: Mark Bennett [mbennett@ideaeng.com]
+Sent: Thursday, August 08, 2002 3:45 PM
+To: Kevin-Neil Klop
+Cc: Mark Bennett
+Subject: Kevin, one important note on the Build directory
+
+Importance: High
+
+Kevin,
+
+Most of the NIE projects have src/nie/... and classes/nie/...
+
+Since classes normally contain compiled code, one might expect that this
+entire directory is "expendable", since the source code can just be re-made.
+
+This is often NOT TRUE with our projects.
+
+For both XPump/DPump and SearchNames, I needed a "system" directory to store
+ancillary supporting files; files that are part of our install, but not an
+actual .class
+
+Java does have support for this idea.
+
+However, these files are relative to the CLASSES, not the source code.
+
+So in some of our classes trees you will see NON-.class files.
+
+This may seem odd at build time; I was tempted to not even do it.
+
+However, this works out VERY NICE at packaging/shipping time.  Our non
+.class files live INSIDE the our JAR file, and are still accessible as
+"files" inside Java.  It's a neat feature.
+
+Examples:
+
+I have an XML file that maps XPump in to DPump.  This becomes part of our
+jar file.
+
+I have XSLT files that format XML monitor data into HTML.  Again, these need
+to be shipped with our product.  And by doing it this way, the get to ride
+inside the jar file.
+
+Just pointing this out, as it's perhaps non-obvious.
+
+Mark
+
+

@@ -1,0 +1,68 @@
+<report>
+	<title>Most Frequent Visitors</title>
+	<subtitle>For the past $cgi.days day(s)</subtitle>
+
+	<link_text>Most Frequent Visitors in last:</link_text>
+
+
+	<field
+		heading="Visitor IP Address"
+		null_value_display="(not logged)"
+		sql_alias="client_host"
+
+		is_report_link="TRUE"
+		link_report_name="visitor_details_ndays"
+		link_title="Click to see this Visitor's searches"
+		do_link_if_null="TRUE"
+	>
+		a.CLIENT_HOST
+	</field>
+
+	<field
+		heading="Domain Name"
+		null_value_display="(not translated)"
+	>
+		b.dns_name
+	</field>
+
+	<field heading="Num Searches">count(*) num_searches</field>
+
+	<field
+		heading="Most Recently"
+		css_class="nie_datetime"
+		format_as="datetime"
+	>
+		max(START_TIME)
+	</field>
+
+	<raw_from>
+		nie_log a, nie_domain_names b
+	</raw_from>
+	<raw_where_join>
+		a.client_host = b.client_host (+)
+		AND
+		b.was_resolved (+) = 1
+	</raw_where_join>
+	<raw_where_filter>
+		<![CDATA[
+			start_time >= SYSDATE - $cgi.days
+			AND
+			TRANSACTION_TYPE = 1
+			
+		]]>
+	</raw_where_filter>
+
+	<raw_grouping>
+		a.client_host, b.dns_name
+	</raw_grouping>
+	<raw_sort>
+		num_searches desc
+		<!--
+		NORMALIZED_QUERY
+		search
+		-->
+	</raw_sort>
+
+	<include location="includes/standard_ndays_link_suggestions.xml" />
+
+</report>

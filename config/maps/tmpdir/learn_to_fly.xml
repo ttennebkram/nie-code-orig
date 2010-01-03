@@ -1,0 +1,63 @@
+<map>
+	<term>nie test</term>
+
+	<term>learn to fly</term>
+	<term>learning to fly</term>
+	<term>learning</term>
+
+	<term>training</term>
+	<term>training materials</term>
+	<term>training classes</term>
+	<term>instrament training</term>
+	<term>vfr training</term>
+
+	<term>get a license</term>
+	<term>license</term>
+	<term>pilots license</term>
+	<term>pilot's license</term>
+	<term>how to get a pilot's license</term>
+	<term>how to get a pilots license</term>
+
+	<!-- Advertisements -->
+	<user_data_markup_items class="text_ad">
+
+		<include location="../ads/american_flyers.xml" />
+		<include location="../ads/king_schools.xml" />
+		<include location="../ads/flight_safety.xml" />
+		<include location="../ads/sportys.xml" />
+
+	</user_data_markup_items>
+
+	<!-- Other SearchNames settings -->
+	<alternate_term>Joining AOPA</alternate_term>
+
+	<url redirect="0">
+		http://www.aopa.org/learntofly/
+		<title>
+		Learning to Fly!	
+		</title>
+		<description>
+		Here you'll learn the basics of getting 
+		a pilot certificate and read personal 
+		accounts of people who have done it.  
+		We think you'll find it interesting 
+		and enjoyable reading, and we hope it 
+		will help convince you to take a drive 
+		to your local airport and sign up for 
+		a first flight.
+		</description>
+	</url>
+
+	<url redirect="0">
+		http://www.aopa.org/members/files/guides/learntofly.html
+		<title>AOPA Member Learn to Fly Page</title>
+		<description>
+		This page in the members only section of the
+		AOPA web site details everything you need to know 
+		if you want to learn to fly, or if you want
+		to upgrade your skills with a more advanced
+		certificate.
+		</description>
+	</url>
+
+</map>

@@ -1,0 +1,51 @@
+http://en.wikipedia.org/wiki/Comparison_of_JavaScript_frameworks
+
+what of Greasemonkey? (Grease Monkey sic)
+	different category
+	http://en.wikipedia.org/wiki/Greasemonkey
+	http://userscripts.org/about/installing
+	http://www.greasespot.net/
+	http://userscripts.org/
+	- - -
+	http://platypus.mozdev.org/
+	http://jennifermadden.com/scripts/ViewRenderedSource.html
+
+Tahoe Ted uses YUI Yahoo
+
+Dojo
+	didn't excite me
+Echo3
+	seems a bit slow
+Ext
+	commerial and GPL
+	looks very nice but don't see charts, random placement, etc.
+GWT Google Web Toolkit
+	well known, but rather lame demos
+jQuery
+	drag and drop, etc but underwhelming
+midori
+	lame
+MochiKit
+	table sorting, some other plain stuff
+MooTools
+	very plain, light
+Prototype & script, aculo.us
+	visual effects, but not much else?
+	nice tile game :-)
+Pyjamas
+	functional, email client demo
+qooxdoo
+	dclick, visual effects, nice controls, buggy calculator demo
+	MINI WEB BROWSER (showcase / Browser)
+Rialto
+	basic tools
+Rico
+	basic tools
+SweetDEV RIA
+	basic tools
+* YUI Yahoo! User Interface Toolkit
+	EXTENSIVE basic examples
+	used by Tahoe Ted
+* ZK
+	Java and server centric, data binding, timelines
+	charts, widgets

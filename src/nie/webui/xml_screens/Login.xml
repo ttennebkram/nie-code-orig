@@ -1,0 +1,40 @@
+<form
+	action="..."
+	title="Report Viewing and Administration Login"
+>
+
+	<section
+		title="Please Login (account privileges depend on password)"
+		_help="find_map_basic_info.html"
+	>
+		<field
+			name="login_username"
+			label="User Name"
+			type="constant"
+			default="Reports/Admin"
+		/>
+		<field
+			name="login_password"
+			label="Password"
+			type="password"
+		/>
+	</section>
+
+	<section>
+		<field type="hidden" name="mode">
+			submit
+		</field>
+
+		<!-- See webui.UILink and sr2.java_reports.ListMapsForTerms -->
+		<field type="hidden" name="return_url">
+			(self)
+		</field>
+
+		<!-- Submit buttons -->
+		<button>
+			Login &gt;
+		</button>
+	</section>
+
+
+</form>

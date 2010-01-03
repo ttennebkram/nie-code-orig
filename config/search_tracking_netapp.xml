@@ -1,0 +1,69 @@
+<search_tracking>
+  <data_logging site_id="10" ignore_null_searches="TRUE">
+    <!-- You can list more than one ignore_address, and you can
+         use DNS name or IP address -->
+    <!--
+    <ignore_address>localhost</ignore_address>
+    -->
+    <proxy_settings>
+      <!-- aopa pattern -->
+      <!--
+			<docs_found_pattern>
+			<![CDATA[
+				"</I></B> matched <B><I>
+			]]>
+			</docs_found_pattern>
+			-->
+      <!-- nie free find pattern -->
+      <docs_found_pattern match_both="FALSE" max_found_look_ahead="" max_searched_look_ahead=""><![CDATA[</b> of <b>]]></docs_found_pattern>
+      <!-- two valid patterns
+			<font class=search-count face="arial,verdana,geneva,lucida" size="1"><small>Found
+
+			</font><br>Found
+			-->
+      <!-- Indicator of NO documents found
+				Ignored if above pattern matches
+			-->
+      <no_docs_found_pattern><![CDATA[</b> - had no results.]]></no_docs_found_pattern>
+    </proxy_settings>
+    <!-- Search Track needs to talk to a database -->
+    <!-- moved up <include location="database_connection.xml" /> -->
+    <ignore_address />
+    <ignore_address />
+    <ignore_address />
+    <ignore_pattern />
+    <ignore_pattern />
+    <ignore_pattern />
+    <ignore_indicator_field />
+    <ignore_indicator_field />
+    <ignore_indicator_field />
+  </data_logging>
+  <report_settings>
+    <!--
+		<surround_template>
+			http://ideaeng.com/sn/aopa-report-template.html
+		</surround_template>
+		<marker_text replace="TRUE">
+			<![CDATA[
+				REPORT GOES HERE
+			]]>
+		</marker_text>
+		-->
+    <!--
+		<surround_template>
+			http://ideaeng.com/search/sr-template.html
+		</surround_template>
+		<marker_text replace="TRUE">
+			<![CDATA[
+				search reports go here
+			]]>
+		</marker_text>
+		-->
+    <reports_directory>myreports</reports_directory>
+    <!--
+			report dir =
+			css =
+			report menu definitiohn =
+		-->
+  </report_settings>
+</search_tracking>

@@ -1,0 +1,142 @@
+<form
+	action="..."
+	title="Text Ad"
+	cgi_add_record_carry_over_field="term"
+	cgi_edit_or_add_key_field="term"
+	multiple_match_selector_report="ListMapsForTerm3"
+	object_id_field="map_id"
+>
+
+	<section
+		title="Basic Information"
+		help="create_text_ad_basic_info.html"
+	>
+		<field
+			name="term"
+			label="Search Term(s)"
+			type="textarea"
+			rows="3"
+			is_required="TRUE"
+		/>
+		<field
+			name="map_id"
+			type="hidden"
+		/>
+	</section>
+
+	<section
+		title="Advertisement Information"
+		help="create_text_ad_advertisement_info.html"
+	>
+		<field
+			name="ad_code_01"
+			label="Advertisement Code"
+			is_required="TRUE"
+		/>
+		<!--
+		<field
+			name="new_code"
+			label="New Ad Code"
+		/>
+		<field
+			name="new_code_desc"
+			label="Description"
+		/>
+		<label
+			text="- or -"
+			position="all"
+			small="TRUE"
+			itallic="TRUE"
+		/>
+		<field
+			label="- or -"
+		/>
+		<field
+			name="old_code"
+			label="Existing Ad Code"
+			type="select"
+		>
+			<option value="(null)">(existing codes)</option>
+			<option>AOPAI / AOPA Insurance Campaign</option>
+			<option>GARM / Garmin</option>
+			<option>JEPP / Jeppeson Charts</option>
+		</field>
+	</section>
+	<section
+		title="Advertiser's Web Page"
+		help="create_text_ad_web_page.html"
+	>
+		-->
+
+		<field
+			name="url_01"
+			label="URL"
+			is_required="TRUE"
+		/>
+		<field
+			name="title_01"
+			label="Title"
+			is_required="TRUE"
+		/>
+		<field
+			name="desc_01_line_01"
+			label="Description"
+			size="30"
+			max_input_length="30"
+			is_required="TRUE"
+		/>
+		<field
+			name="desc_01_line_02"
+			label="line 2"
+			size="30"
+			max_input_length="30"
+		/>
+		<field
+			name="desc_01_line_03"
+			label="line 3"
+			size="30"
+			max_input_length="30"
+		/>
+		<field
+			name="desc_01_line_04"
+			label="line 4"
+			size="30"
+			max_input_length="30"
+		/>
+		<field
+			name="url_id_01"
+			type="hidden"
+		/>
+	</section>
+
+	<section>
+		<field type="hidden" name="mode">
+			submit
+		</field>
+		<!-- placeholder -->
+		<field type="hidden" name="return_url" />
+
+		<field type="hidden" name="user_class">
+			text_ad
+		</field>
+
+		<!-- Submit buttons -->
+		<button skip_operation="view">
+			&lt; Cancel
+		</button>
+		<button operation="add">
+			OK Create &gt;
+		</button>
+		<button operation="edit">
+			OK Save Changes &gt;
+		</button>
+		<button operation="delete">
+			OK Delete &gt;
+		</button>
+		<button operation="view">
+			Return &gt;
+		</button>
+	</section>
+
+
+</form>

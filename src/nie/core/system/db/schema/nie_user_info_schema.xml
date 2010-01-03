@@ -1,0 +1,44 @@
+<table name="nie_user_info">
+
+<field name="user_id"
+	type="int"
+	is_not_null="TRUE"
+	is_indexed="FALSE"
+/>
+<field name="security_level"
+	type="int"
+	description="if less than or equal zero means LOCKED OUT"
+/>
+<field name="user_name"
+	type="text"
+	size="16"
+	is_not_null="TRUE"
+	is_indexed="TRUE"
+/>
+<field name="password"
+	type="text"
+	size="24"
+	is_not_null="TRUE"
+	is_indexed="TRUE"
+/>
+<field name="full_name"
+	type="text"
+	size="128"
+/>
+<field name="email_address"
+	type="text"
+	size="128"
+/>
+<field name="phone_1"
+	type="text"
+	size="10"
+/>
+<field name="phone_2"
+	type="text"
+	size="10"
+/>
+<field name="phone_3"
+	type="text"
+	size="10"
+/>
+</table>

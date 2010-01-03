@@ -1,0 +1,36 @@
+For reference, FAST JDBC doc 4.1.1 suggests these:
+
+Oracle:
+	oracle.jdbc.driver.OracleDriver
+MS SQL Server 2000:
+	com.microsoft.jdbc.sqlserver.SQLServerDriver
+ODBC Bridge:
+	sun.jdbc.odbc.JdbcOdbcDriver
+MySQL:
+	com.mysql.jdbc.Driver
+DB2:
+	com.ibm.db2.jcc.DB2Driver
+Sybase:
+	com.sybase.jdbc3.jdbc.SybDriver
+
+And for URL syntax:
+
+Oracle:
+	jdbc:oracle:thin:@yourServer:1521:yourDataBase
+MS SQL Server 2000:
+    jdbc:microsoft:sqlserver://yourServer:1433; DatabaseName=yourData-BaseName
+ODBC Bridge:
+	jdbc:odbc:DSNName
+MySQL:
+	jdbc:mysql://host:3306/yourDatabase-Here?user=value1&password=value2
+DB2:
+	jdbc:db2://yourServerHere:50000/yourDatabaseNameHere
+Sybase:
+	jdbc:sybase:Tds:yourServer-Here:2048/yourDatabaseNameHere
+
+Sample query
+
+SELECT * from employees where ...
+	and
+	UPDATE > TO_TIMESTAMP_TZ ('%TIMESTAMP%', 'MM/dd/yyyy hh24:mi:ss TZR')
+	%TIMESTAMP% or %TIMESTAMPSEC% for seconds

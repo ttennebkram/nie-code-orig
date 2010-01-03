@@ -1,0 +1,42 @@
+Collection	coll1	coll2	etc
+
+(mark ideas)
+
+Record Efficiency (active records / total records)
+-- all stats below are for non deleted records --
+Populated Title Ratio (non-empty / total)
+Unique Title Ratio (unique non-null titles / total titles)
+
+
+
+Oveall Health
+Last Update
+Currancy (days)
+Partition Health
+Document Count
+
+-----
+
+Verity Broker
+Verity Server
+Alias
+System
+Gateway
+Style Set
+Doc Access
+Locale
+Partition Count
+Partition Doc Count
+BIF Recs
+BIF Date
+
+------
+
+Index Tool
+Build Script
+Update Script
+Supporting Files
+Output Logfile
+start url
+Collection Version
+Index By

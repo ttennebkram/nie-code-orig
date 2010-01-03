@@ -1,0 +1,125 @@
+Download
+--------
+Google
+	postgresql
+	first site is postgresq.org
+	sitemap
+		Downloads
+
+OR just go here:
+
+http://www.postgresql.org/download/
+	Windows
+http://www.postgresql.org/download/windows
+	"1 click installer"
+	Download
+http://www.enterprisedb.com/products/pgdownload.do#windows
+	left box
+	lower right button Windows flag
+	postgresql-8.3.5-1-windows.exe
+
+Do the install
+but hold off on running.
+
+Then TWO MANUAL CHANGES
+
+Manual change 1:
+
+Get your HOST IP address and name with ipconfig /all
+Edit
+	C:\Program Files\PostgreSQL\83\data\pg_hba.conf
+	or
+	D:\apps\PostgreSQL-83\data\pg_hba.conf
+Add line:
+	host    all         all         YOUR IP ADDR AND MASK	password
+	Example:
+	host    all         all         192.168.1.1/16          password
+
+Notes:
+* In earlier versions there was a different option for this
+* "password" is not very secure, use other method for production systems
+
+
+Manual change 2:
+
+Control Panel
+	Windows Firewall
+		Exceptions tab
+			Add Port...
+			Name: PostgreSQL
+			Port: 5432
+			Type: TCP
+OK, save, etc.
+
+
+Run PostgreSQL Configurator
+---------------------------
+
+Start Menu
+	PosgreSQL
+		pgAdmin III
+
+Add NON-localhost IP address
+----------------------------
+	get your HOST name with ipconfig /all
+	This assumes previous step was run
+	expand Servers
+	right click "PostgreSQL 8.3"
+	make sure it is NOT running
+	right click -> properties
+	Host field: CHANGE THIS to your NON localhost IP NAME or address
+	IF IT'S GRAYED OUT, you didn't STOP the service!
+		Cancel
+		right click "PostgreSQL 8.3"
+		Stop Service
+		then right click -> Properties -> host, etc.
+	Then right click
+		Start Service
+	right click again
+		connect
+	This should work
+	I don't think you have to reboot or goto Control Panel / Services
+		but I guess if nothing else works then try that.
+
+Note: sometimes it puts red X's in the UI
+	This is normal I guess, either they don't refresh the state or
+		it means something... who knows.
+	If you see a red x it MIGHT BE OK, try clicking on that object anyway
+
+Create a new User FIRST (before DB)
+-----------------------
+	right click "PostgreSQL 8.3"
+		make sure it's running
+	expand "PostgreSQL 8.3"
+	right click Login Roles
+		New Login Role...
+	Fill in just a couple fields:
+		Role name (like customer name)
+		password (twice)
+		*** Can create database Objects set to YES / checked
+	OK
+
+Create a new database
+---------------------
+	As before, make sure PostgreSQL 8.3 is running and expanded
+	Right click Databases
+		New Database...
+	Fill in just a few fields
+		name: (maybe simple, same as customer and login)
+		*** Owner: choose the user you just created
+	OK
+
+Test connection with SearchTrack
+--------------------------------
+
+Create a database.xml file.
+Can do this with SearchTrack Configurator
+
+Then test:
+hello_db.bat database.xml
+
+Try on local machine, same as PostgreSQL.
+
+Then try on another machine, if needed.
+If it works locally, but not remotely, see the Firewall settings
+above for the machine that POSTGRES is installed on.

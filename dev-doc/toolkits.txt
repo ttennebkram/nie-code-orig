@@ -1,0 +1,36 @@
+Used by FAST Clarity graphics
+	rrdbtool
+	Round Robin DataBase tool
+
+Used by FAST Linguistic Studio
+* Eclipse Platform files
+Available for download and use pursuant to the terms of the
+Eclipse Public License, v1.0
+(http://www.eclipse.org/org/documents/epl-v10.php)
+* Hibernate - Relational Persistence for Java
+* Jacorb - multithreaded ORB
+* XXL - extended relational algebra
+Available for download and use pursuant to the terms of the
+GNU Lesser General Public License, v2.1
+(http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html)
+
+
+Used by Jeremy for his Medial Trials system startup 2008
+These are all open source products. Some have a commercial version or components.
+ETL and OLAP tools:
+Pentaho BI Suite
+	http://www.pentaho.com/products/
+I have been experimenting with these and they have improved dramatically over the last year and a half. I have a full set of the free version and they work well. Takes a little time to get up to speed with them.
+These look good, but I have not tried them. They are also ETL and OLAP tools
+	http://www.talend.com/products-data-integration/talend-open-studio.php - feature
+	http://www.jaspersoft.com/JasperSoft_JasperAnalysis.html
+Group Management and Web-able Spreadsheets (Very Cool Concept)
+	http://www.jedox.com/en/enterprise-spreadsheet-server/excel-olap-server/palo-server.html
+Document Management and Content Management (Replacement for Microsoft Sharepoint with major benefits)
+	http://www.alfresco.com/products/
+System Monitoring
+	http://www.nagios.org/
+Message Bus
+	http://mulesource.com/products/mule.php
+Business Rules
+	http://www.jboss.org/drools/

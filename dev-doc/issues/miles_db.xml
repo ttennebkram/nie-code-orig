@@ -1,0 +1,17 @@
+<!-- configured for Miles Postgres database -->
+
+<database
+	vendor_tag="postgresql"
+	server_name="bsd.castlecontrols.com"
+	database_name="miles1"
+	username="miles"
+	password="culver"
+	main_table="nie_log"
+>
+	<!-- Run a test query,
+		by default does a count(*) on main table by default
+	<test_query />
+	-->
+
+</database>
+

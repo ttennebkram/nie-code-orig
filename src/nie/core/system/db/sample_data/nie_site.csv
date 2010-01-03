@@ -1,0 +1,2 @@
+#id,name,comments,is_default_site,search_port,search_engine_url,administrator_email,created_by_person
+123,NIE,"NIE's Web Site",1,9000,http://search.freefind.com/find.html?pageid=r&mode=ALL&id=36902671,mbennett@ideaeng.com,demoloader

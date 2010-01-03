@@ -1,0 +1,110 @@
+<report>
+	<title>Sub-Site / Filtered Searches - Summary</title>
+	<subtitle>
+		in the past $cgi.days day(s)
+	</subtitle>
+	<link_text>Sub-site Search Activity in last:</link_text>
+	<link_text_compact>Sub-site</link_text_compact>
+
+	<select_modifier>
+		distinct
+	</select_modifier>
+
+	<field
+		heading="Filter Field"
+		sql_alias="display_field"
+		null_value_display="(un-filtered)"
+		is_report_link="FALSE"
+		_link_report_name="search_modes_detail_ndays"
+		_except_db_vendor="oracle"
+	>
+		${system.null_value_method}( field_description, field_name )
+	</field>
+
+	<field
+		should_display="FALSE"
+	>
+		field_name
+	</field>
+
+	<field
+		heading="Filter Value"
+		sql_alias="display_value"
+		null_value_display="(no value)"
+		is_report_link="TRUE"
+		do_link_if_null="TRUE"
+		link_title="Click to see these filtered searches"
+		link_report_name="moded_search_detail_ndays"
+		_except_db_vendor="oracle"
+	>
+		${system.null_value_method}( value_description, field_value )
+
+		<link>
+			<!-- Variable hash prefix from sr2.ReportLink.RAW_FIELDS_HASH_NAME = raw_fields -->
+			<parameter name="field_name" value="$raw_fields.field_name" />
+			<parameter name="field_value" value="$raw_fields.field_value" />
+		</link>
+	</field>
+
+	<field
+		should_display="FALSE"
+	>
+		field_value
+	</field>
+
+	<field
+		heading="# of Searches"
+		sql_alias="searches"
+	>
+		count(*)
+	</field>
+
+	<!-- Oracle 8i -->
+	<raw_from
+		db_vendor="oracle"
+	>
+		nie_log log, nie_log_meta_data meta
+	</raw_from>
+	<!-- Postgresql and others -->
+	<raw_from
+		except_db_vendor="oracle"
+	>
+		nie_log log left outer join nie_log_meta_data meta on
+			log.search_transaction_number = meta.search_transaction_number
+	</raw_from>
+
+	<raw_where_join
+		db_vendor="oracle"
+	>
+		log.search_transaction_number = meta.search_transaction_number (+)
+	</raw_where_join>
+	<!-- No postgresql or others raw_where_join needed -->
+
+	<!-- "owner" value set in DbMapRecord.META_DATA_FIELD_MODE_OWNER_NAME -->
+	<raw_where_filter>
+		<![CDATA[
+			start_time >= $system.from_date
+			AND
+			transaction_type = 1
+			AND
+			(
+				meta.search_transaction_number IS NULL
+				OR owner = 'moded_field_match'
+			)
+		]]>
+	</raw_where_filter>
+
+	<raw_grouping>
+		${system.null_value_method}( field_description, field_name ),
+		field_name,
+		${system.null_value_method}( value_description, field_value ),
+		field_value
+	</raw_grouping>
+
+	<raw_sort>
+		display_field, field_name, display_value, field_value
+	</raw_sort>
+
+	<include location="includes/standard_ndays_link_suggestions.xml" />
+
+</report>

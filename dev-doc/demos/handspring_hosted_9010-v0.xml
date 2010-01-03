@@ -1,0 +1,173 @@
+<nie_config>
+<!-- Config file for terms for Handspring using atomz	-->
+<!-- Edit: 10/22/02 1204 local mbk -->
+
+	<search_names 
+		admin_password="handspring"
+		port="9010">
+
+		<!-- Edit: Insert URL of NIE Server here  -->
+ 		<search_names_url>
+<!-- 			uncomment for cci server	-->
+			http://67.121.68.98:9010	
+<!--			http://firebolt:9010	-->
+
+		</search_names_url>
+
+		<!-- Edit: Insert URL of search engine here  -->
+		<!-- Tell us about the search engine we're shimming -->
+		<!-- Define the name of the sewarch box field -->
+		<!-- For Verity, we look at QueryText -->
+		<search_engine_info>
+			<search_term_field_name>sp-q</search_term_field_name>
+			<search_url>
+				http://search.atomz.com/search/
+			</search_url>
+
+		<vendor>Atomz/Hosted</vendor>  
+		<!-- Optional, for future use -->
+		<!-- If this field is present, do NOT take any 
+			SearchNames actions.  In the case of 
+			Verity, this indicates they have
+			browsed to page 2 of the results, 
+			or a subsequent page.
+							-->
+		<no_action_indicator_field>ResultStart</no_action_indicator_field>
+		<no_action_indicator_field>nie_no_op</no_action_indicator_field>
+		<suggestion_marker_text>
+			<![CDATA[
+				<!-- Atomz Search results section.-->	
+			]]>
+		</suggestion_marker_text>
+		</search_engine_info>
+
+		<!-- Optional defaults -->
+		<default_webmaster_suggests_header
+			text="The Handspring Webmaster suggests:"
+			color="#000084"
+			size="+1"
+			markup_before="&lt;b&gt;"
+			markup_after="&lt;/b&gt;"
+			face="'MS Sans Serif',Geneva,sans-serif"
+		/>
+		<default_webmaster_suggests_box
+			bgcolor="#00ff00"
+		/>
+
+		
+		<default_webmaster_suggests_icon
+			src="http://www.ideaeng.com/sn/images/morearrow.gif"
+			width="7"
+			height="11"
+			alt="[more arrow]"
+		/>
+		
+		<default_alternate_suggestions_heading
+			text="You might also want to check out "
+			color="#000000"
+			size="-1"
+			markup_before="&lt;b&gt;"
+			markup_after="&lt;/b&gt;"
+			face="'MS Sans Serif',Geneva,sans-serif"
+		/>
+		<!--
+			color="#ff0000"
+			markup_before="&lt;font&gt;"
+			markup_after="&lt;/font&gt;"
+		-->
+
+
+		<!-- This is the default, not currently implemented to override it -->
+		<!-- default_case_sensitive_terms>false</default_case_sensitive_terms -->
+
+
+		<!-- Currently we load the map from this file.
+			Of course in the future we would load from a database.
+		-->
+		<fixed_redirection_map>
+
+
+<!-- Section specific to Handspring -->
+<!-- ================================================ -->
+
+
+
+			<map>
+				<term>support</term>
+				<term>customer support</term>
+				<term>problem</term>
+				<url redirect="0">
+			<![CDATA[
+http://support.handspring.com/esupport/start/hsWelcome.jsp?navid=wl&lstProducts=-1
+				]]>
+					<title>Handspring Customer Support</title>
+					<description>
+				For the latest in information about keeping your Handspring
+				working right, this is your page!
+					
+					</description>
+				</url>
+			</map>
+				
+<!-- ================================================ -->
+
+			<map>
+				<term>resellers</term>
+				<term>reseller</term>
+		<url>
+			http://www.handspring.com/enterprise/reseller/overview.jhtml
+		</url>
+			</map>
+
+<!-- ================================================ -->
+
+			<map>
+				<term>developer</term>
+				<url redirect="0">
+			http://www.handspring.com/developers/index.jhtml
+					<title>Handspring Developer Page</title>
+					<description>
+Developers are finding Handspring products exciting and lucrative,
+This is the place to go to learn about the developers program, the tools
+Handspring makes available to you, and what you need to know to 
+develop for the Trio platform.
+					</description>
+				</url>
+			</map>
+
+<!-- ================================================ -->
+
+			<map>
+				<term>buy</term>
+				<alternate_term>Treo 300 Now Online!</alternate_term>
+<alternate_suggestions_heading text="You can buy a "/>
+<webmaster_suggests_icon src="http://www.ideaeng.com/sn/images/treo300.png"/>
+
+				<url redirect="0">
+					http://www.handspring.com/wheretobuy/index.jhtml
+				<title>Where to buy your Handspring Product</title>
+				<description>
+Ready to buy a Handspring product? This page tells you all your options!
+				</description>
+				</url>
+
+
+			</map>
+
+<!-- ================================================ -->
+
+			<map>
+				<term>Trio 300 Now Online!</term>
+				<url redirect="1">
+					http://www.handspring.com/products/treo300/index.jhtml
+				</url>
+			</map>
+
+
+
+<!-- End of AOPA terms -->
+
+		</fixed_redirection_map>
+
+	</search_names>
+</nie_config>

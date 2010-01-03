@@ -1,0 +1,49 @@
+<nie_config>
+
+	<run_logging
+		verbosity="default"
+		location="D:/apps/tomcat/webapps/SearchTrackReporting/sr.log"
+		overwrite="TRUE"
+	/>
+	<!-- Verbosity Levels: From Least to Most
+		fatal_only, quiet, status, transactions / default,
+		info, debug, trace
+		See Readme for more details
+	-->
+
+	<search_track base_directory="d:\mydir">
+
+		<database
+			vendor_tag="oracle"
+			server_name="titan"
+			port="1521"
+			database_name="stack"
+			username="stack2"
+			password="test"
+		/>
+		<!--
+			server_name="bigmomma"
+			username="kklop"
+			password="kklop"
+		-->
+
+		<reports>
+			<!-- One or more reports -->
+
+			<!-- Report 1
+				Notice NO specific report 1 is defined
+				We will autogenerate a class name
+			-->
+
+			<!-- Report 2 -->
+			<report
+				id="report2"
+				report_java_class="MyReport2Class"
+				title="This is Test Report Two"
+			/>
+
+		</reports>
+
+	</search_track>
+
+</nie_config>

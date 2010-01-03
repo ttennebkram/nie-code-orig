@@ -1,0 +1,61 @@
+<report>
+	<title>Most Popular Searches</title>
+	<subtitle>For the past $cgi.days day(s)</subtitle>
+
+	<link_text>Most Popular Searches in last:</link_text>
+
+	<field
+		heading="Search Term(s)"
+		sql_alias="search"
+		null_value_display="(null search)"
+
+		is_report_link="TRUE"
+		link_report_name="search_details_ndays"
+		link_title="Click for Details"
+		do_link_if_null="TRUE"
+	>
+		NORMALIZED_QUERY
+	</field>
+
+	<field heading="Count">count(*) num_times</field>
+
+
+	<field
+		heading="Most Recently"
+		css_class="nie_datetime"
+	>
+		to_char( max(START_TIME), 'MM/DD/YY HH:MI:SS am')
+	</field>
+
+	<field heading="Pages Found">max(NUM_RESULTS)</field>
+
+	<field heading="Mapped?">
+		decode( max(WAS_SEARCH_NAMES_TERM), 0, 'N', 1, 'Y', 'n/a' )
+	</field>
+
+	<raw_where_filter>
+		<!-- TRUNC(SYSDATE) - $cgi.days -->
+		<![CDATA[
+			start_time >= SYSDATE - $cgi.days
+			AND
+			TRANSACTION_TYPE = 1 
+		]]>
+	</raw_where_filter>
+
+	<raw_grouping>
+		NORMALIZED_QUERY
+	</raw_grouping>
+
+	<raw_sort>
+		num_times desc
+		<!--
+		NORMALIZED_QUERY
+		search
+		-->
+	</raw_sort>
+
+
+	<include location="includes/standard_ndays_link_suggestions.xml" />
+
+</report>
+

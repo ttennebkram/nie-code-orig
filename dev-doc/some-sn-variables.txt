@@ -1,0 +1,70 @@
+
+called in
+setupProxySearch
+and
+setupPassthroughSearchEngineRedirect
+addSearchTrackDirectLoggingCGIFields( newRequest )
+
+//doSearchLogging()
+//alwaysProxy()
+//doesSearchLoggingRequireProxy()
+
+
+sn request
+	// Some information about the status of SearchNames actions
+	// The first, or "primary" action that was taken
+	private int fSNActionCode;
+	// How many high level actions we took: 3 wm suggest + 4 alt terms = 2
+	private int fSNActionCount;
+	// How many individual, component bits of info did we convey
+	// 3 wm suggest + 4 alt terms = 7
+	private int fSNActionItemCount;
+	// Error code, if any
+	private int fSNStatusCode;
+	private String fSNStatusMsg;
+
+
+sn config
+	public static final int SN_ACTION_CODE_NONE = 0;
+	public static final int SN_ACTION_CODE_SUGGEST = 1;
+	public static final int SN_ACTION_CODE_ALT = 2;
+	public static final int SN_ACTION_CODE_SEARCH_REDIR = 3;
+	public static final int SN_ACTION_CODE_AD = 4;
+	public static final int SN_ACTION_CODE_AD_CODE = 5;
+
+	// Codes about error / status conditions
+	public static final int SN_STATUS_OK = 0;
+	public static final int SN_ERROR_READING_REQUEST = 1;
+	public static final int SN_ERROR_BAD_MAP = 2;
+	public static final int SN_ERROR_SENDING_RESPONSE = 3;
+	public static final int SN_ERROR_PARSING_PAGE = 4;
+	public static final int SN_ERROR_WITH_EXTERNAL_CALL = 5;
+
+		    // Log status info for SearchNames response
+		    if( fSNStatusCode == SearchNamesConfig.SN_ACTION_CODE_NONE )
+		    {
+				fSNStatusCode = SearchNamesConfig.SN_ERROR_WITH_EXTERNAL_CALL;
+				fSNStatusMsg = msg;
+		    }
+
+
+
+		// Init some items
+		fSNActionCode = SearchNamesConfig.SN_ACTION_CODE_NONE;
+		fSNStatusCode = SearchNamesConfig.SN_STATUS_OK;
+		fSNStatusMsg = null;
+		fSNActionCount = 0;
+		fSNActionItemCount = 0;
+
+
+	public boolean logTransaction(
+		AuxIOInfo inRequestObj,         // Request
+		AuxIOInfo inResponseObj,        // Response
+		String inQuery,                 // Query
+		int inSNActionCode,             // int inSNActionCode,
+		int inSNActionCount,            // # of high level actions taken
+		int inSNActionItemCount,        // # of units of into sent
+		int inSNStatusCode,             // int inSNStatusCode,
+		String inSNStatusMsg,           // String inSNStatusMsg,
+		boolean inFromDirectLogAction   // inFromDirectLogAction
+		)

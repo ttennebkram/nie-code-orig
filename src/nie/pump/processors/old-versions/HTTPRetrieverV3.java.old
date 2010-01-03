@@ -1,0 +1,1037 @@
+/*
+ *  Copyright 2001 New Idea Engineering, Inc.
+ *  Written by Kevin-Neil Klop and Mark L. Bennett
+ *
+ *  $Id: HTTPRetrieverV3.java,v 1.1 2004/03/03 20:00:49 mbennett Exp $
+ *
+ *  $Log: HTTPRetrieverV3.java,v $
+ *  Revision 1.1  2004/03/03 20:00:49  mbennett
+ *  Source tree from niesrv 226, from Feb 2004
+ *
+ *
+ *  Rev 3.0(1) 2001/11/2 mbennett
+ *  Added support for username/password attrs for Basic Authentication
+ *  I think it's a "global" setting...
+ *  Todo: revisit
+ *
+ *  Revision 3.0 2001/10/10 mbennett
+ *  Rearrange the structure of the program, check variables
+ *
+ *  Revision 2.0  2001/09/24 mbennett
+ *  Change how fields are retrieved and stored using work unit methods
+ *  Make default field names
+ *
+ *  Revision 1.7  2001/08/31 16:29:50  kevin
+ *  Implemented new WorkUnits stuff into these processors.
+ *
+ *  Revision 1.6  2001/08/27 22:15:09  kevin
+ *  Altered to match new constructor for processors.
+ *
+ *  Revision 1.5  2001/08/24 17:04:10  kevin
+ *  Added constructor parameter to take the String inID and pass it on
+ *  to the Processor class.
+ *
+ *  Revision 1.4  2001/08/21 03:56:59  kevin
+ *  re-indented to match current NIE, Inc. style giude.
+ *  No code changes.
+ *
+ *  Revision 1.3  2001/08/15 20:17:57  kevin
+ *  Minor changes in preparation for the Major language/specification.
+ *
+ *  Revision 1.2  2001/08/07 01:16:21  kevin
+ *  Slimmed down the system, added a d few new processors.
+ *  Alse made the processors a bit more generic since they were very spider-centric.
+ *
+ *  Revision 1.1  2001/07/31 21:46:35  kevin
+ *  Initial revision
+ *
+ *
+ */
+
+//package nie.processors;
+package nie.pump.processors;
+
+import nie.core.*;
+import nie.pump.base.*;
+
+import java.net.*;
+import java.io.*;
+
+import org.jdom.Element;
+import org.jdom.Attribute;
+
+/////////////////////////////////////////////////////
+//
+// This takes up to three output queues...
+//
+//	Queue 1: Content Queue - feeds out those URLs that were successfully
+//		 retrieved, along with their content.
+//	Queue 2: Error queue (optional) - feeds out those URLs that caused
+//		 an error during retrieve for any reason.
+//
+////////////////////////////////////////////////////
+
+public class HTTPRetrieverV3 extends Processor
+{
+	public String kClassName() { return "HTTPRetrieverV3"; }
+
+
+	private static final boolean debug = false;
+
+	// Helper class used for HTTP Basic authentication
+	class NIEAuthenticator extends Authenticator
+	{
+		private String username;
+		private String password;
+		NIEAuthenticator( String u, String p )
+		{
+			super();
+			this.username = u;
+			this.password = p;
+		}
+		protected PasswordAuthentication getPasswordAuthentication()
+		{
+			return new PasswordAuthentication(
+				username, password.toCharArray()
+				);
+		}
+	}
+
+
+
+	////////////////////////////////////////////
+	//
+	// Constructor for an HTTP Retriever - it should look exactly like
+	// the constructor for a Processor.  No more arguments, no less.  No
+	// different parameter types either.  We're strict about this!
+	//
+	////////////////////////////////////////////
+
+	public HTTPRetrieverV3( Application inApplication,
+			  Queue[] inReadFromQueue,
+			  Queue[] inWriteToQueue,
+			  Queue[] inUsesQueue,
+			  Element inParameters,
+			  String inID )
+	{
+		super( inApplication, inReadFromQueue, inWriteToQueue, inUsesQueue, inParameters, inID );
+
+		if( (inReadFromQueue != null) &&
+			(inReadFromQueue.length > 0) &&
+			(inReadFromQueue[0] != null) )
+			fReadQueue = inReadFromQueue[0];
+		else
+		{
+			System.err.println( "HTTPRetrieverV3 passed an invalid queue set." );
+			System.exit( -1 );
+		}
+
+		if( inWriteToQueue != null )
+		{
+			if( (inWriteToQueue.length > 0) &&
+			(inWriteToQueue[0] != null) )
+				fContentQueue = inWriteToQueue[0];
+			else
+				badQueueList();
+
+			if( inWriteToQueue.length > 1)
+				fErrorRetrievingQueue = inWriteToQueue[1];
+		}
+		else
+			badQueueList();
+
+		// If parameters were sent in, save them
+		if( inParameters != null )
+		{
+			try
+			{
+				fJdh = new JDOMHelper( inParameters );
+			}
+			catch (Exception e)
+			{
+				fJdh = null;
+				System.err.println(
+					"Error creating jdom helper for parameter\n" + e
+					);
+				System.exit(1);
+			}
+		}
+		else
+		{
+			System.err.println( "Error: inParameter == null." );
+			System.err.println( "see doc" );
+			System.exit(1);
+		}
+
+
+		// Make sure they get the valueus from the tag, vs the cache
+		fHaveDoneInit = false;
+
+		// Call the get methods so they will fill their cache
+		// they will do an exit if they are not happy
+		getURLFieldName();
+		getContentFieldName();
+		getParentURLFieldName();
+		getAttemptedURLFieldName();
+		getUsername();
+		getPassword();
+		getUserAgentField();
+
+		// switch over to using the cached values
+		fHaveDoneInit = true;
+
+		if( debug )
+		{
+			System.err.println( "HTTPRetrieverV3: Start." );
+			System.err.println( "getURLFieldName()=" + getURLFieldName() );
+			System.err.println( "getContentFieldName()="
+				+ getContentFieldName()
+				);
+			System.err.println( "getParentURLFieldName()="
+				+ getParentURLFieldName()
+				);
+			System.err.println( "getAttemptedURLFieldName()="
+				+ getAttemptedURLFieldName()
+				);
+			System.err.println( "getUsername()=" + getUsername() );
+			System.err.println( "is set: getPassword()=" + (getPassword()!=null) );
+			System.err.println( "getUserAgentField()=" + getUserAgentField() );
+		}
+
+
+		// Setup basic authentication IF it was specified
+		setupOptionalAuthentication();
+	}
+
+	private void badQueueList()
+	{
+		System.err.println( "Bad output queue list given to HTTPRetrieverV3." );
+		System.err.println( "The output queue list must have at least one item," );
+		System.err.println( "    queue to which to put retrieved URLs." );
+		System.err.println( "    A second queue may be specified to which we will" );
+		System.err.println( "    queue URLs that caused errors." );
+		System.exit( -1 );
+	}
+
+	/////////////////////////////////////////////
+	//
+	// And this is where the work gets done.
+	//
+	/////////////////////////////////////////////
+
+	public void run()
+	{
+		/*
+		 * Read a URL String from the queues then retrieve it.
+		 * if the retrieve works well, send it to fNormalQueue
+		 * if the retrieve goes badly, send it to fErrorQueue
+		 */
+
+		//final boolean debug = false;
+
+		// Main Loop
+		while( true )
+		{
+			WorkUnit lWorkUnit = null;
+			boolean success = false;
+			String problemMsg = null;
+
+			// Try to dqueue and process a work unit
+			try
+			{
+				// Get a work unit
+				lWorkUnit = (WorkUnit)dequeue( fReadQueue );
+
+				if(debug) System.err.println( "HT3: dequeued work unit" );
+
+				success = processWorkUnit( lWorkUnit );
+
+				// Whoa!  a little too soon!
+				//lWorkUnit = null;
+
+				if(debug) System.err.println( "HT3: processed work unit"
+					+ ", success=" + success
+					);
+
+			}   // End of try to dqueue and process a work unit
+			// Normal interruption
+			catch( InterruptedException ie )
+			{
+				if(debug) System.err.println( "HT3:	caught normal interrupt" );
+				return;
+			}
+			catch( Exception lException )
+			{
+				System.err.println( "HTTPRetrieverV3: got exception: " +
+					lException
+					);
+				success = false;
+				problemMsg = "Got exception: " + lException;
+				lException.printStackTrace( System.err );
+			}
+
+			if(debug) System.err.println( "HT3:	past exception catches" );
+
+			// Re-Queue the work unit, if we have a work unit
+			if( lWorkUnit != null )
+			{
+				if(debug) System.err.println( "HT3: work unit was not null" );
+				// If there was a problem, mark up the work unit
+				if( ! success )
+				{
+					if(debug) System.err.println( "HT3: success was FALSE"
+						+ ", marking work unit invalid"
+						+ ", message=" + problemMsg
+						);
+					// Mark it invalid
+					lWorkUnit.setIsValidRecord( false );
+					// Add an explanation, if we have any
+					if( problemMsg != null && ! problemMsg.trim().equals("") )
+						lWorkUnit.addNamedField( ERROR_MESSAGE_FIELD,
+							problemMsg.trim()
+							);
+				}
+				else
+					if(debug) System.err.println( "HT3: shows success" );
+
+				if(debug) System.out.println( "HT3: at bottom of loop" +
+					", fErrorRetrievingQueue=" + fErrorRetrievingQueue
+					);
+				// Add it to the correct queue
+				// If the work unit was alright, or there's nowhere
+				// else to send it
+				if( success || fErrorRetrievingQueue == null )
+				{
+					if(debug) System.out.println("HT3: Sending to regular output");
+					enqueue( fContentQueue, lWorkUnit );
+					lWorkUnit = null;
+				}
+				// Else we did have a problem and we do have an error queue
+				else
+				{
+					if(debug) System.out.println("HT3: Sending to error output");
+					enqueue( fErrorRetrievingQueue, lWorkUnit );
+					lWorkUnit = null;
+				}
+
+			}   // End if work unit not null
+			else
+				if(debug) System.err.println( "HT3:	work unit was null" );
+
+			// Triple check that we set it to null
+			lWorkUnit = null;
+
+			if(debug) System.err.println( "HT3:	bottom of main loop" );
+
+		}   // End of Main Loop
+
+	}
+
+
+	// Do the work
+	// Logic:
+	// Find the URL for us to download, get it, store it, store other info
+	// The boolean flag indicates whether or not we think we're OK
+	boolean processWorkUnit( WorkUnit inWU )
+		throws Exception
+	{
+
+		final boolean debug = false;
+
+		String lURLString = null;
+
+		// Get the URL we are to download from
+		String fetchURLStr = calculateSourceURL( inWU );
+
+		if(debug) System.err.println( "HT3: url=" + fetchURLStr );
+
+		// If we found a URL to download
+		if( fetchURLStr == null || fetchURLStr.trim().equals("") )
+		{
+			throw new Exception( "There was no URL field specified" );
+		}
+
+		// Store the URL we actually made the
+		// request on, if asked to do so
+		if( getAttemptedURLFieldName() != null )
+		{
+			inWU.addNamedField(
+				getAttemptedURLFieldName(),
+				fetchURLStr
+				);
+		}
+
+		// Now actually download the content
+		// This may thrown an exception, which we'll pass up the food chain
+		String theContent;
+		try
+		{
+			theContent = fetchContent( fetchURLStr );
+			if(debug) System.err.println( "HT3: finished getting content" );
+		}
+		catch(Exception e)
+		{
+			inWU.addNamedField( ERROR_MESSAGE_FIELD,
+				"Fetch error: " + e
+				);
+			inWU.setIsValidRecord( false );
+			return false;
+		}
+
+		if( theContent != null )
+		{
+
+			if(debug) System.out.println(
+				"Content field to store: '" + getContentFieldName() + "'"
+				);
+
+			// Store the content
+			inWU.addNamedField(
+				getContentFieldName(),
+				theContent
+				);
+
+			return true;
+		}
+		else
+			return false;
+
+	}
+
+	// Download the actual content, return it as a string
+	String fetchContent( String inFetchURLStr )
+		throws Exception
+	{
+
+		final boolean debug = false;
+
+		URL lURL = null;
+		URLConnection lURLConnection = null;
+		try
+		{
+			lURL = new URL( inFetchURLStr );
+			lURLConnection = lURL.openConnection();
+		}
+//		catch(MalformedException me)
+//		{
+//			throw new Exception( "Bad URL '" +
+//				inFetchURLStr + "', error was '" + me + "'"
+//				);
+//		}
+		catch(IOException ioe)
+		{
+			throw new Exception( "Error opening URL '" +
+				inFetchURLStr + "', error was '" + ioe + "'"
+				);
+		}
+
+		// Setup the user agent field
+		String userAgentField = getUserAgentField();
+		if( userAgentField != null )
+			lURLConnection.setRequestProperty( HTTP_USER_AGENT_FIELD_SPELLING,
+				userAgentField
+			);
+
+		boolean lMoreHeaders = true;
+		int lHeaderNumber = 0;
+		boolean saw200Header = false;
+
+		// Read until no more headers
+		while( lMoreHeaders )
+		{
+			String lHeader = lURLConnection.getHeaderField( lHeaderNumber++ );
+			if( debug )
+				System.err.println( "fetchURL: header: '" + lHeader + "'" );
+			if( lHeader != null )
+				lHeader = lHeader.trim().toUpperCase();
+
+			// If header not null and starts with http/
+			if( lHeader != null && lHeader.startsWith( "HTTP/" ) )
+			{
+				lMoreHeaders = false;
+				lHeader = lHeader.substring( lHeader.indexOf(' ') ).trim();
+				if( lHeader.startsWith("200") )
+					saw200Header = true;
+				else
+					throw new Exception( "Got non-200 HTTP header:" +
+						lHeader +
+						" URL='" + inFetchURLStr + "'"
+						);
+			}
+			if( lHeader == null )
+				lMoreHeaders = false;
+		}
+
+		//InputStream lStream = lURL.openStream();
+		InputStream lStream = lURLConnection.getInputStream();
+		StringBuffer strBuff = new StringBuffer();
+
+		int c;
+		while( (c=lStream.read()) != -1 )
+		{
+			strBuff.append( (char)c );
+		}
+
+		lStream.close();
+		lStream = null;
+		lURLConnection = null;
+
+		return new String( strBuff );
+
+//  Old cruft from before
+//					//if( fContentQueue != null )
+//					//	fContentQueue.enqueue( lWorkUnit );
+//					// Queue it later
+//
+//				}   // End if header starts with 200
+//				// Else header did not start with 200
+//				else
+//				{
+//					lURLConnection = null;
+//
+//					System.err.println(
+//						"HTTPRetrieverV3: header didn't start with 200." +
+//						" Header='" + lHeader + "'" +
+//						" url1='" + lURL.toExternalForm() + "'" +
+//						" url2='" + fetchURLStr + "'"
+//						);
+//						lWorkUnit.print();
+//					if( ! hadAProblem )
+//					{
+//						hadAProblem = true;
+//						problemMsg = "HTTPRetrieverV3: header didn't start with 200." +
+//							" Header='" + lHeader + "'" ;
+//					}
+//				}
+//			}   // End if header is not null and starts with HTTP/
+//			// Else header was null
+//			else
+//			{
+//				lURLConnection = null;
+//
+//				System.err.println( "HTTPRetrieverV3: got null header." );
+//				if( ! hadAProblem )
+//				{
+//					hadAProblem = true;
+//					problemMsg = "HTTPRetrieverV3: got null header.";
+//				}
+//			}
+//		}   // Read until no more headers
+//
+//
+//		// Round about way from O'Reilly Networking, page 475
+//		try
+//		{
+//			URL lURL = new URL( inFetchURLStr );
+//			URLConnection lURLConnection = lURL.openConnection();
+//		    InputStream lRawInput = lURLConnection.getInputStream();
+//		    InputStream lBufferedInput = new BufferedInputStream( lRawInput );
+//		    Reader lReader = new InputStreamReader( lBufferedInput );
+//
+//		    int c;
+//		    while( (c=lReader.read()) != -1 )
+//		    {
+//
+//
+//
+//		    }
+//
+//		}
+//		catch(MalformedException me)
+//		{
+//		    throw new Exception( "Bad URL '" +
+//				inFetchURLStr + "', error was '" + me + "'"
+//				);
+//		}
+//		catch(IOException ioe)
+//		{
+//		    throw new Exception( "Error opening URL '" +
+//				inFetchURLStr + "', error was '" + ioe + "'"
+//				);
+//		}
+
+
+	}
+
+
+	/*************************************************
+	*
+	*	Simple Get/Set Logic
+	*
+	*************************************************/
+	private void __sep__Simple_Get_and_Set__() {};
+	////////////////////////////////////////////////////////////
+
+	String getURLFieldName()
+	{
+		if( fHaveDoneInit )
+			return fURLFieldName;
+		else
+		{
+			String tmpString = fJdh.getStringFromAttribute(
+				URL_FIELD_ATTR_NAME
+				);
+			if( tmpString == null || tmpString.trim().equals("") )
+			{
+				fURLFieldName = DEFAULT_URL_FIELD_NAME;
+			}
+			else
+			{
+				fURLFieldName = tmpString.trim();
+			}
+		}
+		return fURLFieldName;
+	}
+
+	String getParentURLFieldName()
+	{
+		if( fHaveDoneInit )
+			return fParentURLFieldName;
+		else
+		{
+			String tmpString = fJdh.getStringFromAttribute(
+				PARENT_URL_FIELD_ATTR_NAME
+				);
+			if( tmpString == null || tmpString.trim().equals("") )
+			{
+				fParentURLFieldName = null;
+			}
+			else
+			{
+				fParentURLFieldName = tmpString.trim();
+			}
+		}
+		return fParentURLFieldName;
+	}
+
+	String getAttemptedURLFieldName()
+	{
+		if( fHaveDoneInit )
+			return fAttemptedURLFieldName;
+		else
+		{
+			String tmpString = fJdh.getStringFromAttribute(
+				ATTEMPTED_URL_FIELD_ATTR_NAME
+				);
+			if( tmpString == null || tmpString.trim().equals("") )
+			{
+				fAttemptedURLFieldName = null;
+			}
+			else
+			{
+				fAttemptedURLFieldName = tmpString.trim();
+			}
+		}
+		return fAttemptedURLFieldName;
+	}
+
+	String getContentFieldName()
+	{
+		if( fHaveDoneInit )
+			return fContentFieldName;
+		else
+		{
+			String tmpString = fJdh.getStringFromAttribute(
+				CONTENT_FIELD_ATTR_NAME
+				);
+			if( tmpString == null || tmpString.trim().equals("") )
+			{
+				fContentFieldName = DEFAULT_CONTENT_FIELD_NAME;
+			}
+			else
+			{
+				fContentFieldName = tmpString.trim();
+			}
+		}
+		return fContentFieldName;
+	}
+
+	// We will return null if none
+	// We do NOT trim the answer, and we WILL return "" if that's what
+	// was set, since passwords can be null (I think?)
+	String getUsername()
+	{
+		// Todo: support pulling it from a field
+		if( fHaveDoneInit )
+			return fUsername;
+		else
+		{
+			String tmpString = fJdh.getStringFromAttribute(
+				USERNAME_ATTR_NAME
+				);
+			if( tmpString == null )
+			{
+				return null;
+			}
+			fUsername = tmpString;
+		}
+		return fUsername;
+	}
+
+	// We will return null if none
+	// We do NOT trim the answer, and we WILL return "" if that's what
+	// was set, since passwords can be null (I think?)
+	String getPassword()
+	{
+		// Todo: support pulling it from a field
+		if( fHaveDoneInit )
+			return fPassword;
+		else
+		{
+			String tmpString = fJdh.getStringFromAttribute(
+				PASSWORD_ATTR_NAME
+				);
+			if( tmpString == null )
+			{
+				return null;
+			}
+			fPassword = tmpString;
+		}
+		return fContentFieldName;
+	}
+
+	// Return the header field to use
+	// Note that if you don't want it, use user_agent=""
+	String getUserAgentField()
+	{
+		if( fHaveDoneInit )
+			return fUserAgentField;
+		else
+		{
+			String tmpString = fJdh.getStringFromAttribute(
+				USER_AGENT_ATTR_NAME
+				);
+			if( tmpString == null )
+			{
+				tmpString = fJdh.getStringFromAttribute(
+					USER_AGENT_ATTR_SHORT_NAME
+					);
+			}
+			// A little convoluted
+			// If they really didn't set either attr, use the default
+			if( tmpString == null )
+			{
+				tmpString = DEFAULT_USER_AGENT_FIELD;
+			}
+			// If they DID set the attr, but it's an empty string, then
+			// they are trying to turn OFF this feature, so we should
+			// specifically null it out.
+			else if( tmpString.trim().equals("") )
+			{
+				tmpString = null;
+			}
+			// Store it
+			fUserAgentField = tmpString;
+		}
+		return fUserAgentField;
+
+	}
+
+
+
+
+
+
+
+	private void __sep__Supporting_Logic__() {};
+	////////////////////////////////////////////////////////////
+
+	void setupOptionalAuthentication()
+	{
+		String username = getUsername();
+		String password = getPassword();
+
+		// If they're both null then never mind
+		if( username == null || password == null )
+			return;
+
+		// If only one of the two is missing, set the other to ""
+		if( username == null )
+		{
+			System.err.println( "Warning: HttpRet: password set but no username"
+				+ ", setting username to empty string, hope that's OK"
+				);
+			username = "";
+		}
+		if( password == null )
+		{
+			System.err.println( "Warning: HttpRet: username set but no password"
+				+ ", setting password to empty string, hope that's OK"
+				);
+			username = "";
+		}
+
+		// Install Authenticator
+		Authenticator.setDefault(
+			new NIEAuthenticator( username, password )
+			);
+
+	}
+
+	// Get the URL from the work unit
+	// And if there's a parent link, do the relative calculation
+	String calculateSourceURL( WorkUnit wu )
+	{
+		String childURLField = getURLFieldName();
+		String childURL = wu.getUserFieldText( childURLField );
+		if( childURL == null || childURL.trim().equals("") )
+			return null;
+		if( getParentURLFieldName() == null )
+			return childURL;
+		String parentURL = wu.getUserFieldText( getParentURLFieldName() );
+		if( parentURL == null || parentURL.trim().equals("") )
+			return childURL;
+
+		return joinURL( parentURL, childURL );
+	}
+
+	// Given a URL and a root, calculate a new URL
+	String joinURL( String parent, String child )
+	{
+		// check and normalize the child
+		if( child == null || child.trim().equals("") )
+			return child;
+		child = child.trim();
+		// check and normalize the parent
+		if( parent == null || parent.trim().equals("") )
+			return child;
+		parent = tweakBaseURL( parent );
+
+		// init the results
+		String retURLStr = child;
+
+		// Now try to form the new URL
+		try
+		{
+			URL parentURL = new URL( parent );
+			URL childURL = new URL( parentURL, child );
+			retURLStr = childURL.toExternalForm();
+		}
+		catch( MalformedURLException mfue )
+		{
+			System.err.println( "HTTPRetrieverV3: Error combing child url '" +
+				child + "' with base/parent/reference url '" +
+				parent + "', returning null.  Exception was: " + mfue
+				);
+			return null;
+		}
+
+		// Fix up the double slash problem
+		retURLStr = cleanDoubleSlash( retURLStr );
+
+		return retURLStr;
+
+	}
+
+
+
+	String tweakBaseURL( String inURL )
+	{
+		// bypass some of the nullish edge cases
+		if( inURL == null )
+			return null;
+		inURL = inURL.trim();
+		if( inURL.equals("") )
+			return inURL;
+
+		// Setup the return value in advance
+		String outURL = inURL;
+
+		// look for the opening double slash
+		int doubleSlashAt = inURL.indexOf( "//" );
+		int firstSingleSlashAt;
+		if( doubleSlashAt >= 0 )
+			firstSingleSlashAt = inURL.indexOf( '/', doubleSlashAt+2 );
+		else
+			firstSingleSlashAt = inURL.indexOf( '/' );
+
+		// At this point we know where the first
+		// single slash is
+		// If there's NO first single slash then we know that:
+		// 1: it's a server only url
+		// 2: that does not have a slash
+		// So in that case we should add it and return
+		// the results
+
+		// If there is no ending slash
+		if( firstSingleSlashAt < 0 )
+		{
+			// Add one and return
+			outURL = inURL + '/';
+			return outURL;
+		}
+
+		// Now find the last slash in the URL
+		int lastSingleSlashAt = inURL.lastIndexOf( '/' );
+		// Sanity check that we did find one
+		if( lastSingleSlashAt < 0 )
+			return outURL;
+
+		// If it's at the end, we're OK, just return
+		// that URL
+		if( lastSingleSlashAt == inURL.length()-1 )
+			return inURL;
+
+		// OK we have a path section of the URL
+		// and it doesn't end in a slash
+		// Lets look at it further
+
+		// Grab the final portion of the path
+		String finalPath = inURL.substring( lastSingleSlashAt+1 );
+
+		// If it has a dot OR ? OR # in it we probably don't
+		// want to add anything to it
+		if( finalPath.indexOf('.') >= 0 ||
+			finalPath.indexOf('?') >= 0 ||
+			finalPath.indexOf('#') >= 0
+			)
+		{
+			// Just return what we got in
+			return inURL;
+		}
+
+		// OK at this point we know there is a
+		// final bit of path, and it doesn't seem
+		// to be a a file name or CGI call so it
+		// really looks like a plain old DIR reference
+		// so 99 out of 100 times we SHOULD add a slash
+		outURL = inURL + '/';
+		return outURL;
+	}
+
+	String cleanDoubleSlash( String inURL )
+	{
+		if( inURL == null )
+			return inURL;
+
+		int baseSlashesAt = inURL.indexOf( "//" );
+		if( baseSlashesAt < 0 )
+			return inURL;
+
+		int prefixLen = baseSlashesAt + "//".length() + 1;
+		if( prefixLen == inURL.length() )
+			return inURL;
+		// Get the http:// portion
+		// A little weird math
+		// zero based offset = desired length - 1
+		// sustring offset = final offset + 1
+		// so they cancel
+		String prefix = inURL.substring( 0, prefixLen );
+
+		// Get the rest, this is what we'll be working on
+		// More strange math
+		// Start at prefix length + 1
+		// but offset = start length - 1
+		// so they cancel
+		String suffix = inURL.substring( prefixLen );
+
+		// Short circuit the rest of this mess if we know there's
+		// nothing to be done
+		if( suffix.indexOf('/') != 0 && suffix.indexOf( "//" ) < 0 )
+			return inURL;
+		// Else yes there is something for us to do
+		else
+			System.err.println( "URLBuilder:cleanDoubleSlash: Start.  url='" +
+				inURL + "'"
+				);
+
+		// Trim off leading /'s, of which there shouldn't be any
+		while( suffix.indexOf('/') == 0 )
+		{
+			if( suffix.length() > 1 )
+				suffix = suffix.substring(1);
+			else
+				suffix = "";
+		}
+
+		while( true )
+		{
+			int doubleSlashAt = suffix.indexOf( "//" );
+			if( doubleSlashAt < 0 )
+				break;
+			int suffixEndingStartsAt = doubleSlashAt + "//".length();
+			if( suffixEndingStartsAt < suffix.length()-1 )
+			{
+				suffix = suffix.substring( 0, doubleSlashAt ) + '/' +
+					suffix.substring( suffixEndingStartsAt );
+			}
+			else
+			{
+				suffix = suffix.substring( 0, doubleSlashAt ) + '/' ;
+			}
+		}
+
+		String outURL = prefix + suffix;
+
+
+		System.err.println( "URLBuilder:cleanDoubleSlash: End.  url='" +
+			outURL + "'"
+			);
+
+
+		return outURL;
+
+	}
+
+
+	private void __sep__Fields_and_Constants__() {};
+	////////////////////////////////////////////////////////////
+
+	private static final String DEFAULT_URL_FIELD_NAME = "url";
+	private static final String DEFAULT_CONTENT_FIELD_NAME = "_content";
+
+	// What URL to fetch
+	private static final String URL_FIELD_ATTR_NAME =
+		"url_field";
+	// Where to put the content when you get it back
+	private static final String CONTENT_FIELD_ATTR_NAME =
+		"content_field";
+	// Optional parent field that URL is relative to
+	private static final String PARENT_URL_FIELD_ATTR_NAME =
+		"parent_url_field";
+	// Optional: the URL that we actually tried to retrieved
+	private static final String ATTEMPTED_URL_FIELD_ATTR_NAME =
+		"attempted_url_field";
+	// Optional: the username and password fields for basic authentication
+	private static final String USERNAME_ATTR_NAME =
+		"username";
+	private static final String PASSWORD_ATTR_NAME =
+		"password";
+
+	// Control over the user agent field
+	private static final String USER_AGENT_ATTR_NAME =
+		"http_user_agent_field";
+	private static final String USER_AGENT_ATTR_SHORT_NAME =
+		"user_agent";
+
+
+	private static final String ERROR_MESSAGE_FIELD =
+		"_http_retriever_error_msg";
+
+	// The stupid default field to send to stupid sites so that their stupid
+	// scripts will give the correct content  <sign>
+	// See other gunk at:
+	// http://support.microsoft.com/support/kb/articles/Q272/4/13.ASP
+	// Todo: not sure, this may be a "global" setting
+	private static final String DEFAULT_USER_AGENT_FIELD =
+		"Mozilla/4.0 (compatible; MSIE 5.01; Windows NT 5.0; NetCaptor 6.5.0)";
+	private static final String HTTP_USER_AGENT_FIELD_SPELLING =
+		"User-Agent";
+
+	// The main parameters tree
+	JDOMHelper fJdh;
+
+	// Caching variables
+	private boolean fHaveDoneInit;
+	private String fURLFieldName;
+	private String fParentURLFieldName;
+	private String fAttemptedURLFieldName;
+	private String fContentFieldName;
+	private String fUsername;
+	private String fPassword;
+	private String fUserAgentField;
+	// The main queues
+	Queue fErrorRetrievingQueue = null;
+	Queue fContentQueue = null;
+	Queue fReadQueue = null;
+}

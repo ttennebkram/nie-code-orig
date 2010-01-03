@@ -1,0 +1,161 @@
+	<!-- Debug Info -->
+	<!-- ========== -->
+	<section
+		title="Logging"
+		_help="find_map_basic_info.html"
+	>
+		<!--
+		<field type="vertical_spacer" />
+		-->
+		<field
+			type="vertical_spacer"
+		>
+			Search Activity to be IGNORED (Beta)
+		</field>
+
+		<!--
+		<field type="vertical_spacer" />
+		<field
+			type="vertical_spacer"
+			font_size_increment="0"
+		>
+			Search activity is logged to the database set in the Database Info tab
+		</field>
+		-->
+
+		<!-- Don't log from certain IP addresses -->
+		<field type="vertical_spacer" />
+		<field
+			type="vertical_spacer"
+			font_size_increment="0"
+		>
+			Don't log Searches from specific test machines
+		</field>
+		<field
+			name="log_ignore_ip_1"
+			label="Ignore all searches from IP address(es)"
+			xpath="/nie_config/search_tracking/data_logging/ignore_address[1]"
+		/>
+		<field
+			name="log_ignore_ip_2"
+			xpath="/nie_config/search_tracking/data_logging/ignore_address[2]"
+		/>
+		<field
+			name="log_ignore_ip_3"
+			xpath="/nie_config/search_tracking/data_logging/ignore_address[3]"
+		/>
+
+		<!-- Don't log certain queries -->
+		<field type="vertical_spacer" />
+		<field
+			type="vertical_spacer"
+			font_size_increment="0"
+		>
+			Don't log certain queries (Beta)
+		</field>
+		<field
+			type="vertical_spacer"
+			font_size_increment="0"
+		>
+			(Example: disable logging if search contains the word test)
+		</field>
+		<field
+			name="log_ignore_pattern_1"
+			label="Do not log if string is in query"
+			xpath="/nie_config/search_tracking/data_logging/ignore_pattern[1]"
+		/>
+		<field
+			name="log_ignore_pattern_2"
+			xpath="/nie_config/search_tracking/data_logging/ignore_pattern[2]"
+		/>
+		<field
+			name="log_ignore_pattern_3"
+			xpath="/nie_config/search_tracking/data_logging/ignore_pattern[3]"
+		/>
+		
+		<!-- Don't log if a certain field is present -->
+		<field type="vertical_spacer" />
+		<field
+			type="vertical_spacer"
+			font_size_increment="0"
+		>
+			Don't log if a particular field is present (Beta)
+		</field>
+		<field
+			type="vertical_spacer"
+			font_size_increment="0"
+		>
+			(Example: Don't log page 2 as a new search)
+		</field>
+		<field
+			name="log_ignore_field_1"
+			label="No Logging indicated by CGI field"
+			xpath="/nie_config/search_tracking/data_logging/ignore_indicator_field[1]"
+		/>
+		<field
+			name="log_ignore_field_2"
+			xpath="/nie_config/search_tracking/data_logging/ignore_indicator_field[2]"
+		/>
+		<field
+			name="log_ignore_field_3"
+			xpath="/nie_config/search_tracking/data_logging/ignore_indicator_field[3]"
+		/>
+
+		<field type="vertical_spacer" />
+		<field
+			type="vertical_spacer"
+			font_size_increment="0"
+		>
+			Suppressing Suggestions based on fields -&gt; See Results List and Suggestions
+		</field>
+		<!--
+		<field type="vertical_spacer" />
+		<field
+			type="vertical_spacer"
+		>
+			Suppress Suggestions (Beta)
+		</field>
+		-->
+		<!-- Do not provide SUGGESTIONS if a certain field is present -->
+		<!--
+		<field type="vertical_spacer" />
+		-->
+		<!--
+		<field
+			type="vertical_spacer"
+			font_size_increment="0"
+		>
+			Do not provide Suggestions if a particular field is present (Beta)
+		</field>
+		<field
+			type="vertical_spacer"
+			font_size_increment="0"
+		>
+			(Example: do not provide suggestions for page 2 of search results)
+		</field>
+		<field
+			name="take_no_action_field_1"
+			label="No Suggestions indicated by CGI field"
+			xpath="/nie_config/search_tuning/search_engine_info/no_action_indicator_field[1]"
+		/>
+		<field
+			name="take_no_action_field_2"
+			xpath="/nie_config/search_tuning/search_engine_info/no_action_indicator_field[2]"
+		/>
+		<field
+			name="take_no_action_field_3"
+			xpath="/nie_config/search_tuning/search_engine_info/no_action_indicator_field[3]"
+		/>
+		-->
+
+		<!--
+		<field type="vertical_spacer" />
+		<field
+			type="vertical_spacer"
+			font_size_increment="0"
+		>
+			See related tabs for Patterns related to logging
+		</field>
+		-->
+
+	</section>

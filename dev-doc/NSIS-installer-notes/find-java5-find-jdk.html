@@ -1,0 +1,85 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<!-- header.skel.php: begin -->
+<html>
+
+<head>
+
+<title>NSIS Archive</title>
+
+    
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" href="/media/template/nsis.css" type="text/css">
+
+</head>
+
+<body leftmargin="0" topmargin="0" marginwidth="0" marginheight="0">
+
+<table width="778" height="100%" class="maintable" cellspacing="0" cellpadding="0" align="center">
+
+<tr><td colspan="2" height="22">
+ <table width="778">
+   <tr>
+     <td class="auser"><strong>Logged in as:</strong> <i>not logged in</i> ( <a href="login.php?page=162">login</a> )</td>
+     <td class="alinks">
+ 	          [ <a href="picklist.php">Pick List</a> ] [ <a href="search.php">Search</a> ] [ <a href="../index.php">NSIS Site</a> ] [ <a href="http://nsis.sourceforge.net/archive/nsisweb.php">Home</a> ]
+     </td>
+   </tr>
+ </table>
+<tr></td>
+
+  <tr>
+    <td width="150" height="100" class="top"><a href="/index.php"><img src="/media/template/left.gif" width="150" height="100" border="0"></a></td>
+    <td width="628" height="100" class="top"><h1 class="header">NSIS Archive</td>
+  </tr>
+
+  <tr>
+    <td class="content" colspan="2">
+
+<!-- header.skel.php: end --><!-- user_page.skel.php: begin -->
+Navigation: <a href="browse.php">Browse</a> &gt; <a href="/archive/nsisweb.php?page=110&instances=0">How to detect if ... is installed</a></a>
+<hr class="aline">
+<table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr>
+    <td class="atitle">
+      Detecting the JDK version    </td>
+    <td>
+      <a href="edit.php?pageid=143&instances=0,110,162"><img src="images/edit2.png" name="edit2" width="20" height="20" border="0" alt="Edit this page"></a> | <a href="delete.php?instanceid=162"><img src="images/cut2.png" name="cut2" width="20" height="20" border="0" alt="Remove this page instance from the Archive"></a> | <a href="picklist.php?action=pick&instanceid=162"><img src="images/copy2.png" name="copy2" width="20" height="20" border="0" alt="Add this page to your pick list"></a> | <a href="/archive/nsisweb.php?page=110&instances=0"><img src="images/up2.png" name="up2" width="20" height="20" border="0" alt="View the parent of this page"></a>    </td>
+  </tr>
+</table>
+<hr class="aline">
+<table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr>
+    <td align="left" valign="top">
+      Written by <a href="profile.php?userid=100">pcristip</a> 2003-02-26 04:31:53    </td>
+    <td align="right" valign="top">
+          </td>
+  </tr>
+  <tr><td><br><br></td></tr>
+  <tr><td colspan="2" align="left" valign="top" class="apage">
+<!-- user_page.skel.php: source -->
+The following code snippet detects whether Java Development Kit is installed on the machine and will set $1 to the version and $2 to the directory of the installation.<br><br><a href="savescript.php?pageid=143&script=1" target="_blank"><img border="0" src="images/disk.gif" width="19" height="19" class="aicon">Save this script</a><br><pre class="afixfont"><span class="ahinstruction">ClearErrors</span>
+<span class="ahinstruction">ReadRegStr</span> <span class="ahvar">$1</span> <span class="ahparam">HKLM</span> <span class="ahstring">"SOFTWARE\JavaSoft\Java Development Kit"</span> <span class="ahstring">"CurrentVersion"</span>
+<span class="ahinstruction">ReadRegStr</span> <span class="ahvar">$2</span> <span class="ahparam">HKLM</span> <span class="ahstring">"SOFTWARE\JavaSoft\Java Development Kit\<span class="ahvar">$1</span>"</span> <span class="ahstring">"JavaHome"</span>
+
+<span class="ahinstruction">IfErrors</span> <span class="ahnumber">0</span> NoAbort
+    <span class="ahinstruction">MessageBox</span> <span class="ahparam">MB_OK</span> <span class="ahstring">"Couldn't find a Java Development Kit installed. Setup
+</span>will exit now.<span class="ahstring">" 
+</span>    <span class="ahinstruction">Quit</span>        
+        
+<span class="ahlabel">NoAbort:</span>
+    <span class="ahinstruction">DetailPrint</span> <span class="ahstring">"Found JDK in path <span class="ahvar">$2</span>"</span>
+</pre><br><!-- user_page.skel.php: end -->
+  </td></tr>
+</table>
+<!-- footer.skel.php: begin -->
+    </td>
+  </tr>
+  <tr>
+    <td colspan="2" height="40" class="alogo">
+      <a href="http://sourceforge.net"><img src="http://sourceforge.net/sflogo.php?group_id=22049&amp;type=1" alt="SourceForge Logo" border="0"></a>
+    </td>
+  </tr> 
+</table>
+</body> 
+</html>
+<!-- footer.skel.php: end -->

@@ -1,0 +1,764 @@
+/*
+ * Created on Sep 17, 2003
+ *
+ * To change the template for this generated file go to
+ * Window>Preferences>Java>Code Generation>Code and Comments
+ */
+package nie.sn;
+
+
+Mark 7/30/2008
+I was going to do a secondary dispatcher class but there's so many
+things htat need to be manually pulled over from SnRequestHandler
+that it's just not worth it, I'm retreating and will clone and
+modify the snippet server rountine that class instead.
+
+
+import java.util.*;
+import java.io.*;
+import java.lang.reflect.*;
+import org.jdom.Element;
+import org.jdom.Comment;
+import nie.core.*;
+import nie.lucene.LuceneConfigException;
+import nie.lucene.LuceneException;
+import nie.sn.SearchTuningApp;
+
+/**
+ * @author mbennett
+ *
+ * To change the template for this generated type comment go to
+ * Window>Preferences>Java>Code Generation>Code and Comments
+ */
+public class GoogleOneBoxSnippetRequestDispatcher
+{
+
+	final static String kClassName = "GoogleOneBoxSnippetRequestDispatcher";
+	final static String kFullClassName = "nie.sn." + kClassName;
+
+
+	public GoogleOneBoxSnippetRequestDispatcher(
+		Element inConfigElem,
+		nie.sn.SearchTuningConfig inMainConfig
+		// nie.sn.SearchTuningApp inMainApp
+		)
+		//	throws ReportConfigException
+	{
+		final String kFName = "constructor";
+		final String kExTag = kClassName + '.' + kFName + ": ";
+
+		// This will throw an exception if anything is
+		// wrong, it also checks fMainApp for null
+		// fReportsConfig = new SearchReportingConfig(
+		//	inConfigElem, inMainApp
+		//	);
+
+		// Looking good
+
+		// Save this
+		// fMainApp = inMainApp;
+		fMainConfig = inMainConfig;
+	}
+
+	public String dispatch(
+		AuxIOInfo inRequestInfo,
+		AuxIOInfo inResponseInfo
+		)
+			// throws Exception
+	{
+		final String kFName = "dispatch";
+		final String kExTag = kClassName + '.' + kFName + ": ";
+
+		if( null == inRequestInfo || null == inResponseInfo )
+			throw new LuceneException( kExTag
+				+ "Null request/reponse object."
+				);
+
+		
+		
+		
+		
+		
+		
+		// Even if we find nothing, we will always emit HTML
+		inResponseInfo.setContentType(
+			AuxIOInfo.MIME_TYPE_XML
+			);
+
+		// The results
+		StringBuffer buff = new StringBuffer();
+
+		
+		
+		
+		
+		
+		// Even though the later routines check for the query,
+		// we like to check for it now, to give better debug messages
+		String query = getUserQuery();
+
+		// If no query, just return
+		// No warning needed, be we should emit a comment at least
+		if( query == null )
+		{
+			String tmpMsg =
+				"<!--"
+				+ " Info: NIE SearchTrack: no search terms found in request"
+				+ " for Webmaster Suggests or Alternatives snippet suggestions."
+				+ "-->"
+				;
+			// We did NOT find anything interesting
+			// Redundant, but makes it clear
+			fSnippetToSend = false;
+			// We still return a string in case they want to send back
+			// some debug page or something, normally they would just redirect
+			return tmpMsg;
+		}
+
+
+		// Check for no query, or no matching query
+		// This also checks the hash
+		if( ! getHasAnyMatchingTerms() )
+		{
+			String tmpMsg =
+				"<!--"
+				+ " Info: NIE SearchTrack: Search term(s) not mapped."
+				+ " Terms = '" + query + "'"
+				+ "-->"
+				;
+			// We did NOT find anything interesting
+			// Redundant, but makes it clear
+			fSnippetToSend = false;
+			// We still return a string in case they want to send back
+			// some debug page or something, normally they would just redirect
+			return tmpMsg;
+		}
+
+		// The list of valid, matching wm suggests records, IF any found
+		// turns list of SnURLRecords
+		List suggestions = getValidWebmasterSuggestsRecords();
+		// And also alternative spellings
+		// Returns list of strings
+		List alternatives = getValidAlternateSuggestionRecords();
+
+		// If there aren't any, still just do a passthrough
+		// Usually there should be by this point in the code
+		if( ( suggestions == null || suggestions.size() < 1 )
+			&& ( alternatives == null || alternatives.size() < 1 )
+			)
+		{
+			String tmpMsg =
+				"<!--"
+				+ " Info: NIE SearchNames: Search term(s) not mapped"
+				+ " for Webmaster Suggests or Alternatives snippet suggestions,"
+				+ " even though it may be present in the map for other uses."
+				+ " Terms = '" + query + "'"
+				+ "-->"
+				;
+			// We did NOT find anything interesting
+			// Redundant, but makes it clear
+			fSnippetToSend = false;
+			// We still return a string in case they want to send back
+			// some debug page or something, normally they would just redirect
+			return tmpMsg;
+		}
+
+
+		// Increment counters, etc
+		// We need to track that we actually did something
+
+		// Tabulate suggestions
+		if( suggestions.size() > 0 )
+		{
+			// Increment the counter, need to increment the other one in
+			fSNActionCount++;
+			// Each URL is counted
+			fSNActionItemCount += suggestions.size();
+
+			// We need to handle if they are as-yet undefined
+			fSNActionCount = fSNActionCount <= 0 ? 1 : fSNActionCount+1;
+			if( fSNActionItemCount <= 0 )
+				fSNActionItemCount = suggestions.size();
+			else
+				fSNActionItemCount += suggestions.size();
+
+			// Make a note of what we did
+			if( fSNActionCode == SearchTuningConfig.SN_ACTION_CODE_UNDEFINED )
+				fSNActionCode = SearchTuningConfig.SN_ACTION_CODE_SUGGEST;
+		}
+
+		// Tabulate alternatives
+		if( alternatives.size() > 0 )
+		{
+			// Increment the counter, need to increment the other one in
+			// Each URL is counted
+			// We need to handle if they are as-yet undefined
+			fSNActionCount = fSNActionCount <= 0 ? 1 : fSNActionCount+1;
+			if( fSNActionItemCount <= 0 )
+				fSNActionItemCount = alternatives.size();
+			else
+				fSNActionItemCount += alternatives.size();
+
+			// Make a note of what we did
+			if( fSNActionCode == SearchTuningConfig.SN_ACTION_CODE_UNDEFINED )
+				fSNActionCode = SearchTuningConfig.SN_ACTION_CODE_ALT;
+		}
+
+		// So we know we have good records
+		// build the complete buffer
+		StringBuffer outBuff = new StringBuffer();
+
+		// Add the Webmaster Suggests suggestions, if appropriate
+		String wmsSnippet = null;
+		if( suggestions != null && suggestions.size() > 0 )
+		{
+			// Add all the suggestions
+			wmsSnippet = formatWMSuggestionsToSnippet( suggestions, query );
+			if( null==wmsSnippet )
+				errorMsg( kFName,
+					"Got back unexpected null wms snippet."
+					+ " Had " + suggestions.size() + " urls to suggest."
+					);
+		}
+		// Or make a note that we didn't have WM suggestions
+		else
+		{
+			String tmpMsg =
+			    NIEUtil.NL +
+				"<!--"
+				+ " Info: NIE SearchTrack: Search terms has no"
+				+ " Webmaster Suggests suggestions." // ;"
+				// + " however it may have an alternative spelling suggestion."
+			    + NIEUtil.NL
+				+ "Term = '" + query + "'"
+				+ "-->"
+				;
+			outBuff.append( tmpMsg );
+		}
+
+		// Add the Alternative Spelling suggestions, if appropriate
+		String altSnippet = null;
+		if( alternatives != null && alternatives.size() > 0 )
+		{
+			altSnippet = formatAlternateSuggestionsToSnippet( alternatives, query );
+			if( null==altSnippet )
+				errorMsg( kFName,
+					"Got back unexpected null alt-terms snippet."
+					+ " Had " + alternatives.size() + " alt terms to suggest."
+					);
+		}
+		// Or make a note that we didn't have WM suggestions
+		else
+		{
+			String tmpMsg =
+			    NIEUtil.NL +
+				"<!--"
+				+ " Info: NIE SearchTrack: Search term has no"
+				+ " Alternative suggestions." // ;"
+				// + " however it may have Webmaster Suggests suggestion."
+			    + NIEUtil.NL
+				+ "Term = '" + query + "'"
+				+ "-->"
+				;
+			outBuff.append( tmpMsg );
+		}
+
+		// Add snippets, if we got any
+		// If we got both, wrap them in table
+		if( null!=wmsSnippet || null!=altSnippet ) {
+			boolean hasBoth = null!=wmsSnippet && null!=altSnippet;
+			outBuff.append( NIEUtil.NL );
+			if( hasBoth ) {
+				outBuff.append( "<table width=\"100%\"><tr><td align=\"left\">");
+				outBuff.append( NIEUtil.NL );
+			}
+			// Add WMS
+			if( null!=wmsSnippet ) {
+				outBuff.append( wmsSnippet );
+				outBuff.append( NIEUtil.NL );
+			}
+			if( hasBoth ) {
+				outBuff.append( "</td></tr><tr><td align=\"left\">");
+				outBuff.append( NIEUtil.NL );
+			}
+			// Add Alt terms
+			if( null!=altSnippet ) {
+				outBuff.append( altSnippet );
+				outBuff.append( NIEUtil.NL );
+			}
+			if( hasBoth ) {
+				outBuff.append( "</td></tr></table>");
+				outBuff.append( NIEUtil.NL );
+			}
+			// Add an extra <br>
+			// outBuff.append( "<br />" );
+			// ^^^ can now be added by admin in config file
+			fSnippetToSend = true;
+		}
+
+		
+		
+		
+		
+		
+		
+		
+		
+		// calling this always marks for post processing
+		// And the true tells it this was just a snippet served up (no parsing)
+		markPostSearchLogging( true );
+
+		// First off, see if there's no matching terms
+		if( ! getHasAnyMatchingTerms() )
+		{
+		    debugMsg( kFName, "getHasAnyMatchingTerms() was false" );
+			buff.append( "<!-- Info: NIE SearchTrack: No Suggestions -->" );
+		}
+		// Else we do have a shot at it
+		else
+		{
+		    debugMsg( kFName, "getHasAnyMatchingTerms() was true" );
+
+			// Get the snippet
+			String snippet = null;
+			if( getMainConfig().getLicIsAllGood() ) {
+				snippet = generateSnippet();
+				debugMsg( kFName, "calling generateSnippet()" );
+			}
+			else
+				warningMsg( kFName, "N"
+					+ "ot pro" + "vid" + "i" + "ng " + 's' + "u" + "gges" + "tio" + "ns; L"
+					+ "IC" + "ENS"
+					+ 'E' + ' '
+					+ 'E' + 'X' + "PI" + 'R' + "ED" + '!'
+					+ '!' + '!'
+					+ ' ' + "con" + "tact su"
+					+ "por" + "t@id"
+					+ "eaen"
+					+ "g." + 'c' + "om"
+					);
+			// Carefully check the results
+			// If we didn't get anything, just give a quick notice
+			if( snippet == null || ! fSnippetToSend )
+			{
+				buff.append( "<!-- Info: NIE SearchTrack: No Suggestions (empty) -->" );
+				debugMsg( kFName, "NULL or no fSnippet Snippet" );
+				debugMsg( kFName, "snippet" + ( null==snippet ? " is null" : " has "+snippet.length()+" chars (1)") );
+				debugMsg( kFName, "fSnippetToSend="+fSnippetToSend );
+			}
+			else
+			{
+				// Go ahead and add it
+				buff.append( snippet );
+				debugMsg( kFName, "got snippet with " + snippet.length() + " chars (2)" );
+			}
+
+		}   // End else we did have a shot, we did have at least some matches
+
+		// And cleanup
+		buff.append( kPageFooter );
+
+		// save the buffer in Contents
+		fResponseInfo.setContent( new String(buff) );
+
+		// Make a note that we did have success
+		fResponseInfo.setHTTPResponseCode( AuxIOInfo.DEFAULT_HTTP_RESPONSE_CODE );
+
+		
+		
+		
+		
+		
+		
+		
+		// Our eventual response, barring any exceptions
+		Element outElem = null;
+
+		// An overall display template
+		// String screenTemplate = getScreenTemplate();
+		String screenTemplate = null;
+
+		// Now run it!
+		// It may throw plain old report run time exceptions
+		try {
+			outElem = processRequest(
+				inRequestInfo,
+				inResponseInfo,
+				( null == screenTemplate )
+				);
+		}
+		catch( Throwable e ) {
+			String msg = null;
+			try {
+				StringWriter sw = new StringWriter();
+				PrintWriter pw = new PrintWriter( sw );
+				e.printStackTrace(pw);
+				sw.close();
+				msg = e.toString() + " STACK: " + sw.toString();
+			}
+			catch( Exception e2 ) {
+				msg = e.toString() + " - NO STACK TRACE, Error: " + e2;
+			}
+			throw new LuceneException( kExTag
+				+ " Error processing Lucene search, Error: " + msg
+				);
+		}
+
+		// Sanity check
+		if( null==outElem )
+			throw new LuceneException( kExTag
+				+ "Got back null XHTML screen element."
+				);
+
+		
+		// By now we have a jdom tree that is either
+		// a menu of reports, or the results of a specific report
+
+		// Convert it to a String (XHTML)
+		String outDoc = null;
+
+		boolean isRedirect = false;
+
+		if( outElem.getName().equals("redirect") ) {
+			isRedirect = true;
+			String newURL = outElem.getTextNormalize();
+			SnRequestHandler.static_setupSpecificURLRedicect( newURL, inResponseInfo );
+		}
+		// If there's NO template
+		if( null == screenTemplate )
+		{
+		 	// outDoc = JDOMHelper.JDOMToString( outElem, true );
+			outDoc = JDOMHelper.JDOMToString( outElem, false );
+		}
+		// Else they ARE using a template
+		else
+		{
+			outDoc = JDOMHelper.JDOMToString( outElem, true );
+			errorMsg( kFName, "templates not supported in UI at tis time");
+
+			/***
+			// Format what we got back as a string to
+			// substitute into the final page
+		 	String snippet = JDOMHelper.JDOMToString( outElem, true );
+
+			// get the marker text and options
+			List patterns = getUIConfig().getMarkerLiteralText();
+			if( null == patterns || patterns.size() < 1 )
+			{
+				errorMsg( kFName,
+					"No patterns defined to mark substitution, returning null."
+					);
+				return null;
+			}
+	
+			// Get some other flags from the Search Engine config
+			boolean goesAfter =
+				getReportingConfig().getIsMarkerNewTextInsertAfter();
+			// statusMsg( kFName, "goesAfter=" + goesAfter );
+			boolean doesReplace =
+				getReportingConfig().getIsMarkerReplaced();
+			boolean isCasen =
+				getReportingConfig().getIsMarkerCaseSensitive();
+			***/	
+	
+			/****
+			debugMsg( kFName,
+				"Will process input doc with " + inSourceDoc.length() + " chars"
+				+ ", Snippet with " + inSnippet.length() + " chars"
+				+ ", and " + patterns.size() + " pattern(s)."
+				+ " Options:"
+				+ " goesAfter=" + goesAfter
+				+ " doesReplace=" + doesReplace
+				+ " isCasen=" + isCasen
+				);
+			*******/
+
+			/***	
+			// call the substituion routine
+			// Do the markup
+			outDoc = NIEUtil.markupStringWtihString(
+				reportTemplate, snippet, patterns,
+				goesAfter, doesReplace, isCasen
+				);
+	
+			// A final escape hatch to at least give them something
+			if( null == outDoc )
+			{
+				errorMsg( kFName,
+					"Did not find target pattern in report template."
+					+ " Will return unformatted report."
+					);
+				// Just slap some HTML tags onto the snippet
+				outDoc = "<html>" + snippet + "</html>";
+			}
+			***/
+
+		}	// End if there was a template
+
+		// Sanity check
+		if( !isRedirect && null==outDoc )
+			throw new LuceneException( kExTag
+				+ "Got back null string from XHTML-to-String conversion."
+				);
+
+		// OK, we're done, return it!
+		return outDoc;
+	}
+
+	private String getUserQueryField()
+	{
+		// Will return it trimmed or null
+		String qryField = getSearchEngine().getQueryField();
+		// Sanity check
+		if( qryField == null )
+			errorMsg( "getUserQueryField",
+				"No search engine query field specified."
+				+ " Don't know what field to check for matching search terms."
+				+ " Returning null."
+				);
+		return qryField.trim();
+	}
+
+	private String getUserQuery()
+	{
+		final String kFName = "getUserQuery";
+
+		String qryField = getUserQueryField();
+		// Sanity check
+		if( qryField == null )
+		{
+			return null;
+			// ??? Warning message already generated by getUserQueryField
+		}
+
+		// Look it up in the CGI fields we have
+		String outQry = fRequestInfo.getScalarCGIFieldTrimOrNull(
+			qryField
+			);
+
+		try {
+			// If we didn't find it, but we're doing a webmaster suggests, then
+			// check the referer field
+			if( outQry == null &&
+				determineContext().equals(SN_CONTEXT_SNIPPET_SUGGEST)
+				)
+			{
+				AuxIOInfo refererInfo = fRequestInfo.getCompleteRefererInfo();
+				// If we got something, check that
+				if( refererInfo != null )
+				{
+					outQry = refererInfo.getScalarCGIFieldTrimOrNull(
+						qryField
+						);
+				}
+				// And now we either got it or we didn't
+			}
+		}
+		catch( SpuriousHTTPRequestException e ) {
+			infoMsg( kFName, "Got back exception from determineContext(), ignoring. Exception: " + e );
+		}
+
+		// For now, just return it, I don't think we need a warning here
+		return outQry;
+	}
+	private String getUserQueryToLower()
+	{
+		String tmpStr = getUserQuery();
+		if( tmpStr != null )
+			tmpStr = tmpStr.toLowerCase();
+		return tmpStr;
+	}
+
+	private SearchEngineConfig getSearchEngine()
+	{
+		// return getMainApplication().getSearchEngine();
+		if( null!=fMainConfig )
+			return getMainConfig().getSearchEngine();
+		else
+			return null;
+	}
+
+	nie.sn.SearchTuningConfig getMainConfig()
+	{
+		return fMainConfig;
+	}
+
+	// do we need this?
+	DBConfig _getDBConfig()
+	{
+		// return getMainApp().getDBConfig();
+		return getMainConfig().getDBConfig();
+	}
+
+
+
+
+
+	private static void ___Sep_Run_Logging__(){}
+	//////////////////////////////////////////////////////////////////
+
+	// Handling Errors and warning messages
+	// ************* NEW LOGGING STUFF *************
+
+	private static RunLogInterface getRunLogObject()
+	// can't access some of impl's extensions with interface reference
+	//private static RunLogBasicImpl getRunLogObject()
+	{
+		// return RunLogBasicImpl.getRunLogObject();
+		return RunLogBasicImpl.getRunLogObject();
+	}
+
+	// New style
+	private static boolean statusMsg( String inFromRoutine, String inMessage )
+	{
+		return getRunLogObject().statusMsg( kClassName, inFromRoutine,
+			inMessage
+			);
+	}
+
+	// New style
+	private static boolean transactionStatusMsg( String inFromRoutine, String inMessage )
+	{
+		return getRunLogObject().transactionStatusMsg( kClassName, inFromRoutine,
+			inMessage
+			);
+	}
+
+	// New style
+	private static boolean infoMsg( String inFromRoutine, String inMessage )
+	{
+		return getRunLogObject().infoMsg( kClassName, inFromRoutine,
+			inMessage
+			);
+	}
+	private static boolean shouldDoInfoMsg( String inFromRoutine )
+	{
+		return getRunLogObject().shouldDoInfoMsg( kClassName, inFromRoutine );
+	}
+
+
+
+	// Old style
+	private void debugMsg( String inFromRoutine, String inMessage )
+	{
+		staticDebugMsg( inFromRoutine, inMessage );
+	}
+	private static void staticDebugMsg(
+		String inFromRoutine, String inMessage
+		)
+	{
+
+		getRunLogObject().debugMsg( kClassName, inFromRoutine,
+			inMessage
+			);
+
+//		if( debug )
+//		{
+//			messageLogger( "Debug: " + kClassName + ":" + inFromRoutine + ":"
+//				+ inMessage
+//				);
+//		}
+	}
+
+	// New style
+	private static boolean traceMsg( String inFromRoutine, String inMessage )
+	{
+		return getRunLogObject().traceMsg( kClassName, inFromRoutine,
+			inMessage
+			);
+	}
+	private static boolean shouldDoTraceMsg( String inFromRoutine )
+	{
+		return getRunLogObject().shouldDoTraceMsg( kClassName, inFromRoutine );
+	}
+
+	// Old style
+	private void warningMsg( String inFromRoutine, String inMessage )
+	{
+		staticWarningMsg( inFromRoutine, inMessage );
+	}
+	private static void staticWarningMsg(
+		String inFromRoutine, String inMessage
+		)
+	{
+		getRunLogObject().warningMsg( kClassName, inFromRoutine,
+			inMessage
+			);
+	}
+	private void errorMsg( String inFromRoutine, String inMessage )
+	{
+		staticErrorMsg( inFromRoutine, inMessage );
+	}
+	private static void staticErrorMsg(
+		String inFromRoutine, String inMessage
+		)
+	{
+		getRunLogObject().errorMsg( kClassName, inFromRoutine,
+			inMessage
+			);
+	}
+
+	// Newer style
+	private static boolean fatalErrorMsg( String inFromRoutine, String inMessage )
+	{
+		return getRunLogObject().fatalErrorMsg( kClassName, inFromRoutine,
+			inMessage
+			);
+	}
+
+
+
+
+
+
+
+
+	static Hashtable mMimeTypesByExtension;
+
+	public static final String DEFAULT_LOCAL_FILE_URI_PREFIX = "system:static_files/";
+
+
+	// private Element fConfigElem;
+	// private nie.sn.SearchTuningApp fMainApp;
+	private nie.sn.SearchTuningConfig fMainConfig;
+	public static String DEFAULT_MIME_TYPE = "application/x-generic-binary-data";
+
+	static {
+		mMimeTypesByExtension = new Hashtable();
+
+		// There are conflicting views on what these should be, I've tried to pick the "oldest"
+
+		mMimeTypesByExtension.put( "txt", "text/plain" );
+		mMimeTypesByExtension.put( "asc", "text/plain" );
+
+		mMimeTypesByExtension.put( "htm", "text/html" );
+		mMimeTypesByExtension.put( "html", "text/html" );
+		mMimeTypesByExtension.put( "xhtml", "text/html" );
+
+		mMimeTypesByExtension.put( "xml", "text/xml" );
+		mMimeTypesByExtension.put( "css", "text/css" );
+
+		mMimeTypesByExtension.put( "gif", "image/gif" );
+		mMimeTypesByExtension.put( "jpg", "image/jpeg" );
+		mMimeTypesByExtension.put( "jpeg", "image/jpeg" );
+		mMimeTypesByExtension.put( "png", "image/png" );	// also x-png
+		mMimeTypesByExtension.put( "tif", "image/tiff" );
+		mMimeTypesByExtension.put( "tiff", "image/tiff" );
+		mMimeTypesByExtension.put( "bmp", "image/x-bmp" );
+		mMimeTypesByExtension.put( "ico", "image/x-ico" );
+		mMimeTypesByExtension.put( "ps", "application/postscript" );
+		mMimeTypesByExtension.put( "eps", "application/postscript" );
+
+		mMimeTypesByExtension.put( "pdf", "application/pdf" );
+		mMimeTypesByExtension.put( "zip", "application/zip" );
+
+		mMimeTypesByExtension.put( "doc", "application/msword" );	// bunches of others
+		mMimeTypesByExtension.put( "rtf", "application/rtf" );	// also text/rtf?
+		mMimeTypesByExtension.put( "xls", "application/x-ms-excel" );	// also vnd...
+		mMimeTypesByExtension.put( "ppt", "application/x-ms-powerpoint" );	// also vnd...
+
+		mMimeTypesByExtension.put( "nb", "application/mathematica" );
+
+	}
+
+}

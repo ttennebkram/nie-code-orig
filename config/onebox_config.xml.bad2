@@ -1,0 +1,64 @@
+<onebox type="external" suppressDateTime="false" suppressIPAddr="false">
+  
+	
+  <name>SearchTrack Suggestions</name>
+  
+	
+  <security userAuth="none" />
+  
+	
+  <description>Provide predefined suggestions for certain search terms, defined by the administrator.</description>
+  
+	
+  <trigger triggerType="null" />
+  
+	
+  <providerURL>http://localhost:9000/onebox</providerURL>
+  
+	
+  <resultsTemplate>
+    
+		
+    <xsl:template xmlns:xsl="http://www.w3.org/1999/XSL/Transform" name="suggestions">
+      
+	
+      <xsl:for-each select="MODULE_RESULT">
+        
+		
+        <a>
+          
+			
+          <xsl:attribute name="href">
+            
+				
+            <xsl:value-of select="U" />
+            
+			
+          </xsl:attribute>
+          
+			
+          <b>
+            <xsl:value-of select="Field[@name='title']" />
+          </b>
+          <br />
+          
+		
+        </a>
+        
+		
+        <small>
+          <xsl:value-of select="Field[@name='description']" />
+        </small>
+        <p />
+        
+	
+      </xsl:for-each>
+      
+
+    </xsl:template>
+    
+	
+  </resultsTemplate>
+  
+
+</onebox>

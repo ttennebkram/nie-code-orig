@@ -1,0 +1,95 @@
+<report>
+	<title>Number of Searches per Day</title>
+	<subtitle>For the past $cgi.days day(s)</subtitle>
+
+	<link_text>Searches per Day in last:</link_text>
+
+	<field
+		heading="Days w/ Searches"
+		css_class="nie_datetime"
+	>
+		to_char( trunc(START_TIME), 'Dy MM/DD/YY')
+	</field>
+
+	<field heading="Num Searches"
+		display_sum="TRUE"
+		_display_avg="true"
+		_display_min="true"
+		_display_max="true"
+		_display_count="true"
+	>
+		count(*) num_searches
+	</field>
+
+	<field
+		heading="Earliest"
+		css_class="nie_datetime"
+	>
+		to_char( min(START_TIME), 'HH:MI:SS am')
+	</field>
+
+	<!--
+	<field heading="Average">
+		to_char( avg(START_TIME), 'HH24:MI:SS')
+	</field>
+	-->
+	<!--
+	<field heading="Average">
+		avg( to_number(START_TIME) )
+	</field>
+	-->
+	<field
+		heading="Average"
+		css_class="nie_datetime"
+	>
+		to_char(
+			trunc(START_TIME) + avg( START_TIME - trunc(START_TIME) ),
+			'HH:MI:SS am'
+			)
+	</field>
+
+
+
+	<field
+		heading="Latest"
+		css_class="nie_datetime"
+	>
+		to_char( max(START_TIME), 'HH:MI:SS am')
+	</field>
+
+
+	<raw_where_filter>
+		<!-- TRUNC(SYSDATE) - $cgi.days -->
+		<![CDATA[
+			start_time >= SYSDATE - $cgi.days
+			AND
+			TRANSACTION_TYPE = 1 
+		]]>
+	</raw_where_filter>
+
+	<raw_grouping>
+		trunc(START_TIME)
+	</raw_grouping>
+	<raw_sort>
+		trunc(START_TIME) desc
+	</raw_sort>
+
+	<suggested_links>
+		<link>
+			<text>week</text>
+			<title>week</title>
+			<parameter name="days" value="7" />
+		</link>
+		<link>
+			<text>month</text>
+			<title>month</title>
+			<parameter name="days" value="30" />
+		</link>
+		<link>
+			<text>year</text>
+			<title>year</title>
+			<parameter name="days" value="365" />
+		</link>
+	</suggested_links>
+
+</report>

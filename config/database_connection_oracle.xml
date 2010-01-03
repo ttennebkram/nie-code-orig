@@ -1,0 +1,23 @@
+<database
+vendor_tag="Oracle"
+_server_name="titan"
+server_name="10.0.4.1"
+__server_name="67.121.68.97"
+port="1521"
+database_name="stack"
+username="stack2"
+password="test"
+main_table="nie_log"
+_retry_wait_ms="60000">
+  <!-- Test that the main table is there
+		By default, does a count(*)
+	<test_query>
+		select 'http://foo?this=that&amp;foo=bar' from dual
+	</test_query>
+	-->
+  <!--
+	<test_query
+		is_count_query="TRUE"
+	/>
+	-->
+</database>

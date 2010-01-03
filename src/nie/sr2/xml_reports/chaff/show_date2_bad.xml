@@ -1,0 +1,28 @@
+<report>
+	<title>
+		Show System Date and Time 2
+	</title>
+
+	<field
+		db_vendor="oracle"
+		heading="date1a"
+	>
+		sysdate
+	</field>
+	<field
+		db_vendor="postgresql"
+		heading="date1b"
+	>
+		CURRENT_TIMESTAMP
+	</field>
+
+	<field heading="date2">
+		<db_variant except_db_vendor="oracle">
+			CURRENT_TIMESTAMP
+		</db_variant>
+		<db_variant db_vendor="oracle">
+			SYSDATE
+		</db_variant>
+	</field>
+
+</report>

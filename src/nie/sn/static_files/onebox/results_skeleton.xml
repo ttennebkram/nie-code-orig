@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<OneBoxResults xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="oneboxresults.xsd">
+
+	<resultCode>success</resultCode>
+	<Diagnostics/>
+	<provider>SearchTrack</provider>
+	<!-- NO, this is for FULL RESULTS, which they will already have -->
+	<!--
+	<title>
+		<urlText>SearchTrack Suggestions</urlText>
+		<urlLink />
+	</title>
+	-->
+
+	<!-- No, we do not include a SearchTrack image, at this time -->
+	<!-- <IMAGE_SOURCE /> -->
+
+	<!-- can have up to three results -->
+	<!--
+	<MODULE_RESULT />
+	<MODULE_RESULT />
+	<MODULE_RESULT />
+	-->
+
+</OneBoxResults>

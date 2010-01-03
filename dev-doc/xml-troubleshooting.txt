@@ -1,0 +1,14 @@
+ERROR: 4/16/03 3:35:50 PM PDT DBConfigException.constructor: Called with message
+ "Error loading config file (1). JDOMHelperException: nie.core.JDOMHelperExcepti
+on: JDOMHelper:constructor(6): Unable to create JDOM document. URI="system:syste
+m/db/schema/nie_user_info_schema.xml" Reason: org.jdom.JDOMException: Error on l
+ine 0: File "null" not found."
+ERROR: 4/16/03 3:35:50 PM PDT DBConfig.createDBTable: Unable to find defintion f
+or table "nie_user_info". Exception was: nie.core.DBConfigException: Error loadi
+ng config file (1). JDOMHelperException: nie.core.JDOMHelperException: JDOMHelpe
+r:constructor(6): Unable to create JDOM document. URI="system:system/db/schema/n
+ie_user_info_schema.xml" Reason: org.jdom.JDOMException: Error on line 0: File "
+null" not found.
+
+This was because I added a schema to the src tree, but didn't do "update"
+in Eclipse, so the file was never copied over to the classes tree.

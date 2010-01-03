@@ -1,0 +1,45 @@
+<table name="nie_term">
+
+<field name="id"
+	type="int"
+	cgi_field_name="nie_term_id"
+	is_not_null="TRUE"
+	is_indexed="TRUE"
+/>
+
+<field name="text_as_entered"
+	type="text"
+	is_not_null="TRUE"
+	size="256"
+/>
+<field name="text_normalized"
+	type="text"
+	is_not_null="TRUE"
+	size="256"
+/>
+
+<field name="created_date"
+	type="timestamp"
+/>
+<field name="created_by_person"
+	type="text"
+	size="64"
+/>
+<field name="created_comment"
+	type="text"
+	size="1024"
+/>
+
+<field name="last_edit_date"
+	type="timestamp"
+/>
+<field name="last_edit_by_person"
+	type="text"
+	size="64"
+/>
+<field name="last_edit_comment"
+	type="text"
+	size="1024"
+/>
+
+</table>

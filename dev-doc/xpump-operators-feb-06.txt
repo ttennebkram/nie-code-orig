@@ -1,0 +1,79 @@
+Operations in XPump
+
+Pattern Matching
+----------------
+regex (for text)
+xpath (for trees)
+
+Flow Control
+------------
+route_by_test
+redirect
+redirect_t
+select_queue (like a case statement)
+copy_to_queues
+if / else
+replicate_on_field (like a for loop)
+(also exception routing)
+(also to_q, from_q and error_q attributs)
+
+String Manipulation
+-------------------
+zap_chars
+remove_commas
+to_upper_case
+to_lower_case
+
+Simple Statistics
+-----------------
+count_field / count  (number of instances of a field)
+tabulate  (simple unique value counter, see also consolidate)
+min / minimum
+max / maximum
+
+Simple Structural Data Changes
+------------------------------
+new_field
+copy_field
+rename_field
+delete_field
+delete_attributes
+
+Advanced Structural Data Changes
+--------------------------------
+consolidate  (tabulates complex data then emits assembled results)
+master_list_filter
+move_under
+flatten_to_xml_text
+flatten_to_plain_text
+
+Files and URLs
+--------------
+build_url
+unique_urls
+get_url_extension
+get_file_extension
+extract_directory
+
+Basic I/O
+---------
+csv_in
+csv_out
+http_download
+db_out / database_out
+lucene_index
+inject_xml inject_xml_files
+
+Advanced I/O
+------------
+csv_in_t (CSV In with outbound "done" trigger)
+siphon (next 3 handle entire work unit)
+inject
+sink
+
+System / Debugging
+------------------
+auto_exit
+monitor
+trigger
+(see also siphon)

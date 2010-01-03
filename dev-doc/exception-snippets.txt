@@ -1,0 +1,46 @@
+ResultSet lThisTimeIntervalResultSet = null;
+Statement lThisStatement = null;
+Connection lThisConnection = null;
+
+ResultSet lOldTimeIntervalResultSet = null;
+Statement lOldStatement = null;
+Connection lOldConnection = null;
+
+Object [] objs1 = getDBConfig().runQuery( qry, true );
+lThisTimeIntervalResultSet = (ResultSet) objs1[0];
+lThisStatement = (Statement) objs1[1];
+lThisConnection = (Connection) objs1[2];
+
+
+
+
+finally {
+	results = DBConfig.closeResults( results, kClassName(), kFName, false );
+}
+
+myDBConnection = DBConfig.closeConnection( myDBConnection, kClassName, kFName, false );
+myDBConnectionManualCommit = DBConfig.closeConnection( myDBConnectionManualCommit, kClassName, kFName, false );
+
+Statement myStatement = null;
+Connection myConnection = null;
+
+inDBConfig.executeStatementWithConnection(
+	sql, optConnection, true
+	);
+
+ResultSet myResults = null;
+Statement myStatement = null;
+Connection myConnection = null;
+
+
+Object [] objs = myDB.runQuery( sql, true );
+ResultSet myResults = (ResultSet) objs[0];
+Statement myStatement = (Statement) objs[1];
+Connection myConnection = (Connection) objs[2];
+
+
+finally {
+	myResults = DBConfig.closeResults( myResults, kClassName, kFName, false );
+	myStatement = DBConfig.closeStatement( myStatement, kClassName, kFName, false );
+	myConnection = DBConfig.closeConnection( myConnection, kClassName, kFName, false );
+}

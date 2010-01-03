@@ -1,0 +1,21 @@
+<item>
+	<url>
+		http://TopGunFlightSchool.com
+		<title>Top Gun Flight School</title>
+		<description>
+			Learn what you need to know
+			and get hands on practice.
+		</description>
+
+		<!--
+		<description_line_1>
+			Learn what you need to know
+		</description_line_1>
+		<description_line_2>
+			and get hands on practice.
+		</description_line_2>
+		-->
+
+	</url>
+	<advertisement_code>123</advertisement_code>
+</item>

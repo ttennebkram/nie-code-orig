@@ -1,0 +1,40 @@
+<!-- If included in a report, these links will
+	suggest 3 or versions of the report, looking back
+	various amounts of time
+
+	Note: It ASSUMES the key CGI field is called "days"
+-->
+<suggested_links>
+
+	<!--
+	<link>
+		<title>So far today</title>
+		<parameter name="days" value="0" />
+	</link>
+	-->
+	<link>
+		<!-- <text>day</text> -->
+		<text>D</text>
+		<title>day</title>
+		<parameter name="days" value="1" />
+	</link>
+	<link>
+		<!-- <text>week</text> -->
+		<text>W</text>
+		<title>week</title>
+		<parameter name="days" value="7" />
+	</link>
+	<link>
+		<!-- <text>month</text> -->
+		<text>M</text>
+		<title>month</title>
+		<parameter name="days" value="30" />
+	</link>
+	<!--
+	<link>
+		<text>Last 90 days</text>
+		<title>Last 90 days</title>
+		<parameter name="days" value="90" />
+	</link>
+	-->
+</suggested_links>

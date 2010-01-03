@@ -1,0 +1,41 @@
+<report>
+	<title>
+		Show System Date and Time
+	</title>
+
+	<field
+		db_vendor="oracle"
+		heading="date"
+	>
+		sysdate
+	</field>
+	<field
+		_db_vendor="postgresql"
+		except_db_vendor="oracle"
+		heading="date"
+	>
+		CURRENT_TIMESTAMP
+	</field>
+	<field
+		_db_vendor="postgresql"
+		except_db_vendor="oracle"
+		heading="date - 0"
+	>
+		CURRENT_TIMESTAMP-0
+	</field>
+	<field
+		_db_vendor="postgresql"
+		except_db_vendor="oracle"
+		heading="date - 0.0"
+	>
+		CURRENT_TIMESTAMP-0.0
+	</field>
+	<field
+		_db_vendor="postgresql"
+		except_db_vendor="oracle"
+		heading="date - 1"
+	>
+		CURRENT_TIMESTAMP-1
+	</field>
+
+</report>

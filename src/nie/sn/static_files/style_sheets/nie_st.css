@@ -1,0 +1,190 @@
+.nie_report_title {
+	color:#000080;
+	font-size:150%;
+}
+.nie_form_title {color:#000080;}
+.nie_report_subtitle {
+	color:#000080;
+	font-size:120%;
+}
+.nie_form_subtitle {color:#000080;}
+
+/* body { margin: 0px; } */
+
+/* also .nie_cmenu_row1 */
+/* N/12 E/3 S/6 W/9 */
+.nie_cmenu_r1_cell {
+	padding: 1px 7px 1px 7px;
+	/* background-color:#c7c7c7; */
+}
+.nie_cmenu_r2_cell {
+	_p_adding: 0px 4px 1px 4px;
+	padding: 0px 8px 1px 8px;
+	/* background-color:#e5e5e5; */
+}
+
+.nie_stat_number {color:#000080;}
+.nie_stats_qualifier {font-size:smaller;}
+
+.nie_container_cell { padding:0px; spacing:0px }
+.nie_hr_cell { padding:0px; spacing:0px }
+
+
+/* Help Text */
+.nie_helptext_body { background-color: #ffffd0; } /* ffffc2 #ffffcc; #FFCC00-dark-gold */
+.nie_helptext_heading, .nie_product_name, .nie_vocabulary_term { color: #000080; } /* #003399; */
+
+/* Trend */
+.nie_trend_table { background-color: #bfd2e3; } /* confirmed??? */
+
+/* UI Stuff */
+.nie_form_header_row {
+	background-color:#dddddd;
+	vertical-align:bottom;
+}
+.nie_form_header_cell {
+	font-weight:bold;
+	font-size=120%;
+	color:black;
+}
+
+.nie_form_label_cell {
+	align: right;
+	vertical-align: top;
+	font-weight: bold;
+}
+
+.nie_spacer_cell {
+	width: 8px;
+	height:9px;
+}
+.nie_form_input_cell {
+	align: left;
+	vertical-align: top;
+}
+
+.nie_form_error_msg_cell {
+	color: red;
+	font-weight:bold;
+	padding: 2px;
+	border: 2px solid red;
+}
+.nie_form_warning_msg_cell {
+	color: black;
+	font-size: 80%;
+	font-style: italic;
+	padding: 3px;
+	background-color:#ffffd0;
+	border: 1px solid black;
+}
+.nie_form_info_msg_cell {
+	color: #005000;
+	font-size: 80%;
+	font-style: italic;
+	padding: 3px;
+	background-color:#d0ffd0;
+	border: 1px solid #005000;
+}
+.nie_form_label_error_text {
+	color: red;
+}
+.nie_form_label_warning_text {
+	color: #ff8000;
+}
+.nie_form_label_info_text {
+	color: green;
+}
+
+.nie_datetime, .nie_datetime_cell
+{
+	font-family: sans-serif; /* was monospace */
+	/* was font-size -1 */
+	vertical-align: text-bottom;
+}
+.nie_percentage_cell,
+.nie_percentage /* legacy css class */
+{
+	font-family: sans-serif;
+	text-align: right;
+	_v_ertical-align: text-bottom;
+	padding: 0px 4px 1px 4px;
+}
+.nie_numeric_cell
+{
+	font-family:sans-serif;
+	text-align: right;
+	_v_ertical-align: text-bottom;
+	/* padding is clockwise starting at North */
+	padding: 0px 4px 1px 4px;
+}
+
+.nie_report_link,
+.nie_inactive_report_link
+{
+	font-family:sans-serif;
+	_v_ertical-align: text-bottom;
+}
+
+.nie_menu_link,
+.nie_inactive_menu_link
+{
+	font-family:sans-serif;
+	font-size:smaller;
+	_v_ertical-align: text-bottom;
+}
+
+.nie_inactive_paging_link
+{
+	font-family:sans-serif;
+	font-size:smaller;
+	color:gray;
+}
+.nie_active_paging_link
+{
+	font-family:sans-serif;
+	font-size:smaller;
+}
+
+.nie_header_row
+{
+	text-align: left;
+	vertical-align: bottom;
+	font-weight: bold;
+	color:white;
+	background-color:#000080;
+	border: 2px solid black 
+}
+
+.nie_even_row {background-color:#dddddd; }
+
+
+/* table and row settings do not seem to inherrit */
+.nie_header_cell { padding:3px; }
+.nie_data_cell
+{
+	font-family:sans-serif;  /* for consistency */
+	_p_adding:2px;
+	/* padding is clockwise starting at North */
+	padding: 1px 2px 1px 2px;
+}
+
+.nie_special_term, .nie_special_data_cell
+{
+	font-family:sans-serif;  /* for consistency */
+	font-style:italic;
+	_p_adding:2px;
+	/* padding is clockwise starting at North */
+	padding: 1px 2px 1px 2px;
+}
+
+/*input* /*, option*/
+.nie_compact_form_element {
+	font-size: 12;
+}
+
+.nie_compact_data_cell
+{
+	font-family:sans-serif;  /* for consistency */
+	padding: 0px;
+}
+

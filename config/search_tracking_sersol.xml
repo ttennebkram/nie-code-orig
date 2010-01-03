@@ -1,0 +1,17 @@
+<search_tracking>
+  <data_logging site_id="10" ignore_null_searches="TRUE">
+    <ignore_address />
+    <ignore_address />
+    <ignore_address />
+    <proxy_settings>
+      <docs_found_pattern max_found_look_ahead="" match_both="FALSE" max_searched_look_ahead="25"><![CDATA[25</B> of <B>]]></docs_found_pattern>
+      <no_docs_found_pattern><![CDATA[<b>&nbsp;&nbsp;Sorry, no results found. Please revise your Search Criteria and try again.]]></no_docs_found_pattern>
+    </proxy_settings>
+    <ignore_pattern />
+    <ignore_pattern />
+    <ignore_pattern />
+    <ignore_indicator_field />
+    <ignore_indicator_field />
+    <ignore_indicator_field />
+  </data_logging>
+</search_tracking>

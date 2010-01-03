@@ -1,0 +1,45 @@
+<nie_config>
+
+	<include location="license.xml" />
+
+	<!-- Do database init right up front -->
+	<include location="database.xml" />
+
+	<!-- We want to log queries and advertisement clicks -->
+	<include location="search_tracking.xml" />
+
+	<!-- Enable Lucene searching -->
+	<include location="lucene.xml" />
+
+	<!-- How to handle Null and Empty Searches -->
+	<include location="null_searches.xml" />
+
+	<!-- General Configuration -->
+	<!-- ===================== -->
+	<search_tuning>
+
+		<!-- What URL we are to run on -->
+ 		<nie_server_url />
+
+		<!-- Information about the host search engine -->
+		<include location="search_engine.xml" />
+
+		<!-- Include the actual KEYWORD mappings, suggestions, ads, etc -->
+		<db_redirection_map />
+
+		<!-- Some cosmetic defaults -->
+		<!-- ====================== -->
+		<include location="defaults/default_webmaster_suggests_box.xml" />
+		<include location="defaults/default_webmaster_suggests_header.xml" />
+		<include location="defaults/default_webmaster_suggests_icon.xml" />
+		<include location="defaults/default_webmaster_suggests_doc_url.xml" />
+		<include location="defaults/default_alternate_suggestions_heading.xml" />
+
+		<!-- Declare User Data Classes (Advertisements) -->
+		<!-- ========================================== -->
+		<!--
+		<include location="markup_declarations.xml" />
+		-->
+
+	</search_tuning>
+</nie_config>

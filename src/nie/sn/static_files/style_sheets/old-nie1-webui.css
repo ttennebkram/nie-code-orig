@@ -1,0 +1,65 @@
+.nie_form_title {color:#000080;}
+.nie_form_header_row
+{
+    background-color:#dddddd;
+    vertical-align:bottom;
+}
+
+
+
+
+
+.nie_form_header_row
+{
+    background-color:#dddddd;
+    vertical-align:bottom;
+}
+.nie_form_header_cell
+{
+    font-weight:bold;
+    font-size=120%;
+    color:black;
+}
+
+.nie_form_label_cell
+{
+/***
+    _width: 40%;
+    _width: 10%;
+    _w_idth: 30%;
+***/
+    align: right;
+    vertical-align: top;
+    font-weight: bold;
+}
+
+
+
+.nie_spacer_cell
+{
+    width:10px;
+    height:9px;
+}
+.nie_form_input_cell
+{
+    _width: 55%;
+    _width: 60%;
+    _width: 70%;
+    align: left;
+    vertical-align: top;
+}
+
+.nie_form_helptext_cell
+{
+    background-color:#FFFFC2;
+    padding: 5px;
+    align: left;
+    vertical-align: top;
+    font-size:10pt;
+}
+
+.nie_form_tiny_helptext
+{
+    font-size:smaller;
+    font-style:italic;
+}

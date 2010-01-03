@@ -1,0 +1,379 @@
+Running application...
+Status: 3/30/04 2:19:36 PM PST SearchTuningApp.constructor(2): Loading configuration data from "config/nolog.xml".
+Status: 3/30/04 2:19:36 PM PST SearchTuningConfig.loadConfigFile: 
+FYI: No Run Logging specified in this configuration; process status information will continue to be sent to this log.
+Status: 3/30/04 2:19:37 PM PST DBConfig.getConnection: Connecting to database with connection string "jdbc:oracle:thin:@63.100.100.150:1522:portal" as user "verity".
+ERROR: 3/30/04 2:19:39 PM PST SearchEngineConfig.getSearchEngineTestDriveURLFields: Null field name and/or value: name=qp, value=null
+ERROR: 3/30/04 2:19:39 PM PST SearchEngineConfig.getSearchEngineTestDriveURLFields: Null field name and/or value: name=qs, value=null
+ERROR: 3/30/04 2:19:39 PM PST SearchEngineConfig.getSearchEngineTestDriveURLFields: Null field name and/or value: name=qc, value=null
+ERROR: 3/30/04 2:19:39 PM PST SearchEngineConfig.getSearchEngineTestDriveURLFields: Null field name and/or value: name=oq, value=null
+Status: 3/30/04 2:19:39 PM PST SearchReportingConfig.constructor: FYI: User configured reports.
+Status: 3/30/04 2:19:39 PM PST SearchTuningConfig.readAndSetupMarkupDeclarations: 
+FYI: No User Data markup declarations or Ad declarations found in config file.
+Status: 3/30/04 2:19:39 PM PST SearchTuningConfig.readAndSetupMapping: 
+Loading Directed Search Results Maps, *** PLEASE WAIT *** ...
+Status: 3/30/04 2:19:40 PM PST SearchTuningApp.constructor(2): Configured to listen on port 9100.
+Status: 3/30/04 2:19:40 PM PST SearchTuningApp.run: NIE SearchTrack(tm), Version 2.30b_pre2
+Status: 3/30/04 2:19:40 PM PST SearchTuningApp.run: Init Complete.
+
+          ***********************************************************
+          *** Initialization Complete, the NIE Server is Starting ***
+          ***       NIE SearchTrack(tm) version 2.30b_pre2        ***
+          ***      Up at 3/30/04 2:19:40 PM PST on port 9100      ***
+          ***          using /local/nie/config/nolog.xml          ***
+          ***********************************************************
+
+Transaction: 3/30/04 2:21:21 PM PST SnHTTPServer.run: In from 10.98.32.130
+Debug: NIEUtil.cgiDecodeVarsBuffer: inIsCasenFields=false
+Trace: NIEUtil.cgiDecodeVarsBuffer: predec key="report"
+Trace: NIEUtil.cgiDecodeVarsBuffer: pstdec key="report"
+Debug: NIEUtil.cgiDecodeVarsBuffer: Normalied key to "report".
+Trace: NIEUtil.cgiDecodeVarsBuffer: predec val="popular_searches_ndays"
+Trace: NIEUtil.cgiDecodeVarsBuffer: pstdec val="popular_searches_ndays"
+Trace: NIEUtil.cgiDecodeVarsBuffer: predec key="password"
+Trace: NIEUtil.cgiDecodeVarsBuffer: pstdec key="password"
+Debug: NIEUtil.cgiDecodeVarsBuffer: Normalied key to "password".
+Trace: NIEUtil.cgiDecodeVarsBuffer: predec val="verityk2"
+Trace: NIEUtil.cgiDecodeVarsBuffer: pstdec val="verityk2"
+Trace: NIEUtil.cgiDecodeVarsBuffer: predec key="command"
+Trace: NIEUtil.cgiDecodeVarsBuffer: pstdec key="command"
+Debug: NIEUtil.cgiDecodeVarsBuffer: Normalied key to "command".
+Trace: NIEUtil.cgiDecodeVarsBuffer: predec val="report"
+Trace: NIEUtil.cgiDecodeVarsBuffer: pstdec val="report"
+Trace: NIEUtil.cgiDecodeVarsBuffer: predec key="nie_context"
+Trace: NIEUtil.cgiDecodeVarsBuffer: pstdec key="nie_context"
+Debug: NIEUtil.cgiDecodeVarsBuffer: Normalied key to "nie_context".
+Trace: NIEUtil.cgiDecodeVarsBuffer: predec val="admin"
+Trace: NIEUtil.cgiDecodeVarsBuffer: pstdec val="admin"
+Trace: NIEUtil.cgiDecodeVarsBuffer: predec key="days"
+Trace: NIEUtil.cgiDecodeVarsBuffer: pstdec key="days"
+Debug: NIEUtil.cgiDecodeVarsBuffer: Normalied key to "days".
+Trace: NIEUtil.cgiDecodeVarsBuffer: predec val="1"
+Trace: NIEUtil.cgiDecodeVarsBuffer: pstdec val="1"
+Transaction: 3/30/04 2:21:26 PM PST SnHTTPServer.run: In from 10.98.32.130
+Debug: NIEUtil.cgiDecodeVarsBuffer: inIsCasenFields=false
+Trace: NIEUtil.cgiDecodeVarsBuffer: predec key="report"
+Trace: NIEUtil.cgiDecodeVarsBuffer: pstdec key="report"
+Debug: NIEUtil.cgiDecodeVarsBuffer: Normalied key to "report".
+Trace: NIEUtil.cgiDecodeVarsBuffer: predec val="PopSearchLinked3"
+Trace: NIEUtil.cgiDecodeVarsBuffer: pstdec val="PopSearchLinked3"
+Trace: NIEUtil.cgiDecodeVarsBuffer: predec key="password"
+Trace: NIEUtil.cgiDecodeVarsBuffer: pstdec key="password"
+Debug: NIEUtil.cgiDecodeVarsBuffer: Normalied key to "password".
+Trace: NIEUtil.cgiDecodeVarsBuffer: predec val="verityk2"
+Trace: NIEUtil.cgiDecodeVarsBuffer: pstdec val="verityk2"
+Trace: NIEUtil.cgiDecodeVarsBuffer: predec key="command"
+Trace: NIEUtil.cgiDecodeVarsBuffer: pstdec key="command"
+Debug: NIEUtil.cgiDecodeVarsBuffer: Normalied key to "command".
+Trace: NIEUtil.cgiDecodeVarsBuffer: predec val="report"
+Trace: NIEUtil.cgiDecodeVarsBuffer: pstdec val="report"
+Trace: NIEUtil.cgiDecodeVarsBuffer: predec key="nie_context"
+Trace: NIEUtil.cgiDecodeVarsBuffer: pstdec key="nie_context"
+Debug: NIEUtil.cgiDecodeVarsBuffer: Normalied key to "nie_context".
+Trace: NIEUtil.cgiDecodeVarsBuffer: predec val="admin"
+Trace: NIEUtil.cgiDecodeVarsBuffer: pstdec val="admin"
+Trace: NIEUtil.cgiDecodeVarsBuffer: predec key="days"
+Trace: NIEUtil.cgiDecodeVarsBuffer: pstdec key="days"
+Debug: NIEUtil.cgiDecodeVarsBuffer: Normalied key to "days".
+Trace: NIEUtil.cgiDecodeVarsBuffer: predec val="30"
+Trace: NIEUtil.cgiDecodeVarsBuffer: pstdec val="30"
+Transaction: 3/30/04 2:21:28 PM PST SnHTTPServer.run: In from 10.98.32.130
+Transaction: 3/30/04 2:21:28 PM PST SnHTTPServer.run: In from 10.98.32.130
+Debug: NIEUtil.cgiDecodeVarsBuffer: inIsCasenFields=false
+Debug: NIEUtil.cgiDecodeVarsBuffer: inIsCasenFields=false
+Transaction: 3/30/04 2:21:28 PM PST SnHTTPServer.run: In from 10.98.32.130
+Debug: NIEUtil.cgiDecodeVarsBuffer: inIsCasenFields=false
+Transaction: 3/30/04 2:22:12 PM PST SnHTTPServer.run: In from 10.98.32.130
+Debug: NIEUtil.cgiDecodeVarsBuffer: inIsCasenFields=false
+Trace: NIEUtil.cgiDecodeVarsBuffer: predec key="operation"
+Trace: NIEUtil.cgiDecodeVarsBuffer: pstdec key="operation"
+Debug: NIEUtil.cgiDecodeVarsBuffer: Normalied key to "operation".
+Trace: NIEUtil.cgiDecodeVarsBuffer: predec val="add"
+Trace: NIEUtil.cgiDecodeVarsBuffer: pstdec val="add"
+Trace: NIEUtil.cgiDecodeVarsBuffer: predec key="password"
+Trace: NIEUtil.cgiDecodeVarsBuffer: pstdec key="password"
+Debug: NIEUtil.cgiDecodeVarsBuffer: Normalied key to "password".
+Trace: NIEUtil.cgiDecodeVarsBuffer: predec val="verityk2"
+Trace: NIEUtil.cgiDecodeVarsBuffer: pstdec val="verityk2"
+Trace: NIEUtil.cgiDecodeVarsBuffer: predec key="mode"
+Trace: NIEUtil.cgiDecodeVarsBuffer: pstdec key="mode"
+Debug: NIEUtil.cgiDecodeVarsBuffer: Normalied key to "mode".
+Trace: NIEUtil.cgiDecodeVarsBuffer: predec val="formgen"
+Trace: NIEUtil.cgiDecodeVarsBuffer: pstdec val="formgen"
+Transaction: 3/30/04 2:22:13 PM PST SnHTTPServer.run: In from 10.98.32.130
+Debug: NIEUtil.cgiDecodeVarsBuffer: inIsCasenFields=false
+Transaction: 3/30/04 2:22:19 PM PST SnHTTPServer.run: In from 10.98.32.130
+Debug: NIEUtil.cgiDecodeVarsBuffer: inIsCasenFields=false
+Trace: NIEUtil.cgiDecodeVarsBuffer: predec key="password"
+Trace: NIEUtil.cgiDecodeVarsBuffer: pstdec key="password"
+Debug: NIEUtil.cgiDecodeVarsBuffer: Normalied key to "password".
+Trace: NIEUtil.cgiDecodeVarsBuffer: predec val="verityk2"
+Trace: NIEUtil.cgiDecodeVarsBuffer: pstdec val="verityk2"
+Trace: NIEUtil.cgiDecodeVarsBuffer: predec key="operation"
+Trace: NIEUtil.cgiDecodeVarsBuffer: pstdec key="operation"
+Debug: NIEUtil.cgiDecodeVarsBuffer: Normalied key to "operation".
+Trace: NIEUtil.cgiDecodeVarsBuffer: predec val="add"
+Trace: NIEUtil.cgiDecodeVarsBuffer: pstdec val="add"
+Trace: NIEUtil.cgiDecodeVarsBuffer: predec key="term"
+Trace: NIEUtil.cgiDecodeVarsBuffer: pstdec key="term"
+Debug: NIEUtil.cgiDecodeVarsBuffer: Normalied key to "term".
+Trace: NIEUtil.cgiDecodeVarsBuffer: predec val="*"
+Trace: NIEUtil.cgiDecodeVarsBuffer: pstdec val="*"
+Trace: NIEUtil.cgiDecodeVarsBuffer: predec key="url"
+Trace: NIEUtil.cgiDecodeVarsBuffer: pstdec key="url"
+Debug: NIEUtil.cgiDecodeVarsBuffer: Normalied key to "url".
+Trace: NIEUtil.cgiDecodeVarsBuffer: predec val=""
+Trace: NIEUtil.cgiDecodeVarsBuffer: pstdec val=""
+Trace: NIEUtil.cgiDecodeVarsBuffer: predec key="seed_terms"
+Trace: NIEUtil.cgiDecodeVarsBuffer: pstdec key="seed_terms"
+Debug: NIEUtil.cgiDecodeVarsBuffer: Normalied key to "seed_terms".
+Trace: NIEUtil.cgiDecodeVarsBuffer: predec val="%A0"
+Trace: NIEUtil.cgiDecodeVarsBuffer: pstdec val="?"
+Debug: NIEUtil.cgiDecodeVarsBuffer: Forcing 0xA0 to empty string after decode, was="?"
+Trace: NIEUtil.cgiDecodeVarsBuffer: predec key="button"
+Trace: NIEUtil.cgiDecodeVarsBuffer: pstdec key="button"
+Debug: NIEUtil.cgiDecodeVarsBuffer: Normalied key to "button".
+Trace: NIEUtil.cgiDecodeVarsBuffer: predec val="Go+%3E"
+Trace: NIEUtil.cgiDecodeVarsBuffer: pstdec val="Go >"
+Trace: NIEUtil.cgiDecodeVarsBuffer: predec key="mode"
+Trace: NIEUtil.cgiDecodeVarsBuffer: pstdec key="mode"
+Debug: NIEUtil.cgiDecodeVarsBuffer: Normalied key to "mode".
+Trace: NIEUtil.cgiDecodeVarsBuffer: predec val="submit"
+Trace: NIEUtil.cgiDecodeVarsBuffer: pstdec val="submit"
+Trace: NIEUtil.cgiDecodeVarsBuffer: predec key="return_url"
+Trace: NIEUtil.cgiDecodeVarsBuffer: pstdec key="return_url"
+Debug: NIEUtil.cgiDecodeVarsBuffer: Normalied key to "return_url".
+Trace: NIEUtil.cgiDecodeVarsBuffer: predec val="http%3A%2F%2Fsearch2.tibco.com%3A9100%2F%3Freport%3DPopSearchLinked3%26password%3Dverityk2%26command%3Dreport%26nie_context%3Dadmin%26days%3D30"
+Trace: NIEUtil.cgiDecodeVarsBuffer: pstdec val="http://search2.tibco.com:9100/?report=PopSearchLinked3&password=verityk2&command=report&nie_context=admin&days=30"
+Transaction: 3/30/04 2:22:19 PM PST SnHTTPServer.run: In from 10.98.32.130
+Debug: NIEUtil.cgiDecodeVarsBuffer: inIsCasenFields=false
+Trace: NIEUtil.cgiDecodeVarsBuffer: predec key="term"
+Trace: NIEUtil.cgiDecodeVarsBuffer: pstdec key="term"
+Debug: NIEUtil.cgiDecodeVarsBuffer: Normalied key to "term".
+Trace: NIEUtil.cgiDecodeVarsBuffer: predec val="*"
+Trace: NIEUtil.cgiDecodeVarsBuffer: pstdec val="*"
+Trace: NIEUtil.cgiDecodeVarsBuffer: predec key="command"
+Trace: NIEUtil.cgiDecodeVarsBuffer: pstdec key="command"
+Debug: NIEUtil.cgiDecodeVarsBuffer: Normalied key to "command".
+Trace: NIEUtil.cgiDecodeVarsBuffer: predec val="report"
+Trace: NIEUtil.cgiDecodeVarsBuffer: pstdec val="report"
+Trace: NIEUtil.cgiDecodeVarsBuffer: predec key="operation"
+Trace: NIEUtil.cgiDecodeVarsBuffer: pstdec key="operation"
+Debug: NIEUtil.cgiDecodeVarsBuffer: Normalied key to "operation".
+Trace: NIEUtil.cgiDecodeVarsBuffer: predec val="add"
+Trace: NIEUtil.cgiDecodeVarsBuffer: pstdec val="add"
+Trace: NIEUtil.cgiDecodeVarsBuffer: predec key="report"
+Trace: NIEUtil.cgiDecodeVarsBuffer: pstdec key="report"
+Debug: NIEUtil.cgiDecodeVarsBuffer: Normalied key to "report".
+Trace: NIEUtil.cgiDecodeVarsBuffer: predec val="ListMapsForTerm3"
+Trace: NIEUtil.cgiDecodeVarsBuffer: pstdec val="ListMapsForTerm3"
+Trace: NIEUtil.cgiDecodeVarsBuffer: predec key="button"
+Trace: NIEUtil.cgiDecodeVarsBuffer: pstdec key="button"
+Debug: NIEUtil.cgiDecodeVarsBuffer: Normalied key to "button".
+Trace: NIEUtil.cgiDecodeVarsBuffer: predec val="Go+%3E"
+Trace: NIEUtil.cgiDecodeVarsBuffer: pstdec val="Go >"
+Trace: NIEUtil.cgiDecodeVarsBuffer: predec key="mode"
+Trace: NIEUtil.cgiDecodeVarsBuffer: pstdec key="mode"
+Debug: NIEUtil.cgiDecodeVarsBuffer: Normalied key to "mode".
+Trace: NIEUtil.cgiDecodeVarsBuffer: predec val="submit"
+Trace: NIEUtil.cgiDecodeVarsBuffer: pstdec val="submit"
+Trace: NIEUtil.cgiDecodeVarsBuffer: predec key="return_url"
+Trace: NIEUtil.cgiDecodeVarsBuffer: pstdec key="return_url"
+Debug: NIEUtil.cgiDecodeVarsBuffer: Normalied key to "return_url".
+Trace: NIEUtil.cgiDecodeVarsBuffer: predec val="http%3A%2F%2Fsearch2.tibco.com%3A9100%2F%3Freport%3DPopSearchLinked3%26password%3Dverityk2%26command%3Dreport%26nie_context%3Dadmin%26days%3D30"
+Trace: NIEUtil.cgiDecodeVarsBuffer: pstdec val="http://search2.tibco.com:9100/?report=PopSearchLinked3&password=verityk2&command=report&nie_context=admin&days=30"
+Trace: NIEUtil.cgiDecodeVarsBuffer: predec key="password"
+Trace: NIEUtil.cgiDecodeVarsBuffer: pstdec key="password"
+Debug: NIEUtil.cgiDecodeVarsBuffer: Normalied key to "password".
+Trace: NIEUtil.cgiDecodeVarsBuffer: predec val="verityk2"
+Trace: NIEUtil.cgiDecodeVarsBuffer: pstdec val="verityk2"
+Trace: NIEUtil.cgiDecodeVarsBuffer: predec key="nie_context"
+Trace: NIEUtil.cgiDecodeVarsBuffer: pstdec key="nie_context"
+Debug: NIEUtil.cgiDecodeVarsBuffer: Normalied key to "nie_context".
+Trace: NIEUtil.cgiDecodeVarsBuffer: predec val="admin"
+Trace: NIEUtil.cgiDecodeVarsBuffer: pstdec val="admin"
+Transaction: 3/30/04 2:22:28 PM PST SnHTTPServer.run: In from 10.98.32.130
+Debug: NIEUtil.cgiDecodeVarsBuffer: inIsCasenFields=false
+Trace: NIEUtil.cgiDecodeVarsBuffer: predec key="report"
+Trace: NIEUtil.cgiDecodeVarsBuffer: pstdec key="report"
+Debug: NIEUtil.cgiDecodeVarsBuffer: Normalied key to "report".
+Trace: NIEUtil.cgiDecodeVarsBuffer: predec val="PopSearchLinked3"
+Trace: NIEUtil.cgiDecodeVarsBuffer: pstdec val="PopSearchLinked3"
+Trace: NIEUtil.cgiDecodeVarsBuffer: predec key="password"
+Trace: NIEUtil.cgiDecodeVarsBuffer: pstdec key="password"
+Debug: NIEUtil.cgiDecodeVarsBuffer: Normalied key to "password".
+Trace: NIEUtil.cgiDecodeVarsBuffer: predec val="verityk2"
+Trace: NIEUtil.cgiDecodeVarsBuffer: pstdec val="verityk2"
+Trace: NIEUtil.cgiDecodeVarsBuffer: predec key="command"
+Trace: NIEUtil.cgiDecodeVarsBuffer: pstdec key="command"
+Debug: NIEUtil.cgiDecodeVarsBuffer: Normalied key to "command".
+Trace: NIEUtil.cgiDecodeVarsBuffer: predec val="report"
+Trace: NIEUtil.cgiDecodeVarsBuffer: pstdec val="report"
+Trace: NIEUtil.cgiDecodeVarsBuffer: predec key="nie_context"
+Trace: NIEUtil.cgiDecodeVarsBuffer: pstdec key="nie_context"
+Debug: NIEUtil.cgiDecodeVarsBuffer: Normalied key to "nie_context".
+Trace: NIEUtil.cgiDecodeVarsBuffer: predec val="admin"
+Trace: NIEUtil.cgiDecodeVarsBuffer: pstdec val="admin"
+Trace: NIEUtil.cgiDecodeVarsBuffer: predec key="days"
+Trace: NIEUtil.cgiDecodeVarsBuffer: pstdec key="days"
+Debug: NIEUtil.cgiDecodeVarsBuffer: Normalied key to "days".
+Trace: NIEUtil.cgiDecodeVarsBuffer: predec val="30"
+Trace: NIEUtil.cgiDecodeVarsBuffer: pstdec val="30"
+Transaction: 3/30/04 2:22:29 PM PST SnHTTPServer.run: In from 10.98.32.130
+Debug: NIEUtil.cgiDecodeVarsBuffer: inIsCasenFields=false
+Transaction: 3/30/04 2:22:29 PM PST SnHTTPServer.run: In from 10.98.32.130
+Debug: NIEUtil.cgiDecodeVarsBuffer: inIsCasenFields=false
+Transaction: 3/30/04 2:22:29 PM PST SnHTTPServer.run: In from 10.98.32.130
+Debug: NIEUtil.cgiDecodeVarsBuffer: inIsCasenFields=false
+Transaction: 3/30/04 2:22:34 PM PST SnHTTPServer.run: In from 10.98.32.130
+Debug: NIEUtil.cgiDecodeVarsBuffer: inIsCasenFields=false
+Trace: NIEUtil.cgiDecodeVarsBuffer: predec key="operation"
+Trace: NIEUtil.cgiDecodeVarsBuffer: pstdec key="operation"
+Debug: NIEUtil.cgiDecodeVarsBuffer: Normalied key to "operation".
+Trace: NIEUtil.cgiDecodeVarsBuffer: predec val="add"
+Trace: NIEUtil.cgiDecodeVarsBuffer: pstdec val="add"
+Trace: NIEUtil.cgiDecodeVarsBuffer: predec key="password"
+Trace: NIEUtil.cgiDecodeVarsBuffer: pstdec key="password"
+Debug: NIEUtil.cgiDecodeVarsBuffer: Normalied key to "password".
+Trace: NIEUtil.cgiDecodeVarsBuffer: predec val="verityk2"
+Trace: NIEUtil.cgiDecodeVarsBuffer: pstdec val="verityk2"
+Trace: NIEUtil.cgiDecodeVarsBuffer: predec key="term"
+Trace: NIEUtil.cgiDecodeVarsBuffer: pstdec key="term"
+Debug: NIEUtil.cgiDecodeVarsBuffer: Normalied key to "term".
+Trace: NIEUtil.cgiDecodeVarsBuffer: predec val="search"
+Trace: NIEUtil.cgiDecodeVarsBuffer: pstdec val="search"
+Trace: NIEUtil.cgiDecodeVarsBuffer: predec key="mode"
+Trace: NIEUtil.cgiDecodeVarsBuffer: pstdec key="mode"
+Debug: NIEUtil.cgiDecodeVarsBuffer: Normalied key to "mode".
+Trace: NIEUtil.cgiDecodeVarsBuffer: predec val="formgen"
+Trace: NIEUtil.cgiDecodeVarsBuffer: pstdec val="formgen"
+Transaction: 3/30/04 2:22:35 PM PST SnHTTPServer.run: In from 10.98.32.130
+Debug: NIEUtil.cgiDecodeVarsBuffer: inIsCasenFields=false
+Transaction: 3/30/04 2:23:00 PM PST SnHTTPServer.run: In from 10.98.32.130
+Debug: NIEUtil.cgiDecodeVarsBuffer: inIsCasenFields=false
+Trace: NIEUtil.cgiDecodeVarsBuffer: predec key="password"
+Trace: NIEUtil.cgiDecodeVarsBuffer: pstdec key="password"
+Debug: NIEUtil.cgiDecodeVarsBuffer: Normalied key to "password".
+Trace: NIEUtil.cgiDecodeVarsBuffer: predec val="verityk2"
+Trace: NIEUtil.cgiDecodeVarsBuffer: pstdec val="verityk2"
+Trace: NIEUtil.cgiDecodeVarsBuffer: predec key="operation"
+Trace: NIEUtil.cgiDecodeVarsBuffer: pstdec key="operation"
+Debug: NIEUtil.cgiDecodeVarsBuffer: Normalied key to "operation".
+Trace: NIEUtil.cgiDecodeVarsBuffer: predec val="add"
+Trace: NIEUtil.cgiDecodeVarsBuffer: pstdec val="add"
+Trace: NIEUtil.cgiDecodeVarsBuffer: predec key="term"
+Trace: NIEUtil.cgiDecodeVarsBuffer: pstdec key="term"
+Debug: NIEUtil.cgiDecodeVarsBuffer: Normalied key to "term".
+Trace: NIEUtil.cgiDecodeVarsBuffer: predec val="search"
+Trace: NIEUtil.cgiDecodeVarsBuffer: pstdec val="search"
+Trace: NIEUtil.cgiDecodeVarsBuffer: predec key="url_01"
+Trace: NIEUtil.cgiDecodeVarsBuffer: pstdec key="url_01"
+Debug: NIEUtil.cgiDecodeVarsBuffer: Normalied key to "url_01".
+Trace: NIEUtil.cgiDecodeVarsBuffer: predec val="http%3A%2F%2Fwww.ideaeng.com"
+Trace: NIEUtil.cgiDecodeVarsBuffer: pstdec val="http://www.ideaeng.com"
+Trace: NIEUtil.cgiDecodeVarsBuffer: predec key="title_01"
+Trace: NIEUtil.cgiDecodeVarsBuffer: pstdec key="title_01"
+Debug: NIEUtil.cgiDecodeVarsBuffer: Normalied key to "title_01".
+Trace: NIEUtil.cgiDecodeVarsBuffer: predec val="Mark+xxyyzz"
+Trace: NIEUtil.cgiDecodeVarsBuffer: pstdec val="Mark xxyyzz"
+Trace: NIEUtil.cgiDecodeVarsBuffer: predec key="desc_01"
+Trace: NIEUtil.cgiDecodeVarsBuffer: pstdec key="desc_01"
+Debug: NIEUtil.cgiDecodeVarsBuffer: Normalied key to "desc_01".
+Trace: NIEUtil.cgiDecodeVarsBuffer: predec val="%A0ABCDEFG"
+Trace: NIEUtil.cgiDecodeVarsBuffer: pstdec val="?ABCDEFG"
+Trace: NIEUtil.cgiDecodeVarsBuffer: predec key="related_terms"
+Trace: NIEUtil.cgiDecodeVarsBuffer: pstdec key="related_terms"
+Debug: NIEUtil.cgiDecodeVarsBuffer: Normalied key to "related_terms".
+Trace: NIEUtil.cgiDecodeVarsBuffer: predec val="%A0"
+Trace: NIEUtil.cgiDecodeVarsBuffer: pstdec val="?"
+Debug: NIEUtil.cgiDecodeVarsBuffer: Forcing 0xA0 to empty string after decode, was="?"
+Trace: NIEUtil.cgiDecodeVarsBuffer: predec key="related_terms_heading"
+Trace: NIEUtil.cgiDecodeVarsBuffer: pstdec key="related_terms_heading"
+Debug: NIEUtil.cgiDecodeVarsBuffer: Normalied key to "related_terms_heading".
+Trace: NIEUtil.cgiDecodeVarsBuffer: predec val="%28null%29"
+Trace: NIEUtil.cgiDecodeVarsBuffer: pstdec val="(null)"
+Trace: NIEUtil.cgiDecodeVarsBuffer: predec key="related_terms_color"
+Trace: NIEUtil.cgiDecodeVarsBuffer: pstdec key="related_terms_color"
+Debug: NIEUtil.cgiDecodeVarsBuffer: Normalied key to "related_terms_color".
+Trace: NIEUtil.cgiDecodeVarsBuffer: predec val="%28null%29"
+Trace: NIEUtil.cgiDecodeVarsBuffer: pstdec val="(null)"
+Trace: NIEUtil.cgiDecodeVarsBuffer: predec key="button"
+Trace: NIEUtil.cgiDecodeVarsBuffer: pstdec key="button"
+Debug: NIEUtil.cgiDecodeVarsBuffer: Normalied key to "button".
+Trace: NIEUtil.cgiDecodeVarsBuffer: predec val="OK+Create+%3E"
+Trace: NIEUtil.cgiDecodeVarsBuffer: pstdec val="OK Create >"
+Trace: NIEUtil.cgiDecodeVarsBuffer: predec key="map_id"
+Trace: NIEUtil.cgiDecodeVarsBuffer: pstdec key="map_id"
+Debug: NIEUtil.cgiDecodeVarsBuffer: Normalied key to "map_id".
+Trace: NIEUtil.cgiDecodeVarsBuffer: predec val=""
+Trace: NIEUtil.cgiDecodeVarsBuffer: pstdec val=""
+Trace: NIEUtil.cgiDecodeVarsBuffer: predec key="url_id_01"
+Trace: NIEUtil.cgiDecodeVarsBuffer: pstdec key="url_id_01"
+Debug: NIEUtil.cgiDecodeVarsBuffer: Normalied key to "url_id_01".
+Trace: NIEUtil.cgiDecodeVarsBuffer: predec val=""
+Trace: NIEUtil.cgiDecodeVarsBuffer: pstdec val=""
+Trace: NIEUtil.cgiDecodeVarsBuffer: predec key="mode"
+Trace: NIEUtil.cgiDecodeVarsBuffer: pstdec key="mode"
+Debug: NIEUtil.cgiDecodeVarsBuffer: Normalied key to "mode".
+Trace: NIEUtil.cgiDecodeVarsBuffer: predec val="submit"
+Trace: NIEUtil.cgiDecodeVarsBuffer: pstdec val="submit"
+Trace: NIEUtil.cgiDecodeVarsBuffer: predec key="return_url"
+Trace: NIEUtil.cgiDecodeVarsBuffer: pstdec key="return_url"
+Debug: NIEUtil.cgiDecodeVarsBuffer: Normalied key to "return_url".
+Trace: NIEUtil.cgiDecodeVarsBuffer: predec val="http%3A%2F%2Fsearch2.tibco.com%3A9100%2F%3Freport%3DPopSearchLinked3%26password%3Dverityk2%26command%3Dreport%26nie_context%3Dadmin%26days%3D30"
+Trace: NIEUtil.cgiDecodeVarsBuffer: pstdec val="http://search2.tibco.com:9100/?report=PopSearchLinked3&password=verityk2&command=report&nie_context=admin&days=30"
+Transaction: 3/30/04 2:23:01 PM PST SnHTTPServer.run: In from 10.98.32.130
+Debug: NIEUtil.cgiDecodeVarsBuffer: inIsCasenFields=false
+Trace: NIEUtil.cgiDecodeVarsBuffer: predec key="report"
+Trace: NIEUtil.cgiDecodeVarsBuffer: pstdec key="report"
+Debug: NIEUtil.cgiDecodeVarsBuffer: Normalied key to "report".
+Trace: NIEUtil.cgiDecodeVarsBuffer: predec val="PopSearchLinked3"
+Trace: NIEUtil.cgiDecodeVarsBuffer: pstdec val="PopSearchLinked3"
+Trace: NIEUtil.cgiDecodeVarsBuffer: predec key="password"
+Trace: NIEUtil.cgiDecodeVarsBuffer: pstdec key="password"
+Debug: NIEUtil.cgiDecodeVarsBuffer: Normalied key to "password".
+Trace: NIEUtil.cgiDecodeVarsBuffer: predec val="verityk2"
+Trace: NIEUtil.cgiDecodeVarsBuffer: pstdec val="verityk2"
+Trace: NIEUtil.cgiDecodeVarsBuffer: predec key="command"
+Trace: NIEUtil.cgiDecodeVarsBuffer: pstdec key="command"
+Debug: NIEUtil.cgiDecodeVarsBuffer: Normalied key to "command".
+Trace: NIEUtil.cgiDecodeVarsBuffer: predec val="report"
+Trace: NIEUtil.cgiDecodeVarsBuffer: pstdec val="report"
+Trace: NIEUtil.cgiDecodeVarsBuffer: predec key="nie_context"
+Trace: NIEUtil.cgiDecodeVarsBuffer: pstdec key="nie_context"
+Debug: NIEUtil.cgiDecodeVarsBuffer: Normalied key to "nie_context".
+Trace: NIEUtil.cgiDecodeVarsBuffer: predec val="admin"
+Trace: NIEUtil.cgiDecodeVarsBuffer: pstdec val="admin"
+Trace: NIEUtil.cgiDecodeVarsBuffer: predec key="days"
+Trace: NIEUtil.cgiDecodeVarsBuffer: pstdec key="days"
+Debug: NIEUtil.cgiDecodeVarsBuffer: Normalied key to "days".
+Trace: NIEUtil.cgiDecodeVarsBuffer: predec val="30"
+Trace: NIEUtil.cgiDecodeVarsBuffer: pstdec val="30"
+Transaction: 3/30/04 2:23:06 PM PST SnHTTPServer.run: In from 10.98.32.130
+Debug: NIEUtil.cgiDecodeVarsBuffer: inIsCasenFields=false
+Transaction: 3/30/04 2:23:07 PM PST SnHTTPServer.run: In from 10.98.32.130
+Debug: NIEUtil.cgiDecodeVarsBuffer: inIsCasenFields=false
+Transaction: 3/30/04 2:23:07 PM PST SnHTTPServer.run: In from 10.98.32.130
+Debug: NIEUtil.cgiDecodeVarsBuffer: inIsCasenFields=false
+Transaction: 3/30/04 2:23:36 PM PST SnHTTPServer.run: In from 10.98.32.130
+Debug: NIEUtil.cgiDecodeVarsBuffer: inIsCasenFields=false
+Transaction: 3/30/04 2:24:12 PM PST SnHTTPServer.run: In from 10.98.32.130
+Debug: NIEUtil.cgiDecodeVarsBuffer: inIsCasenFields=false
+Trace: NIEUtil.cgiDecodeVarsBuffer: predec key="password"
+Trace: NIEUtil.cgiDecodeVarsBuffer: pstdec key="password"
+Debug: NIEUtil.cgiDecodeVarsBuffer: Normalied key to "password".
+Trace: NIEUtil.cgiDecodeVarsBuffer: predec val="verityk2"
+Trace: NIEUtil.cgiDecodeVarsBuffer: pstdec val="verityk2"
+Trace: NIEUtil.cgiDecodeVarsBuffer: predec key="command"
+Trace: NIEUtil.cgiDecodeVarsBuffer: pstdec key="command"
+Debug: NIEUtil.cgiDecodeVarsBuffer: Normalied key to "command".
+Trace: NIEUtil.cgiDecodeVarsBuffer: predec val="shutdown"
+Trace: NIEUtil.cgiDecodeVarsBuffer: pstdec val="shutdown"
+Trace: NIEUtil.cgiDecodeVarsBuffer: predec key="nie_context"
+Trace: NIEUtil.cgiDecodeVarsBuffer: pstdec key="nie_context"
+Debug: NIEUtil.cgiDecodeVarsBuffer: Normalied key to "nie_context".
+Trace: NIEUtil.cgiDecodeVarsBuffer: predec val="admin"
+Trace: NIEUtil.cgiDecodeVarsBuffer: pstdec val="admin"
+Status: 3/30/04 2:24:12 PM PST SnRequestHandler.run: Have sent response and have now detected that the shutdown flag is set. Will call stop now application method.
+Status: 3/30/04 2:24:12 PM PST SearchTuningApp.forceStopNow: Will now close / shut down main server socket.
+ERROR: 3/30/04 2:24:12 PM PST SnHTTPServer.run: Unable to read from socket. Will continue to listen on this port. Exception was "java.io.InterruptedIOException: operation interrupted"

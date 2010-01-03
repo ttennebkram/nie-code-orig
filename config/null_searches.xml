@@ -1,0 +1,13 @@
+<null_searches>
+  <redirect_on_null_search enabled="TRUE">
+    <!--
+    <url>http://ideaeng.com</url>
+    -->
+    <url>(referrer)</url>
+  </redirect_on_null_search>
+  <!-- You can map certain phrases to be treated the same as a null search -->
+  <null_search_equiv_phrase>SEARCH</null_search_equiv_phrase>
+  <!-- For logging, SEE ALSO search logging config -->
+  <null_search_equiv_phrase />
+  <null_search_equiv_phrase />
+</null_searches>

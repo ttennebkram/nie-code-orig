@@ -1,0 +1,19 @@
+ERROR: 5/21/03 5:15:54 PM PDT DBConfig.createDBTable: Unable to create database
+table "nie_domain_names". Exception was: nie.core.DBConfigException: DBTableDef.
+instantiateTableInDatabase: Unable to generate SQL statements to create table "n
+ie_domain_names". Reason: nie.core.JDOMHelperException: Error processing data wi
+th style sheet: javax.xml.transform.TransformerConfigurationException: xsl:value
+_of is not allowed in this position in the stylesheet!
+
+First theory:
+BAD:
+"<xsl:value_of select="../@name">"
+
+Fix:
+"<xsl:value_of select='../@name'>"
+&quot;<xsl:value_of select='../@name'>&quot;
+
+Second theory:
+<xsl:value_of select="../@name">
+had two in a row, with no / it thought I was trying to nest
+<xsl:value_of select="../@name" />

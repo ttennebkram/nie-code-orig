@@ -1,0 +1,5 @@
+#map_id,term_id,is_primary_term,created_by_person
+1001,1,1,demoloader
+1001,2,0,demoloader
+1001,3,0,demoloader
+1002,10,1,demoloader

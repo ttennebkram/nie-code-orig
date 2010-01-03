@@ -1,0 +1,18 @@
+As of March 2009 most sites return results in UTF-8
+This is fine, unless you're trying to test with ISO-Latin-1
+
+But there are still a few sites using ISO
+
+Lucent US Search using K2:
+http://www1.alcatel-lucent.com/gsearch/search.jhtml?_requestid=12496
+No...
+http://www1.alcatel-lucent.com/gsearch/search.jhtml?_requestid=12496&queryText=
+Used:
+http://www1.alcatel-lucent.com/gsearch/search_null.jhtml?queryText=microsoft
+
+
+Avi's site has LOTS of search boxes
+http://searchtools.com/search/index.html
+
+SLI uses 8859-1
+http://searchtools.resultspage.com/search?p=Q&ts=custom&w=microsoft

@@ -1,0 +1,57 @@
+<report>
+	<title>Test Report: Raw Search Log</title>
+	<subtitle>Since April 1st, Very plain indeed</subtitle>
+
+	<!--
+	<field heading="Trans #">SEARCH_TRANSACTION_NUMBER</field>
+	<field heading="Ref Trans #">REFERRING_TRANSACTION_NUMBER</field>
+	-->
+
+	<!--
+	<field heading="Trans Type">TRANSACTION_TYPE</field>
+	-->
+	<field heading="Trans Type">
+		decode
+		(
+			TRANSACTION_TYPE,
+			1, 'Search',
+			2, 'Doc-Click',
+			3, 'Usr-Fdbk',
+			4, 'Ad-Exp',
+			5, 'Ad-Click',
+			'Unknown'
+		)
+	</field>
+
+	<!--
+	<field heading="Time">START_TIME</field>
+	-->
+	<field heading="Time">
+		to_char(START_TIME, 'MM/DD/YY HH24:MI:SS')
+	</field>
+
+
+	<field heading="Adv Code">ADVERTISEMENT_CODE_SENT</field>
+	<field heading="Adv URL">ADVERTISEMENT_HREF</field>
+	<field heading="Num Results">NUM_RESULTS</field>
+
+	<!--
+	<field heading="SN Term?">WAS_SEARCH_NAMES_TERM</field>
+	-->
+	<field heading="SN Term?">
+		decode( WAS_SEARCH_NAMES_TERM, 0, 'N', 1, 'Y' )
+	</field>
+	<field heading="User's Search">nvl( NORMALIZED_QUERY, 'n/a' )</field>
+
+	<raw_where_filter>
+		<![CDATA[
+			start_time > '01-April-2003'
+		]]>
+	</raw_where_filter>
+
+	<raw_sort>
+		<!-- start_time desc, -->
+		SEARCH_TRANSACTION_NUMBER, TRANSACTION_TYPE
+	</raw_sort>
+
+</report>

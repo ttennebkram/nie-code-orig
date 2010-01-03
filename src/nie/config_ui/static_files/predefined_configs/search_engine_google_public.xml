@@ -1,0 +1,30 @@
+<!-- http://www.google.com/search?hl=en&q=site%3Amysite.com+term -->
+<search_engine_info>
+  <vendor>Google Public Search</vendor>
+  <search_term_field_name>q</search_term_field_name>
+  <search_url method="GET">http://www.google.com/search</search_url>
+  <search_url_test_drive_fields>
+    <field name="hl" value="en" />
+  </search_url_test_drive_fields>
+  <!-- Modifiers go here, if neeeded -->
+  <suggestion_marker_text_modifiers after="TRUE" replace="FALSE" />
+  <suggestion_marker_text><![CDATA[</font></FORM></td></tr></table>]]></suggestion_marker_text>
+  <!-- LITERAL text -->
+  <markup_after><![CDATA[]]></markup_after>
+
+  <results>
+    <forms>
+      <tweak_policy>same_url</tweak_policy>
+      <tweak_arg_1 />
+      <tweak_arg_2 />
+    </forms>
+    <doc_links>
+      <cgi_field />
+      <js_policy></js_policy>
+      <tweak_policy>none</tweak_policy>
+      <tweak_arg_1 />
+      <tweak_arg_2 />
+    </doc_links>
+  </results>
+
+</search_engine_info>

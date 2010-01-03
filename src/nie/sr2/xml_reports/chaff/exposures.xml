@@ -1,0 +1,50 @@
+<report>
+	<title>Advertisement Activity</title>
+	<subtitle>Advertisement Exposures and Click-Throughs</subtitle>
+
+	<field heading="Ad Code">unique ADVERTISEMENT_CODE_SENT</field>
+	<field heading="Search Term">NORMALIZED_QUERY</field>
+	<field heading="# of Exposures">
+		<![CDATA[
+	   (
+	   		  select count(*) 
+			  from nie_log b
+			  where
+			  	   a.ADVERTISEMENT_CODE_SENT = b.ADVERTISEMENT_CODE_SENT
+			  	   and a.NORMALIZED_QUERY = b.NORMALIZED_QUERY
+				   and b.start_time > '15-April-2003'
+				   and b.TRANSACTION_TYPE = 4
+		)
+		]]>
+	</field>
+	<field heading="# of Clicks">
+		<![CDATA[
+	   (
+	   		  select count(*) 
+			  from nie_log c
+			  where
+			  	   a.ADVERTISEMENT_CODE_SENT = c.ADVERTISEMENT_CODE_SENT
+			  	   and a.NORMALIZED_QUERY = c.NORMALIZED_QUERY
+				   and c.start_time > '15-April-2003'
+				   and c.TRANSACTION_TYPE = 5
+		)
+		]]>
+	</field>
+	<field heading="Advertisement URL">ADVERTISEMENT_HREF</field>
+
+	<raw_from>
+		nie_log a
+	</raw_from>
+
+	<raw_where_filter>
+		 a.ADVERTISEMENT_CODE_SENT is not null
+		 and
+		 a.NORMALIZED_QUERY is not null
+	</raw_where_filter>
+
+	<raw_sort>
+	  a.ADVERTISEMENT_CODE_SENT,
+	  a.NORMALIZED_QUERY
+	</raw_sort>
+
+</report>

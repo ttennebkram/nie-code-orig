@@ -1,0 +1,195 @@
+	<!-- Search Engine -->
+	<!-- ============= -->
+	<section
+		title="Results List and Suggestions"
+		level="1"
+		help="find_map_or_create.html"
+	>
+		<!--
+		<field type="vertical_spacer" />
+		-->
+		<field
+			type="vertical_spacer"
+		>
+			Search Engine Results List
+		</field>
+
+		<field type="vertical_spacer" />
+
+		<!-- Step 2A -->
+		<!--
+		<field
+			type="vertical_spacer"
+			font_size_increment="0"
+		>
+			Test Search Results
+		</field>
+		<field
+			name="search_term_good_2"
+			label="Enter a search that will return results"
+			default="the"
+			is_special="TRUE"
+		/>
+		<field
+			name="search_term_bad"
+			label="Enter a search that WON'T return any results"
+			default="xyzxyzxyz"
+			is_special="TRUE"
+		/>
+		<field type="vertical_spacer" />
+		<field
+			type="inline_button"
+			label="Run searche and analyze results"
+			click_event_class="RunTestSearches"
+		>
+			Run Test Search &gt;
+		</field>
+		<field type="vertical_spacer" />
+		<field
+			type="inline_button"
+			label="Clear settings below and try again"
+			click_event_class="ClearAndRetrySearches"
+		>
+			Clear and Try Again
+		</field>
+		<field type="vertical_spacer" />
+		-->
+
+		<!-- Step 2B -->
+		<!--
+		<field
+			type="vertical_spacer"
+			font_size_increment="0"
+		>
+			Mini search forms in results list
+		</field>
+		-->
+		<!--
+		<field type="vertical_spacer" />
+		<field
+			type="vertical_spacer"
+			font_size_increment="0"
+		>
+			Results lists often include a mini search form to &quot;search againn&quot;.
+			In order for SearchTrack to be active from those forms,
+			it needs to tweak the &quot;action&quot; attribute
+			of the &lt;form&gt; tag to send it back through
+			SearchTrack.
+		</field>
+		-->
+
+		<!--
+		<field
+			name="results_has_forms"
+			label="Results List has mini search form(s)"
+			type="checkbox"
+			default="TRUE"
+			xpath="/nie_config/search_tuning/search_engine_info/results/forms/@enabled"
+		/>
+		-->
+
+		<!--
+		<field
+			name="results_forms_tweak_policy"
+			_label="Send mini search forms through SearchTrack"
+			 label="Send forms back through SearchTrack"
+			type="select"
+			default="That are using the same search URL (form's action)"
+			xpath="/nie_config/search_tuning/search_engine_info/results/forms/tweak_policy"
+		>
+			<option value="0">Disabled: Do not send through SearchTrack</option>
+			<option value="1">That are using the same search URL (form's action)</option>
+			<option value="2">Any form found in the results</option>
+			<option value="3">Only forms using a specific URL (form's action)</option>
+			<option value="4">Except forms using a specific URL (form's action)</option>
+			<option value="5">That match a URL pattern (regex)</option>
+			<option value="6">Only specifically named forms (the name attr)</option>
+			<option value="7">Except specifically named forms</option>
+			<option value="8">Only specifically numbered forms (pos. on page)</option>
+			<option value="9">Except specifically numbered forms</option>
+			<option value="10">Only specific CSS class forms</option>
+			<option value="11">Except specific CSS class forms</option>
+
+			<option value="10">Only After a literal marker</option>
+			<option value="11">Only Before a literal marker</option>
+			<option value="12">Only Between literal markers</option>
+			<option value="13">Only OUTSIDE of literal markers</option>
+		</field>
+
+		<field type="vertical_spacer" />
+
+		<field
+			type="vertical_spacer"
+			font_size_increment="0"
+		>
+			(Optional) Patterns or Markers to use with mini search forms setting above
+		</field>
+		<field
+			name="results_forms_to_tweak_1"
+			label="Optional pattern, names, numbers, etc."
+			xpath="/nie_config/search_tuning/search_engine_info/results/forms/to_tweak_a"
+		/>
+		<field
+			name="results_forms_to_tweak_2"
+			label="Optional end pattern, etc."
+			xpath="/nie_config/search_tuning/search_engine_info/results/forms/to_tweak_b"
+		/>
+		-->
+
+		<!--
+		<field type="vertical_spacer" />
+		-->
+		<field
+			type="vertical_spacer"
+			font_size_increment="0"
+		>
+			Handling Null Searches -&gt; See Logging / Null Searches
+		</field>
+
+		<!--
+		<field type="vertical_spacer" />
+		<field
+			type="vertical_spacer"
+			font_size_increment="0"
+		>
+			Suppressing Suggestions -&gt; See Logging (bottom section)
+		</field>
+		-->
+		<field type="vertical_spacer" />
+		<field
+			type="vertical_spacer"
+		>
+			Suppress Suggestions (Beta)
+		</field>
+		<!-- Do not provide SUGGESTIONS if a certain field is present -->
+		<!--
+		<field type="vertical_spacer" />
+		-->
+		<field
+			type="vertical_spacer"
+			font_size_increment="0"
+		>
+			Do not provide Suggestions if a particular field is present (Beta)
+		</field>
+		<field
+			type="vertical_spacer"
+			font_size_increment="0"
+		>
+			(Example: do not provide suggestions for page 2 of search results)
+		</field>
+		<field
+			name="take_no_action_field_1"
+			label="No Suggestions indicated by CGI field"
+			xpath="/nie_config/search_tuning/search_engine_info/no_action_indicator_field[1]"
+		/>
+		<field
+			name="take_no_action_field_2"
+			xpath="/nie_config/search_tuning/search_engine_info/no_action_indicator_field[2]"
+		/>
+		<field
+			name="take_no_action_field_3"
+			xpath="/nie_config/search_tuning/search_engine_info/no_action_indicator_field[3]"
+		/>
+
+
+	</section>

@@ -1,0 +1,139 @@
+		// SITE_ID
+		lSiteID = inRequestObj.getIntFromCGIField( "sn_site_id", -1 );
+		statement.setInt( getIntForFieldName("site_id",lIsAssignedMap), lSiteID );
+
+
+		// SEARCH_TRANSACTION_NUMBER
+		// int lSearchTransNum = inRequestObj.getIntFromCGIField( "sn_sid", -1 );
+			statement.setLong( getIntForFieldName("search_transaction_number",lIsAssignedMap),
+				java.sql.Types.BIGINT
+
+		// REFERRING_TRANSACTION_NUMBER
+			lRefNum = inRequestObj.getIntFromCGIField( "sn_ref_num", -1 );
+			statement.setInt( getIntForFieldName("referring_transaction_number",lIsAssignedMap), lTransType );
+		else
+			statement.setLong( getIntForFieldName("referring_transaction_number",lIsAssignedMap),
+				java.sql.Types.BIGINT
+				);
+
+		// TRANSACTION_TYPE
+			lTransType = inRequestObj.getIntFromCGIField( "sn_event_type", -1 );
+			lTransType = TRANS_TYPE_SEARCH;
+			statement.setInt( getIntForFieldName("transaction_type",lIsAssignedMap), lTransType );
+				java.sql.Types.INTEGER
+				);
+
+
+
+		// ORIGINAL_QUERY
+		// NORMALIZED_QUERY
+		statement.setString( getIntForFieldName("original_query",lIsAssignedMap),
+		statement.setString( getIntForFieldName("normalized_query",lIsAssignedMap),
+
+
+		// FORM_NAME
+			"sn_form"
+		statement.setString( getIntForFieldName("form_name",lIsAssignedMap),
+
+		// CLIENT_HOST
+		statement.setString( getIntForFieldName("client_host",lIsAssignedMap),
+
+		// REFERER
+		statement.setString( getIntForFieldName("referer",lIsAssignedMap),
+
+		// NUM_RESULTS
+		// NUM_SEARCHED
+				"sn_num_found", -1
+				"sn_num_searched", -1
+
+			statement.setInt( getIntForFieldName("num_results",lIsAssignedMap), numFound );
+				java.sql.Types.INTEGER
+			statement.setInt( getIntForFieldName("num_searched",lIsAssignedMap), numSearched );
+				java.sql.Types.INTEGER
+				);
+
+
+		// Needs formatting with Java JDBC
+		// START_TIME
+		// END_TIME
+		statement.setTimestamp( getIntForFieldName("start_time",lIsAssignedMap),
+		statement.setTimestamp( getIntForFieldName("end_time",lIsAssignedMap),
+
+		int lActionCode = SearchNamesConfig.SN_ACTION_CODE_UNDEFINED;
+		int lSNStatusCode = SearchNamesConfig.SN_STATUS_UNDEFINED;
+				"sn_action_code", -1
+				"sn_status_code", -1
+				"sn_action_count", -1
+				"sn_item_count", -1
+				"sn_status_msg"
+
+			if( lSNStatusCode == SearchNamesConfig.SN_STATUS_OK )
+
+		// WAS_SEARCH_NAMES_TERM
+			statement.setInt( getIntForFieldName("was_search_names_term",lIsAssignedMap),
+				java.sql.Types.INTEGER
+
+
+		// WAS_SEARCH_NAMES_ACTION_TAKE
+			statement.setInt( getIntForFieldName("was_search_names_action_taken",lIsAssignedMap),
+				java.sql.Types.INTEGER
+
+		// SEARCH_NAMES_ACTION_CODE
+			statement.setInt( getIntForFieldName("search_names_action_code",lIsAssignedMap),
+				java.sql.Types.INTEGER
+				);
+
+		// SEARCH_NAMES_ACTION_COUNT
+			statement.setInt( getIntForFieldName("search_names_action_count",lIsAssignedMap),
+				java.sql.Types.INTEGER
+				);
+
+			statement.setInt( getIntForFieldName("search_names_problem_flag",lIsAssignedMap),
+				java.sql.Types.INTEGER
+				);
+
+		// SEARCH_NAMES_PROBLEM_CODE
+			statement.setInt( getIntForFieldName("search_names_problem_code",lIsAssignedMap),
+				java.sql.Types.INTEGER
+
+		// SEARCH_NAMES_PROBLEM_MESSAGE
+		statement.setString( getIntForFieldName("search_names_problem_message",lIsAssignedMap),
+			lSNStatusMsg
+
+		statement.setNull( getIntForFieldName("extra_search_parameters",lIsAssignedMap),
+			java.sql.Types.VARCHAR
+		statement.setNull( getIntForFieldName("user_name",lIsAssignedMap),
+			java.sql.Types.VARCHAR
+		statement.setNull( getIntForFieldName("user_domain",lIsAssignedMap),
+			java.sql.Types.VARCHAR
+		statement.setNull( getIntForFieldName("advertisement_code_sent",lIsAssignedMap),
+			java.sql.Types.VARCHAR
+		statement.setNull( getIntForFieldName("advertisement_graphic_url",lIsAssignedMap),
+			java.sql.Types.VARCHAR
+		statement.setNull( getIntForFieldName("advertisement_href",lIsAssignedMap),
+			java.sql.Types.VARCHAR
+		statement.setNull( getIntForFieldName("type_of_document_click",lIsAssignedMap),
+			java.sql.Types.INTEGER
+		statement.setNull( getIntForFieldName("user_feedback",lIsAssignedMap),
+			java.sql.Types.INTEGER
+		statement.setNull( getIntForFieldName("rank_in_results_list",lIsAssignedMap),
+			java.sql.Types.INTEGER
+		statement.setNull( getIntForFieldName("rank_in_results_on_this_page",lIsAssignedMap),
+			java.sql.Types.INTEGER
+		// Not in AOPA table, also, if you add this back in, update the static
+		// statement.setNull( getIntForFieldName("results_list_page_number",lIsAssignedMap),
+		//	java.sql.Types.INTEGER
+		statement.setNull( getIntForFieldName("year",lIsAssignedMap),
+			java.sql.Types.INTEGER
+		statement.setNull( getIntForFieldName("month_of_year",lIsAssignedMap),
+			java.sql.Types.INTEGER
+		statement.setNull( getIntForFieldName("week_of_year",lIsAssignedMap),
+			java.sql.Types.INTEGER
+		statement.setNull( getIntForFieldName("day_of_year",lIsAssignedMap),
+			java.sql.Types.INTEGER
+		statement.setNull( getIntForFieldName("day_of_month",lIsAssignedMap),
+			java.sql.Types.INTEGER
+		statement.setNull( getIntForFieldName("day_of_week",lIsAssignedMap),
+			java.sql.Types.INTEGER
+		statement.setNull( getIntForFieldName("hour_of_day",lIsAssignedMap),
+			java.sql.Types.INTEGER

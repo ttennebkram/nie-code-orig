@@ -1,0 +1,3 @@
+Move tabs to tree on side
+
+Then use CardLayout or TreeNode properties on right

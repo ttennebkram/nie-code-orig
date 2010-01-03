@@ -1,0 +1,909 @@
+<!-- dpump process definition file
+	Also tries to explain how to translate xpump tags
+	INTO dpump tags
+
+parameters_info copy_as="tag_as_child"
+parameters_info copy_as="attrs_as_children"
+parameters_info copy_as="tag_as_params" 
+parameters_info copy_as="none"
+-->
+
+<!-- Todo:
+	Currently no way to specify type of queue to use
+-->
+
+<dpump_proc_def>
+
+	<!-- NOTE:
+		The XPump tag <tag_group> is NOT defined here.
+		It's actually expanded in the XPump to DPump compiler.
+		It's really a no-op, just an easy way to group tags.
+		TODO: Eventually replayce with nested xpumps
+	-->
+
+	<!-- Exit processor as auto exit -->
+	<processor class="ExitProcessor"
+		multiple_instances_ok="0"
+		multiple_sub_instances_ok="0"
+		creates_work_units="0"
+		is_linear="0"
+	>
+		<xpump_info link_to_xpump="1"
+			direct_xpump_replacement="1"
+			xpump_name="auto_exit"
+			chain_multiple="0"
+		/>
+		<parameters_info copy_as="none" />
+	</processor>
+
+
+	<!-- Exit processor as a trigger -->
+	<processor class="ExitProcessor"
+		multiple_instances_ok="0"
+		multiple_sub_instances_ok="0"
+		creates_work_units="0"
+		is_linear="0"
+	>
+		<writes_to>
+			<queue_connection name="trigger_queue"
+				primary_output="1"
+				how_many_allowed="-1"
+				how_many_required="1"
+			/>
+		</writes_to>
+		<xpump_info link_to_xpump="1"
+			direct_xpump_replacement="1"
+			xpump_name="trigger"
+			chain_multiple="0"
+		/>
+		<parameters_info copy_as="none" />
+	</processor>
+
+	<processor class="Monitor2"
+		multiple_instances_ok="0"
+		multiple_sub_instances_ok="0"
+		creates_work_units="0"
+		is_linear="0"
+	>
+		<xpump_info link_to_xpump="1"
+			direct_xpump_replacement="1"
+			xpump_name="monitor"
+			chain_multiple="0"
+		/>
+		<parameters_info copy_as="attrs_as_children" />
+	</processor>
+
+	<processor class="Sink"
+		multiple_instances_ok="1"
+		multiple_sub_instances_ok="1"
+		creates_work_units="0"
+		is_linear="0"
+	>
+		<reads_from>
+			<queue_connection name="doomed_work_units"
+				primary_input="1"
+				how_many_allowed="1"
+				how_many_required="1"
+			/>
+		</reads_from>
+		<xpump_info link_to_xpump="1"
+			direct_xpump_replacement="1"
+			xpump_name="sink"
+			chain_multiple="0"
+		/>
+		<parameters_info copy_as="none" />
+	</processor>
+
+	<processor class="ConditionalRouter"
+		multiple_instances_ok="1"
+		multiple_sub_instances_ok="1"
+		creates_work_units="0"
+		clones_work_units="0"
+		is_linear="1"
+	>
+		<reads_from>
+			<queue_connection name="input"
+				primary_input="1"
+				how_many_allowed="1"
+				how_many_required="1"
+			/>
+		</reads_from>
+		<writes_to>
+			<queue_connection name="outputs_or_else_queue"
+				primary_output="1"
+				how_many_required="1"
+				how_many_allowed="-1"
+			/>
+			<queue_connection name="errors"
+				primary_output="0"
+				primary_exception="1"
+				how_many_allowed="1"
+				how_many_required="0"
+			/>
+		</writes_to>
+		<xpump_info link_to_xpump="1"
+			direct_xpump_replacement="1"
+			xpump_name="route_by_test"
+			chain_multiple="0"
+		/>
+		<parameters_info copy_as="tag_as_params" />
+	</processor>
+
+	<processor class="SimpleRedirector"
+		multiple_instances_ok="1"
+		multiple_sub_instances_ok="1"
+		creates_work_units="0"
+		clones_work_units="0"
+		is_linear="1"
+	>
+		<!-- could have also added markings on backwash? -->
+		<reads_from>
+			<queue_connection name="input"
+				primary_input="1"
+				how_many_allowed="1"
+				how_many_required="1"
+			/>
+		</reads_from>
+		<writes_to>
+			<queue_connection name="output"
+				primary_output="1"
+				how_many_allowed="1"
+				how_many_required="1"
+			/>
+			<queue_connection name="errors"
+				primary_output="0"
+				primary_exception="1"
+				how_many_allowed="1"
+				how_many_required="0"
+			/>
+		</writes_to>
+		<xpump_info link_to_xpump="1"
+			direct_xpump_replacement="1"
+			xpump_name="redirect"
+			chain_multiple="0"
+		/>
+		<parameters_info copy_as="none" />
+	</processor>
+	<processor class="SimpleRedirector2"
+		multiple_instances_ok="1"
+		multiple_sub_instances_ok="1"
+		creates_work_units="0"
+		clones_work_units="0"
+		is_linear="1"
+	>
+		<!-- could have also added markings on backwash? -->
+		<reads_from>
+			<queue_connection name="input"
+				primary_input="1"
+				how_many_allowed="1"
+				how_many_required="1"
+			/>
+		</reads_from>
+		<writes_to>
+			<queue_connection name="output"
+				primary_output="1"
+				how_many_allowed="1"
+				how_many_required="1"
+			/>
+			<queue_connection name="errors"
+				primary_output="0"
+				primary_exception="1"
+				how_many_allowed="1"
+				how_many_required="0"
+			/>
+		</writes_to>
+		<uses>
+			<queue_connection name="activation_trigger"
+				primary_uses="1"
+				how_many_allowed="1"
+				how_many_required="1"
+			/>
+		</uses>
+		<xpump_info link_to_xpump="1"
+			direct_xpump_replacement="1"
+			xpump_name="redirect_t"
+			chain_multiple="0"
+		/>
+		<parameters_info copy_as="none" />
+	</processor>
+
+	<processor class="RegexV4"
+		multiple_instances_ok="1"
+		multiple_sub_instances_ok="1"
+		creates_work_units="0"
+		is_linear="1"
+	>
+		<!-- could have also added markings on backwash? -->
+		<reads_from>
+			<queue_connection name="raw_text"
+				primary_input="1"
+				how_many_allowed="1"
+				how_many_required="1"
+			/>
+		</reads_from>
+		<writes_to>
+			<queue_connection name="matched_text"
+				primary_output="1"
+				how_many_allowed="1"
+				how_many_required="1"
+			/>
+		</writes_to>
+		<xpump_info link_to_xpump="1"
+			direct_xpump_replacement="1"
+			xpump_name="regex"
+			chain_multiple="0"
+		/>
+		<!-- ^^^ TODO: revisit this, I think maybe we could allow that -->
+		<parameters_info copy_as="tag_as_child" />
+		<!-- At some point we need to use schema validation here
+			for the paramters -->
+	</processor>
+
+	<processor class="XPathProc"
+		multiple_instances_ok="1"
+		multiple_sub_instances_ok="1"
+		creates_work_units="0"
+		is_linear="1"
+	>
+		<!-- could have also added markings on backwash? -->
+		<reads_from>
+			<queue_connection name="raw_text"
+				primary_input="1"
+				how_many_allowed="1"
+				how_many_required="1"
+			/>
+		</reads_from>
+		<writes_to>
+			<queue_connection name="matched_text"
+				primary_output="1"
+				how_many_allowed="1"
+				how_many_required="1"
+			/>
+		</writes_to>
+		<xpump_info link_to_xpump="1"
+			direct_xpump_replacement="1"
+			xpump_name="xpath"
+			chain_multiple="0"
+		/>
+		<!-- ^^^ TODO: revisit this, I think maybe we could allow that -->
+		<parameters_info copy_as="tag_as_child" />
+	</processor>
+
+	<!-- extract_url_directory -->
+	<processor class="URLDirExtractor"
+		multiple_instances_ok="1"
+		multiple_sub_instances_ok="0"
+		creates_work_units="1"
+		is_linear="0"
+	>
+		<reads_from>
+			<queue_connection name="raw_url"
+				primary_input="1"
+				how_many_allowed="1"
+				how_many_required="1"
+			/>
+		</reads_from>
+		<writes_to>
+			<queue_connection name="extracted_directory"
+				primary_output="1"
+				how_many_allowed="1"
+				how_many_required="1"
+			/>
+		</writes_to>
+		<xpump_info link_to_xpump="1"
+			direct_xpump_replacement="1"
+			xpump_name="extract_directory"
+			chain_multiple="0"
+		/>
+		<parameters_info copy_as="tag_as_child" />
+	</processor>
+
+	<!-- Tabulate -->
+	<processor class="TabulatorV2"
+		multiple_instances_ok="1"
+		multiple_sub_instances_ok="0"
+		creates_work_units="1"
+		is_linear="0"
+	>
+		<!-- could have also added markings on backwash? -->
+		<reads_from>
+			<queue_connection name="input_and_trigger"
+				primary_input="1"
+				how_many_allowed="2"
+				how_many_required="2"
+			/>
+		</reads_from>
+		<writes_to>
+			<queue_connection name="tabulated_output"
+				primary_output="1"
+				how_many_allowed="1"
+				how_many_required="1"
+			/>
+		</writes_to>
+		<xpump_info link_to_xpump="1"
+			direct_xpump_replacement="1"
+			xpump_name="tabulate"
+			chain_multiple="0"
+		/>
+		<parameters_info copy_as="attrs_as_children" />
+	</processor>
+
+	<!-- Master List Filter -->
+	<processor class="MasterLookup2"
+		multiple_instances_ok="1"
+		multiple_sub_instances_ok="0"
+		creates_work_units="0"
+		is_linear="0"
+	>
+		<!-- could have also added markings on backwash? -->
+		<reads_from>
+			<queue_connection name="regular_data_and_master_list_data"
+				primary_input="1"
+				how_many_allowed="2"
+				how_many_required="2"
+			/>
+		</reads_from>
+		<writes_to>
+			<queue_connection name="checked_output"
+				primary_output="1"
+				how_many_allowed="1"
+				how_many_required="1"
+			/>
+		</writes_to>
+		<uses>
+			<queue_connection name="subscribed_trigger"
+				primary_uses="1"
+				how_many_allowed="1"
+				how_many_required="1"
+			/>
+		</uses>
+		<xpump_info link_to_xpump="1"
+			direct_xpump_replacement="1"
+			xpump_name="master_list_filter"
+			chain_multiple="0"
+		/>
+		<parameters_info copy_as="attrs_as_children" />
+	</processor>
+
+	<!-- Consolidate -->
+	<processor class="UserDataConsolidator"
+		multiple_instances_ok="1"
+		multiple_sub_instances_ok="0"
+		creates_work_units="1"
+		is_linear="0"
+	>
+		<!-- could have also added markings on backwash? -->
+		<reads_from>
+			<queue_connection name="source_work_units"
+				primary_input="1"
+				how_many_allowed="1"
+				how_many_required="1"
+			/>
+		</reads_from>
+		<writes_to>
+			<queue_connection name="consolidated_output"
+				primary_output="1"
+				how_many_allowed="1"
+				how_many_required="1"
+			/>
+		</writes_to>
+		<uses>
+			<queue_connection name="no_more_source_work_units"
+				primary_uses="1"
+				how_many_allowed="1"
+				how_many_required="1"
+			/>
+		</uses>
+		<xpump_info link_to_xpump="1"
+			direct_xpump_replacement="1"
+			xpump_name="user_data_consolidator user_data_consolidate consolidate"
+			chain_multiple="0"
+		/>
+		<parameters_info copy_as="attrs_as_children" />
+	</processor>
+
+	<processor class="NoRepeatURLFilterV2"
+		multiple_instances_ok="1"
+		multiple_sub_instances_ok="0"
+		creates_work_units="0"
+		is_linear="0"
+	>
+		<!-- could have also added markings on backwash? -->
+		<reads_from>
+			<queue_connection name="possible_duplicates"
+				primary_input="1"
+				how_many_allowed="1"
+				how_many_required="1"
+			/>
+		</reads_from>
+		<writes_to>
+			<queue_connection name="unique_output"
+				primary_output="1"
+				how_many_allowed="1"
+				how_many_required="1"
+			/>
+		</writes_to>
+		<xpump_info link_to_xpump="1"
+			direct_xpump_replacement="1"
+			xpump_name="unique_urls"
+			chain_multiple="0"
+		/>
+		<parameters_info copy_as="attrs_as_children" />
+	</processor>
+
+
+	<processor class="Replicator"
+		multiple_instances_ok="1"
+		multiple_sub_instances_ok="1"
+		creates_work_units="0"
+		clones_work_units="1"
+		is_linear="0"
+	>
+		<!-- could have also added markings on backwash? -->
+		<reads_from>
+			<queue_connection name="input"
+				primary_input="1"
+				how_many_allowed="1"
+				how_many_required="1"
+			/>
+		</reads_from>
+		<writes_to>
+			<queue_connection name="cloned_output"
+				primary_output="1"
+				how_many_allowed="-1"
+				how_many_required="1"
+			/>
+		</writes_to>
+		<xpump_info link_to_xpump="1"
+			direct_xpump_replacement="1"
+			xpump_name="copy_to_queues"
+			chain_multiple="0"
+		/>
+		<parameters_info copy_as="none" />
+	</processor>
+
+	<processor class="HTTPRetrieverV4"
+		multiple_instances_ok="1"
+		multiple_sub_instances_ok="1"
+		creates_work_units="0"
+		clones_work_units="0"
+		is_linear="1"
+	>
+		<!-- could have also added markings on backwash? -->
+		<reads_from>
+			<queue_connection name="input"
+				primary_input="1"
+				how_many_allowed="1"
+				how_many_required="1"
+			/>
+		</reads_from>
+		<writes_to>
+			<queue_connection name="content"
+				primary_output="1"
+				how_many_allowed="1"
+				how_many_required="1"
+			/>
+			<queue_connection name="retrieval_error"
+				primary_output="0"
+				primary_exception="1"
+				how_many_allowed="1"
+				how_many_required="0"
+			/>
+		</writes_to>
+		<xpump_info link_to_xpump="1"
+			direct_xpump_replacement="1"
+			xpump_name="http_download"
+			chain_multiple="0"
+		/>
+		<parameters_info copy_as="tag_as_params" />
+	</processor>
+
+	<!-- Siphon -->
+	<processor class="SiphonWorkUnitFilesV2"
+		multiple_instances_ok="1"
+		multiple_sub_instances_ok="1"
+		creates_work_units="0"
+		clones_work_units="0"
+		is_linear="1"
+	>
+		<!-- could have also added markings on backwash? -->
+		<reads_from>
+			<queue_connection name="input"
+				primary_input="1"
+				how_many_allowed="1"
+				how_many_required="1"
+			/>
+		</reads_from>
+		<writes_to>
+			<queue_connection name="output"
+				primary_output="1"
+				how_many_allowed="1"
+				how_many_required="0"
+			/>
+		</writes_to>
+		<!-- Here we have a list of xpump names that
+			are actually implemented with the same DPump class
+		-->
+		<xpump_info link_to_xpump="1"
+			direct_xpump_replacement="1"
+			xpump_name="siphon"
+			chain_multiple="0"
+		/>
+		<!-- Note that select queue is not listed here -->
+		<parameters_info copy_as="attrs_as_children" />
+	</processor>
+
+
+	<!-- Two definitions of Work Unit Mangler -->
+
+	<!-- Def 1: as an operator on a work unit -->
+	<processor class="WorkUnitModifierV2"
+		multiple_instances_ok="1"
+		multiple_sub_instances_ok="1"
+		creates_work_units="0"
+		clones_work_units="0"
+		is_linear="1"
+	>
+		<!-- could have also added markings on backwash? -->
+		<reads_from>
+			<queue_connection name="input"
+				primary_input="1"
+				how_many_allowed="1"
+				how_many_required="1"
+			/>
+		</reads_from>
+		<writes_to>
+			<queue_connection name="output"
+				primary_output="1"
+				how_many_allowed="1"
+				how_many_required="1"
+			/>
+		</writes_to>
+		<!-- Here we have a list of xpump names that
+			are actually implemented with the same DPump class
+		-->
+		<xpump_info link_to_xpump="1"
+			direct_xpump_replacement="1"
+			xpump_name="
+				clear_error clear_error_if_set
+				rename_field delete_field copy_field
+				new_field
+				get_file_extension get_url_extension
+				drop_url_pound_suffix_if_present
+				zap_chars remove_commas count_field count
+				split_csv
+				to_upper_case to_lower_case
+				min minimum max maximum
+				flatten_to_xml_text
+				flatten_to_plain_text
+				delete_attributes
+				move_under
+				"
+			chain_multiple="1"
+		/>
+		<!-- Note that select queue is not listed here -->
+		<parameters_info copy_as="tag_as_child" />
+	</processor>
+
+	<!-- Def 2: as a queue switch -->
+	<processor class="WorkUnitMangler"
+		multiple_instances_ok="1"
+		multiple_sub_instances_ok="1"
+		creates_work_units="0"
+		clones_work_units="0"
+		is_linear="0"
+	>
+		<!-- could have also added markings on backwash? -->
+		<reads_from>
+			<queue_connection name="input"
+				primary_input="1"
+				how_many_allowed="1"
+				how_many_required="1"
+			/>
+		</reads_from>
+		<writes_to>
+			<queue_connection name="selected_output"
+				primary_output="1"
+				how_many_allowed="-1"
+				how_many_required="1"
+			/>
+		</writes_to>
+		<!-- Here we have a list of xpump names that
+			are actually implemented with the same DPump class
+		-->
+		<xpump_info link_to_xpump="1"
+			direct_xpump_replacement="1"
+			xpump_name="select_queue"
+			chain_multiple="0"
+		/>
+		<parameters_info copy_as="tag_as_child" />
+	</processor>
+
+	<!-- aka: User Data Splitter, userdatasplitter -->
+	<processor class="ReplicateOnFieldV2"
+		multiple_instances_ok="1"
+		multiple_sub_instances_ok="1"
+		creates_work_units="0"
+		clones_work_units="1"
+		is_linear="0"
+	>
+		<!-- could have also added markings on backwash? -->
+		<reads_from>
+			<queue_connection name="input"
+				primary_input="1"
+				how_many_allowed="1"
+				how_many_required="1"
+			/>
+		</reads_from>
+		<writes_to>
+			<queue_connection name="multiple_output"
+				primary_output="1"
+				how_many_allowed="1"
+				how_many_required="1"
+			/>
+			<queue_connection name="no_loop_field"
+				primary_output="0"
+				primary_exception="1"
+				how_many_allowed="1"
+				how_many_required="0"
+			/>
+		</writes_to>
+		<!-- Here we have a list of xpump names that
+			are actually implemented with the same DPump class
+		-->
+		<xpump_info link_to_xpump="1"
+			direct_xpump_replacement="1"
+			xpump_name="replicate_on_field replicate split splitter user_data_splitter"
+			chain_multiple="0"
+		/>
+		<!-- Translation rules don't fall into general category -->
+		<parameters_info copy_as="attrs_as_children"
+		/>
+	</processor>
+
+
+
+	<processor class="URLBuilder"
+		multiple_instances_ok="1"
+		multiple_sub_instances_ok="1"
+		creates_work_units="0"
+		clones_work_units="0"
+		is_linear="1"
+	>
+		<!-- could have also added markings on backwash? -->
+		<reads_from>
+			<queue_connection name="input"
+				primary_input="1"
+				how_many_allowed="1"
+				how_many_required="1"
+			/>
+		</reads_from>
+		<writes_to>
+			<queue_connection name="output"
+				primary_output="1"
+				how_many_allowed="1"
+				how_many_required="1"
+			/>
+		</writes_to>
+		<!-- Here we have a list of xpump names that
+			are actually implemented with the same DPump class
+		-->
+		<xpump_info link_to_xpump="1"
+			direct_xpump_replacement="1"
+			xpump_name="build_url"
+			chain_multiple="0"
+		/>
+		<parameters_info copy_as="tag_as_child" />
+	</processor>
+
+	<!-- Normal CSV In -->
+	<processor class="CSVIn"
+		multiple_instances_ok="1"
+		multiple_sub_instances_ok="0"
+		creates_work_units="1"
+		sinks_work_units="0"
+		is_linear="0"
+	>
+		<!-- Todo: Someday it would be nice if it
+			could read from a queue to get location info -->
+		<!-- Does not read from a queue -->
+		<writes_to>
+			<queue_connection name="records"
+				primary_output="1"
+				how_many_allowed="1"
+				how_many_required="1"
+			/>
+		</writes_to>
+		<!-- Here we have a list of xpump names that
+			are actually implemented with the same DPump class
+		-->
+		<xpump_info link_to_xpump="1"
+			direct_xpump_replacement="1"
+			xpump_name="csv_in"
+			chain_multiple="0"
+		/>
+		<parameters_info copy_as="tag_as_params" />
+	</processor>
+
+	<!-- CSV In with outbound "done" trigger -->
+	<processor class="CSVInT"
+		multiple_instances_ok="1"
+		multiple_sub_instances_ok="0"
+		creates_work_units="1"
+		sinks_work_units="0"
+		is_linear="0"
+	>
+		<!-- Does not read from a queue -->
+		<writes_to>
+			<queue_connection name="records"
+				primary_output="1"
+				how_many_allowed="1"
+				how_many_required="1"
+			/>
+		</writes_to>
+		<uses>
+			<queue_connection name="done_trigger_out"
+				primary_output="0"
+				primary_uses="1"
+				how_many_allowed="1"
+				how_many_required="1"
+			/>
+		</uses>
+		<!-- Here we have a list of xpump names that
+			are actually implemented with the same DPump class
+		-->
+		<xpump_info link_to_xpump="1"
+			direct_xpump_replacement="1"
+			xpump_name="csv_in_t"
+			chain_multiple="0"
+		/>
+		<parameters_info copy_as="tag_as_params" />
+	</processor>
+
+	<processor class="CSVOut"
+		multiple_instances_ok="1"
+		multiple_sub_instances_ok="0"
+		creates_work_units="0"
+		sinks_work_units="1"
+		is_linear="0"
+	>
+		<reads_from>
+			<queue_connection name="input"
+				primary_input="1"
+				how_many_allowed="1"
+				how_many_required="1"
+			/>
+		</reads_from>
+		<!-- No output queues -->
+		<!-- Here we have a list of xpump names that
+			are actually implemented with the same DPump class
+		-->
+		<xpump_info link_to_xpump="1"
+			direct_xpump_replacement="1"
+			xpump_name="csv_out"
+			chain_multiple="0"
+		/>
+		<parameters_info copy_as="attrs_as_children" />
+	</processor>
+
+	<processor class="DBOut"
+		multiple_instances_ok="1"
+		multiple_sub_instances_ok="0"
+		creates_work_units="0"
+		sinks_work_units="1"
+		is_linear="0"
+	>
+		<reads_from>
+			<queue_connection name="input"
+				primary_input="1"
+				how_many_allowed="1"
+				how_many_required="1"
+			/>
+		</reads_from>
+		<!-- No output queues -->
+		<!-- Here we have a list of xpump names that
+			are actually implemented with the same DPump class
+		-->
+		<xpump_info link_to_xpump="1"
+			direct_xpump_replacement="1"
+			xpump_name="db_out database_out"
+			chain_multiple="0"
+		/>
+		<parameters_info copy_as="attrs_as_children" />
+	</processor>
+
+	<processor class="LuceneIndexer"
+		multiple_instances_ok="1"
+		multiple_sub_instances_ok="0"
+		creates_work_units="0"
+		sinks_work_units="1"
+		is_linear="0"
+	>
+		<reads_from>
+			<queue_connection name="input"
+				primary_input="1"
+				how_many_allowed="1"
+				how_many_required="1"
+			/>
+		</reads_from>
+		<!-- No output queues -->
+		<!-- Here we have a list of xpump names that
+			are actually implemented with the same DPump class
+		-->
+		<xpump_info link_to_xpump="1"
+			direct_xpump_replacement="1"
+			xpump_name="lucene_index"
+			chain_multiple="0"
+		/>
+		<parameters_info copy_as="attrs_as_children" />
+	</processor>
+
+
+	<processor class="InjectWorkUnitFilesV2"
+		multiple_instances_ok="1"
+		multiple_sub_instances_ok="1"
+		creates_work_units="1"
+		clones_work_units="0"
+		is_linear="0"
+	>
+		<!-- Absense of reads_from means none are allowed -->
+		<!-- What we expect to write to -->
+		<writes_to>
+			<queue_connection name="to_next_process"
+				primary_output="1"
+				how_many_allowed="1"
+				how_many_required="1"
+			/>
+		</writes_to>
+		<!-- Here we have a list of xpump names that
+			are actually implemented with the same DPump class
+		-->
+		<xpump_info link_to_xpump="1"
+			direct_xpump_replacement="1"
+			xpump_name="inject inject_work inject_work_units inject_work_unit_files"
+			chain_multiple="0"
+		/>
+		<!-- Note that select queue is not listed here -->
+		<parameters_info copy_as="attrs_as_children" />
+	</processor>
+
+	<processor class="InjectXmlFiles"
+		multiple_instances_ok="1"
+		multiple_sub_instances_ok="1"
+		creates_work_units="1"
+		clones_work_units="0"
+		is_linear="0"
+	>
+		<!-- Absense of reads_from means none are allowed -->
+		<!-- What we expect to write to -->
+		<writes_to>
+			<queue_connection name="to_next_process"
+				primary_output="1"
+				how_many_allowed="1"
+				how_many_required="1"
+			/>
+		</writes_to>
+		<!-- Here we have a list of xpump names that
+			are actually implemented with the same DPump class
+		-->
+		<xpump_info link_to_xpump="1"
+			direct_xpump_replacement="1"
+			xpump_name="inject_xml inject_xml_files"
+			chain_multiple="0"
+		/>
+		<!-- Note that select queue is not listed here -->
+		<parameters_info copy_as="attrs_as_children" />
+	</processor>
+
+
+
+
+
+
+	<!-- Monitor processor not currently modelled -->
+
+	<!-- Exit processor not fully modelled -->
+
+	<!-- Sink processor not currently modelled -->
+
+</dpump_proc_def>

@@ -1,0 +1,23 @@
+Site to fileFrom: Miles B. Kehoe [mbk@ideaeng.com]
+Sent: Friday, June 25, 2004 12:17 PM
+To: Mark Bennett
+Cc: Miles B. Kehoe
+Subject: Site to file
+
+Definitions of search engine action parms - not for enterprise, but works for ultraseek, google, etc. 
+
+http://maximized.com/products/flashstats/support/searchengines.asp 
+
+search=About.com;url=http://www.about.com;domain=about.com;vars=terms search=AltaVista;url=http://www.altavista.com;domain=altavista.com;vars=q search=AOL Search;url=http://search.aol.com/;domain=.aol.com;vars=query,search,s;domain=aolsearch.com;vars=query search=Ask Jeeves;url=http://www.ask.com/;domain=ask.com;vars=ask;domain=askjeeves.com;vars=ask;domain=aj.com;vars=ask search=Direct Hit;url=http://www.directhit.com/;domain=directhit.com;vars=qry search=Dogpile;url=http://www.dogpile.com/;domain=dogpile.com;vars=q search=Excite;url=http://www.excite.com/;domain=excite.com;vars=search,s search=FAST Search;url=http://www.alltheweb.com;domain=alltheweb.com;vars=query search=GO Network;url=http://www.go.com/;domain=.go.com;vars=qt search=Google;url=http://www.google.com/;domain=google.com;vars=q search=GoTo;url=http://www.goto.com/;domain=goto.com;vars=Keywords search=HotBot;url=http://hotbot.lycos.com/;domain=hotbot.lycos.com;vars=MT;domain=hotbot.com;vars=MT search=InferenceFind;url=http://www.infind.com/;domain=infind.com;vars=query search=InfoSeek;url=http://infoseek.go.com/;domain=infoseek.go.com;vars=qt;domain=infoseek.com;vars=qt search=iWon;url=http://www.iwon.com/;domain=.iwon.com;vars=searchfor search=LookSmart;url=http://www.looksmart.com/;domain=looksmart.com;vars=key search=Lycos;url=http://www.lycos.com/;domain=lycos.com;vars=query search=Magellan;url=http://magellan.excite.com/;domain=magellan.excite.com;vars=search,query;domain=mckinley.com;vars=search,query search=MetaCrawler;url=http://www.go2net.com/;domain=metacrawler.com;vars=general;domain=.go2net.com;vars=general search=Microsoft;url=http://www.microsoft.com/;domain=microsoft.com;vars=qu,SearchString search=MSN;url=http://www.msn.com/;domain=msn.com;vars=q,MT search=NetGuide;url=http://www.netguide.com/;domain=netguide.com;vars=query,Search.Query,AVSearchApp.Query search=Netscape;url=http://home.netscape.com/;domain=netscape.com;vars=search search=Northern Light;url=http://www.northernlight.com/;domain=northernlight.com;vars=qr search=Open Directory Project;url=http://www.dmoz.org/;domain=dmoz.org;vars=search;domain=newhoo.com;vars=search search=PlanetSearch;url=http://www.planetsearch.com/;domain=planetsearch.com;vars=text search=RealNames;url=http://www.realnames.com/;domain=realnames.com;vars=realname search=SavvySearch;url=http://www.savvysearch.com/;domain=savvysearch.com;vars=q,KW;domain=cs.colostate.edu;vars=KW search=SEARCH.com;url=http://www.search.com/;domain=.cnet.com;vars=QUERY;domain=search.com;vars=QUERY search=Snap;url=http://www.snap.com/;domain=snap.com;vars=keyword,KW search=Switchboard;url=http://www.switchboard.com/;domain=switchboard.com;vars=SEARCHSTRING search=Thunderstone;url=http://www.thunderstone.com/;domain=thunderstone.com;vars=q,arg search=WebCrawler;url=http://www.webcrawler.com/;domain=webcrawler.com;vars=searchText,text search=Yahoo!;url=http://www.yahoo.com/;domain=yahoo.com;vars=p 
+
+
+
+Miles Kehoe 
+408-446-3460 office 
+408-828-4592 mobile 
+
+New Idea Engineering, Inc. 
+http://www.ideaeng.com 
+Products and services that enhance and extend search, navigation, 
+and content management infrastructure 
+

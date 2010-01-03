@@ -1,0 +1,125 @@
+	<!-- Basic Info -->
+	<!-- ========== -->
+	<section
+		title="Basic Info"
+		help="find_map_basic_info.html"
+	>
+
+		<field type="vertical_spacer" />
+		<field
+			type="vertical_spacer"
+		>
+			Basic SearchTrack Settings
+		</field>
+		<field type="vertical_spacer" />
+
+		<field
+			type="vertical_spacer"
+			font_size_increment="0"
+		>
+			NIE Server Process
+		</field>
+		<field
+			name="nie_server"
+			label="SearchTrack Server URL and port"
+			xpath="/nie_config/search_tuning/nie_server_url"
+			default="http://this.server.com:9000"
+			_is_special="TRUE"
+		/>
+		<!--
+		<field
+			name="nie_port"
+			label="Port"
+			default="9000"
+			is_special="TRUE"
+		/>
+		-->
+		<field
+			name="admin_password"
+			label="Administrative Password"
+			xpath="/nie_config/search_tuning/@admin_password"
+		/>
+		<field
+			name="read_only_password"
+			label="Read-Only Password"
+			xpath="/nie_config/search_tuning/@read_only_password"
+		/>
+
+		<field
+			name="site_id"
+			_label="Declare a unique Site ID"
+			label="Unique Site ID (for reporting purposes)"
+			default="10"
+			xpath="/nie_config/search_tracking/data_logging/@site_id"
+		/>
+
+		<field
+			name="service_name"
+			label="Windows Service Name (Windows only)"
+			default="niesrv"
+			xpath="/nie_config/search_tuning/@nt_service_name"
+		/>
+
+
+		<field type="vertical_spacer" />
+		<field
+			type="vertical_spacer"
+			font_size_increment="0"
+		>
+			Process and Error Logging
+		</field>
+
+		<field
+			name="log_file_name"
+			label="Runtime Log File (absolute path to FILE please)"
+			default="d:\full\path\niesrv\logs\niesrv.log"
+			xpath="/nie_config/run_logging/@location"
+		/>
+		<field
+			name="log_verbosity"
+			label="Overall log Verbosity"
+			type="select"
+			default="default"
+			xpath="/nie_config/run_logging/@verbosity"
+		>
+			<option>quiet</option>
+			<option>default</option>
+			<option>info</option>
+			<option>debug</option>
+			<option>trace</option>
+		</field>
+		<field
+			name="log_history_length"
+			label="History length (to view online)"
+			type="select"
+			xpath="/nie_config/run_logging/@keep"
+		>
+			<option>100</option>
+			<option>1000</option>
+			<option>10000</option>
+		</field>
+
+
+		<!--
+		<field type="vertical_spacer" />
+		<field
+			type="vertical_spacer"
+		>
+			Return Here after visiting all other Tabs
+		</field>
+		<field type="vertical_spacer" />
+		<field
+			type="inline_button"
+			label="Final check for all the settings"
+			_click_event_class="VL"
+		>
+			Verify Configuration
+		</field>
+		-->
+
+		<!-- Service Name -->
+		<!-- Log file -->
+		<!-- Log verbosity -->
+		<!-- Log keep N -->
+
+	</section>

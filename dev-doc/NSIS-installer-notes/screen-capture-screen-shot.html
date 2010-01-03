@@ -1,0 +1,119 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<!-- header.skel.php: begin -->
+<html>
+
+<head>
+
+<title>NSIS Archive</title>
+
+    
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" href="/media/template/nsis.css" type="text/css">
+
+</head>
+
+<body leftmargin="0" topmargin="0" marginwidth="0" marginheight="0">
+
+<table width="778" height="100%" class="maintable" cellspacing="0" cellpadding="0" align="center">
+
+<tr><td colspan="2" height="22">
+ <table width="778">
+   <tr>
+     <td class="auser"><strong>Logged in as:</strong> <i>not logged in</i> ( <a href="login.php?page=0">login</a> )</td>
+     <td class="alinks">
+ 	          [ <a href="picklist.php">Pick List</a> ] [ <a href="search.php">Search</a> ] [ <a href="../index.php">NSIS Site</a> ] [ <a href="http://nsis.sourceforge.net/archive/nsisweb.php">Home</a> ]
+     </td>
+   </tr>
+ </table>
+<tr></td>
+
+  <tr>
+    <td width="150" height="100" class="top"><a href="/index.php"><img src="/media/template/left.gif" width="150" height="100" border="0"></a></td>
+    <td width="628" height="100" class="top"><h1 class="header">NSIS Archive</td>
+  </tr>
+
+  <tr>
+    <td class="content" colspan="2">
+
+<!-- header.skel.php: end --><!-- user_page.skel.php: begin -->
+Parent Pages: <a href="viewpage.php?pageid=55">Plugins</a></a>
+<hr class="aline">
+<table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr>
+    <td class="atitle">
+      nsScreenshot    </td>
+    <td>
+      <a href="edit.php?pageid=348"><img src="images/edit2.png" name="edit2" width="20" height="20" border="0" alt="Edit this page"></a> | <a href="delete.php?instanceid=409"><img src="images/cut2.png" name="cut2" width="20" height="20" border="0" alt="Remove this page instance from the Archive"></a> | <a href="picklist.php?action=pick&instanceid=409"><img src="images/copy2.png" name="copy2" width="20" height="20" border="0" alt="Add this page to your pick list"></a> | <a href="viewpage.php?pageid=55"><img src="images/up2.png" name="up2" width="20" height="20" border="0" alt="View the parent of this page"></a>    </td>
+  </tr>
+</table>
+<hr class="aline">
+<table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr>
+    <td align="left" valign="top">
+      Written by <a href="profile.php?userid=345">lzandman</a> 2003-09-22 05:00:09    </td>
+    <td align="right" valign="top">
+      Last updated by <a href="profile.php?userid=345">lzandman</a> 2003-09-23 13:11:31    </td>
+  </tr>
+  <tr><td><br><br></td></tr>
+  <tr><td colspan="2" align="left" valign="top" class="apage">
+<!-- user_page.skel.php: source -->
+nsScreenshot is a NSIS-plugin created by <a href="mailto:leon@wirwar.com?subject=nsScreenshot" target="_blank">Leon Zandman</a> that can create a screenshot and save it to a bitmap (BMP) file.<br><br><a href="http://nsis.sourceforge.net/archive/download.php?file=nsScreenshot.zip" target="_blank">Download nsScreenshot</a> (<a href="http://home.studenten.net/~wowleon/nsScreenshot.zip" target="_blank">Alternative</a>)<br><br>It supports two types of screenshots:<br><ul><li>Full-screen capture<li>Capture of a specific window (identified by window handle)</ul><br>To capture the full screen and save it to 'c:\fullscreen.bmp' use the<br>following script:<br><a href="savescript.php?pageid=348&script=1" target="_blank"><img border="0" src="images/disk.gif" width="19" height="19" class="aicon">Save this script</a><br><pre class="afixfont"><span class="ahcomment">; Put filename of screenshot onto stack
+</span><span class="ahinstruction">Push</span> <span class="ahstring">"c:\fullscreen.bmp"</span>
+
+<span class="ahcomment">; Capture full screen
+</span><span class="ahlabel">nsScreenshot:</span><span class="ahnumber">:</span>Grab_FullScreen
+
+<span class="ahinstruction">Pop</span> <span class="ahvar">$1</span>
+<span class="ahcomment">; $1 contains "ok" if the screenshot was taken
+</span><span class="ahcomment">; $1 contains "error" if something went wrong
+</span>
+<span class="ahinstruction">StrCmp</span> <span class="ahvar">$1</span> <span class="ahstring">"ok"</span> ok1 <span class="ahnumber">0</span>
+<span class="ahinstruction">DetailPrint</span> <span class="ahstring">"nsScreenshot error"</span>
+<span class="ahinstruction">Goto</span> next1
+<span class="ahlabel">ok1:</span>
+<span class="ahcomment">; Get image dimensions from stack (only available when "ok")
+</span><span class="ahinstruction">Pop</span> <span class="ahvar">$R1</span>
+<span class="ahinstruction">Pop</span> <span class="ahvar">$R2</span>
+<span class="ahinstruction">DetailPrint</span> <span class="ahstring">"nsScreenshot OK"</span>
+<span class="ahinstruction">DetailPrint</span> <span class="ahstring">"Dimensions:  (<span class="ahvar">$R1x</span><span class="ahvar">$R2</span>)"</span>
+<span class="ahlabel">next1:</span>
+</pre>For capturing a specific window and saving it to 'c:\screenshot.bmp'<br>use the following script:<br><a href="savescript.php?pageid=348&script=2" target="_blank"><img border="0" src="images/disk.gif" width="19" height="19" class="aicon">Save this script</a><br><pre class="afixfont"><span class="ahcomment">; Put window handle of window to be captured
+</span><span class="ahcomment">; onto stack. You can use FindWindow for this.
+</span><span class="ahcomment">; We'll use the NSIS window in this example
+</span><span class="ahinstruction">Push</span> <span class="ahvar">$HWNDPARENT</span>
+
+<span class="ahcomment">; Put filename of screenshot onto stack
+</span><span class="ahinstruction">Push</span> <span class="ahstring">"c:\screenshot.bmp"</span>
+
+<span class="ahcomment">; Capture window
+</span><span class="ahlabel">nsScreenshot:</span><span class="ahnumber">:</span>Grab
+
+<span class="ahinstruction">Pop</span> <span class="ahvar">$1</span>
+<span class="ahcomment">; $1 contains "ok" if the screenshot was taken
+</span><span class="ahcomment">; $1 contains "error" if something went wrong
+</span>
+<span class="ahinstruction">StrCmp</span> <span class="ahvar">$1</span> <span class="ahstring">"ok"</span> ok1 <span class="ahnumber">0</span>
+<span class="ahinstruction">DetailPrint</span> <span class="ahstring">"nsScreenshot error"</span>
+<span class="ahinstruction">Goto</span> next1
+<span class="ahlabel">ok1:</span>
+<span class="ahcomment">; Get image dimensions from stack (only available when "ok")
+</span><span class="ahinstruction">Pop</span> <span class="ahvar">$R1</span>
+<span class="ahinstruction">Pop</span> <span class="ahvar">$R2</span>
+<span class="ahinstruction">DetailPrint</span> <span class="ahstring">"nsScreenshot OK"</span>
+<span class="ahinstruction">DetailPrint</span> <span class="ahstring">"Dimensions:  (<span class="ahvar">$R1x</span><span class="ahvar">$R2</span>)"</span>
+<span class="ahlabel">next1:</span>
+</pre>The distribution includes an example NSIS-script file<br>that should be easy to understand.<br><br><b>Important:</b> nsScreenshot always captures the full-screen.<br>For capturing a specific window it will determine the rectangle<br>occupied by that window and crop it out of the total picture, thus<br>resulting in a screenshot of only that specific window. This means<br>that the window to be captured has to be visible (and on top)!<br><br>nsScreenshot was created after some discussion in <a href="http://forums.winamp.com/showthread.php?s=&threadid=149561" target="_blank">this</a> forum thread.<!-- user_page.skel.php: end -->
+  </td></tr>
+</table>
+<!-- footer.skel.php: begin -->
+    </td>
+  </tr>
+  <tr>
+    <td colspan="2" height="40" class="alogo">
+      <a href="http://sourceforge.net"><img src="http://sourceforge.net/sflogo.php?group_id=22049&amp;type=1" alt="SourceForge Logo" border="0"></a>
+    </td>
+  </tr> 
+</table>
+</body> 
+</html>
+<!-- footer.skel.php: end -->

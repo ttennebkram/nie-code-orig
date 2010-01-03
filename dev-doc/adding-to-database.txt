@@ -1,0 +1,57 @@
+
+// Create a template SQL statement string
+// (this is broken up across multiple lines for readability)
+String templateSQL = "INSERT INTO tablename ("
+	+ "fieldname1, fieldname2, fieldname3"
+	+ ") VALUES ("
+	+ "?, ?, ?"		// 3 field names, 3 placeholders
+	+ ")"	// final closing paren
+	;
+
+// Get a connection to your database, you already know how to do that,
+// I will assume it's called myConnection
+
+// Now prepare the template statement
+// can throw SQLException
+PreparedStatement myStatement = myConnection.prepareStatement( templateSQL );
+
+
+// In these examples we'll assume that:
+// fieldname1 was a string
+// fieldname2 was a number
+// fieldname3 was a date
+
+// So field # 1 is a string
+// -------------------------
+String myValue1 = "hello world";
+// Need to make sure myValue1 does NOT have an apostrophies, or if it
+// does, they need to be escaped into double apostrophes
+// (Notice the 1st feild is _1_, not 0
+myStatement.setString( 1, myValue1 );
+// IF myValue == null, then need to set null instead
+myStatement.setNull( 1, java.sql.Types.VARCHAR );
+
+// Field # 2 is a number
+// -----------------------
+int myValue2 = 5;
+// 2nd field is 2
+myStatement.setInt( 2, myValue2 );
+// OR
+myStatement.setNull( 2, java.sql.Types.INTEGER );
+
+// Field # 3 is a date
+// --------------------------------
+// Weird because you need to get to a type of java.sql.Timestamp
+Timestamp myValue3 = ....;	// somehow get into timestatmp format, see below
+myStatement.setTimestamp( 3, myValue3 );
+// Or set null
+myStatement.setNull( 3, java.sql.Types.TIMESTAMP );
+
+// Then you send it
+myStatement.executeUpdate();
+
+// Then I think you clear all the fields to reuse it
+// check the doc... or start over
+
+Notes on ' to '' and dates later.
+

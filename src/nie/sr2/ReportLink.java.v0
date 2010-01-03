@@ -1,0 +1,740 @@
+package nie.sr2;
+
+import java.util.*;
+// import java.sql.*;
+import org.jdom.Element;
+// import org.jdom.Comment;
+import nie.core.*;
+import nie.sn.SnRequestHandler;
+import nie.sn.CSSClassNames;
+
+/**
+ * @author mbennett
+ *
+ * To change this generated comment edit the template variable "typecomment":
+ * Window>Preferences>Java>Templates.
+ * To enable and disable the creation of type comments go to
+ * Window>Preferences>Java>Code Generation.
+ */
+public class ReportLink
+{
+	private final static String kClassName = "ReportLink";
+
+	public ReportLink(
+		Element inLinkDefinitionElement,
+		nie.sn.SearchTuningConfig inMainConfig
+	)
+		throws ReportConfigException
+	{
+		this( inLinkDefinitionElement, inMainConfig, true );
+	}
+
+	public ReportLink(
+		Element inLinkDefinitionElement,
+		// nie.sn.SearchTuningApp inMainApp
+		nie.sn.SearchTuningConfig inMainConfig,
+		boolean inDoWarnAboutMissingData
+		)
+			throws ReportConfigException
+	{
+		final String kFName = "constructor(1)";
+		final String kExTag = kClassName + '.' + kFName + ": ";
+
+		// we need the main app for various info
+		if( null==inMainConfig )
+			throw new ReportConfigException( kExTag
+				+ "Null application configuration object passed in."
+				);
+		fMainConfig = inMainConfig;
+
+		// we also need a report definition
+		if( null==inLinkDefinitionElement )
+			throw new ReportConfigException( kExTag
+				+ "Null XML report definition passed in."
+				);
+		fMainElem = inLinkDefinitionElement;
+
+		// Fill in the cache
+		initCachedFields( inDoWarnAboutMissingData );
+
+	}
+
+
+	public ReportLink(
+		nie.sn.SearchTuningConfig inMainConfig,
+		String inReportName,
+		String inLinkText,
+		String optLinkTitle,
+		String optCssClass,
+		String optParmName,
+		String optParmDefaultValue
+		)
+			throws ReportConfigException
+	{
+		final String kFName = "constructor(2)";
+		final String kExTag = kClassName + '.' + kFName + ": ";
+
+		// we need the main app for various info
+		if( null==inMainConfig )
+			throw new ReportConfigException( kExTag
+				+ "Null application configuration object passed in."
+				);
+		fMainConfig = inMainConfig;
+
+		cShortReportName = NIEUtil.trimmedStringOrNull( inReportName );
+		if( null==cShortReportName )
+			throw new ReportConfigException( kExTag
+				+ "Null report name passed in."
+				);
+
+		cLinkText = NIEUtil.trimmedStringOrNull( inLinkText );
+		if( null==cLinkText )
+			throw new ReportConfigException( kExTag
+				+ "Null link text passed in."
+				);
+
+		// Some optional stuff
+		cTitle = NIEUtil.trimmedStringOrNull( optLinkTitle );
+		cCssClass = NIEUtil.trimmedStringOrNull( optCssClass );
+
+		cSingleParmName = NIEUtil.trimmedStringOrNull( optParmName );
+		if( null!=cSingleParmName && IS_CASEN )
+			cSingleParmName = cSingleParmName.toLowerCase();
+		String tmpParmValue = NIEUtil.trimmedStringOrNull( optParmDefaultValue );
+		if( null!=cSingleParmName && null!=tmpParmValue ) {
+			cParameters = new Hashtable();
+			cParameters.put( cSingleParmName, tmpParmValue );
+		}
+
+		fMainElem = null;
+
+		// If this is nDays, cache it
+		if( null!=optParmName
+			&& null!=optParmDefaultValue
+			&& ! optParmDefaultValue.equalsIgnoreCase(ReportConstants.INTERNAL_NULL_MARKER_SEQUENCE)
+			&& optParmName.equalsIgnoreCase(ReportConstants.DAYS_OLD_CGI_FIELD_NAME)
+			)
+				cNDays = NIEUtil.stringToIntOrDefaultValue( optParmDefaultValue, 0, true, true );
+
+
+		// Fill in the cache
+		// initCachedFields();
+		fUseCache = true;
+
+	}
+
+
+	private void initCachedFields(
+			boolean inDoWarnAboutMissingData
+		)
+		throws ReportConfigException
+	{
+		final String kFName = "initCachedFields";
+		final String kExTag = kClassName + '.' + kFName + ": ";
+
+		fUseCache = false;
+
+		if( null == getLinkText() )
+			if( inDoWarnAboutMissingData )
+				throw new ReportConfigException( kExTag
+					+ "No link text given for this link."
+					);
+
+		getTitle();
+		// getCssClass();
+
+		getDestReportName();
+
+		// Cache the paramter hash
+		getCachedParameters();
+
+		fUseCache = true;
+	}
+
+
+	public Element generateRichLink(
+		AuxIOInfo inRequest, boolean inIsMenuLink
+		)
+	{
+		return generateRichLink( inRequest, null, null, inIsMenuLink, null, null, null );
+	}
+
+	public Element generateRichLink(
+		AuxIOInfo inRequest,
+		String optReportName,
+		String optFilterName,
+		boolean inIsMenuLink
+		)
+	{
+		return generateRichLink( inRequest, optReportName, optFilterName, inIsMenuLink, null, null, null );
+	}
+
+	// TODO: revisit this code  :-(
+	public Element generateRichLink(
+		AuxIOInfo inRequest,
+		String optReportName,
+		String optFilterName,
+		boolean inIsMenuLink,
+		String optNewParmValue,
+		Hashtable optVarsHash,
+		String optNewLinkTextValue
+		)
+	{
+		final String kFName = "generateRichLink(2)";
+
+		// Start creating a repository for link info
+		AuxIOInfo linkInfo = new AuxIOInfo();
+		linkInfo.setBasicURL( getMainAppURL() );
+
+
+		// List fieldsToExclude = new Vector();
+		Set fieldsToExclude = new HashSet();
+		boolean didParms = false;
+		if( ! fHaveSeenDollarSigns ) {
+			// Add the paramters from this link, and make sure
+			// that we don't leave any old ones leftover
+			Hashtable parms = getCachedParameters();
+			// The fields we will NOT copy over
+			// If we got some parameters
+			if( null!=parms ) {
+				didParms = true;
+				List keys = new Vector( parms.keySet() );
+				// For each parameter
+				for( Iterator it = keys.iterator(); it.hasNext(); )
+				{
+					String key = (String) it.next();
+					String value = (String) parms.get( key );
+	
+					// Did we want to override one of the parameters?
+					// If yes, we just swap in the value passed in
+					// for the value that we had from before
+					if( null!=optNewParmValue
+						&& null!=cSingleParmName && cSingleParmName.equals(key)
+					) {
+						value = optNewParmValue;
+						optNewParmValue = null;
+					}
+	
+					linkInfo.addCGIField( key, value );
+					fieldsToExclude.add( key );
+
+					// We need to point out this filter
+					linkInfo.addCGIField(
+						ReportConstants.FILTER_NAME_CGI_FIELD_NAME,
+						key
+						);
+					fieldsToExclude.add( ReportConstants.FILTER_NAME_CGI_FIELD_NAME );
+
+				}		
+			}
+		}
+		// Else we have seen dollar signs, indicating dynamic variables
+		else {
+
+			// Give a warning, we can't handle this right now
+			if( null!=optNewParmValue || null!=cSingleParmName )
+				warningMsg( kFName,
+					"Can't combine method parameters with dynamic XML parameters"
+					+ " Ignoring passed in \"" + optNewParmValue + "\" = \"" + cSingleParmName + "\""
+					);			
+
+
+			// Lookup the list of parameter elements
+			List parmList = JDOMHelper.findElementsByPath(
+				fMainElem, PARM_PATH
+				);
+			// Loop through, if any; it's OK if there isn't
+			if( null!=parmList && parmList.size() > 0 )
+			{
+				didParms = true;
+				// For each parameter element
+				for( int i = 0; i < parmList.size(); i++ )
+				{
+					Element elem = (Element) parmList.get( i );
+
+					// First obsess about the parameter name
+					String origKey = JDOMHelper.getStringFromAttributeTrimOrNull(
+						elem, PARM_NAME_ATTR
+						);
+					if( null==origKey ) {
+						errorMsg( kFName,
+							"Parameter # " + (i+1) + " has no name, skipping."
+							);
+						continue;
+					}
+					// Normalize if needed
+					String key = IS_CASEN ? origKey : origKey.toLowerCase();
+
+					// No matter what, we don't want this copied over
+					fieldsToExclude.add( key );
+
+
+					// Obsess about the value
+					// String value = JDOMHelper.getStringFromAttributeTrimOrNull(
+					String value = JDOMHelper.getStringFromAttribute(
+						elem, PARM_VALUE_ATTR
+						);
+
+					/*** No, w're not going to allow this
+							^^^ See the warning we issue above
+					// Did we want to override one of the parameters?
+					if( null!=optNewParmValue
+						&& null!=cSingleParmName && cSingleParmName.equals(key)
+					) {
+						value = optNewParmValue;
+						optNewParmValue = null;
+					}
+					***/
+
+
+					// There is a big difference between a true null
+					// and an empty string
+					if( null==value ) {
+						value = ReportConstants.INTERNAL_NULL_MARKER_SEQUENCE;
+					}
+					else {
+						String oldValue = value;
+						value = NIEUtil.markupStringWithVariables(
+							value,			// String inSourceString,
+							optVarsHash,	// Hashtable inValues,
+							false,			// boolean inCasen,
+							true,			// boolean inReturnNullOnError,
+							true,			// boolean inDisplayErrors,
+							true			// boolean inDisplayNotFoundErrors
+							);
+						// Sanity check
+						if( null==value ) {
+							errorMsg( kFName,
+								"Unable to do variable substitution."
+								+ " orig value = \"" + oldValue + "\""
+								+ ", var hash = " + optVarsHash + "\""
+								+ " Returning a null element."
+								);
+							return null;
+						}
+					}
+
+					// Add the value
+					linkInfo.addCGIField( key, value );
+
+					// We need to point out this filter
+					linkInfo.addCGIField(
+						ReportConstants.FILTER_NAME_CGI_FIELD_NAME,
+						key
+						);
+					fieldsToExclude.add( ReportConstants.FILTER_NAME_CGI_FIELD_NAME );
+
+				}	// End for each parameter element
+			}	// End if we did find parameters
+
+		}	// End Else we have seen dollar signs, indicating dynamic variables
+
+		// a double check to make sure we added the possible override parameter
+		// even if there was no parms hash
+		if( ! fHaveSeenDollarSigns && ! didParms
+			&& null!=optNewParmValue && null!=cSingleParmName
+			)
+		{
+			linkInfo.addCGIField( cSingleParmName, optNewParmValue );
+			fieldsToExclude.add( cSingleParmName );
+
+			// If a filter name was given, use it
+			if( null != optFilterName && ! optFilterName.equalsIgnoreCase( ReportConstants.DAYS_OLD_CGI_FIELD_NAME))
+				linkInfo.setOrOverwriteCGIField(
+					ReportConstants.FILTER_NAME_CGI_FIELD_NAME,
+					optFilterName
+					);
+		}
+
+		// And if we're doing something like a menu link there's probably
+		// a bunch of stuff we DON't want
+		if( inIsMenuLink )
+			fieldsToExclude.addAll( ReportConstants.fMiscReportFields );
+
+		// We know, for a fact, that we want to clear the start row stuff
+		fieldsToExclude.add( ReportConstants.START_ROW_CGI_FIELD_NAME );
+
+		// If there's a request, copy everything else in
+		if( null!=inRequest )
+			linkInfo.copyInCGIFields( inRequest, fieldsToExclude );
+
+		// If a report name was given, use it
+		if( null != optReportName )
+			linkInfo.setOrOverwriteCGIField(
+				ReportConstants.REPORT_NAME_CGI_FIELD, optReportName
+				);
+		else if( null != getDestReportName() )
+			linkInfo.setOrOverwriteCGIField(
+				ReportConstants.REPORT_NAME_CGI_FIELD, getDestReportName()
+				);
+
+		// Make sure we have the admin context and report command
+		linkInfo.setOrOverwriteCGIField(
+			SnRequestHandler.NIE_CONTEXT_REQUEST_FIELD,
+			SnRequestHandler.SN_CONTEXT_ADMIN
+			);
+		linkInfo.setOrOverwriteCGIField(
+			SnRequestHandler.ADMIN_CONTEXT_REQUEST_FIELD,
+			SnRequestHandler.ADMIN_CONTEXT_REPORT
+			);
+
+		// Get the full URL
+		String href = linkInfo.getFullCGIEncodedURL();
+
+		Element outElem = new Element( "a" );
+		// outElem class
+		// outElem.setAttribute(
+		//	"class", ReportDispatcher.NIE_REPORT_LINK_CSS_CLASS
+		//	);
+		if( null != getCssClass( inIsMenuLink ) )
+			outElem.setAttribute(
+				"class", getCssClass( inIsMenuLink )
+				);
+		// Add the link
+		outElem.setAttribute( "href", href );
+		if( null != getTitle() )
+			outElem.setAttribute( "title", getTitle() );
+		// Add the link text
+		String linkText = optNewLinkTextValue;
+		if( null==linkText )
+			linkText = getLinkText();
+		outElem.addContent( linkText );
+
+		// Return the <a> tag
+		return outElem;
+	}
+
+
+	public int getNDaysIfApplicable()
+	{
+		return cNDays;
+	}
+
+	public String getTitle( /*Hashtable inValuesHash*/ )
+	{
+		if( ! fUseCache && null==cTitle )
+		{
+			final String kFName = "getTitle";
+			cTitle = JDOMHelper.getTextByPathTrimOrNull(
+				fMainElem, TITLE_PATH
+				);
+			// if( null!=cTitle && cTitle.indexOf( '$' ) >= 0 )
+			//	fHaveSeenDollarSigns = true;
+		}
+		return cTitle;
+
+		/****
+		// If no variable substitution, just return the query
+		// Or if we're just priming the cache and have no vars anyway
+		if( ! fUseCache
+			|| ! getShouldDoVariableSubstitutions()
+			|| null == inValuesHash
+			)
+		{
+			return cTitle;
+		}
+		// If there IS var subst, apply it to the values
+		else
+		{
+			return NIEUtil.markupStringWithVariables(
+				cTitle, inValuesHash
+				);
+		}
+		****/
+
+	}
+
+
+	public String getDestReportName()
+	{
+		if( ! fUseCache && null==cShortReportName )
+		{
+			final String kFName = "getDestReportName";
+			cShortReportName = JDOMHelper.getStringFromAttributeTrimOrNull(
+				fMainElem, LINKED_REPORT_ATTR
+				);
+		}
+		return cShortReportName;
+
+	}
+
+
+	public String getLinkText( /*Hashtable inValuesHash*/ )
+	{
+		if( ! fUseCache && null==cLinkText )
+		{
+			final String kFName = "getLinkText";
+			cLinkText = JDOMHelper.getTextByPathTrimOrNull(
+				fMainElem, LINK_TEXT_PATH
+				);
+			// if( null!=cTitle && cTitle.indexOf( '$' ) >= 0 )
+			//	fHaveSeenDollarSigns = true;
+		}
+		return cLinkText;
+
+		/****
+		// If no variable substitution, just return the query
+		// Or if we're just priming the cache and have no vars anyway
+		if( ! fUseCache
+			|| ! getShouldDoVariableSubstitutions()
+			|| null == inValuesHash
+			)
+		{
+			return cTitle;
+		}
+		// If there IS var subst, apply it to the values
+		else
+		{
+			return NIEUtil.markupStringWithVariables(
+				cTitle, inValuesHash
+				);
+		}
+		****/
+
+	}
+
+
+
+	String getCssClass( boolean inIsMenuLink )
+	{
+		if( inIsMenuLink )
+			return CSSClassNames.ACTIVE_MENU_LINK;
+		else
+			return CSSClassNames.ACTIVE_RPT_LINK;
+
+		/***
+		if( ! fUseCache && null == cCssClass )
+		{
+			cCssClass =
+				JDOMHelper.getStringFromAttributeOrDefaultValue(
+					fMainElem,
+					CSS_CLASS_ATTR,
+					CSSClassNames.ACTIVE_RPT_LINK
+					);
+		}
+		return cCssClass;
+		***/
+
+	}
+
+	public boolean getAppearsToHaveDynamicVariables()
+	{
+		return fHaveSeenDollarSigns;
+	}
+
+	public Hashtable getCachedParameters()
+	{
+		if( ! fUseCache && null==cParameters )
+		{
+			final String kFName = "getParameters";
+			// final boolean kCasen = false;
+
+			// We always create a hash, it may remain empty
+			cParameters = new Hashtable();
+
+			// Lookup the list of parameter elements
+			List tmpList = JDOMHelper.findElementsByPath(
+				fMainElem, PARM_PATH
+				);
+			// Loop through, if any; it's OK if there isn't
+			if( null!=tmpList && tmpList.size() > 0 )
+			{
+				for( int i = 0; i < tmpList.size(); i++ )
+				{
+					Element elem = (Element) tmpList.get( i );
+
+					// First obsess about the parameter name
+					String origKey = JDOMHelper.getStringFromAttributeTrimOrNull(
+						elem, PARM_NAME_ATTR
+						);
+					if( null==origKey )
+					{
+						errorMsg( kFName,
+							"Parameter # " + (i+1) + " has no name, skipping."
+							);
+						continue;
+					}
+					// Normalize if needed
+					String key = IS_CASEN ? origKey : origKey.toLowerCase();
+					// Check the hash
+					if( cParameters.containsKey( key ) )
+					{
+						errorMsg( kFName,
+							"Parameter # " + (i+1) + "/\"" + key + "\""
+							+ " is a duplicate paramter name, skipping."
+							);
+						continue;
+					}
+
+					// Obsess about the value
+					String value = JDOMHelper.getStringFromAttributeTrimOrNull(
+						elem, PARM_VALUE_ATTR
+						);
+					if( null==value )
+					{
+						errorMsg( kFName,
+							"Parameter # " + (i+1) + "/\"" + key + "\""
+							+ " has a null/empty value, skipping."
+							);
+						continue;
+					}
+
+					// If this is nDays, cache it
+					if( ! value.equalsIgnoreCase(ReportConstants.INTERNAL_NULL_MARKER_SEQUENCE)
+						&& key.equalsIgnoreCase(ReportConstants.DAYS_OLD_CGI_FIELD_NAME)
+						)
+							cNDays = NIEUtil.stringToIntOrDefaultValue( value, 0, true, true );
+
+					// NO CACHING IF ANY DOLLAR SIGNS
+					if( value.indexOf('$') >=0 ) {
+						fHaveSeenDollarSigns = true;
+						// Kill the cache
+						cParameters = null;
+						infoMsg( kFName,
+							"No caching of parameters because a dollar sign was seen in paramter "
+							+ key
+							);
+						return null;
+					}
+
+					// OK, add it
+					cParameters.put( key, value );
+				}
+			}
+
+		}
+		return cParameters;
+	}
+
+
+
+
+
+
+
+	nie.sn.SearchTuningApp _getMainApp()
+	{
+		return _fMainApp;
+	}
+	nie.sn.SearchTuningConfig getMainConfig()
+	{
+		return fMainConfig;
+	}
+
+	DBConfig getDBConfig()
+	{
+		// return getMainApp().getDBConfig();
+		return getMainConfig().getDBConfig();
+	}
+
+	String getMainAppURL()
+	{
+		// return getMainApp().getSearchNamesURL();
+		return getMainConfig().getSearchNamesURL();
+	}
+
+
+	// This gets us to the logging object
+	private static RunLogInterface getRunLogObject()
+	{
+		return RunLogBasicImpl.getRunLogObject();
+	}
+	private static boolean statusMsg( String inFromRoutine, String inMessage )
+	{
+		return getRunLogObject().statusMsg( kClassName, inFromRoutine,
+			inMessage
+			);
+	}
+	private static boolean transactionStatusMsg( String inFromRoutine, String inMessage )
+	{
+		return getRunLogObject().transactionStatusMsg( kClassName, inFromRoutine,
+			inMessage
+			);
+	}
+	private static boolean shouldDoTransactionStatusMsg( String inFromRoutine )
+	{
+		return getRunLogObject().shouldDoTransactionStatusMsg( kClassName, inFromRoutine );
+	}
+	private static boolean infoMsg( String inFromRoutine, String inMessage )
+	{
+		return getRunLogObject().infoMsg( kClassName, inFromRoutine,
+			inMessage
+			);
+	}
+	private static boolean debugMsg( String inFromRoutine, String inMessage )
+	{
+		return getRunLogObject().debugMsg( kClassName, inFromRoutine,
+			inMessage
+			);
+	}
+	private static boolean shouldDoDebugMsg( String inFromRoutine )
+	{
+		return getRunLogObject().shouldDoDebugMsg( kClassName, inFromRoutine );
+	}
+	private static boolean traceMsg( String inFromRoutine, String inMessage )
+	{
+		return getRunLogObject().traceMsg( kClassName, inFromRoutine,
+			inMessage
+			);
+	}
+	private static boolean shouldDoTraceMsg( String inFromRoutine )
+	{
+		return getRunLogObject().shouldDoTraceMsg( kClassName, inFromRoutine );
+	}
+	private static boolean warningMsg( String inFromRoutine, String inMessage )
+	{
+		return getRunLogObject().warningMsg( kClassName, inFromRoutine,
+			inMessage
+			);
+	}
+	private static boolean errorMsg( String inFromRoutine, String inMessage )
+	{
+		return getRunLogObject().errorMsg( kClassName, inFromRoutine,
+			inMessage
+			);
+	}
+	private static boolean fatalErrorMsg( String inFromRoutine, String inMessage )
+	{
+		return getRunLogObject().fatalErrorMsg( kClassName, inFromRoutine,
+			inMessage
+			);
+	}
+
+
+	// private JDOMHelper fMainElem;
+	private Element fMainElem;
+	private nie.sn.SearchTuningApp _fMainApp;
+	private nie.sn.SearchTuningConfig fMainConfig;
+	private String cShortReportName;
+
+	boolean fUseCache;
+	boolean fHaveSeenDollarSigns;
+	String cTitle;
+	String cLinkText;
+	String cCssClass;
+	Hashtable cParameters;
+	String cSingleParmName;
+	int cNDays;
+
+
+	public static final boolean IS_CASEN = false;
+
+	public static final String MAIN_ELEM_NAME = "link";
+	public static final String TITLE_PATH = "title";
+
+	public static final String CSS_CLASS_ATTR = "css_class";
+	public static final String LINK_TEXT_PATH = "text";
+	public static final String PARM_PATH = "parameter";
+	public static final String PARM_NAME_ATTR = "name";
+	public static final String PARM_VALUE_ATTR = "value";
+	// When we do string varaible substitution we use a double
+	// layer hash, so this is the prefix name
+	public static final String RAW_FIELDS_HASH_NAME = "raw_fields";
+
+	public static final String _DEFAULT_CSS_CLASS =
+		CSSClassNames.ACTIVE_RPT_LINK;
+
+	public static final String LINKED_REPORT_ATTR = XMLDefinedField.LINKED_REPORT_ATTR;
+
+	// Todo: allow for is_null option
+}

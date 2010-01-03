@@ -1,0 +1,94 @@
+From http://www.desy.de/asg/oracle/impexp/impexp.html
+
+The ORACLE Import/Export UtilitiesThe ORACLE Import/Export Utilities 
+Export, Import are complementary utilities which allow you to write data in an 
+ORACLE-binary format from the database into operating system files and to read 
+data back from those operating system files. EXPORT, IMPORT are used for the 
+following tasks: 
+  backup ORACLE data in operating system files
+  restore tables that where dropped
+  save space or reduce fragmentation in the database
+  move data from one owner to another 
+Because of the special binary format, files which had been created by the EXPORT 
+utility can only be read by IMPORT. Both tools are only used to maintain ORACLE 
+database objects.
+To load data from other systems into the database you have to use SQL*LOADER or 
+other programs. To store data from database into readable operating system files 
+you may use e.g. REPORTS, SQLPLUS.
+It is a prerequisite that oraenv or coraenv (if you are working in a c-shell) 
+was executed before you export, import data. Consider, if you stored data in the 
+database by using an national language support (NLS) other than AMERICAN you 
+have to change your environment before import, export.
+Example for a german environment:
+NLS_LANG=GERMAN_GERMANY.WE8ISO8859P1
+export NLS_LANG
+
+EXPORT
+Exporting of ORACLE database objects is controlled by parameters. To get 
+familiar with EXPORT parameters type:
+exp help=y
+You will get a short description and the default settings will be shown. 
+The EXPORT utility may be used in three ways: 
+  Interactive dialogue
+  Simply type exp. You will be prompted for your ORACLE userid, password. All 
+  other prompts answer by pressing the return key. This is the easiest way to 
+  export all data you stored in the ORALE database. You may assign other values 
+  than the defaults to the parameters but in most cases it is unnecessary.
+  Controlled through bypassed parameters
+  You may bypass parameters when you export data from the database. Type:
+  exp <userid/password> <parameter>=<value>,<parameter>=<value>,...
+  Example of exporting scott's tables EMP and DEPT to file empdept.expdat and 
+  storing all messages to file empdept.log:
+  exp scott/tiger file=empdept.expdat tables=(EMP,DEPT) log=empdept.log
+
+  Parameterfile controlled
+  Instead of typing the parameters on the commandline you may use a parameter 
+  file where the parameters are stored. The syntax for this method is: exp 
+  <userid/password> parfile=<filename>
+Do not ignore warnings and messages! Look at your logfile and repeat EXPORT 
+until you get messages like: 
+About to export specified tables ...
+. exporting table                            EMP       14 rows exported
+. exporting table                           DEPT        4 rows exported
+Export terminated successfully without warnings.\ 
+IMPORT
+Like EXPORT the IMPORT utility is controlled by parameters. To get familiar with 
+these parameters type: imp help=y
+You will get a short description of usage and default settings of parameters. 
+To start IMPORT simply type imp. You will be prompted for your ORACLE userid, 
+password. The next prompts depend on what you answer. In most cases you may 
+answer the prompts by pressing the return key. But the following prompts you 
+have to answer carefully. 
+Import file: expdat.dmp >If your data was exported to file expdat.dmp press return, otherwise enter the 
+filename where the exported data resides. 
+Ignore create error due to object existence (yes/no): yes >This is a flag to indicate how object creation errors should be handeld. If you 
+import into an existing table and you set IGNORE=Y, rows could be duplicated if 
+they where already present in the table. 
+Import entire export file (yes/no): yes > no
+Username:If your exportfile consists of more objects than you want to import, enter no. 
+In this case you will be prompted for the Username (this is normally your ORACLE 
+account). 
+Enter table names. Null list means all tables for user
+Enter table name or . if done:After entering the username you will be prompted for table names until you press 
+the return key without entering a table name. Than IMPORT will be started.
+
+Instead of the dialogue method you may use parameters. This is analogous to the 
+methods described for EXPORT.
+Examples:
+imp <userid/password> tables=(table1,table2)
+Tables table1, table2 will be imported from the default file export.dmp into the 
+database.
+imp <userid/password> parfile=<filename>
+Import will be controlled by the named parameterfile.
+After importing you should get messages like: 
+importing SCOTT's objects into SCOTT
+. importing table "DEPT"                                     4 rows imported
+. importing table "EMP"                                     14 rows imported
+Import terminated successfully without warnings.
+
+
+Last Update on May 15th 1997
+by Ulrich Naujokat 
+
+
+Go to ORACLE Home Page 

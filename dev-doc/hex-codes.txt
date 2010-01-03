@@ -1,0 +1,30 @@
+HTML  URL   Description
+----  ---   ----------------------
+&#32; %20=  space
+&#33; %21=! exclamation point bang
+&#34; %22=" quote aka double quote
+&#35; %23=# pound sign hash sign
+&#37; %25=% percent
+&#38; %26=& ampersand
+&#39; %27=' apostrophe aka single quote
+&#40; %28=( left parenthesis open paren
+&#41; %29=) right parenthesis close paran
+&#42; %2A=* asterisk star
+&#43; %2B=+ plus
+&#45; %2D=- minus hyphen
+&#46; %2E=. period
+&#47; %2F=/ forward slash (backslash = %5C)
+&#48;-&#57; %30-%39 = digits 0 - 9 zero through nine
+&#58; %3A=: colon,,, &#59; %3B=; semicolon
+&#60; %3C=< less than,,, &#62; %3E=> greater than
+&#61; %3D== equals
+&#63; %3F=? question mark
+&#64; %40=@ at sign
+&#65;-&#90; %41-%5A = upper case letters A - Z
+&#91;, &#93; %5B=[, %5D=] square brackets
+&#92; %5C=\ backslash (forward slash = %2F)
+&#94; %5E=^ carrot,,,,, %5F=_ underscore
+&#97;-&#122; %61-%7A = lower case letters a - z
+&#123; %7B={, &#125; %7D=} curley braces curly brackets
+&#124; %7C=| vertical bar
+&#126; %7E=~ tilde tidle

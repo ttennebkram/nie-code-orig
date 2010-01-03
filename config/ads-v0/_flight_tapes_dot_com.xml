@@ -1,0 +1,21 @@
+<item>
+	<url>
+		http://flight-tapes.com
+		<title>Flight-Tapes Online Store</title>
+		<description>
+			Thousands of informative flight related
+			VHS and DVD titles.
+		</description>
+
+		<!--
+		<description_line_1>
+			Thousands of informative flight related
+		</description_line_1>
+		<description_line_2>
+			VHS and DVD titles.
+		</description_line_2>
+		-->
+
+	</url>
+	<advertisement_code>456</advertisement_code>
+</item>

@@ -1,0 +1,18 @@
+src/nie/core/JDOMHelper.java:7100:		//XMLOutputter xo = new XMLOutputter( "    ", true, "ISO-8859-1" );
+
+src/nie/core/AuxIOInfo.java:1960:			outType = getScalarHTTPFieldTrimOrNull( "content-type" );
+src/nie/core/AuxIOInfo.java:2742:	public static final String MIME_TYPE_HTML = "text/html";
+
+src/nie/core/NIEUtil.java:7600:			    //		"Content-Type",
+src/nie/core/NIEUtil.java:8016:			    //		"Content-Type",
+src/nie/core/NIEUtil.java:8140:				if( null!=headerKey && headerKey.equalsIgnoreCase("Content-type") )
+src/nie/core/NIEUtil.java:8145:							"HTTP header Content-type is UNKNOWN"
+src/nie/core/NIEUtil.java:8529:		    //		"Content-Type",
+src/nie/core/NIEUtil.java:8677:				if( null!=headerKey && headerKey.equalsIgnoreCase("Content-type") )
+src/nie/core/NIEUtil.java:8682:							"HTTP header Content-type is UNKNOWN"
+
+src/nie/sn/SnRequestHandler.java:5883:				"Content-Type", fResponseInfo.getContentTypeWithDefault()
+src/nie/sn/SnRequestHandler.java:5926://			"Content-type: text/html\r\n\r\n";
+src/nie/sn/SnRequestHandler.java:5926://			"Content-type: text/html\r\n\r\n";
+
+src/nie/pump/processors/HTTPRetrieverV4.java:1275:	public static final String DEFAULT_ENCODING = "ISO-8859-1";

@@ -1,0 +1,121 @@
+<report>
+	<title>Search Details</title>
+	<subtitle>For the past $cgi.days day(s)</subtitle>
+
+	<!-- This is both a filter link and a filter target -->
+	<field
+		heading="Search Term(s)"
+		sql_alias="search"
+		null_value_display="(null search)"
+
+		is_filter_field="TRUE"
+		do_filter_if_null="TRUE"
+
+		is_report_link="TRUE"
+		link_title="Click to see all instances of this search"
+		do_link_if_null="TRUE"
+	>
+		NORMALIZED_QUERY
+	</field>
+
+	<field
+		sql_alias="client_host"
+
+		heading="Visitor Address"
+		null_value_display="(not logged)"
+
+		is_filter_field="TRUE"
+		do_filter_if_null="TRUE"
+
+		is_report_link="TRUE"
+		link_report_name="visitor_details_ndays"
+		link_title="Click to see this Visitor's searches"
+		do_link_if_null="TRUE"
+	>
+		a.CLIENT_HOST
+	</field>
+
+	<field
+		heading="Domain Name"
+		null_value_display="(not translated)"
+	>
+		b.dns_name
+	</field>
+
+
+	<field
+		heading="Date &amp; Time"
+		css_class="nie_datetime"
+		format_as="datetime"
+	>
+		START_TIME
+	</field>
+
+	<field heading="Pages Found"
+		format_as="number"
+	>
+		NUM_RESULTS
+	</field>
+
+	<field
+		heading="Mapped?"
+		format_as="boolean"
+	>
+		WAS_SEARCH_NAMES_TERM
+	</field>
+
+	<raw_from
+		db_vendor="oracle"
+	>
+		nie_log a, nie_domain_names b
+	</raw_from>
+	<!-- Postgresql and others -->
+	<raw_from
+		except_db_vendor="oracle"
+	>
+		nie_log a left outer join nie_domain_names b on a.client_host = b.client_host
+	</raw_from>
+
+	<raw_where_join
+		db_vendor="oracle"
+	>
+		a.client_host = b.client_host (+)
+		<!--
+		AND
+		b.was_resolved (+) = 1
+		-->
+	</raw_where_join>
+	<!-- No postgresql or others raw_where_join needed -->
+
+
+	<raw_where_filter>
+		<![CDATA[
+			start_time >= $system.from_date
+			AND
+			TRANSACTION_TYPE = 1 
+		]]>
+	</raw_where_filter>
+
+
+	<!--
+	<raw_from>
+		nie_log a
+		left outer JOIN
+			nie_domain_names b ON
+				a.client_host = b.client_host
+				AND
+				b.was_resolved = 1
+	</raw_from>
+	-->
+
+
+
+
+	<raw_sort>
+		start_time desc
+	</raw_sort>
+
+
+	<include location="includes/standard_ndays_link_suggestions.xml" />
+
+</report>

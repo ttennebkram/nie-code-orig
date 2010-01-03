@@ -1,0 +1,129 @@
+	<!-- Subsite Fields (cont) -->
+	<!-- ===================== -->
+	<section
+		title="Sub-Site Search (cont.)"
+		level="2"
+		help="find_map_or_create.html"
+	>
+		<!--
+		<field type="vertical_spacer" />
+		-->
+		<field
+			type="vertical_spacer"
+		>
+			(continued from the previous screen)
+		</field>
+		<field type="vertical_spacer" />
+
+		<field
+			name="search_form_option_field_1_value_11"
+			label="CGI Value # 11"
+			xpath="/nie_config/search_tuning/search_engine_info/search_form_option_fields/field[1]/option[11]/@value"
+		/>
+		<field
+			name="search_form_option_field_1_value_11_desc"
+			label="Label 11"
+			xpath="/nie_config/search_tuning/search_engine_info/search_form_option_fields/field[1]/option[11]/@label"
+		/>
+
+		<field
+			name="search_form_option_field_1_value_12"
+			label="CGI Value # 12"
+			xpath="/nie_config/search_tuning/search_engine_info/search_form_option_fields/field[1]/option[12]/@value"
+		/>
+		<field
+			name="search_form_option_field_1_value_12_desc"
+			label="Label 12"
+			xpath="/nie_config/search_tuning/search_engine_info/search_form_option_fields/field[1]/option[12]/@label"
+		/>
+
+		<field
+			name="search_form_option_field_1_value_13"
+			label="CGI Value # 13"
+			xpath="/nie_config/search_tuning/search_engine_info/search_form_option_fields/field[1]/option[13]/@value"
+		/>
+		<field
+			name="search_form_option_field_1_value_13_desc"
+			label="Label 13"
+			xpath="/nie_config/search_tuning/search_engine_info/search_form_option_fields/field[1]/option[13]/@label"
+		/>
+
+		<field
+			name="search_form_option_field_1_value_14"
+			label="CGI Value # 14"
+			xpath="/nie_config/search_tuning/search_engine_info/search_form_option_fields/field[1]/option[14]/@value"
+		/>
+		<field
+			name="search_form_option_field_1_value_14_desc"
+			label="Label 14"
+			xpath="/nie_config/search_tuning/search_engine_info/search_form_option_fields/field[1]/option[14]/@label"
+		/>
+
+		<field
+			name="search_form_option_field_1_value_15"
+			label="CGI Value # 15"
+			xpath="/nie_config/search_tuning/search_engine_info/search_form_option_fields/field[1]/option[15]/@value"
+		/>
+		<field
+			name="search_form_option_field_1_value_15_desc"
+			label="Label 15"
+			xpath="/nie_config/search_tuning/search_engine_info/search_form_option_fields/field[1]/option[15]/@label"
+		/>
+
+		<field
+			name="search_form_option_field_1_value_16"
+			label="CGI Value # 16"
+			xpath="/nie_config/search_tuning/search_engine_info/search_form_option_fields/field[1]/option[16]/@value"
+		/>
+		<field
+			name="search_form_option_field_1_value_16_desc"
+			label="Label 16"
+			xpath="/nie_config/search_tuning/search_engine_info/search_form_option_fields/field[1]/option[16]/@label"
+		/>
+
+		<field
+			name="search_form_option_field_1_value_17"
+			label="CGI Value # 17"
+			xpath="/nie_config/search_tuning/search_engine_info/search_form_option_fields/field[1]/option[17]/@value"
+		/>
+		<field
+			name="search_form_option_field_1_value_17_desc"
+			label="Label 17"
+			xpath="/nie_config/search_tuning/search_engine_info/search_form_option_fields/field[1]/option[17]/@label"
+		/>
+
+		<field
+			name="search_form_option_field_1_value_18"
+			label="CGI Value # 18"
+			xpath="/nie_config/search_tuning/search_engine_info/search_form_option_fields/field[1]/option[18]/@value"
+		/>
+		<field
+			name="search_form_option_field_1_value_18_desc"
+			label="Label 18"
+			xpath="/nie_config/search_tuning/search_engine_info/search_form_option_fields/field[1]/option[18]/@label"
+		/>
+
+		<field
+			name="search_form_option_field_1_value_19"
+			label="CGI Value # 19"
+			xpath="/nie_config/search_tuning/search_engine_info/search_form_option_fields/field[1]/option[19]/@value"
+		/>
+		<field
+			name="search_form_option_field_1_value_19_desc"
+			label="Label 19"
+			xpath="/nie_config/search_tuning/search_engine_info/search_form_option_fields/field[1]/option[19]/@label"
+		/>
+
+		<field
+			name="search_form_option_field_1_value_20"
+			label="CGI Value # 20"
+			xpath="/nie_config/search_tuning/search_engine_info/search_form_option_fields/field[1]/option[20]/@value"
+		/>
+		<field
+			name="search_form_option_field_1_value_20_desc"
+			label="Label 20"
+			xpath="/nie_config/search_tuning/search_engine_info/search_form_option_fields/field[1]/option[20]/@label"
+		/>
+
+
+	</section>

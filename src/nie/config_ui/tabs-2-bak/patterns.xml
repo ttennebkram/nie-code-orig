@@ -1,0 +1,110 @@
+	<!-- Patterns -->
+	<!-- ======== -->
+	<section
+		title="Patterns"
+		level="2"
+		help="find_map_or_create.html"
+	>
+		<!--
+		<field type="vertical_spacer" />
+		-->
+		<field
+			type="vertical_spacer"
+		>
+			HTML Patterns
+		</field>
+
+		<field type="vertical_spacer" />
+
+		<field
+			type="vertical_spacer"
+			font_size_increment="0"
+		>
+			For the number of documents Found and Searched
+		</field>
+		<field
+			name="pat_hits"
+			label="Number of documents found"
+			type="textarea"
+			rows="3"
+			xpath="/nie_config/search_tracking/data_logging/proxy_settings/docs_found_pattern"
+		/>
+		<field
+			name="pat_hits_howfar"
+			label="How far ahead to look"
+			default="15"
+			xpath="/nie_config/search_tracking/data_logging/proxy_settings/docs_found_pattern/@max_found_look_ahead"
+		/>
+		<field type="vertical_spacer" />
+		<field
+			name="pat_match_both"
+			label="Also shows TOTAL docs searched?"
+			default="FALSE"
+			type="check_box"
+			xpath="/nie_config/search_tracking/data_logging/proxy_settings/docs_found_pattern/@match_both"
+		/>
+		<field
+			name="pat_searched_howfar"
+			label="How far ahead to look (if provided)"
+			default="25"
+			xpath="/nie_config/search_tracking/data_logging/proxy_settings/docs_found_pattern/@max_searched_look_ahead"
+		/>
+
+		<field type="vertical_spacer" />
+		<field
+			type="vertical_spacer"
+			font_size_increment="0"
+		>
+			Some search engines show a DIFFERENT message if no docs are found
+		</field>
+		<field
+			name="pat_no_hits"
+			label="No docs found (if different from above)"
+			type="textarea"
+			rows="3"
+			xpath="/nie_config/search_tracking/data_logging/proxy_settings/no_docs_found_pattern"
+		/>
+
+
+		<field type="vertical_spacer" />
+
+		<field
+			type="vertical_spacer"
+			font_size_increment="0"
+		>
+			For placement of Suggetions in the results list
+		</field>
+		<field
+			name="pat_markup"
+			label="Suggestion placement"
+			type="textarea"
+			default="&lt;--searchtrack-suggestions-go-here--&gt;"
+			rows="3"
+			xpath="/nie_config/search_tuning/search_engine_info/suggestion_marker_text"
+		/>
+		<field
+			name="pat_insert_after"
+			label="Place AFTER the pattern (vs before)"
+			default="TRUE"
+			type="check_box"
+			xpath="/nie_config/search_tuning/search_engine_info/suggestion_marker_text_modifiers/@after"
+		/>
+		<field
+			name="pat_replace"
+			label="-or- Suggestion REPLACES pattern"
+			default="FALSE"
+			type="check_box"
+			xpath="/nie_config/search_tuning/search_engine_info/suggestion_marker_text_modifiers/@replace"
+		/>
+		<field
+			name="pat_prefix"
+			label="Add HTML text before the suggestion"
+			xpath="/nie_config/search_tuning/search_engine_info/markup_before"
+		/>
+		<field
+			name="pat_suffix"
+			label="Add HTML text after the suggestion"
+			xpath="/nie_config/search_tuning/search_engine_info/markup_after"
+		/>
+
+	</section>

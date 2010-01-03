@@ -1,0 +1,70 @@
+	<!-- Click Through options -->
+	<!-- ===================== -->
+	<section
+		title="Click-Through"
+		help="xyz.html"
+	>
+		<field type="vertical_spacer" />
+		<field
+			type="vertical_spacer"
+		>
+			Tracking Document Click-Throughs
+		</field>
+
+		<field type="vertical_spacer" />
+
+		<field
+			type="vertical_spacer"
+			font_size_increment="0"
+		>
+			SearchTrack can log which links in the results list
+			the users clicked on.
+		</field>
+
+		<field type="vertical_spacer" />
+
+		<field
+			name="click_track_urls"
+			label="Track URLs that are clicked on?"
+			default="TRUE"
+			type="select"
+			xpath="/nie_config/search_tracking/data_logging/proxy_settings/click_through/@should_log"
+		>
+			<option>TRUE</option>
+			<option>FALSE</option>
+		</field>
+
+		<field type="vertical_spacer" />
+
+		<field
+			type="vertical_spacer"
+		>
+			Redirecting Mini-Search Forms
+		</field>
+
+		<field type="vertical_spacer" />
+
+		<field
+			type="vertical_spacer"
+			font_size_increment="0"
+		>
+			Results lists often include a mini search form.
+			In order for SearchTrack to be active from those forms,
+			it needs to tweak the &quot;action&quot; attribute
+			of the &lt;form&gt; tag to send it back through
+			SearchTrack.
+		</field>
+
+		<field type="vertical_spacer" />
+
+		<field
+			name="modify_search_forms"
+			label="Modify Search Forms on Results?"
+			default="TRUE"
+			type="select"
+			xpath="/nie_config/search_tracking/data_logging/proxy_settings/search_forms/@should_modify_action"
+		>
+			<option>TRUE</option>
+			<option>FALSE</option>
+		</field>
+	</section>

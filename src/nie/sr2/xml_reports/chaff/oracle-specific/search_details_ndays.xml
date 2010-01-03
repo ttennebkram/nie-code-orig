@@ -1,0 +1,98 @@
+<report>
+	<title>Search Details</title>
+	<subtitle>For the past $cgi.days day(s)</subtitle>
+
+	<!-- This is both a filter link and a filter target -->
+	<field
+		heading="Search Term(s)"
+		sql_alias="search"
+		null_value_display="(null search)"
+
+		is_filter_field="TRUE"
+		do_filter_if_null="TRUE"
+
+		is_report_link="TRUE"
+		link_title="Click to see all instances of this search"
+		do_link_if_null="TRUE"
+	>
+		NORMALIZED_QUERY
+	</field>
+
+	<field
+		sql_alais="client_host"
+
+		heading="Visitor Address"
+		null_value_display="(not logged)"
+
+		is_filter_field="TRUE"
+		do_filter_if_null="TRUE"
+
+		is_report_link="TRUE"
+		link_report_name="visitor_details_ndays"
+		link_title="Click to see this Visitor's searches"
+		do_link_if_null="TRUE"
+	>
+		a.CLIENT_HOST
+	</field>
+
+	<field
+		heading="Domain Name"
+		null_value_display="(not translated)"
+	>
+		b.dns_name
+	</field>
+
+
+	<field
+		heading="Date &amp; Time"
+		css_class="nie_datetime"
+	>
+		to_char( START_TIME, 'MM/DD/YY HH:MI:SS am')
+	</field>
+
+	<field heading="Pages Found">NUM_RESULTS</field>
+
+	<field heading="Mapped?">
+		decode( WAS_SEARCH_NAMES_TERM, 0, 'N', 1, 'Y' )
+	</field>
+
+	<raw_from>
+		nie_log a, nie_domain_names b
+	</raw_from>
+	<raw_where_join>
+		a.client_host = b.client_host (+)
+		AND
+		b.was_resolved (+) = 1
+	</raw_where_join>
+
+	<raw_where_filter>
+		<!-- TRUNC(SYSDATE) - $cgi.days -->
+		<![CDATA[
+			start_time >= SYSDATE - $cgi.days
+			AND
+			TRANSACTION_TYPE = 1 
+		]]>
+	</raw_where_filter>
+
+	<!--
+	<raw_from>
+		nie_log a
+		left outer JOIN
+			nie_domain_names b ON
+				a.client_host = b.client_host
+				AND
+				b.was_resolved = 1
+	</raw_from>
+	-->
+
+
+
+
+	<raw_sort>
+		start_time desc
+	</raw_sort>
+
+
+	<include location="includes/standard_ndays_link_suggestions.xml" />
+
+</report>

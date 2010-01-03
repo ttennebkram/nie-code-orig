@@ -1,0 +1,90 @@
+<report>
+	<title>Most Popular Searches</title>
+	<subtitle>For the past $cgi.days day(s)</subtitle>
+
+	<link_text>Most Popular Searches in last:</link_text>
+	<link_text_compact>Popular</link_text_compact>
+
+	<field
+		heading="Search Term(s)"
+		sql_alias="search"
+		null_value_display="(null search)"
+
+		is_report_link="TRUE"
+		link_report_name="search_details_ndays"
+		link_title="Click for Details"
+		do_link_if_null="TRUE"
+	>
+		NORMALIZED_QUERY
+	</field>
+
+	<field
+		heading="Count"
+		sql_alias="num_times"
+	>
+		count(*)
+	</field>
+
+
+	<field
+		heading="Most Recently"
+		css_class="nie_datetime"
+		format_as="datetime"
+	>
+		max(START_TIME)
+	</field>
+
+	<field heading="Pages Found"
+		format_as="number"
+	>
+		max(NUM_RESULTS)
+	</field>
+
+	<field
+		heading="Mapped?"
+		format_as="boolean"
+	>
+		max(WAS_SEARCH_NAMES_TERM)
+	</field>
+
+	<raw_where_filter>
+		<![CDATA[
+			start_time >= $system.from_date
+			AND
+			TRANSACTION_TYPE = 1 
+		]]>
+
+		<!-- TRUNC(SYSDATE) - $cgi.days -->
+		<!-- oracle
+		<![CDATA[
+			start_time >= SYSDATE - $cgi.days
+			AND
+			TRANSACTION_TYPE = 1 
+		]]>
+		sql server, postgres, but broken in postgres because datetime - 0 truncats time
+		<![CDATA[
+			start_time >= CURRENT_TIMESTAMP - $cgi.days
+			AND
+			TRANSACTION_TYPE = 1 
+		]]>
+		-->
+	</raw_where_filter>
+
+	<raw_grouping>
+		NORMALIZED_QUERY
+	</raw_grouping>
+
+	<raw_sort>
+		num_times desc,
+		max(START_TIME) desc
+		<!--
+		NORMALIZED_QUERY
+		search
+		-->
+	</raw_sort>
+
+
+	<include location="includes/standard_ndays_link_suggestions.xml" />
+
+</report>
+

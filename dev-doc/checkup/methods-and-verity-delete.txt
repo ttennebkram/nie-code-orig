@@ -1,0 +1,40 @@
+security field 800000000 hex
+high order bit in 32 bit unsigned number
+
+get fieldname
+when i pass you a string, check that i didnt send null name; return null
+
+normalize (lower case) and trim
+
+check if length < 1 return null
+(infield.length < 1 )
+
+
+overload classes
+
+
+browse class
+request getfieldname(field number) -> name of field (get that rec 0)
+request getfieldnames() -> list of names (vector)
+
+request getmaxrownumber(fieldname) -> max count for that field
+request getfieldvalue(row, fieldname) -> value
+request getfieldvalue(row,col) -> value
+
+request fieldvalues(fieldname,all|active) -> list of all field values
+request getuniquefieldvalues(fieldname,all|active) -> list of unique values
+request getrawkeycount()
+request getactivekeycount()
+
+
+collection class
+contructor: takes path to known collection
+static method that takes a starting path and ret a coll object for each class
+   (a factory) returns list of instantiated objects
+
+
+collection.getdddlist(mime_type)
+request getrawkeycount()
+request getactivekeycount()
+
+

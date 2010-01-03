@@ -1,0 +1,281 @@
+//package nie.processors;
+package nie.pump.processors;
+
+import java.net.*;
+import org.jdom.*;
+import nie.core.*;
+import nie.pump.base.*;
+
+// 9/8/2001 mbennett
+//      Add change to try and tweak the parent URL
+//      so that we don't get invalid URL's
+//      when we add the child reference
+//      See tweakBaseURL()
+
+/**
+ * Title:        DPump
+ * Description:
+ * Copyright:    Copyright (c) 2001
+ * Company:      New Idea Engineering
+ * @author Kevin-Neil Klop and Mark Benett
+ * @version 1.0
+ */
+
+public class URLBuilder extends Processor {
+
+	public String kClassName() { return "URLBuilder"; }
+
+
+	public URLBuilder( Application inApplication,
+						Queue[] inReadQueueList,
+						Queue[] inWriteQueueList,
+						Queue[] inUsesQueueList,
+						Element inParameter,
+						String inID )
+	{
+		super( inApplication, inReadQueueList, inWriteQueueList, inUsesQueueList, inParameter, inID );
+		final String kFName = "constructor";
+		if( inReadQueueList == null || inReadQueueList[0] == null )
+		{
+			// System.err.println( inID + ": requires an input queue." );
+			fatalErrorMsg( kFName, inID + ": requires an input queue." );
+			System.exit( -1 );
+		}
+
+		if( inWriteQueueList == null || inWriteQueueList[0] == null )
+		{
+			System.err.println( inID + ": requires an output queue." );
+			System.exit( -1 );
+		}
+
+		fReadQueue = inReadQueueList[0];
+		fWriteQueue = inWriteQueueList[0];
+
+		Element lBase = inParameter.getChild( BUILD_TAG_NAME );
+		fParentFieldName = lBase.getAttributeValue( PARENT_FIELD_NAME );
+		fFragmentFieldName = lBase.getAttributeValue( FRAGMENT_FIELD_NAME );
+		fDestinationFieldName = lBase.getAttributeValue( DESTINATION_FIELD_NAME );
+	}
+
+	public void run()
+	{
+		final String kFName = "run";
+		try
+		{
+			while( true )
+			{
+				WorkUnit lWorkUnit = dequeue( fReadQueue );
+				Element lParent = lWorkUnit.findElement( WorkUnit.USER_DATA_PATH + "/" + fParentFieldName );
+				Element lFragment = lWorkUnit.findElement( WorkUnit.USER_DATA_PATH + "/" + fFragmentFieldName );
+				String lResultingURL = null;
+
+				// System.out.println( "parent field name='"+fParentFieldName+"', fragment field name='"+fFragmentFieldName+"'");
+
+				// System.out.println( "parent='"+lParent+"', fragment='"+lFragment+"'");
+
+				if( lParent == null )
+					lResultingURL = lFragment.getTextTrim();
+				else if( lFragment == null )
+					lResultingURL = lParent.getTextTrim();
+				else
+				{
+					// Tweak the parent URL
+					String lParentURLString = lParent.getTextTrim();
+					lParentURLString = tweakBaseURL( lParentURLString );
+					try
+					{
+						URL lParentURL = new URL( lParentURLString );
+						URL lURL = new URL(lParentURL, lFragment.getTextTrim() );
+						lResultingURL = lURL.toExternalForm();
+					}
+					catch( MalformedURLException mfue )
+					{
+						lResultingURL = null;
+						// System.err.println( "buildurl: error: " + mfue );
+						mWorkUnit.errorMsg( this, kFName,  ""+ mfue );
+					}
+				}
+
+				// Fix up the double slash problem
+				lResultingURL = cleanDoubleSlash( lResultingURL );
+
+				Element lNewElement = new Element( fDestinationFieldName );
+				lNewElement.addContent( lResultingURL );
+				lWorkUnit.getUserData().addContent( lNewElement );
+				enqueue( fWriteQueue, lWorkUnit );
+			}
+		}
+		catch( InterruptedException ie )
+		{
+		}
+	}
+
+	String tweakBaseURL( String inURL )
+	{
+		// bypass some of the nullish edge cases
+		if( inURL == null )
+			return null;
+		inURL = inURL.trim();
+		if( inURL.equals("") )
+			return inURL;
+
+		// Setup the return value in advance
+		String outURL = inURL;
+
+		// look for the opening double slash
+		int doubleSlashAt = inURL.indexOf( "//" );
+		int firstSingleSlashAt;
+		if( doubleSlashAt >= 0 )
+			firstSingleSlashAt = inURL.indexOf( '/', doubleSlashAt+2 );
+		else
+			firstSingleSlashAt = inURL.indexOf( '/' );
+
+		// At this point we know where the first
+		// single slash is
+		// If there's NO first single slash then we know that:
+		// 1: it's a server only url
+		// 2: that does not have a slash
+		// So in that case we should add it and return
+		// the results
+
+		// If there is no ending slash
+		if( firstSingleSlashAt < 0 )
+		{
+			// Add one and return
+			outURL = inURL + '/';
+			return outURL;
+		}
+
+		// Now find the last slash in the URL
+		int lastSingleSlashAt = inURL.lastIndexOf( '/' );
+		// Sanity check that we did find one
+		if( lastSingleSlashAt < 0 )
+			return outURL;
+
+		// If it's at the end, we're OK, just return
+		// that URL
+		if( lastSingleSlashAt == inURL.length()-1 )
+			return inURL;
+
+		// OK we have a path section of the URL
+		// and it doesn't end in a slash
+		// Lets look at it further
+
+		// Grab the final portion of the path
+		String finalPath = inURL.substring( lastSingleSlashAt+1 );
+
+		// If it has a dot OR ? OR # in it we probably don't
+		// want to add anything to it
+		if( finalPath.indexOf('.') >= 0 ||
+			finalPath.indexOf('?') >= 0 ||
+			finalPath.indexOf('#') >= 0
+			)
+		{
+			// Just return what we got in
+			return inURL;
+		}
+
+		// OK at this point we know there is a
+		// final bit of path, and it doesn't seem
+		// to be a a file name or CGI call so it
+		// really looks like a plain old DIR reference
+		// so 99 out of 100 times we SHOULD add a slash
+		outURL = inURL + '/';
+		return outURL;
+	}
+
+	String cleanDoubleSlash( String inURL )
+	{
+		final String kFName = "cleanDoubleSlash(String)";
+		
+		if( inURL == null )
+			return inURL;
+
+		int baseSlashesAt = inURL.indexOf( "//" );
+		if( baseSlashesAt < 0 )
+			return inURL;
+
+		int prefixLen = baseSlashesAt + "//".length() + 1;
+		if( prefixLen == inURL.length() )
+			return inURL;
+		// Get the http:// portion
+		// A little weird math
+		// zero based offset = desired length - 1
+		// sustring offset = final offset + 1
+		// so they cancel
+		String prefix = inURL.substring( 0, prefixLen );
+
+		// Get the rest, this is what we'll be working on
+		// More strange math
+		// Start at prefix length + 1
+		// but offset = start length - 1
+		// so they cancel
+		String suffix = inURL.substring( prefixLen );
+
+		// Short circuit the rest of this mess if we know there's
+		// nothing to be done
+		if( suffix.indexOf('/') != 0 && suffix.indexOf( "//" ) < 0 )
+			return inURL;
+		// Else yes there is something for us to do
+		else
+			// System.err.println( "URLBuilder:cleanDoubleSlash: Start.  url='" +
+			//	inURL + "'"
+			//	);
+			mWorkUnit.errorMsg( this, kFName, "Start.  url='" +
+				inURL + "'"
+				);
+
+		// Trim off leading /'s, of which there shouldn't be any
+		while( suffix.indexOf('/') == 0 )
+		{
+			if( suffix.length() > 1 )
+				suffix = suffix.substring(1);
+			else
+				suffix = "";
+		}
+
+		while( true )
+		{
+			int doubleSlashAt = suffix.indexOf( "//" );
+			if( doubleSlashAt < 0 )
+				break;
+			int suffixEndingStartsAt = doubleSlashAt + "//".length();
+			if( suffixEndingStartsAt < suffix.length()-1 )
+			{
+				suffix = suffix.substring( 0, doubleSlashAt ) + '/' +
+					suffix.substring( suffixEndingStartsAt );
+			}
+			else
+			{
+				suffix = suffix.substring( 0, doubleSlashAt ) + '/' ;
+			}
+		}
+
+		String outURL = prefix + suffix;
+
+
+		// System.err.println( "URLBuilder:cleanDoubleSlash: End.  url='" +
+		//	outURL + "'"
+		//	);
+		mWorkUnit.errorMsg( this, kFName, "End.  url='" +
+				outURL + "'"
+				);
+
+
+		return outURL;
+
+	}
+
+	Queue fReadQueue;
+	Queue fWriteQueue;
+
+	String fParentFieldName;
+	String fFragmentFieldName;
+	String fDestinationFieldName;
+
+	public static final String BUILD_TAG_NAME = "build_url";
+	public static final String PARENT_FIELD_NAME = "parent_field";
+	public static final String FRAGMENT_FIELD_NAME = "fragment_field";
+	public static final String DESTINATION_FIELD_NAME = "destination_field";
+	WorkUnit mWorkUnit;
+}

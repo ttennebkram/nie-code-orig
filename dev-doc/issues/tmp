@@ -1,0 +1,31 @@
+<html><head><title>or Manage Directed Results</title><style type="text/css"><!--
+.nie_report_title {
+    color:#000080;
+    font-size:150%;
+}
+/* UI Stuff */
+.nie_form_header_row {
+    background-color:#dddddd;
+    vertical-align:bottom;
+}
+.nie_form_header_cell {
+    font-weight:bold;
+    font-size=120%;
+    color:black;
+}
+
+.nie_form_label_cell {
+    align: right;
+    vertical-align: top;
+    font-weight: bold;
+}
+
+.nie_spacer_cell {
+    width: 8px;
+    height:9px;
+}
+.nie_form_input_cell {
+    align: left;
+    vertical-align: top;
+}
+--></style></head>

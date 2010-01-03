@@ -1,0 +1,8 @@
+<database
+	vendor_tag="PostgreSQL"
+	server_name="niesearch2"
+	port=""
+	database_name="mdb"
+	username="mbennett"
+	password="shad0w15"
+/>

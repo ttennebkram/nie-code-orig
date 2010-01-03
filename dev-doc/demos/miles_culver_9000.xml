@@ -1,0 +1,305 @@
+<nie_config>
+<!-- Config file for terms for Culver using Google -->
+<!-- Edit: 7/11/02 2015 local mbk -->
+<!-- Edit: 7/15,16/02 mbennett change color to bgcolor, formatting -->
+<!-- Edit: 7/24/02 mbk added some maps -->
+<!-- Edit: 10/24/02 mbk added more maps -->
+
+	<search_names port="9000"
+				admin_password="logansport">
+
+		<!-- Edit: Insert URL of search engine here  -->
+		<!-- Tell us about the search engine we're shimming -->
+		<!-- Define the name of the sewarch box field -->
+
+		<!-- For google, we look at q -->
+		<search_engine_info>
+			<search_term_field_name>q</search_term_field_name>
+			<search_url>
+				http://www.google.org/u/CEF
+			</search_url>
+
+		<vendor>Google Remote Hosted / Search97</vendor>  
+		<!-- Optional, for future use -->
+		<!-- If this field is present, do NOT take any 
+			SearchNames actions.  In the case of 
+			Verity, this indicates they have
+			browsed to page 2 of the results, 
+			or a subsequent page.
+							-->
+
+		<no_action_indicator_field>ResultStart</no_action_indicator_field>
+		<no_action_indicator_field>nie_no_op</no_action_indicator_field>
+
+		<!-- Insert right after form but before blue search stats bar -->
+		<suggestion_marker_text>
+			<![CDATA[
+			&nbsp;</font></td></tr></form></table></td></tr></table></center>
+			]]>
+		</suggestion_marker_text>
+		</search_engine_info>
+
+		<!-- Edit: Insert URL of system running NIE Server here  -->
+ 		<search_names_url>
+<!-- 			uncomment for cci server 	-->
+<!--			http://www.culverclubs.org:9000	-->
+<!--			http://firebolt:9000		-->
+			http://localhost:9000
+		</search_names_url>
+
+
+		<!-- Optional defaults -->
+
+		<!-- Culver colors
+			Culver light yellow: F7F7D6
+			Culver top bar marroon: 840000
+			Culver logo: http://www.ideaeng.com/sn/images/culver-c.jpg (JPG!)
+		-->
+
+		<default_webmaster_suggests_header
+			text="The Culver Webmaster Suggests:"
+			color="#840000"
+			size="+1"
+			markup_before="&lt;b&gt;"
+			markup_after="&lt;/b&gt;"
+			face="Arial"
+		/>
+		<!-- MILES: NOTE: no longer "color", it's now bgcolor,
+			to be consistent with HTML table tag and other options.
+		-->
+		<default_webmaster_suggests_box
+			bgcolor="#F7F7D6"
+			border="2"
+			width="100%"
+			cellspacing="3"
+		/>
+
+		<default_webmaster_suggests_icon
+			src="http://www.ideaeng.com/sn/images/culver-c.jpg"
+			alt="[Culver Logo]"
+			width="64"
+			height="30"
+		/>
+
+		<default_alternate_suggestions_heading
+			text="You might also want to check out:"
+			color="#330088"
+			size="-1"
+			markup_before="&lt;b&gt;"
+			markup_after="&lt;/b&gt;"
+			face="'MS Sans Serif',Geneva,sans-serif"
+		/>
+		<!--
+			color="#ff0000"
+			markup_before="&lt;font&gt;"
+			markup_after="&lt;/font&gt;"
+		-->
+
+
+		<!-- This is the default, not currently implemented to override it -->
+		<!-- default_case_sensitive_terms>false</default_case_sensitive_terms -->
+
+
+		<!-- Currently we load the map from this file.
+			Of course in the future we would load from a database.
+		-->
+		<fixed_redirection_map>
+
+
+<!-- Section specific to Culver -->
+<!-- bad map - with google problem -->
+		<map>
+			<term>admissions</term>
+			<url redirect="0">
+				http://www.culver.org/admission/
+				<title>Admissions</title>
+				<description>
+                  Culver selects students who are capable of           
+                  superior academic achievement in a competitive 
+                  college preparatory, boarding school 
+                  environment. This page is your starting point to learning
+                  about the Admissions Proess at Culver.
+					</description>
+				</url>
+			</map>
+
+			<map>
+				<term>alumni</term>
+				<term>alumnae</term>
+				<term>alumnus</term>
+				<url redirect="0">
+					http://www.culver.org/alumni/
+					<title>
+					Alumni and Development Offices
+					</title>
+					<description>
+					Graduation from Culver is not the end of
+					the Culver Experience. Out Alumni and
+					Development Offices are set up to provide
+					lifelong communication about current events
+					at The Academies, about events directed 
+					specifically at graduates and friends, and about
+					ways to get the word out about Culver.
+					</description>
+		
+				</url>
+			</map>
+
+
+			<map>
+				<term>sports</term>
+				<term>atheletics</term>
+				<url redirect="0">
+					http://www.culver.org/students/sports/
+					<title>
+					Culver Atheletics
+					</title>
+					<description>
+					With the goal of nurturing and developing the
+					mind, character, spirit, and body, Culver 
+					encourages all students to be involved in 
+					some athletic activity. This page is your
+					starting point for all of Culver's broad
+					atheletic offerings.
+					</description>
+			
+				</url>
+			</map>
+
+
+			<map>
+				<term>bookstore</term>
+				<term>book store</term>
+				<term>qm store</term>
+				<term>gift shop</term>
+				<url redirect="0">
+					http://www.theculverstore.com/
+					<title>
+					The Culver Bookstore
+					</title>
+					<description>
+					Culver's Bookstore sells everything from books
+					and snacks to sweatshirts, coffee mugs, and
+					keepsakes. 
+					</description>
+				</url>
+			</map>
+
+
+			<map>
+				<term>employment</term>
+				<term>jobs</term>
+				<term>hiring</term>
+				<url redirect="1">
+					http://www.culver.org/humanresources/index.asp
+				</url>
+			</map>
+
+
+			<map>
+				<term>Faculty</term>
+				<url redirect="0">
+					http://www.culver.org/a_directory/faculty_admin_directory.asp
+					<title>
+					Staff and Faculty Directory
+					</title>
+					<description>
+					A comprehensive listing of the staff 
+					and faculty working at the academies.
+               Locate a email address or phone number for 
+					staff through this searchable database.
+					</description>
+				</url>
+			</map>
+
+			<map>
+				<term>admissions application</term>
+				<term>application</term>
+            <term>form</term>
+            <term>applications form</term>
+            <term>admissions form</term>
+            <term>pdf</term>
+				<url redirect="0">
+               http://www.culver.org/admission/applying.asp
+					<title>
+					Application Form
+					</title>
+					<description>			
+               For those wishing to apply to Culver the 
+					application is convienently placed online in pdf format.
+					</description>					
+				</url>
+			</map>
+
+			<map>
+				<term>maps</term>
+				<term>map</term>
+				<term>virtual tours</term>
+				<term>virtual tour</term>
+				<term>tour</term>
+				<term>images</term>
+				<url redirect="0">
+					http://www.culver.org/theacademies/
+            	<title>
+               Maps of the Academy
+               </title>
+               <description>
+               This page contains both helpful maps of The 
+					Academy and surrounding area as well as links 
+					to campus web cams, virtual tours, and images of the campus.
+               </description>
+				</url>
+			</map>
+
+			<map>
+				<term>site map</term>
+				<url redirect="1">
+					http://www.culver.org/sitemap/
+				</url>
+			</map>
+
+			<map>
+				<term>john</term>
+				<term>buxton</term>
+				<term>head of schools</term>
+				<url redirect="0">
+					http://www.culver.org/parents/headofschools/
+                                        <title>
+                                        John Buxton
+                                        </title>
+                                        <description>
+                                        A look at the background of John Buxton the Head of Schools for the 
+                                        Culver Academies.  This page also contains links to Mr. Buxton's opening
+                                        addresses to the students for the last three years.
+                                        </description>
+				</url>
+			</map>
+
+			<map>
+				<term>aviation</term>
+				<term>airplanes</term>
+				<term>flying</term>
+				<term>lisense</term>
+				<term>pilot</term>
+				<url redirect="0">
+					http://www.culver.org/students/special_programs/aviation/
+                                        <title>
+                                        Aviation Department
+                                        </title>
+                                        <description>
+                                        The Culver Academies operates the largest pre-college school of 
+                                        aviation in the Unites States.  Here students can obtain their 
+                                        pilots lisense if they meet the requirements listed.
+                                        </description>
+				</url>
+			</map>
+
+
+
+<!-- End of Culver terms -->
+
+		</fixed_redirection_map>
+
+	</search_names>
+</nie_config>
+

@@ -1,0 +1,11 @@
+<database vendor_tag="PostgreSQL" server_name="bsd" database_name="SearchTrack" _database_name="aopa" __database_name="aopa_junk" ___server_name="10.0.0.1" username="mbennett" password="4fuckit" main_table="nie_log" port="">
+  <!--
+	<test_query />
+	-->
+  <!-- Run a test query,
+		by default does a count(*) on main table by default
+	<test_query
+		is_count_query="TRUE"
+	/>
+	-->
+</database>

@@ -1,0 +1,61 @@
+finds all 5 ips
+
+SELECT
+	a.CLIENT_HOST AS client_host,
+	b.dns_name,
+	count(*) AS num_searches,
+	max(START_TIME)
+FROM
+	nie_log a left outer join nie_domain_names b on a.client_host = b.client_host
+WHERE
+	start_time >= CURRENT_TIMESTAMP - 31
+	AND
+	TRANSACTION_TYPE = 1
+GROUP BY
+	a.client_host, b.dns_name
+ORDER BY
+	num_searches desc
+
+Doesn't find 5th IP
+
+SELECT
+	CLIENT_HOST,
+	TRANSACTION_TYPE,
+	START_TIME,
+	NORMALIZED_QUERY AS search,
+	NUM_RESULTS,
+	WAS_SEARCH_NAMES_TERM,
+	ADVERTISEMENT_CODE_SENT AS ad_code,
+	FORM_NAME
+FROM
+	nie_log
+WHERE
+	(start_time >= '06-JAN-2004 14:29:25')
+	AND
+	(CLIENT_HOST='64.32.174.115')
+ORDER BY
+	SEARCH_TRANSACTION_NUMBER desc,
+	TRANSACTION_TYPE desc
+
+
+
+miles1=> select count(*) from nie_log wheme start_time >= current_timestamp-31;
+ count
+-------
+    72
+
+miles1=> select count(*) from nie_log where start_time >= '06-jan-2004 14:54:00 GMT';
+ count
+-------
+    72
+
+miles1=> select count(*) from nie_log where start_time >= '06-jan-2004 14:54:00 PST';
+ count
+-------
+    68
+
+
+OK… so current_timestamp - 31 gives the same result as the GMT query… but that's actually wrong I think…
+
+So we're having an inconsistency between GMT and PST… I'm not sure which is which…. so I'll be doing more checking…
+

@@ -1,0 +1,55 @@
+<report>
+	<title>Most Frequent Visitors</title>
+	<subtitle>For the past $cgi.days day(s)</subtitle>
+
+	<link_text>Most Frequent Visitors in last:</link_text>
+
+
+	<field
+		heading="Visitor IP Address"
+		null_value_display="(not logged)"
+
+		is_report_link="TRUE"
+		link_report_name="visitor_details_ndays"
+		link_title="Click to see this Visitor's searches"
+		do_link_if_null="TRUE"
+	>
+		CLIENT_HOST
+	</field>
+
+
+
+	<field heading="Num Searches">count(*) num_searches</field>
+
+
+	<field
+		heading="Most Recently"
+		css_class="nie_datetime"
+	>
+		to_char( max(START_TIME), 'MM/DD/YY HH:MI:SS am')
+	</field>
+
+	<raw_where_filter>
+		<!-- TRUNC(SYSDATE) - $cgi.days -->
+		<![CDATA[
+			start_time >= SYSDATE - $cgi.days
+			AND
+			TRANSACTION_TYPE = 1 
+		]]>
+	</raw_where_filter>
+
+	<raw_grouping>
+		client_host
+	</raw_grouping>
+	<raw_sort>
+		num_searches desc
+		<!--
+		NORMALIZED_QUERY
+		search
+		-->
+	</raw_sort>
+
+
+	<include location="includes/standard_ndays_link_suggestions.xml" />
+
+</report>

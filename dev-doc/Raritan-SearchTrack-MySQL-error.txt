@@ -1,0 +1,7 @@
+Error executing SQL statement ...
+com.mysql.jdbc.exceptoins.MySQLSyntaxErrorException
+BLOB/TEXT column 'colname' used in key specification without a key length
+Abandoning commands
+Current syntax:
+CREATE INDEX NUX_table_field ON table( field )
+CREATE INDEX NUX_nie_log_meta_data_owner ON nie_log_meta_data( owner )

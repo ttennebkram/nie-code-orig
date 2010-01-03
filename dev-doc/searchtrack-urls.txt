@@ -1,0 +1,84 @@
+Notes started between 2.9x and 3.0x
+April 2009
+
+Many types of SearchTrack links
+Links TO SearchTrack
+	Base link to SearchTrack
+	to do a SEARCH from client
+	link to request snippet
+	admin, UI, reports, etc.
+	report drill down
+	PREDEFINED SET of links for various reports
+	resource references such as icons, CSS, etc.
+	to do a search from a results form WE modified
+	to log data from their API usage of us
+	to log data from results link WE modified
+	to log data AND do a subsequent search
+TO Host Search Engine
+	Base Link to search engine
+	Link we send to search engine to do search based on query
+	Link we GENERATE to search engine to test searches or back populate data
+	REDIR to search engine
+Search Engine RESULTS
+	which we started tweaking in 3.0
+		SearchEngineConfig.TWEAK_xyz
+	original action= in search form
+	other forms in their results
+	links to matching docs
+	RESULST links Next Page, Navigators, sort, drill down
+	links to other parts of the site 
+	Links THEY might use to do logging
+	relative base link
+	Javascript links and onClick, forms, etc
+Stuff on their base site
+	when we try to GUESS the search form
+		part of Spyder and UI utils
+	a Best Bets link they told us about
+	their base URL that they told us about
+
+AuxIOInfo and NIEUtil
+SearchLogger
+	DB field names AND CGI
+DBTableDef? potential mapping of CGI fields to DB
+LoggingLink
+	setContext
+	setTransationType
+	generateURL
+	setDistinationURL
+ReportLink
+HtmlTagIterator
+
+DECODING Decoding (many places)
+
+Decoding from CGI request to CGI fields
+Decoding from HTML source to regular CGI URL
+	THEN decoding that further
+Multilevel CGI decoding?
+
+SnRequestHandler.readCompleteRequest
+calls NIEUtil.readHTTPRequestFromSocket
+eventually NIEUtil.cgiDecodeVarsBuffer
+	buffer comes from EITHER CGI GET ?xxx or POSTED data
+	StringTokenizer on "&"
+	look for '=', if non we assume "1"
+
+
+CONTEXT Context of a SearchTrack link
+SnRequestHandler
+.determinContext(), .determinAdminContext()
+	regular context
+		NIE_CONTEXT_REQUEST_FIELD
+		nie_context
+			proxy (and default)
+			log_event, clickthrough_proxy
+			snippet, onbox
+			file, admin, ui, lucene_search
+	admin context (and report)
+		ADMIN_CONTEXT_REQUEST_FIELD
+		command=
+			report
+			shutdown, refresh (NOT restart)
+			? resave
+			messages, ping, showall, version
+			do_login, must_login
+	newer "dispatcher" style

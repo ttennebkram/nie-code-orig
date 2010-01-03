@@ -1,0 +1,1579 @@
+<form
+	action="..."
+	title="SearchTrack Config"
+>
+
+	<!-- Basic Info -->
+	<!-- ========== -->
+	<section
+		title="Basic Info"
+		help="find_map_basic_info.html"
+	>
+
+		<field type="vertical_spacer" />
+		<field
+			type="vertical_spacer"
+		>
+			Basic SearchTrack Settings
+		</field>
+		<field type="vertical_spacer" />
+
+		<field
+			type="vertical_spacer"
+			font_size_increment="0"
+		>
+			NIE Server Process
+		</field>
+		<field
+			name="nie_server"
+			label="SearchTrack Server URL and port"
+			xpath="/nie_config/search_tuning/nie_server_url"
+			default="http://this.server.com:9000"
+			_is_special="TRUE"
+		/>
+		<!--
+		<field
+			name="nie_port"
+			label="Port"
+			default="9000"
+			is_special="TRUE"
+		/>
+		-->
+		<field
+			name="admin_password"
+			label="Administrative Password"
+			xpath="/nie_config/search_tuning/@admin_password"
+		/>
+		<field
+			name="read_only_password"
+			label="Read-Only Password"
+			xpath="/nie_config/search_tuning/@read_only_password"
+		/>
+
+		<field
+			name="site_id"
+			_label="Declare a unique Site ID"
+			label="Unique Site ID (for reporting purposes)"
+			default="10"
+			xpath="/nie_config/search_tracking/data_logging/@site_id"
+		/>
+
+		<field
+			name="service_name"
+			label="Windows Service Name (Windows only)"
+			default="niesrv"
+			xpath="/nie_config/search_tuning/@nt_service_name"
+		/>
+
+
+		<field type="vertical_spacer" />
+		<field
+			type="vertical_spacer"
+			font_size_increment="0"
+		>
+			Process and Error Logging
+		</field>
+
+		<field
+			name="log_file_name"
+			label="Runtime Log File (absolute path to FILE please)"
+			default="d:\full\path\niesrv\logs\niesrv.log"
+			xpath="/nie_config/run_logging/@location"
+		/>
+		<field
+			name="log_verbosity"
+			label="Overall log Verbosity"
+			type="select"
+			default="default"
+			xpath="/nie_config/run_logging/@verbosity"
+		>
+			<option>quiet</option>
+			<option>default</option>
+			<option>info</option>
+			<option>debug</option>
+			<option>trace</option>
+		</field>
+		<field
+			name="log_history_length"
+			label="History length (to view online)"
+			type="select"
+			xpath="/nie_config/run_logging/@keep"
+		>
+			<option>100</option>
+			<option>1000</option>
+			<option>10000</option>
+		</field>
+
+
+		<!--
+		<field type="vertical_spacer" />
+		<field
+			type="vertical_spacer"
+		>
+			Return Here after visiting all other Tabs
+		</field>
+		<field type="vertical_spacer" />
+		<field
+			type="inline_button"
+			label="Final check for all the settings"
+			_click_event_class="VL"
+		>
+			Verify Configuration
+		</field>
+		-->
+
+		<!-- Service Name -->
+		<!-- Log file -->
+		<!-- Log verbosity -->
+		<!-- Log keep N -->
+
+	</section>
+
+	<!-- License -->
+	<!-- ======= -->
+	<section
+		title="License Key"
+		help="find_map_basic_info.html"
+	>
+		<field type="vertical_spacer" />
+		<field
+			type="vertical_spacer"
+		>
+			NIE Software License Key
+		</field>
+		<field type="vertical_spacer" />
+
+		<field
+			name="nie_lic_rev"
+			type="read_only"
+			label="Rev"
+			xpath="/nie_config/license/@rev"
+			default="1"
+		/>
+		<field
+			name="nie_lic_company"
+			label="Company"
+			xpath="/nie_config/license/@company"
+		/>
+		<field
+			name="nie_lic_start_date"
+			label="Start date or blank (dd-mon-yyyy)"
+			xpath="/nie_config/license/@start_date"
+			_is_special="TRUE"
+			default="01-jan-2000"
+		/>
+		<field
+			name="nie_lic_end_date"
+			label="End date (dd-mon-yyyy)"
+			xpath="/nie_config/license/@end_date"
+			_is_special="TRUE"
+			default="31-dec-2000"
+		/>
+
+		<field
+			name="nie_lic_server"
+			label="To run on Server"
+			xpath="/nie_config/license/@server"
+		/>
+
+		<field
+			name="nie_lic_key"
+			label="License Key (20 hex-digits)"
+			xpath="/nie_config/license/@key"
+			default="xxxx-xxxx-xxxx-xxxx-xxxx"
+		/>
+
+		<field type="vertical_spacer" />
+
+		<field
+			type="inline_button"
+			click_event_class="VL"
+		>
+			Verify License
+		</field>
+
+	</section>
+
+
+	<!-- Search Engine -->
+	<!-- ============= -->
+	<section
+		title="Search Engine"
+		help="find_map_or_create.html"
+	>
+
+		<field type="vertical_spacer" />
+		<field
+			type="vertical_spacer"
+		>
+			Existing Search Engine
+		</field>
+
+		<field type="vertical_spacer" />
+
+		<!-- Step 1A -->
+		<field
+			type="vertical_spacer"
+			font_size_increment="0"
+		>
+			Step 1.A:  Auto-Detect search engine Basic settings
+		</field>
+		<field
+			name="search_form_url"
+			label="Search form URL"
+			default="http://"
+			is_special="TRUE"
+		/>
+
+		<!--
+		<field type="vertical_spacer" />
+		-->
+
+		<field
+			type="inline_button"
+			label="Fetch and analyze the search form"
+			click_event_class="DetectSearchSettings"
+		>
+			Auto-Detect Search Settings
+		</field>
+
+		<!--
+		<field type="vertical_spacer" />
+		-->
+
+		<!--
+		<field
+			type="inline_button"
+			label="Clear settings below and try again"
+			click_event_class="ClearAndDetectSearchSettings"
+		>
+			Clear and Try Again
+		</field>
+		-->
+
+		<field type="vertical_spacer" />
+
+		<!-- Step 1B -->
+		<field
+			type="vertical_spacer"
+			font_size_increment="0"
+		>
+			Step 1.B:  Review and adjust Basic settings
+		</field>
+		<field
+			name="search_url"
+			label="Search Engine URL (w/ CGI and port)"
+			default="http://"
+			xpath="/nie_config/search_tuning/search_engine_info/search_url"
+		/>
+
+		<field
+			name="search_method"
+			label="Form Submit Method"
+			type="select"
+			default="GET"
+			xpath="/nie_config/search_tuning/search_engine_info/search_url/@method"
+		>
+			<option>GET</option>
+			<option>POST</option>
+		</field>
+
+		<field
+			name="search_vendor"
+			label="Search Engine Vendor"
+			xpath="/nie_config/search_tuning/search_engine_info/vendor"
+		/>
+
+		<field
+			name="search_field"
+			label="Search Term Form Field"
+			default="query"
+			xpath="/nie_config/search_tuning/search_engine_info/search_term_field_name"
+		/>
+
+		<!--
+		<field type="vertical_spacer" />
+		<field
+			type="vertical_spacer"
+			font_size_increment="0"
+		>
+			Disable SearchTrack if a particular field is present
+		</field>
+		<field
+			type="vertical_spacer"
+			font_size_increment="0"
+		>
+			(Example: disable logging for pages 2 and on of search results)
+		</field>
+		<field
+			name="take_no_action_field"
+			label="No-Action indicator CGI field"
+			xpath="/nie_config/search_tuning/search_engine_info/no_action_indicator_field"
+		/>
+		-->
+
+		<field type="vertical_spacer" />
+
+		<!-- Step 2A -->
+		<field
+			type="vertical_spacer"
+			font_size_increment="0"
+		>
+			Step 2.A:  Auto-Detect Results List settings
+		</field>
+		<field
+			name="search_term_good"
+			label="Enter a search that will return results"
+			default="the"
+			is_special="TRUE"
+		/>
+		<field
+			name="search_term_bad"
+			label="Enter a search that WON'T return any results"
+			default="xyzxyzxyz"
+			is_special="TRUE"
+		/>
+
+		<!--
+		<field type="vertical_spacer" />
+		-->
+
+		<field
+			type="inline_button"
+			label="Run searches and analyze results"
+			click_event_class="RunTestSearches"
+		>
+			Run Test Searches
+		</field>
+
+		<!--
+		<field type="vertical_spacer" />
+		-->
+
+		<!--
+		<field
+			type="inline_button"
+			label="Clear settings below and try again"
+			click_event_class="ClearAndRetrySearches"
+		>
+			Clear and Try Again
+		</field>
+		-->
+
+		<field type="vertical_spacer" />
+
+		<!-- Step 2B -->
+		<field
+			type="vertical_spacer"
+			font_size_increment="0"
+		>
+			Step 2.B:  Review and adjust Results List settings
+		</field>
+
+		<!--
+		<field
+			name="results_has_forms"
+			label="Results List has mini search form(s)"
+			type="select"
+			default="TRUE"
+			xpath="/nie_config/search_tuning/search_engine_info/results/forms/@enabled"
+		>
+			<option>TRUE</option>
+			<option>FALSE</option>
+		</field>
+		-->
+
+		<field
+			name="results_forms_tweak_policy"
+			label="Send mini search forms through SearchTrack"
+			type="select"
+			default="That are using the same search URL (form's action)"
+			xpath="/nie_config/search_tuning/search_engine_info/results/forms/tweak_policy"
+		>
+			<option value="0">FALSE</option>
+			<option value="1">That are using the same search URL (form's action)</option>
+			<option value="2">Any form found in the results</option>
+			<option value="3">Only forms using a specific URL (form's action)</option>
+			<option value="4">Except forms using a specific URL (form's action)</option>
+			<option value="5">That match a URL pattern (regex)</option>
+			<option value="6">Only specifically named forms (the name attr)</option>
+			<option value="7">Except specifically named forms</option>
+			<option value="8">Only specifically numbered forms (pos. on page)</option>
+			<option value="9">Except specifically numbered forms</option>
+			<option value="10">Only specific CSS class forms</option>
+			<option value="11">Except specific CSS class forms</option>
+
+			<option value="10">Only After a literal marker</option>
+			<option value="11">Only Before a literal marker</option>
+			<option value="12">Only Between literal markers</option>
+			<!--
+			<option value="13">Only OUTSIDE of literal markers</option>
+			-->
+		</field>
+		<field
+			name="results_forms_to_tweak_1"
+			label="Optional pattern, names, numbers, etc."
+			xpath="/nie_config/search_tuning/search_engine_info/results/forms/to_tweak_a"
+		/>
+		<field
+			name="results_forms_to_tweak_2"
+			label="Optional end pattern, etc."
+			xpath="/nie_config/search_tuning/search_engine_info/results/forms/to_tweak_b"
+		/>
+
+		<field type="vertical_spacer" />
+
+		<field
+			name="results_doc_links_policy"
+			label="Track document Click-Throughs"
+			type="select"
+			default="Any link found in the results"
+			xpath="/nie_config/search_tuning/search_engine_info/results/doc_links/policy"
+		>
+			<option value="0">FALSE</option>
+			<option value="1">That are using the same search URL</option>
+			<option value="2">Any link found in the results</option>
+			<option value="3">Only links starting with a specific URL</option>
+			<option value="4">Except links starting with a specific URL</option>
+			<option value="5">That match a URL pattern (regex)</option>
+			<option value="6">Only specifically named links (the name attr)</option>
+			<option value="7">Except specifically named links</option>
+			<option value="8">Only specifically numbered links (pos. on page)</option>
+			<option value="9">Except specifically numbered links</option>
+			<option value="10">Only specific CSS class links</option>
+			<option value="11">Except specific CSS class links</option>
+			<option value="10">Only After a literal marker</option>
+			<option value="11">Only Before a literal marker</option>
+			<option value="12">Only Between literal markers</option>
+			<!--
+			<option value="13">Only OUTSIDE of literal markers</option>
+			-->
+		</field>
+		<field
+			name="results_doc_links_to_tweak_1"
+			label="Optional pattern, names, numbers, etc."
+			xpath="/nie_config/search_tuning/search_engine_info/results/doc_links/to_tweak_a"
+		/>
+		<field
+			name="results_doc_links_to_tweak_2"
+			label="Optional end pattern, etc."
+			xpath="/nie_config/search_tuning/search_engine_info/results/doc_links/to_tweak_b"
+		/>
+		<field
+			name="results_doc_links_cgi_field_1"
+			label="Document link CGI field (if applicable)"
+			xpath="/nie_config/search_tuning/search_engine_info/results/doc_links/cgi_field"
+		/>
+		<field
+			name="results_doc_links_cgi_field_2"
+			label="Second-level CGI field (very advanced)"
+			xpath="/nie_config/search_tuning/search_engine_info/results/doc_links/cgi_field"
+		/>
+
+		<field
+			name="results_doc_links_javascript_policy"
+			label="JavaScript onClick vs. standard href"
+			type="select"
+			default="Remove onClick (if present)"
+			xpath="/nie_config/search_tuning/search_engine_info/results/doc_links/js_policy"
+		>
+			<option value="1">Remove onClick (if present)</option>
+			<option value="2">Keep onClick and try to patch</option>
+			<option value="3">Leave onClick as-is (breaks click-through)</option>
+		</field>
+
+
+		<field type="vertical_spacer" />
+		<field
+			type="vertical_spacer"
+			font_size_increment="0"
+		>
+			Remember to review the other Search Engine releated tabs
+		</field>
+		<field
+			type="vertical_spacer"
+			font_size_increment="0"
+		>
+			including Hidden Fields, Sub-Site and Patterns
+		</field>
+		<!--
+		<field
+			type="vertical_spacer"
+			font_size_increment="0"
+		>
+			* Search Form Hidden Fields
+		</field>
+		<field
+			type="vertical_spacer"
+			font_size_increment="0"
+		>
+			* Sub-Site Search (2 tabs)
+		</field>
+		<field
+			type="vertical_spacer"
+			font_size_increment="0"
+		>
+			* Patterns
+		</field>
+		-->
+		<field type="vertical_spacer" />
+
+	</section>
+
+	<!-- Hidden Fields -->
+	<!-- ============= -->
+	<section
+		title="Search Form Hidden Fields (opt)"
+		help="find_map_or_create.html"
+	>
+		<field type="vertical_spacer" />
+		<field
+			type="vertical_spacer"
+		>
+			Other values your Search Engine may require
+		</field>
+		<field type="vertical_spacer" />
+
+
+		<field
+			name="search_hidden_field_name_1"
+			label="Hidden Field Name # 1"
+			xpath="/nie_config/search_tuning/search_engine_info/search_url_test_drive_fields/field[1]/@name"
+		/>
+		<field
+			name="search_hidden_field_value_1"
+			label="CGI Value to send 1"
+			xpath="/nie_config/search_tuning/search_engine_info/search_url_test_drive_fields/field[1]/@value"
+		/>
+
+		<field
+			name="search_hidden_field_name_2"
+			label="Hidden Field Name # 2"
+			xpath="/nie_config/search_tuning/search_engine_info/search_url_test_drive_fields/field[2]/@name"
+		/>
+		<field
+			name="search_hidden_field_value_2"
+			label="Value 2"
+			xpath="/nie_config/search_tuning/search_engine_info/search_url_test_drive_fields/field[2]/@value"
+		/>
+
+		<field
+			name="search_hidden_field_name_3"
+			label="Hidden Field Name # 3"
+			xpath="/nie_config/search_tuning/search_engine_info/search_url_test_drive_fields/field[3]/@name"
+		/>
+		<field
+			name="search_hidden_field_value_3"
+			label="Value 3"
+			xpath="/nie_config/search_tuning/search_engine_info/search_url_test_drive_fields/field[3]/@value"
+		/>
+
+		<field
+			name="search_hidden_field_name_4"
+			label="Hidden Field Name # 4"
+			xpath="/nie_config/search_tuning/search_engine_info/search_url_test_drive_fields/field[4]/@name"
+		/>
+		<field
+			name="search_hidden_field_value_4"
+			label="Value 4"
+			xpath="/nie_config/search_tuning/search_engine_info/search_url_test_drive_fields/field[4]/@value"
+		/>
+
+		<field
+			name="search_hidden_field_name_5"
+			label="Hidden Field Name # 5"
+			xpath="/nie_config/search_tuning/search_engine_info/search_url_test_drive_fields/field[5]/@name"
+		/>
+		<field
+			name="search_hidden_field_value_5"
+			label="Value 5"
+			xpath="/nie_config/search_tuning/search_engine_info/search_url_test_drive_fields/field[5]/@value"
+		/>
+
+		<field
+			name="search_hidden_field_name_6"
+			label="Hidden Field Name # 6"
+			xpath="/nie_config/search_tuning/search_engine_info/search_url_test_drive_fields/field[6]/@name"
+		/>
+		<field
+			name="search_hidden_field_value_6"
+			label="Value 6"
+			xpath="/nie_config/search_tuning/search_engine_info/search_url_test_drive_fields/field[6]/@value"
+		/>
+
+		<field
+			name="search_hidden_field_name_7"
+			label="Hidden Field Name # 7"
+			xpath="/nie_config/search_tuning/search_engine_info/search_url_test_drive_fields/field[7]/@name"
+		/>
+		<field
+			name="search_hidden_field_value_7"
+			label="Value 7"
+			xpath="/nie_config/search_tuning/search_engine_info/search_url_test_drive_fields/field[7]/@value"
+		/>
+
+		<field
+			name="search_hidden_field_name_8"
+			label="Hidden Field Name # 8"
+			xpath="/nie_config/search_tuning/search_engine_info/search_url_test_drive_fields/field[8]/@name"
+		/>
+		<field
+			name="search_hidden_field_value_8"
+			label="Value 8"
+			xpath="/nie_config/search_tuning/search_engine_info/search_url_test_drive_fields/field[8]/@value"
+		/>
+
+		<field
+			name="search_hidden_field_name_9"
+			label="Hidden Field Name # 9"
+			xpath="/nie_config/search_tuning/search_engine_info/search_url_test_drive_fields/field[9]/@name"
+		/>
+		<field
+			name="search_hidden_field_value_9"
+			label="Value 9"
+			xpath="/nie_config/search_tuning/search_engine_info/search_url_test_drive_fields/field[9]/@value"
+		/>
+
+		<field
+			name="search_hidden_field_name_10"
+			label="Hidden Field Name # 10"
+			xpath="/nie_config/search_tuning/search_engine_info/search_url_test_drive_fields/field[10]/@name"
+		/>
+		<field
+			name="search_hidden_field_value_10"
+			label="Value 10"
+			xpath="/nie_config/search_tuning/search_engine_info/search_url_test_drive_fields/field[10]/@value"
+		/>
+	</section>
+
+	<!-- Subsite Fields -->
+	<!-- ============== -->
+	<section
+		title="Sub-Site Search (optional)"
+		help="find_map_or_create.html"
+	>
+		<field type="vertical_spacer" />
+		<field
+			type="vertical_spacer"
+		>
+			Optional Sub-Site CGI Field
+		</field>
+		<field type="vertical_spacer" />
+
+		<field
+			type="vertical_spacer"
+			font_size_increment="0"
+		>
+			Designate a Sub-Site field
+		</field>
+		<field
+			name="search_form_option_field_name_1"
+			label="Subsite Field CGI Field"
+			xpath="/nie_config/search_tuning/search_engine_info/search_form_option_fields/field[1]/@skip_blank_name=TRUE/@name"
+		/>
+		<field
+			name="search_form_option_field_desc_1"
+			label="Subsite Field Label"
+			xpath="/nie_config/search_tuning/search_engine_info/search_form_option_fields/field[1]/@label"
+		/>
+
+		<field type="vertical_spacer" />
+
+		<field
+			type="vertical_spacer"
+			font_size_increment="0"
+		>
+			List the values it can have
+		</field>
+		<field
+			name="search_form_option_field_1_value_1"
+			label="CGI Value # 1"
+			xpath="/nie_config/search_tuning/search_engine_info/search_form_option_fields/field[1]/option[1]/@value"
+		/>
+		<field
+			name="search_form_option_field_1_value_1_desc"
+			label="Label 1"
+			xpath="/nie_config/search_tuning/search_engine_info/search_form_option_fields/field[1]/option[1]/@label"
+		/>
+
+		<field
+			name="search_form_option_field_1_value_2"
+			label="CGI Value # 2"
+			xpath="/nie_config/search_tuning/search_engine_info/search_form_option_fields/field[1]/option[2]/@value"
+		/>
+		<field
+			name="search_form_option_field_1_value_2_desc"
+			label="Label 2"
+			xpath="/nie_config/search_tuning/search_engine_info/search_form_option_fields/field[1]/option[2]/@label"
+		/>
+
+		<field
+			name="search_form_option_field_1_value_3"
+			label="CGI Value # 3"
+			xpath="/nie_config/search_tuning/search_engine_info/search_form_option_fields/field[1]/option[3]/@value"
+		/>
+		<field
+			name="search_form_option_field_1_value_3_desc"
+			label="Label 3"
+			xpath="/nie_config/search_tuning/search_engine_info/search_form_option_fields/field[1]/option[3]/@label"
+		/>
+
+		<field
+			name="search_form_option_field_1_value_4"
+			label="CGI Value # 4"
+			xpath="/nie_config/search_tuning/search_engine_info/search_form_option_fields/field[1]/option[4]/@value"
+		/>
+		<field
+			name="search_form_option_field_1_value_4_desc"
+			label="Label 4"
+			xpath="/nie_config/search_tuning/search_engine_info/search_form_option_fields/field[1]/option[4]/@label"
+		/>
+
+		<field
+			name="search_form_option_field_1_value_5"
+			label="CGI Value # 5"
+			xpath="/nie_config/search_tuning/search_engine_info/search_form_option_fields/field[1]/option[5]/@value"
+		/>
+		<field
+			name="search_form_option_field_1_value_5_desc"
+			label="Label 5"
+			xpath="/nie_config/search_tuning/search_engine_info/search_form_option_fields/field[1]/option[5]/@label"
+		/>
+
+		<field
+			name="search_form_option_field_1_value_6"
+			label="CGI Value # 6"
+			xpath="/nie_config/search_tuning/search_engine_info/search_form_option_fields/field[1]/option[6]/@value"
+		/>
+		<field
+			name="search_form_option_field_1_value_6_desc"
+			label="Label 6"
+			xpath="/nie_config/search_tuning/search_engine_info/search_form_option_fields/field[1]/option[6]/@label"
+		/>
+
+		<field
+			name="search_form_option_field_1_value_7"
+			label="CGI Value # 7"
+			xpath="/nie_config/search_tuning/search_engine_info/search_form_option_fields/field[1]/option[7]/@value"
+		/>
+		<field
+			name="search_form_option_field_1_value_7_desc"
+			label="Label 7"
+			xpath="/nie_config/search_tuning/search_engine_info/search_form_option_fields/field[1]/option[7]/@label"
+		/>
+
+		<field
+			name="search_form_option_field_1_value_8"
+			label="CGI Value # 8"
+			xpath="/nie_config/search_tuning/search_engine_info/search_form_option_fields/field[1]/option[8]/@value"
+		/>
+		<field
+			name="search_form_option_field_1_value_8_desc"
+			label="Label 8"
+			xpath="/nie_config/search_tuning/search_engine_info/search_form_option_fields/field[1]/option[8]/@label"
+		/>
+
+		<field
+			name="search_form_option_field_1_value_9"
+			label="CGI Value # 9"
+			xpath="/nie_config/search_tuning/search_engine_info/search_form_option_fields/field[1]/option[9]/@value"
+		/>
+		<field
+			name="search_form_option_field_1_value_9_desc"
+			label="Label 9"
+			xpath="/nie_config/search_tuning/search_engine_info/search_form_option_fields/field[1]/option[9]/@label"
+		/>
+
+		<field
+			name="search_form_option_field_1_value_10"
+			label="CGI Value # 10"
+			xpath="/nie_config/search_tuning/search_engine_info/search_form_option_fields/field[1]/option[10]/@value"
+		/>
+		<field
+			name="search_form_option_field_1_value_10_desc"
+			label="Label 10"
+			xpath="/nie_config/search_tuning/search_engine_info/search_form_option_fields/field[1]/option[10]/@label"
+		/>
+
+		<field type="vertical_spacer" />
+
+		<field
+			type="vertical_spacer"
+			font_size_increment="0"
+		>
+			(values 11 - 20 on next tab, if needed) 
+		</field>
+
+	</section>
+	<!-- Subsite Fields (cont) -->
+	<!-- ===================== -->
+	<section
+		title="Sub-Site Search (cont.)"
+		help="find_map_or_create.html"
+	>
+		<field type="vertical_spacer" />
+		<field
+			type="vertical_spacer"
+		>
+			(continued from the previous screen)
+		</field>
+		<field type="vertical_spacer" />
+
+		<field
+			name="search_form_option_field_1_value_11"
+			label="CGI Value # 11"
+			xpath="/nie_config/search_tuning/search_engine_info/search_form_option_fields/field[1]/option[11]/@value"
+		/>
+		<field
+			name="search_form_option_field_1_value_11_desc"
+			label="Label 11"
+			xpath="/nie_config/search_tuning/search_engine_info/search_form_option_fields/field[1]/option[11]/@label"
+		/>
+
+		<field
+			name="search_form_option_field_1_value_12"
+			label="CGI Value # 12"
+			xpath="/nie_config/search_tuning/search_engine_info/search_form_option_fields/field[1]/option[12]/@value"
+		/>
+		<field
+			name="search_form_option_field_1_value_12_desc"
+			label="Label 12"
+			xpath="/nie_config/search_tuning/search_engine_info/search_form_option_fields/field[1]/option[12]/@label"
+		/>
+
+		<field
+			name="search_form_option_field_1_value_13"
+			label="CGI Value # 13"
+			xpath="/nie_config/search_tuning/search_engine_info/search_form_option_fields/field[1]/option[13]/@value"
+		/>
+		<field
+			name="search_form_option_field_1_value_13_desc"
+			label="Label 13"
+			xpath="/nie_config/search_tuning/search_engine_info/search_form_option_fields/field[1]/option[13]/@label"
+		/>
+
+		<field
+			name="search_form_option_field_1_value_14"
+			label="CGI Value # 14"
+			xpath="/nie_config/search_tuning/search_engine_info/search_form_option_fields/field[1]/option[14]/@value"
+		/>
+		<field
+			name="search_form_option_field_1_value_14_desc"
+			label="Label 14"
+			xpath="/nie_config/search_tuning/search_engine_info/search_form_option_fields/field[1]/option[14]/@label"
+		/>
+
+		<field
+			name="search_form_option_field_1_value_15"
+			label="CGI Value # 15"
+			xpath="/nie_config/search_tuning/search_engine_info/search_form_option_fields/field[1]/option[15]/@value"
+		/>
+		<field
+			name="search_form_option_field_1_value_15_desc"
+			label="Label 15"
+			xpath="/nie_config/search_tuning/search_engine_info/search_form_option_fields/field[1]/option[15]/@label"
+		/>
+
+		<field
+			name="search_form_option_field_1_value_16"
+			label="CGI Value # 16"
+			xpath="/nie_config/search_tuning/search_engine_info/search_form_option_fields/field[1]/option[16]/@value"
+		/>
+		<field
+			name="search_form_option_field_1_value_16_desc"
+			label="Label 16"
+			xpath="/nie_config/search_tuning/search_engine_info/search_form_option_fields/field[1]/option[16]/@label"
+		/>
+
+		<field
+			name="search_form_option_field_1_value_17"
+			label="CGI Value # 17"
+			xpath="/nie_config/search_tuning/search_engine_info/search_form_option_fields/field[1]/option[17]/@value"
+		/>
+		<field
+			name="search_form_option_field_1_value_17_desc"
+			label="Label 17"
+			xpath="/nie_config/search_tuning/search_engine_info/search_form_option_fields/field[1]/option[17]/@label"
+		/>
+
+		<field
+			name="search_form_option_field_1_value_18"
+			label="CGI Value # 18"
+			xpath="/nie_config/search_tuning/search_engine_info/search_form_option_fields/field[1]/option[18]/@value"
+		/>
+		<field
+			name="search_form_option_field_1_value_18_desc"
+			label="Label 18"
+			xpath="/nie_config/search_tuning/search_engine_info/search_form_option_fields/field[1]/option[18]/@label"
+		/>
+
+		<field
+			name="search_form_option_field_1_value_19"
+			label="CGI Value # 19"
+			xpath="/nie_config/search_tuning/search_engine_info/search_form_option_fields/field[1]/option[19]/@value"
+		/>
+		<field
+			name="search_form_option_field_1_value_19_desc"
+			label="Label 19"
+			xpath="/nie_config/search_tuning/search_engine_info/search_form_option_fields/field[1]/option[19]/@label"
+		/>
+
+		<field
+			name="search_form_option_field_1_value_20"
+			label="CGI Value # 20"
+			xpath="/nie_config/search_tuning/search_engine_info/search_form_option_fields/field[1]/option[20]/@value"
+		/>
+		<field
+			name="search_form_option_field_1_value_20_desc"
+			label="Label 20"
+			xpath="/nie_config/search_tuning/search_engine_info/search_form_option_fields/field[1]/option[20]/@label"
+		/>
+
+
+	</section>
+
+
+	<!-- Database -->
+	<!-- ======== -->
+	<section
+		title="Database Info"
+		help="find_map_or_create.html"
+	>
+
+		<field type="vertical_spacer" />
+		<field
+			type="vertical_spacer"
+		>
+			Database Server and Login
+		</field>
+		<field type="vertical_spacer" />
+
+
+		<field
+			name="db_vendor_tag"
+			label="Database Vendor"
+			type="select"
+			is_special="TRUE"
+			xpath="/nie_config/database/@vendor_tag"
+		>
+			<!--
+			<option value="(null)">(none)</option>
+			-->
+			<option value="oracle">Oracle</option>
+			<option value="mssql">Microsoft SQL Server</option>
+			<option value="postgresql">PostgreSQL</option>
+		</field>
+
+		<field
+			name="db_server_name"
+			label="Database Server Machine Name"
+			xpath="/nie_config/database/@server_name"
+		/>
+
+		<field
+			name="db_port"
+			label="TCP/IP Port (blank=default)"
+			_default="(default)"
+			is_special="TRUE"
+			xpath="/nie_config/database/@port"
+		/>
+
+		<field
+			name="db_database"
+			label="Database Name"
+			default="SearchTrack"
+			xpath="/nie_config/database/@database_name"
+		/>
+		<field
+			name="db_username"
+			label="User Name"
+			default="scott"
+			xpath="/nie_config/database/@username"
+		/>
+		<field
+			name="db_password"
+			label="Password"
+			default="tiger"
+			xpath="/nie_config/database/@password"
+		/>
+
+		<field type="vertical_spacer" />
+		<field
+			type="vertical_spacer"
+		>
+			Confirm and Initialize
+		</field>
+		<field type="vertical_spacer" />
+
+		<field
+			type="inline_button"
+			label="Check settings"
+			click_event_class="VerifyDBConn"
+		>
+			Verify DB Connection
+		</field>
+
+		<field type="vertical_spacer" />
+
+		<field
+			type="inline_button"
+			label="SearchTrack system tables"
+			click_event_class="InitDB"
+		>
+			Verify / Create Tables
+		</field>
+
+		<field type="vertical_spacer" />
+
+		<field
+			type="inline_button"
+			label="Clear all search activity data"
+			click_event_class="ClearLogs"
+		>
+			Clear Search Logs ...
+		</field>
+
+
+	</section>
+
+
+	<!-- Patterns -->
+	<!-- ======== -->
+	<section
+		title="Patterns"
+		help="find_map_or_create.html"
+	>
+		<field type="vertical_spacer" />
+		<field
+			type="vertical_spacer"
+		>
+			HTML Patterns
+		</field>
+
+		<field type="vertical_spacer" />
+
+		<field
+			type="vertical_spacer"
+			font_size_increment="0"
+		>
+			For the number of documents Found and Searched
+		</field>
+		<field
+			name="pat_hits"
+			label="Number of documents found"
+			type="textarea"
+			rows="3"
+			xpath="/nie_config/search_tracking/data_logging/proxy_settings/docs_found_pattern"
+		/>
+		<field
+			name="pat_hits_howfar"
+			label="How far ahead to look"
+			default="15"
+			xpath="/nie_config/search_tracking/data_logging/proxy_settings/docs_found_pattern/@max_found_look_ahead"
+		/>
+		<field type="vertical_spacer" />
+		<field
+			name="pat_match_both"
+			label="Also shows TOTAL docs searched?"
+			default="FALSE"
+			type="select"
+			xpath="/nie_config/search_tracking/data_logging/proxy_settings/docs_found_pattern/@match_both"
+		>
+			<option>TRUE</option>
+			<option>FALSE</option>
+		</field>
+		<field
+			name="pat_searched_howfar"
+			label="How far ahead to look (if provided)"
+			default="25"
+			xpath="/nie_config/search_tracking/data_logging/proxy_settings/docs_found_pattern/@max_searched_look_ahead"
+		/>
+
+		<field type="vertical_spacer" />
+		<field
+			type="vertical_spacer"
+			font_size_increment="0"
+		>
+			Some search engines show a DIFFERENT message if no docs are found
+		</field>
+		<field
+			name="pat_no_hits"
+			label="No docs found (if different from above)"
+			type="textarea"
+			rows="3"
+			xpath="/nie_config/search_tracking/data_logging/proxy_settings/no_docs_found_pattern"
+		/>
+
+
+		<field type="vertical_spacer" />
+
+		<field
+			type="vertical_spacer"
+			font_size_increment="0"
+		>
+			For placement of Suggetions in the results list
+		</field>
+		<field
+			name="pat_markup"
+			label="Suggestion placement"
+			type="textarea"
+			default="&lt;--searchtrack-suggestions-go-here--&gt;"
+			rows="3"
+			xpath="/nie_config/search_tuning/search_engine_info/suggestion_marker_text"
+		/>
+		<field
+			name="pat_insert_after"
+			label="Place AFTER the pattern (vs before)"
+			default="TRUE"
+			type="select"
+			xpath="/nie_config/search_tuning/search_engine_info/suggestion_marker_text_modifiers/@after"
+		>
+			<option>TRUE</option>
+			<option>FALSE</option>
+		</field>
+		<field
+			name="pat_replace"
+			label="-or- Suggestion REPLACES pattern"
+			default="FALSE"
+			type="select"
+			xpath="/nie_config/search_tuning/search_engine_info/suggestion_marker_text_modifiers/@replace"
+		>
+.			<option>TRUE</option>
+			<option>FALSE</option>
+		</field>
+		<field
+			name="pat_prefix"
+			label="Add HTML text before the suggestion"
+			xpath="/nie_config/search_tuning/search_engine_info/markup_before"
+		/>
+		<field
+			name="pat_suffix"
+			label="Add HTML text after the suggestion"
+			xpath="/nie_config/search_tuning/search_engine_info/markup_after"
+		/>
+
+	</section>
+
+	<!-- Click Through options -->
+	<!-- ===================== -->
+	<!--
+	<section
+		title="Click-Through"
+		help="xyz.html"
+	>
+		<field type="vertical_spacer" />
+		<field
+			type="vertical_spacer"
+		>
+			Tracking Document Click-Throughs
+		</field>
+
+		<field type="vertical_spacer" />
+
+		<field
+			type="vertical_spacer"
+			font_size_increment="0"
+		>
+			SearchTrack can log which links in the results list
+			the users clicked on.
+		</field>
+
+		<field type="vertical_spacer" />
+
+		<field
+			name="click_track_urls"
+			label="Track URLs that are clicked on?"
+			default="TRUE"
+			type="select"
+			xpath="/nie_config/search_tracking/data_logging/proxy_settings/click_through/@should_log"
+		>
+			<option>TRUE</option>
+			<option>FALSE</option>
+		</field>
+
+		<field type="vertical_spacer" />
+
+		<field
+			type="vertical_spacer"
+		>
+			Redirecting Mini-Search Forms
+		</field>
+
+		<field type="vertical_spacer" />
+
+		<field
+			type="vertical_spacer"
+			font_size_increment="0"
+		>
+			Results lists often include a mini search form.
+			In order for SearchTrack to be active from those forms,
+			it needs to tweak the &quot;action&quot; attribute
+			of the &lt;form&gt; tag to send it back through
+			SearchTrack.
+		</field>
+
+		<field type="vertical_spacer" />
+
+		<field
+			name="modify_search_forms"
+			label="Modify Search Forms on Results?"
+			default="TRUE"
+			type="select"
+			xpath="/nie_config/search_tracking/data_logging/proxy_settings/search_forms/@should_modify_action"
+		>
+			<option>TRUE</option>
+			<option>FALSE</option>
+		</field>
+	</section>
+	-->
+
+	<!-- Look and Feel -->
+	<!-- ============= -->
+	<section
+		title="Look and Feel"
+		help="xyz.html"
+	>
+		<field type="vertical_spacer" />
+		<field
+			type="vertical_spacer"
+		>
+			Set Colors and Fonts, etc.
+		</field>
+		<field type="vertical_spacer" />
+
+
+		<field
+			type="vertical_spacer"
+			font_size_increment="0"
+		>
+			The &quot;Webmaster Suggests&quot; Box
+		</field>
+		<field
+			name="wms_box_bgcolor"
+			label="Box Shading Color"
+			default="#eeeeee"
+			xpath="/nie_config/search_tuning/default_webmaster_suggests_box/@bgcolor"
+		/>
+		<field
+			name="wms_box_width"
+			label="Box Width"
+			default="95%"
+			xpath="/nie_config/search_tuning/default_webmaster_suggests_box/@width"
+		/>
+		<field
+			name="wms_box_border_size"
+			label="Box Border thickness (0=none)"
+			default="1"
+			type="select"
+			xpath="/nie_config/search_tuning/default_webmaster_suggests_box/@border"
+		>
+			<option>0</option>
+			<option>1</option>
+			<option>2</option>
+			<option>3</option>
+		</field>
+		<field
+			name="wms_box_border_color"
+			label="Box Border color (blank=default HTML)"
+			default="#000000"
+			xpath="/nie_config/search_tuning/default_webmaster_suggests_box/@border_color"
+		/>
+
+		<field type="vertical_spacer" />
+
+		<field
+			type="vertical_spacer"
+			font_size_increment="0"
+		>
+			The &quot;Webmaster Suggests&quot; Banner
+		</field>
+		<field
+			name="wms_slogan_text"
+			label="Webmaster Suggests Text"
+			default="The Webmaster Suggests:"
+			xpath="/nie_config/search_tuning/default_webmaster_suggests_header/@text"
+		/>
+		<field
+			name="wms_slogan_color"
+			label="Webmaster Suggests Color"
+			default="#000084"
+			xpath="/nie_config/search_tuning/default_webmaster_suggests_header/@color"
+		/>
+		<field
+			name="wms_slogan_class"
+			label="(Advanced) CSS class name"
+			xpath="/nie_config/search_tuning/default_webmaster_suggests_header/@class"
+		/>
+
+
+		<field type="vertical_spacer" />
+
+
+		<field
+			type="vertical_spacer"
+			font_size_increment="0"
+		>
+			Related Terms and &quot;See Also&quot; Links
+		</field>
+		<field
+			name="alt_slogan_text"
+			label="Default Related Terms Heading Text"
+			default="See Also:"
+			xpath="/nie_config/search_tuning/default_alternate_suggestions_heading/@text"
+		/>
+		<field
+			name="alt_slogan_color"
+			label="Default Related Terms Heading Color"
+			default="#000080"
+			xpath="/nie_config/search_tuning/default_alternate_suggestions_heading/@color"
+		/>
+
+		<field type="vertical_spacer" />
+
+
+		<field
+			type="vertical_spacer"
+			font_size_increment="0"
+		>
+			(Advanced) Additional &quot;Webmaster Suggests&quot; Text Settings
+		</field>
+		<field
+			name="wms_doc_title_class"
+			label="Suggested Title CSS class name"
+			xpath="/nie_config/search_tuning/default_webmaster_suggests_doc_title/@class"
+		/>
+		<field
+			name="wms_doc_url_class"
+			label="URL/Link CSS class name"
+			xpath="/nie_config/search_tuning/default_webmaster_suggests_doc_url/@class"
+		/>
+		<field
+			name="wms_doc_summary_class"
+			label="Summary CSS class name"
+			xpath="/nie_config/search_tuning/default_webmaster_suggests_doc_summary/@class"
+		/>
+	</section>
+
+	<!-- Null Searches -->
+	<!-- ============= -->
+	<section
+		title="Null Searches"
+		help="xyz.html"
+	>
+		<field type="vertical_spacer" />
+		<field
+			type="vertical_spacer"
+		>
+			Handling Null Searches
+		</field>
+		<field type="vertical_spacer" />
+
+		<field
+			type="vertical_spacer"
+			font_size_increment="0"
+		>
+			Search Activity Logging
+		</field>
+		<field
+			name="null_ignore_general"
+			label="Ignore Null searches (do not log)"
+			default="TRUE"
+			type="select"
+			xpath="/nie_config/search_tracking/data_logging/@ignore_null_searches"
+		>
+			<option>FALSE</option>
+			<option>TRUE</option>
+		</field>
+		<field
+			name="log_ignore_ip_1"
+			label="Ignore ALL searches from IP addresses"
+			xpath="/nie_config/search_tracking/data_logging/ignore_address[1]"
+		/>
+		<field
+			name="log_ignore_ip_2"
+			xpath="/nie_config/search_tracking/data_logging/ignore_address[2]"
+		/>
+		<field
+			name="log_ignore_ip_3"
+			xpath="/nie_config/search_tracking/data_logging/ignore_address[3]"
+		/>
+
+
+
+		<field type="vertical_spacer" />
+
+		<field
+			type="vertical_spacer"
+			font_size_increment="0"
+		>
+			Recognizing Null Searches
+		</field>
+		<field
+			name="null_search_equiv_1"
+			label="Phrases to treat as Null search"
+			xpath="/nie_config/search_tuning/null_searches/null_search_equiv_phrase[1]"
+		/>
+		<field
+			name="null_search_equiv_2"
+			xpath="/nie_config/search_tuning/null_searches/null_search_equiv_phrase[2]"
+		/>
+		<field
+			name="null_search_equiv_3"
+			xpath="/nie_config/search_tuning/null_searches/null_search_equiv_phrase[3]"
+		/>
+
+		<field type="vertical_spacer" />
+
+		<field
+			type="vertical_spacer"
+			font_size_increment="0"
+		>
+			Redirecting Null Searches
+		</field>
+		<field
+			name="null_do_redirect"
+			label="Enable Null Search Redirect"
+			default="FALSE"
+			type="select"
+			xpath="/nie_config/search_tuning/null_searches/redirect_on_null_search/@enabled"
+		>
+			<option>FALSE</option>
+			<option>TRUE</option>
+		</field>
+		<field
+			name="null_redir_url"
+			label="Send to URL"
+			xpath="/nie_config/search_tuning/null_searches/redirect_on_null_search/url"
+		/>
+		<!-- use "(referrer)" to send back to original URL -->
+
+	</section>
+
+	<!-- Lucene Search -->
+	<!-- ============= -->
+	<section
+		title="Lucene (Optional - Beta)"
+		_help="find_map_basic_info.html"
+	>
+		<field type="vertical_spacer" />
+		<field
+			type="vertical_spacer"
+		>
+			(Optional) Activate Lucene Searches
+		</field>
+		<field type="vertical_spacer" />
+
+		<field
+			name="luc_index_path"
+			label="Full Path to Existing Index"
+			xpath="/nie_config/lucene_search/index_directory"
+		/>
+		<field
+			name="luc_content_field"
+			label="Primary/Default Search Field"
+			xpath="/nie_config/lucene_search/content_field"
+			default="content"
+		/>
+
+	</section>
+
+	<!-- Debug Info -->
+	<!-- ========== -->
+	<section
+		title="Debug Logging (advanced)"
+		_help="find_map_basic_info.html"
+	>
+
+		<field type="vertical_spacer" />
+		<field
+			type="vertical_spacer"
+		>
+			Detailed Process Status and Error Logging
+		</field>
+
+		<!--
+		<field type="vertical_spacer" />
+		<field
+			type="vertical_spacer"
+			font_size_increment="0"
+		>
+			Log File and Level
+		</field>
+		<field
+			name="log_file_name"
+			label="Runtime Log File (absolute path to FILE please)"
+			default="d:\full\path\niesrv\logs\niesrv.log"
+			xpath="/nie_config/run_logging/@location"
+		/>
+		<field
+			name="log_verbosity"
+			label="Overall log Verbosity"
+			type="select"
+			default="default"
+			xpath="/nie_config/run_logging/@verbosity"
+		>
+			<option>quiet</option>
+			<option>default</option>
+			<option>info</option>
+			<option>debug</option>
+			<option>trace</option>
+		</field>
+		<field
+			name="log_history_length"
+			label="History length (to view online)"
+			type="select"
+			xpath="/nie_config/run_logging/@keep"
+		>
+			<option>100</option>
+			<option>1000</option>
+			<option>10000</option>
+		</field>
+		-->
+
+		<field type="vertical_spacer" />
+
+		<field
+			type="vertical_spacer"
+			font_size_increment="0"
+		>
+			Debug Logging (Advanced - for troubleshooting only)
+		</field>
+		<field
+			name="debug_class"
+			label="Java class name (no prefix; example: timing)"
+			xpath="/nie_config/run_logging/verbosity[1]/@class"
+		/>
+		<field
+			name="debug_method"
+			label="optional method name (default is entire class)"
+			xpath="/nie_config/run_logging/verbosity[1]/@method"
+		/>
+		<field
+			name="debug_verbosity"
+			label="Debug Verbosity"
+			type="select"
+			default="info"
+			xpath="/nie_config/run_logging/verbosity[1]/@level"
+		>
+			<option>info</option>
+			<option>debug</option>
+			<option>trace</option>
+		</field>
+
+
+	</section>
+
+
+	<!--
+	<section>
+		<button>
+			&lt; Cancel
+		</button>
+		<button>
+			Save &gt;
+		</button>
+	</section>
+	-->
+
+
+</form>

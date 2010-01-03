@@ -1,0 +1,5 @@
+<report>
+	<title>This is a Test Report</title>
+	<subtitle>It does not have many options</subtitle>
+	<field heading="Num Records">count(*)</field>
+</report>

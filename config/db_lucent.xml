@@ -1,0 +1,11 @@
+<database
+	vendor_tag="postgresql"
+	server_name="sv1.ideaeng.net"
+	database_name="lucentdb"
+	username="lucent"
+	password="lucentadmin"
+	main_table="nie_log"
+>
+	<test_query />
+</database>
+

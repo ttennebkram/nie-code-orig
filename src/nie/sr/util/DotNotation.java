@@ -1,0 +1,224 @@
+package nie.sr.util;
+
+import java.net.*;
+
+public class DotNotation
+{
+	///////
+	//
+	// Constructors
+	//
+	///////
+	
+	public DotNotation( String inStringNotation )
+	{
+		fromString( inStringNotation );
+	}
+	
+	public DotNotation( byte[] inBytes )
+	{
+		fromBytes(inBytes);
+	}
+	
+	///////
+	//
+	// getters
+	//
+	///////
+	
+	public byte[] asBytes()
+	{
+		return fBytes;
+	}
+	
+	public String asString()
+	{
+		String lReturnedString = "";
+		
+		if( fBytes != null )
+			for( int i = 0; i < fBytes.length; i++ )
+			{
+				if( lReturnedString.compareTo( "" ) != 0 )
+					lReturnedString += ".";
+				lReturnedString += (int)fBytes[i] & 0x00FF;
+			}
+		
+		return lReturnedString;
+	}
+	
+	public String toString()
+	{
+		return asString();
+	}
+	
+	public InetAddress asInetAddress()
+	{
+		try
+		{
+		    return InetAddress.getByName( asString() );
+		} catch( UnknownHostException uhe ) {
+			return null;
+		}
+	}
+	
+	///////
+	//
+	// Setters
+	//
+	///////
+	
+	public void fromString( String inOctetsAsString )
+	{
+		fBytes = convertToBytes( inOctetsAsString );
+	}
+	
+	public void fromBytes( byte[] inBytes )
+	{
+		fBytes = inBytes;
+	}
+	
+	///////
+	//
+	// Converters
+	//
+	///////
+
+    static String[] split( String inSourceString, String inSplitPoint )
+    {
+	int lSplitPoint = inSourceString.indexOf( inSplitPoint );
+	if( lSplitPoint == -1 )
+	    {
+		String[] lString = { inSourceString };
+		return lString;
+	    }
+
+	else
+	    {
+		if( lSplitPoint > 0 )
+		    {
+			String lPrefix = inSourceString.substring( 0, lSplitPoint );
+			if( (lSplitPoint + inSplitPoint.length()) > inSourceString.length() )
+			    {
+				String[] lStringArray = { lPrefix, "" };
+				return lStringArray;
+			    }
+			else
+			    {
+				String lPostFix = inSourceString.substring( lSplitPoint + inSplitPoint.length() );
+				String[] lPostArray = split( lPostFix, inSplitPoint );
+				String[] lRetArray = new String[ lPostArray.length + 1 ];
+				lRetArray[0] = lPrefix;
+				for( int i =  0; i < lPostArray.length; i++ )
+				    lRetArray[ i+1 ] = lPostArray[i];
+				return lRetArray;
+			    }
+		    }
+	    }
+	String[] lRetArray = { inSourceString };
+	return lRetArray;
+    }
+	
+	static  public byte[] convertToBytes( String inOctetString )
+	{
+		if( inOctetString == null )
+			return null;
+		
+		if( DNSLookup.gDebug )
+		    System.out.print( "Converting " + inOctetString );
+
+		String[] lOctets = split( inOctetString, ".");
+
+		byte[] lOctetBytes  = new byte[lOctets.length];
+		
+		for( int i = 0 ; i < lOctets.length; i++ )
+		{
+		    if( DNSLookup.gDebug )
+		    {
+			System.out.print( "  '	" + lOctets[i] + "'" );
+			System.out.flush();
+		    }
+		    lOctetBytes[i] = (byte)Integer.parseInt( lOctets[i].trim() );
+		}
+
+		if( DNSLookup.gDebug )
+		{
+		    System.out.println();
+		    System.out.flush();
+		}
+		
+		return lOctetBytes;
+	}
+	
+	///////
+	//
+	// Comparison operators
+	//
+	///////
+	
+	private int min( int in1, int in2 )
+	{
+		if( in1 < in2 )
+			return in1;
+		return in2;
+	}
+	
+	public int compareTo( DotNotation inComparation )
+	{
+	    try
+	    {
+		byte[] lBytes = inComparation.asBytes();
+		int lBytesToCheck = min( lBytes.length, fBytes.length );
+		
+		for( int i = 0; i < lBytesToCheck; i++ )
+		{
+			if( fBytes[i] < lBytes[i] )
+				return -1;
+			
+			if( fBytes[i] > lBytes[i] )
+				return 1;
+		}
+		
+		if( fBytes.length < lBytes.length )
+			return -1;
+		
+		if( fBytes.length > lBytes.length )
+			return 1;
+		
+		return 0;
+	    } catch( Exception e ) {
+		e.printStackTrace();
+
+		if( fBytes == null )
+		    System.err.println( "this.fBytes[] == null" );
+		else
+		    for( int i = 0; i < fBytes.length; i++ )
+			System.err.print( "this.fBytes[" + i + "] = " + fBytes[i] + "   " );
+
+		System.err.println("");
+
+		if( inComparation != null )
+		{
+		    byte[] lBytes = inComparation.asBytes();
+		    if( lBytes != null )
+		    {
+			for( int i = 0; i < lBytes.length; i++ )
+			    System.err.print( "inComparation.asBytes()[" + i + "] = " + lBytes[i]  + "   " );
+			System.err.println( "" );
+		    }
+		} else {
+		    System.err.println( "inComparation was null." );
+		}
+
+		System.exit( -1 );
+	    }
+	    return -1;
+	}
+
+	///////
+	//
+	// Internal variables
+	//
+	///////
+	
+	byte[] fBytes;
+}

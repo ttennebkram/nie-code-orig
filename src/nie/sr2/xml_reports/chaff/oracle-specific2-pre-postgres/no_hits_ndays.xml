@@ -1,0 +1,76 @@
+<report>
+	<title>Searches that Returned NO Matching Pages</title>
+	<subtitle>For the past $cgi.days day(s)</subtitle>
+
+	<link_text>Searches with NO Results in last:</link_text>
+
+	<field
+		heading="Search Term(s)"
+		sql_alias="search"
+		null_value_display="(null search)"
+
+		is_report_link="TRUE"
+		link_report_name="search_details_ndays"
+		link_title="Click for Details"
+		do_link_if_null="TRUE"
+	>
+		NORMALIZED_QUERY
+	</field>
+
+
+
+	<field
+		heading="Count"
+		sql_alias="num_times"
+	>
+		count(*)
+	</field>
+
+
+	<field
+		heading="Most Recently"
+		css_class="nie_datetime"
+		format_as="datetime"
+	>
+		max(START_TIME)
+	</field>
+
+	<!-- Show both min and max hits, at least one will be zero -->
+	<field heading="Min Found">min(NUM_RESULTS) min_found</field>
+	<field heading="Max Found">max(NUM_RESULTS) max_found</field>
+
+	<field
+		heading="Mapped?"
+		format_as="boolean"
+	>
+		max(WAS_SEARCH_NAMES_TERM)
+	</field>
+
+	<raw_where_filter>
+		<!-- TRUNC(SYSDATE) - $cgi.days -->
+		<![CDATA[
+			start_time >= SYSDATE - $cgi.days
+			AND
+			TRANSACTION_TYPE = 1
+		]]>
+	</raw_where_filter>
+
+	<raw_grouping>
+		NORMALIZED_QUERY
+		having min(NUM_RESULTS) = 0 OR max(NUM_RESULTS) = 0
+		<!--
+		having min_found = 0 OR max_found = 0
+		-->
+	</raw_grouping>
+	<raw_sort>
+		num_times desc
+		<!--
+		NORMALIZED_QUERY
+		search
+		-->
+	</raw_sort>
+
+
+	<include location="includes/standard_ndays_link_suggestions.xml" />
+
+</report>

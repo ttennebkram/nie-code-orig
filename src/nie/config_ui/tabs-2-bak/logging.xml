@@ -1,0 +1,100 @@
+	<!-- Debug Info -->
+	<!-- ========== -->
+	<section
+		title="Logging"
+		_title="Debug Logging (advanced)"
+		_help="find_map_basic_info.html"
+	>
+		<!--
+		<field type="vertical_spacer" />
+		-->
+		<field
+			type="vertical_spacer"
+		>
+			Process Logging (Advanced)
+		</field>
+		<field
+			type="vertical_spacer"
+			font_size_increment="0"
+		>
+			Detailed Process Status and Error Logging
+		</field>
+
+		<!--
+		<field type="vertical_spacer" />
+		<field
+			type="vertical_spacer"
+			font_size_increment="0"
+		>
+			Log File and Level
+		</field>
+		<field
+			name="log_file_name"
+			label="Runtime Log File (absolute path to FILE please)"
+			default="d:\full\path\niesrv\logs\niesrv.log"
+			xpath="/nie_config/run_logging/@location"
+		/>
+		<field
+			name="log_verbosity"
+			label="Overall log Verbosity"
+			type="select"
+			default="default"
+			xpath="/nie_config/run_logging/@verbosity"
+		>
+			<option>quiet</option>
+			<option>default</option>
+			<option>info</option>
+			<option>debug</option>
+			<option>trace</option>
+		</field>
+		<field
+			name="log_history_length"
+			label="History length (to view online)"
+			type="select"
+			xpath="/nie_config/run_logging/@keep"
+		>
+			<option>100</option>
+			<option>1000</option>
+			<option>10000</option>
+		</field>
+		-->
+
+		<field type="vertical_spacer" />
+
+		<field
+			type="vertical_spacer"
+			font_size_increment="0"
+		>
+			Debug Logging (Advanced - for troubleshooting only)
+		</field>
+		<field
+			name="debug_class"
+			label="Java class name (no prefix; example: timing)"
+			xpath="/nie_config/run_logging/verbosity[1]/@class"
+		/>
+		<field
+			name="debug_method"
+			label="optional method name (default is entire class)"
+			xpath="/nie_config/run_logging/verbosity[1]/@method"
+		/>
+		<field
+			name="debug_verbosity"
+			label="Debug Verbosity"
+			type="select"
+			default="info"
+			xpath="/nie_config/run_logging/verbosity[1]/@level"
+		>
+			<option>info</option>
+			<option>debug</option>
+			<option>trace</option>
+		</field>
+
+		<field type="vertical_spacer" />
+		<field
+			type="vertical_spacer"
+			font_size_increment="0"
+		>
+			See related tabs for search activity logging
+		</field>
+
+	</section>

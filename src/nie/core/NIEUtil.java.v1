@@ -1,0 +1,3986 @@
+package nie.core;
+
+import java.io.*;
+import java.util.*;
+import java.net.*;
+import java.text.DateFormat;
+
+/**
+ * Title:        NIEUtil
+ * Description:  A bunch of static, generic utility functions
+ * Copyright:    Copyright (c) 2001
+ * Company:      New Idea Engineering
+ * @author Kevin-Neil Klop and Mark Benett
+ * @version 1.0
+ */
+
+public class NIEUtil {
+
+	// private static boolean debug = true;
+	// Don't specifically set it if you want FALSE, it'll default to that
+	private static boolean debug;
+	public static void setDebug( boolean flag )
+	{
+		debug = flag;
+	}
+	public static void setVerbosity( boolean flag )
+	{
+		debug = flag;
+	}
+
+	private static void __Simple_String_Formatting__() {}
+
+	// Give us back either a trimmed string or a true null
+	// force "empty" strings to null
+	public static String trimmedStringOrNull( String inStr )
+	{
+		if( inStr == null )
+			return null;
+		String outStr = inStr.trim();
+		outStr = ! outStr.equals("") ? outStr : null;
+		return outStr;
+	}
+	// trimmed string or null, normalized to specific case
+	public static String trimmedLowerStringOrNull( String inStr )
+	{
+		String outStr = trimmedStringOrNull( inStr );
+		outStr = ( outStr != null ) ? outStr.toLowerCase() : null;
+		return outStr;
+	}
+	public static String trimmedUpperStringOrNull( String inStr )
+	{
+		String outStr = trimmedStringOrNull( inStr );
+		outStr = ( outStr != null ) ? outStr.toUpperCase() : null;
+		return outStr;
+	}
+
+	// Add pad characters to the left of a string (aka "right justify")
+	// to a minimum width.
+	// Simple versions set derfaults:
+	// Set default: the pad character is a space
+	// Set default: do NOT truncate if the input string is longer
+	//  than the desired output string
+	public static String leftPadString( String inString, int desiredLength )
+	{
+		return leftPadString( inString, desiredLength,
+			' ', false
+			);
+	}
+	public static String leftPadString( String inString, int desiredLength,
+		char padChar, boolean doTruncateAtMaxLength
+		)
+	{
+		if( inString == null )
+			inString = "";
+		if( desiredLength < 1 )
+			return inString;
+
+		if( inString.length() == desiredLength )
+			return inString;
+
+		if( inString.length() > desiredLength )
+			if( ! doTruncateAtMaxLength )
+				return inString;
+			else
+				return inString.substring( 0, desiredLength+1 );
+
+		// How many pad characters will we need?
+		int padLength = desiredLength - inString.length();
+
+		// We will build this with a string buffer
+		StringBuffer buff = new StringBuffer();
+
+		// Add the appropriate number of pad characters
+		for( int i=1; i<=padLength; i++ )
+			buff.append( padChar );
+
+		// And now add our string
+		buff.append( inString );
+
+		// Return the results
+		return new String( buff );
+	}
+
+	// Left pad an integer with 0's
+	// Don't truncate
+	// leftPadInt( 17, 3 ) => 017
+	// LeftPadInt( 0, 3 ) => 000
+	// leftPadInt( 17293, 3 ) => 17293
+	// If int < 0, pad mantissa to n-1 then re-add "-"
+	// leftPadInt( -17, 3 ) => -17
+	// leftPadInt(  17, 5 ) => 00017
+	// leftPadInt( -17, 5 ) => -0017
+	public static String leftPadInt( int theInteger, int desiredLength )
+	{
+		if( theInteger >= 0 )
+		{
+			return leftPadString( "" + theInteger, desiredLength,
+				'0', false
+				);
+		}
+		// Else integer is < 0
+		else
+		{
+			int tmpInt = theInteger * -1;
+			String tmpIntStr = "" + tmpInt;
+			int newLen = desiredLength - 1;
+			String tmpAns = leftPadString( tmpIntStr, newLen,
+				'0', false
+				);
+			tmpAns = "-" + tmpAns;
+			return tmpAns;
+		}
+	}
+
+	public static String leftPadInt( long theLong, int desiredLength )
+	{
+		if( theLong >= 0L )
+		{
+			return leftPadString( "" + theLong, desiredLength,
+				'0', false
+				);
+		}
+		// Else integer is < 0
+		else
+		{
+			long tmpLong = theLong * -1L;
+			String tmpIntStr = "" + tmpLong;
+			int newLen = desiredLength - 1;
+			String tmpAns = leftPadString( tmpIntStr, newLen,
+				'0', false
+				);
+			tmpAns = "-" + tmpAns;
+			return tmpAns;
+		}
+	}
+
+	// Will always return a valid string, ""
+	public static String zapChars( String source )
+	{
+		return zapChars( source, ' ' );
+	}
+	public static String zapChars( String source, char c )
+	{
+		if( source == null )
+		{
+			System.err.println( "Warning: zapChars(2): null source text passed in." );
+			return "";
+		}
+		String answer = source;
+		// Usually Get rid of white space
+		if( c!=' ' && c!='\t' && c!='\r' && c!='\n' )
+		{
+			answer = answer.replace( ' ', c );
+			answer = answer.replace( '\t', c );
+		}
+		// Other bad chars to look out for
+		// Note that we do allow for - and _
+		String badList = "\"'\\/\r\n:{}()[]<>&%#~`!@$^*+=?|,.";
+		for( int i=0; i<badList.length(); i++ ) {
+			char badC = badList.charAt(i);
+			if( badC != c )
+				answer = answer.replace( badC, c );
+			// Todo: also check for out of range characters
+		}
+
+		return answer;
+	}
+
+	public static double formatDoubleToDisplayPrecision( double inValue )
+	{
+		long lValue;
+		double outValue;
+		if( inValue >= 10 || inValue <= -10 )
+		{
+			lValue = Math.round( inValue );
+			outValue = lValue;
+		}
+		else
+		{
+			lValue = Math.round( inValue * 10.0 );
+			outValue = lValue / 10.0;
+		}
+		return outValue;
+	}
+
+	// Convert milliseconds into a friendlier human readable string
+	public static String formatTimeIntervalMS( long inTime )
+	{
+		double currNum = inTime;
+
+		String units = null;
+		boolean doPluralCheck = true;
+
+		// ms
+		if( currNum < 1000.0 )
+		{
+			units = "ms";
+			doPluralCheck = false;
+		}
+		else
+		{
+			currNum /= 1000.0;
+			// seconds
+			if( currNum < 60.0 )
+			{
+				units = "sec";
+			}
+			else
+			{
+				currNum /= 60.0;
+				// mins
+				if( currNum < 60.0 )
+				{
+					units = "min";
+				}
+				else
+				{
+					currNum /= 60.0;
+					// hours
+					if( currNum < 24.0 )
+					{
+						units = "hour";
+					}
+					else
+					{
+						currNum /= 24.0;
+						units = "day";
+					}
+				}
+			}
+		}
+
+		// Get the decimal number, rounded to int if > 10, to .1 if < 10
+		double displayValue = formatDoubleToDisplayPrecision( currNum );
+		String displayValueStr = "" + displayValue;
+		if( displayValueStr.endsWith(".0") )
+		{
+			if( displayValueStr.length() > 2 )
+				displayValueStr = displayValueStr.substring(
+					0, displayValueStr.length()-2
+					);
+			// ^^^ it was length - 2 (".0".len) -1 (zero based offset) + 1
+			// because substr( ... endIndex) means endIndex-1
+			// so the -1 and +1 cancel out
+		}
+
+		if( doPluralCheck )
+		{
+			if( ! displayValueStr.equals("1")
+				&& ! displayValueStr.equals("-1")
+				)
+			{
+				units += "s";
+			}
+		}
+
+
+
+		// Put together the final answer
+		String outTimeStr = displayValueStr + " " + units;
+
+		return outTimeStr;
+	}
+
+	// This is basically a convernience wrapper around
+	// Integer.parseInt which avoids thrown NumberFormatException exceptions
+	// Use this if you DON'T CARE whether a string was present or not
+	// or had an invalid format, etc.
+	// You can also ask it to throw a warning if you really want,
+	// but it does NOT throw a warning by default - typically if you care
+	// about such things you'll check the string and parse exception yourself.
+	// This one defaults to zero
+	public static int stringToIntOrDefaultValue( String inStr )
+	{
+		return stringToIntOrDefaultValue( inStr, 0, false );
+	}
+	// This one defaults to no warning
+	public static int stringToIntOrDefaultValue( String inStr, int inDefault )
+	{
+		return stringToIntOrDefaultValue( inStr, inDefault, false );
+	}
+	public static int stringToIntOrDefaultValue(
+		String inStr, int inDefault, boolean inDoWarnings
+		)
+	{
+		String tmpStr = trimmedStringOrNull( inStr );
+		if( tmpStr == null )
+		{
+			if( inDoWarnings )
+				System.err.println(
+					"WARNING: NIEUtil:stringToIntOrDefaultValue:"
+					+ " Was passed in null or empty string."
+					+ " Will return default value of " + inDefault + "."
+					);
+			return inDefault;
+		}
+
+		int outInt = inDefault;
+		try
+		{
+			outInt = Integer.parseInt( tmpStr );
+		}
+		catch (Exception e)  // Actually NumberFormatException
+		{
+			if( inDoWarnings )
+				System.err.println(
+					"WARNING: NIEUtil:stringToIntOrDefaultValue:"
+					+ " Unable to parse an integer from the input string."
+					+ " Exception was \"" + e + "\"."
+					+ " Input string was \"" + inStr + "\"."
+					+ " Will return default value of " + inDefault + "."
+					);
+			outInt = inDefault;
+		}
+		// return whatever's left
+		return outInt;
+	}
+
+	// We always return a string, maybe just "<font>"
+	public static String makeFontTagString(
+		String inSize, String inColor, String inFace
+		)
+	{
+		StringBuffer outBuff = new StringBuffer();
+		outBuff.append( "<font" );
+
+		// the Size
+		inSize = trimmedStringOrNull( inSize );
+		if( inSize != null )
+		{
+			outBuff.append( " size=\"" );
+			outBuff.append( inSize );
+			outBuff.append( '"' );
+		}
+
+		// the Color
+		inColor = trimmedStringOrNull( inColor );
+		if( inColor != null )
+		{
+			outBuff.append( " color=\"" );
+			outBuff.append( inColor );
+			outBuff.append( '"' );
+		}
+
+		// Font face
+		inFace = trimmedStringOrNull( inFace );
+		if( inFace != null )
+		{
+			outBuff.append( " face=\"" );
+			outBuff.append( inFace );
+			outBuff.append( '"' );
+		}
+
+		outBuff.append( '>' );
+
+		return new String( outBuff );
+	}
+
+
+	// We always return a string, maybe just "<font>"
+	public static String makeImageTagString(
+				String inSrc, String inAlt,
+				String inWidth, String inHeight,
+				String inBorder, String inHSpace, String inVSpace
+		)
+	{
+
+		StringBuffer outBuff = new StringBuffer();
+		outBuff.append( "<img" );
+
+		// the src itself
+		inSrc = trimmedStringOrNull( inSrc );
+		if( inSrc != null )
+		{
+			outBuff.append( " src=\"" );
+			outBuff.append( inSrc );
+			outBuff.append( '"' );
+		}
+		else
+		{
+			System.err.println( "Warning: NIEUtil.makeImageTagString:"
+				+ " No src field passed in for image tag?"
+				+ " Will finish making tag but doubt it will work correctly."
+				);
+		}
+
+		// the Alt tag
+		// Todo: maybe encode this at some point???
+		inAlt = trimmedStringOrNull( inAlt );
+		if( inAlt != null )
+		{
+			outBuff.append( " alt=\"" );
+			outBuff.append( inAlt );
+			outBuff.append( '"' );
+		}
+
+		// Font border
+		inBorder = trimmedStringOrNull( inBorder );
+		if( inBorder != null )
+		{
+			outBuff.append( " border=\"" );
+			outBuff.append( inBorder );
+			outBuff.append( '"' );
+		}
+
+
+		// the height
+		inHeight = trimmedStringOrNull( inHeight );
+		if( inHeight != null )
+		{
+			outBuff.append( " height=\"" );
+			outBuff.append( inHeight );
+			outBuff.append( '"' );
+		}
+
+		// the Width
+		inWidth = trimmedStringOrNull( inWidth );
+		if( inWidth != null )
+		{
+			outBuff.append( " width=\"" );
+			outBuff.append( inWidth );
+			outBuff.append( '"' );
+		}
+
+		// the HSpace
+		inHSpace = trimmedStringOrNull( inHSpace );
+		if( inHSpace != null )
+		{
+			outBuff.append( " hspace=\"" );
+			outBuff.append( inHSpace );
+			outBuff.append( '"' );
+		}
+
+		// the VSpace
+		inVSpace = trimmedStringOrNull( inVSpace );
+		if( inVSpace != null )
+		{
+			outBuff.append( " vspace=\"" );
+			outBuff.append( inVSpace );
+			outBuff.append( '"' );
+		}
+
+		outBuff.append( " />" );
+
+		return new String( outBuff );
+	}
+
+
+	// We always return a string, maybe just "<table>"
+	public static String makeTableTagString(
+		String inWidth, String inBorder,
+		String inCellPadding, String inCellSpacing,
+		String inBGColor, String inBGImage
+		)
+	{
+
+		StringBuffer outBuff = new StringBuffer();
+		outBuff.append( "<table" );
+
+		// the Width tag
+		inWidth = trimmedStringOrNull( inWidth );
+		if( inWidth != null )
+		{
+			outBuff.append( " width=\"" );
+			outBuff.append( inWidth );
+			outBuff.append( '"' );
+		}
+
+
+		// the Border tag
+		inBorder = trimmedStringOrNull( inBorder );
+		if( inBorder != null )
+		{
+			outBuff.append( " border=\"" );
+			outBuff.append( inBorder );
+			outBuff.append( '"' );
+		}
+
+
+
+		// Cell padding
+		inCellPadding = trimmedStringOrNull( inCellPadding );
+		if( inCellPadding != null )
+		{
+			outBuff.append( " cellpadding=\"" );
+			outBuff.append( inCellPadding );
+			outBuff.append( '"' );
+		}
+
+		// Cell spacing
+		inCellSpacing = trimmedStringOrNull( inCellSpacing );
+		if( inCellSpacing != null )
+		{
+			outBuff.append( " cellspacing=\"" );
+			outBuff.append( inCellSpacing );
+			outBuff.append( '"' );
+		}
+
+
+		// Cell padding
+		inBGColor = trimmedStringOrNull( inBGColor );
+		if( inBGColor != null )
+		{
+			outBuff.append( " bgcolor=\"" );
+			outBuff.append( inBGColor );
+			outBuff.append( '"' );
+		}
+
+		// Cell spacing
+		inBGImage = trimmedStringOrNull( inBGImage );
+		if( inBGImage != null )
+		{
+			outBuff.append( " background=\"" );
+			outBuff.append( inBGImage );
+			outBuff.append( '"' );
+		}
+
+		// Wrap up
+		outBuff.append( " />" );
+
+		return new String( outBuff );
+	}
+
+
+	public static String getTimestamp()
+	{
+		DateFormat formatter = DateFormat.getDateTimeInstance(
+			DateFormat.SHORT, DateFormat.LONG
+			);
+		// Gives: 7/15/02 4:34:45 PM PDT
+
+		// Also DateFormat.FULL, DateFormat.FULL
+		// Example: July 15, 2002 4:33:39 PM PDT
+		// Also DateFormat.SHORT, DateFormat.SHORT
+		// Example: 7/15/02 4:32 PM
+
+		return formatter.format( new Date() );
+	}
+
+
+
+	private static void __More_Elaborate_String_Methods__() {}
+
+	// Markup a string with another string based on a literal pattern
+	// By default, we place the new string after the first match
+	// By default we are NOT case sensitive
+	// If you give a list of patterns, we'll use the first one that matches
+	// *** NOTE ***
+	// If NO SUBSTITUSIONS ARE MADE YOU GET BACK A true _NULL_ STRING.
+	// This is so you can easily tell if a match was done, because you may care.
+	// Todo:
+	// Support regex
+	// Support nth match
+	// Support doing more than one match
+
+
+	public static String markupStringWtihString(
+		String inMainDoc,
+		String inNewText,
+		String inPattern
+		)
+	{
+		// We must do a sanity check to avoid a null exception
+		if( inPattern == null )
+		{
+			System.err.println( "Error: NIEUtil.markupStringWtihString:"
+				+ " Was passed in a null scalar value."
+				+ " Returning NULL (because no substituions were done)."
+				);
+			return null;
+			// return inMainDoc;
+		}
+		// Convert the pattern to a list
+		List lPatterns = new Vector();
+		lPatterns.add( inPattern );
+
+		// Now call the main method, let it assign defaults
+		return markupStringWtihString(
+				inMainDoc, inNewText, lPatterns
+				);
+	}
+
+	public static String markupStringWtihString(
+		String inMainDoc,
+		String inNewText,
+		String inPattern,
+		boolean inInsertAfter,
+		boolean inReplaceMatchedText,
+		boolean inIsCaseSensitive
+		)
+	{
+		// We must do a sanity check to avoid a null exception
+		if( inPattern == null )
+		{
+			System.err.println( "Error: NIEUtil.markupStringWtihString:"
+				+ " Was passed in a null scalar value."
+				+ " Returning NULL (since no substitutions were done)."
+				);
+			return null;
+			// return inMainDoc;
+		}
+		// Convert the pattern to a list
+		List lPatterns = new Vector();
+		lPatterns.add( inPattern );
+
+		// Now call the main method
+		return markupStringWtihString(
+				inMainDoc, inNewText, lPatterns,
+				inInsertAfter, inReplaceMatchedText, inIsCaseSensitive
+				);
+	}
+
+
+
+	public static String markupStringWtihString(
+		String inMainDoc,
+		String inNewText,
+		List inPatterns
+		)
+	{
+		return markupStringWtihString(
+			inMainDoc, inNewText, inPatterns,
+			true, false, false
+			);
+	}
+
+	public static String markupStringWtihString(
+		String inMainDoc,
+		String inNewText,
+		List inPatterns,
+		boolean inInsertAfter,
+		boolean inReplaceMatchedText,
+		boolean inIsCaseSensitive
+		)
+	{
+
+		// For sanity checking it's nice to know WHICH item was null
+		// so break these into 3 checks
+		if( inMainDoc==null || inMainDoc.length()<1 )
+		{
+			String tmpMsg = inMainDoc==null ? "inMainDoc is NULL" :
+				"inMainDoc is an empty string."
+				;
+			System.err.println( "Error: NIEUtil.markupStringWtihString:"
+				+ tmpMsg
+				+ " Returning NULL (since no substitutions were done)."
+				);
+			return null;
+		}
+		if( inNewText==null || inNewText.length()<1 )
+		{
+			String tmpMsg = inNewText==null ? "inNewText is NULL" :
+				"inNewText is an empty string."
+				;
+			System.err.println( "Error: NIEUtil.markupStringWtihString:"
+				+ tmpMsg
+				+ " Returning NULL (since no substitutions were done)."
+				);
+			return null;
+		}
+		if( inPatterns==null || inPatterns.size()<1 )
+		{
+			String tmpMsg = inPatterns==null ? "inPatterns is NULL" :
+				"inPatterns has zero elements."
+				;
+			System.err.println( "Error: NIEUtil.markupStringWtihString:"
+				+ tmpMsg
+				+ " Returning NULL (since no substitutions were done)."
+				);
+			return null;
+		}
+
+		// Start the outbuffer as null
+		StringBuffer outBuff = null;
+
+		// Get a version of the doc that we will search
+		String searchDoc = inMainDoc;
+		if( ! inIsCaseSensitive )
+			searchDoc = searchDoc.toLowerCase();
+
+		// Now loop through each pattern until we do a markup
+		for( Iterator it = inPatterns.iterator(); it.hasNext(); )
+		{
+			// Get the pattern
+			String currPattern = (String)it.next();
+			// Normalize if needed
+			if( ! inIsCaseSensitive )
+				currPattern = currPattern.toLowerCase();
+			// sanity check
+			if( currPattern == null || currPattern.length()<1 )
+			{
+				System.err.println( "Warning: NIEUtil.markupStringWtihString:"
+					+ " Encountered null/empty pattern in list."
+					+ " Ignoring this pattern; will continue checking any"
+					+ " remaining patterns."
+					);
+				continue;
+			}
+
+			// now see if we have a match
+			int patternAt = searchDoc.indexOf( currPattern );
+
+			// Try next pattern if this one didn't match
+			if( patternAt < 0 )
+				continue;
+
+			// Separate out portions of the source document
+			// Note: lengths are 1 based whereas offsets are zero based,
+			// and the SECOND argument to substring is actually off by 1
+			// by design (see Java Doc).
+			// These things tend to cancel each other out, so I have
+			// ommitted the +1 -1 BS below.
+
+			// The part before the matched pattern
+			String partA = "";
+			// Grab it (if pattern not at start of doc)
+			if( patternAt > 0 )
+				partA = inMainDoc.substring( 0, patternAt );
+
+			// The matched pattern itself
+			// We want to extract original, non-normalized form from
+			// the original docuemnt
+			int endPartAt = patternAt + currPattern.length();
+			String partB = inMainDoc.substring( patternAt, endPartAt );
+
+			// The final part of the document, AFTER the matched pattern
+			String partC = "";
+			// Grab it (if pattern not at end of document)
+			// (Note: NOT <= length )
+			if( endPartAt < inMainDoc.length() )
+					partC = inMainDoc.substring( endPartAt );
+
+			// Piece things together
+
+			// Init the buffer
+			outBuff = new StringBuffer();
+
+			// Add in part A, the part before the pattern
+			outBuff.append( partA );
+
+			// If we're NOT including the new text AFTER the pattern
+			// then we are including it BEFORE the pattern
+			if( ! inInsertAfter )       // Insert BEFORE
+				outBuff.append( inNewText );
+
+			// Now, do we want to include the actual matched pattern
+			// itself?  Well if we're NOT REPLACING it then we ARE
+			// going to add it.
+			if( ! inReplaceMatchedText )    // we're keeping it
+				outBuff.append( partB );
+
+			// If we're including the new text AFTER the pattern
+			// then go ahead and add it
+			if( inInsertAfter )       // Insert AFTER
+				outBuff.append( inNewText );
+
+			// And finally, add the remainder of the document
+			outBuff.append( partC );
+
+			// OK, we found a match and handled it, we're done
+			break;
+
+		}   // End of loop for each pattern to check
+
+
+		// Return the results if we have any, or the original document
+		if( outBuff != null )
+			return new String( outBuff );
+		// Or send back a null, indicating that no substitutions were done
+		else
+			return null;
+		// Or send back the original
+			// return inMainDoc;
+
+	}
+
+	private static void __File_Names_and_URLs__() {}
+
+	// Is it relative?  Or Absolute?
+	// Will return FALSE on null, and by default we do warn you
+	// If you send in a null, both isRelative and isAbsolute will
+	// return false, since any question about a null object should be false
+	public static boolean isRelativeFilePath( String inPath )
+	{
+		return isRelativeFilePath( inPath, true );
+	}
+	public static boolean isRelativeFilePath(
+		String inPath, boolean inDoWarnings
+		)
+	{
+		String tmpStr = NIEUtil.trimmedStringOrNull( inPath );
+		if( tmpStr == null )
+		{
+			if( inDoWarnings && tmpStr == null )
+			{
+				System.err.println( "Warning: NIEUtil:isRelativeFilePath:"
+					+ " Was passed in a null or empty path to check."
+					+ " Returning false."
+					);
+			}
+			return false;
+		}
+
+		// Instantiate a File object so we can use it's methods
+		File lTestFile = new File( tmpStr );
+		// return the opposite of it's isAbsolute method
+		return ! lTestFile.isAbsolute();
+	}
+	public static boolean isAbsoluteFilePath( String inPath )
+	{
+		return isAbsoluteFilePath( inPath, true );
+	}
+	public static boolean isAbsoluteFilePath( String inPath, boolean inDoWarnings )
+	{
+		String tmpStr = NIEUtil.trimmedStringOrNull( inPath );
+		if( tmpStr == null )
+		{
+			if( inDoWarnings && tmpStr == null )
+			{
+				System.err.println( "Warning: NIEUtil:isAbsoluteFilePath:"
+					+ " Was passed in a null or empty path to check."
+					+ " Returning false."
+					);
+			}
+			return false;
+		}
+
+		// Instantiate a File object so we can use it's methods
+		File lTestFile = new File( tmpStr );
+		// return the file's isAbsolute method
+		return lTestFile.isAbsolute();
+	}
+
+
+	// A central place to concatenate paths.
+	// This way if we change how we decide to do it, it'll all be
+	// in one place
+	// If one is null then we don't do it, just return the other one
+	// If both are null we return null
+	// We DO WARN YOU by default
+	public static String concatPaths( String inStr1, String inStr2 )
+	{
+		return concatPaths( inStr1, inStr2, true );
+	}
+	public static String concatPaths(
+		String inStr1, String inStr2, boolean inDoWarnings
+		)
+	{
+		String lStr1 = NIEUtil.trimmedStringOrNull( inStr1 );
+		String lStr2 = NIEUtil.trimmedStringOrNull( inStr2 );
+		if( inDoWarnings && ( lStr1 == null || lStr2 == null ) )
+		{
+			System.err.println( "Warning: NIEUtil:concatPaths:"
+				+ " At least one component was null or empty."
+				+ ", inStr1=\"" + inStr1 + "\""
+				+ ", inStr2=\"" + inStr2 + "\"."
+				+ " Will return remaining none-empty segment, if present,"
+				+ " with no conact symbol."
+				);
+		}
+		// Don't add slashes if one was null
+		if( lStr1 == null )
+			return lStr2;
+		if( lStr2 == null )
+			return lStr1;
+		// Concat and return
+		return lStr1 + "/" + lStr2;
+		// Todo: find out preferred OS independent way to do this
+	}
+
+
+	public static String concatURLAndEncodedCGIBuffer( String inURL,
+		String inCGIFieldBuffer
+		)
+	{
+		return concatURLAndEncodedCGIBuffer( inURL, inCGIFieldBuffer, true );
+	}
+	public static String concatURLAndEncodedCGIBuffer( String inURL,
+		String inCGIFieldBuffer, boolean inDoWarnings
+		)
+	{
+		String outURL = trimmedStringOrNull( inURL );
+		if( outURL == null )
+		{
+			if( inDoWarnings )
+				System.err.println( "Error: NIEUtil.concatURLAndEncodedCGIBuffer:"
+					+ " Input URL was null/empty, will return null."
+					);
+			return null;
+		}
+		String cgivars = trimmedStringOrNull( inCGIFieldBuffer );
+		if( cgivars == null )
+		{
+			if( inDoWarnings )
+				System.err.println( "Warning: NIEUtil.concatURLAndEncodedCGIBuffer:"
+					+ " No CGI variables to add, buffer was null/empty."
+					+ " Will return original URL."
+					);
+			return outURL;
+		}
+
+		// If it doesn't have a question mark, then let's put one
+		if( outURL.indexOf( '?' ) < 0 )
+		{
+			outURL = outURL + "?" + cgivars;
+		}
+		// Else must already have it
+		// If it ends with it, just add us on the end
+		// Perhaps the admin included the trailing ? when they set the
+		// URL in the config file, so no warning mecessary
+		else if( outURL.endsWith("?") )
+		{
+			outURL = outURL + cgivars;
+		}
+		// Else it has a ?, but not at the end, so add us with &
+		// In this case, perhaps the URL already has some hard coded
+		// CGI parameters tacked on, we should just add ourselves to the end
+		// Case 1: hard coded and they added the trailing &
+		else if( outURL.endsWith("&") )
+		{
+			outURL = outURL + cgivars;
+		}
+		// Case 2: hard coded cgi params, and they didn't add the trailing &
+		else
+		{
+			outURL = outURL + "&" + cgivars;
+		}
+
+		return outURL;
+	}
+
+
+	// Given the name of a file, return it's extension, if any
+	// Returns NULL if no extension
+	// Simple versions set some default flags for behavior:
+	// Set default: Yes, do trim whitespace from the extension
+	// Set default: Yes, do normalize to lower case
+	// Set default: valid extensions are at most 5 characters long
+	public static String extractFileExtension( String inFileName )
+	{
+		return extractFileExtension( inFileName,
+			true, true
+		);
+	}
+	public static String extractFileExtension( String inFileName,
+		boolean doTrim, boolean normalizeToLowerCase
+		)
+	{
+		return extractFileExtension( inFileName,
+			doTrim, normalizeToLowerCase, 5
+			);
+	}
+	// The full version
+	public static String extractFileExtension( String inFileName,
+		boolean doTrim, boolean normalizeToLowerCase, int maxLength
+		)
+	{
+		if( inFileName == null )
+			return null;
+
+		// Where is our period?
+		int lastPeriodAt = inFileName.lastIndexOf( '.' );
+		// If there's no period, then there's no extension
+		if( lastPeriodAt < 0 )
+			return null;
+		// If the period is at the very end, then nothing left
+		// to form an extension
+		if( lastPeriodAt == inFileName.length()-1 )
+			return null;
+
+		// Find out where the last slash (of either type) is in the string
+		int lastForwardSlashAt = inFileName.lastIndexOf( '/' );
+		int lastBackSlashAt = inFileName.lastIndexOf( '\\' );
+		int lastSlashAt = lastForwardSlashAt > lastBackSlashAt ?
+			lastForwardSlashAt : lastBackSlashAt;
+
+		// Sanity check, the last period should be after the last slash
+		if( lastPeriodAt < lastSlashAt )
+			return null;
+
+		// OK, we have a period and stuff after it, so we have
+		// a potential extension
+		// Let's get it!
+
+		String ext = inFileName.substring( lastPeriodAt+1 );
+
+		// Some normalization
+		if( doTrim )
+			ext = ext.trim();
+		if( normalizeToLowerCase )
+			ext = ext.toLowerCase();
+
+		// Sanity check, a zero length extension is forced to null
+		if( ext.equals("") )
+			return null;
+
+		// Sanity check on length, IF we've been told to check
+		if( maxLength > 0 && ext.length() > maxLength )
+			return null;
+
+		// OK, we've run the gauntlet, go ahead and return the answer
+		return ext;
+
+	}
+
+
+	// Similar to the file version (actually windws up calling it)
+	// but removes any CGI or #rel-ref stuff first
+	public static String extractExtensionFromURL( String inFileName )
+	{
+		return extractExtensionFromURL( inFileName,
+			true, true
+		);
+	}
+	public static String extractExtensionFromURL( String inFileName,
+		boolean doTrim, boolean normalizeToLowerCase
+		)
+	{
+		return extractExtensionFromURL( inFileName,
+			doTrim, normalizeToLowerCase, 5
+			);
+	}
+	// The full version
+	public static String extractExtensionFromURL( String inFileName,
+		boolean doTrim, boolean normalizeToLowerCase, int maxLength
+		)
+	{
+
+		if( inFileName == null )
+			return null;
+
+		// We need to figure out where, if any, the drop-able URL
+		// suffix stuff starts at
+		int qAt = inFileName.indexOf( '?' );
+		int poundAt = inFileName.indexOf( '#' );
+		int suffixCharAt;
+		if( qAt >= 0 )
+			if( poundAt >= 0 )
+				suffixCharAt = poundAt > qAt ? qAt : poundAt;
+			else
+				suffixCharAt = qAt;
+		else if( poundAt >= 0 )
+			suffixCharAt = poundAt;
+		else
+			suffixCharAt = -1;
+
+		String shortURL = null;
+
+		if( suffixCharAt == 0 )
+			return null;
+		else if( suffixCharAt > 0 )
+			shortURL = inFileName.substring( 0, suffixCharAt );
+		else
+			shortURL = inFileName;
+
+		// Now call the regular file name version
+		return extractFileExtension( shortURL,
+			doTrim, normalizeToLowerCase, maxLength
+			);
+	}
+
+
+
+
+	// Given a URL string, return directory portion of it.
+	// If it's already a directory, just return it in tact.
+	// Returns NULL if it has any problems.
+	// The ambiguous flag controls how to handle url's like
+	// http://foo.com/somename
+	public static String extractDirFromURL( String inURL )
+	{
+		// Call with defaults:
+		// Sets default: Ambiguous dirs will be treated as dirs
+		// Sets default: We will not include the trailing slash
+		return extractDirFromURL( inURL, true, false );
+	}
+	public static String extractDirFromURL( String inURL,
+		boolean assertAmbiguousDirectory,
+		boolean includeEndingSlash
+		)
+	{
+		// bypass some of the nullish edge cases
+		if( inURL == null )
+			return null;
+		inURL = inURL.trim();
+		if( inURL.equals("") )
+			return null;
+
+		// Setup the return value in advance
+		String outURL = inURL;
+
+		// look for the opening double slash
+		int doubleSlashAt = inURL.indexOf( "//" );
+		int firstSingleSlashAt;
+		if( doubleSlashAt >= 0 )
+			firstSingleSlashAt = inURL.indexOf( '/', doubleSlashAt+2 );
+		else
+			firstSingleSlashAt = inURL.indexOf( '/' );
+
+		// At this point we know where the first
+		// single slash is
+		// If there's NO first single slash then we know that:
+		// 1: it's a server only url
+		// 2: that does not have a slash
+		// So in that case we just return it
+		// the results
+
+		// If there is no ending slash
+		if( firstSingleSlashAt < 0 )
+		{
+			// Just return it
+			if( ! includeEndingSlash )
+				return outURL;
+			else
+				return outURL + "/";
+		}
+
+		// Now find the last slash in the URL
+		int lastSingleSlashAt = inURL.lastIndexOf( '/' );
+		// Sanity check that we did find one
+		if( lastSingleSlashAt < 0 )
+			if( ! includeEndingSlash )
+				return outURL;
+			else
+				return outURL + "/";
+
+		// If it's at the end, we're OK, just drop
+		// the final slash and return it
+		if( lastSingleSlashAt == inURL.length()-1 )
+		{
+			if( includeEndingSlash )
+				outURL = outURL.substring( 0, lastSingleSlashAt+1 );
+			else
+				outURL = outURL.substring( 0, lastSingleSlashAt );
+			return outURL;
+		}
+
+		// OK we have a path section of the URL
+		// and it doesn't end in a slash
+		// Lets look at it further
+
+		// Grab the final portion of the path
+		String finalPath = inURL.substring( lastSingleSlashAt+1 );
+
+		// If it has a dot OR ? OR # in it we probably have
+		// a file name or cgi call that should be dropped
+		if( finalPath.indexOf('.') >= 0 ||
+			finalPath.indexOf('?') >= 0 ||
+			finalPath.indexOf('#') >= 0
+			)
+		{
+			if( includeEndingSlash )
+				outURL = outURL.substring( 0, lastSingleSlashAt+1 );
+			else
+				outURL = outURL.substring( 0, lastSingleSlashAt );
+			return outURL;
+		}
+
+		// OK at this point we know there is a
+		// final bit of path, and it doesn't seem
+		// to be a a file name or CGI call so it
+		// really looks like it might be a plain old DIR reference
+		// with no slash
+
+		// Let the caller decide
+		if( assertAmbiguousDirectory )
+		{
+			if( includeEndingSlash )
+				return outURL + "/";
+			else
+				// so just return it
+				return outURL;
+		}
+		// Else we've been told to assume it's a file
+		// so we should dump it and return the stem
+		else
+		{
+			if( includeEndingSlash )
+				outURL = outURL.substring( 0, lastSingleSlashAt+1 );
+			else
+				outURL = outURL.substring( 0, lastSingleSlashAt );
+			return outURL;
+		}
+	}
+
+
+	// Given a URL and a root, calculate a new URL
+	public static String combineParentAndChildURLs( String inParent,
+			String inChild
+		)
+		throws IOException
+	{
+		// check and normalize the child
+		if( inChild == null || inChild.trim().equals("") )
+			throw new IOException( "NIEUtil:combineParentAndChildURLs:"
+				+ " NULL or empty child URL passed in."
+			);
+
+		inChild = inChild.trim();
+
+		// check and normalize the parent
+		if( inParent == null || inParent.trim().equals("") )
+		{
+			System.err.println( "WARNING: NIEUtil:combineParentAndChildURLs:"
+				+ " NULL or empty parent URL passed in."
+				+ " Ignring empty parent and returning the child as the URL."
+				);
+			return inChild;
+		}
+		inParent = tweakBaseURL( inParent );
+
+		// init the results
+		String retURLStr = inChild;
+
+		// Now try to form the new URL
+		try
+		{
+			URL parentURL = new URL( inParent );
+			URL childURL = new URL( parentURL, inChild );
+			retURLStr = childURL.toExternalForm();
+		}
+		catch( MalformedURLException mfue )
+		{
+			throw new IOException( "NIEUtil:combineParentAndChildURLs:"
+				+ " Error combing child url '" + inChild + "'"
+				+ " with base/parent/reference url '" + inParent + "'"
+				+ " Exception was: " + mfue
+				);
+		}
+
+		// Fix up the double slash problem
+		retURLStr = cleanURLDoubleSlash( retURLStr );
+
+		return retURLStr;
+	}
+
+	// Selectively add a trailing slash for URL's that seem
+	// to be referencing a simple directory
+	public static String tweakBaseURL( String inURL )
+	{
+		// bypass some of the nullish edge cases
+		if( inURL == null || inURL.trim().equals("") )
+		{
+			System.err.println( "WARNING: NIEUtil:tweakBaseURL:"
+				+ " inURL was NULL or empty.  Returning null."
+				);
+			return null;
+		}
+		inURL = inURL.trim();
+
+		// Setup the return value in advance
+		String outURL = inURL;
+
+		// look for the opening double slash
+		int doubleSlashAt = inURL.indexOf( "//" );
+		int firstSingleSlashAt;
+		if( doubleSlashAt >= 0 )
+			firstSingleSlashAt = inURL.indexOf( '/', doubleSlashAt+2 );
+		else
+			firstSingleSlashAt = inURL.indexOf( '/' );
+
+		// At this point we know where the first
+		// single slash is
+		// If there's NO first single slash then we know that:
+		// 1: it's a server only url
+		// 2: that does not have a slash
+		// So in that case we should add it and return
+		// the results
+
+		// If there is no ending slash
+		if( firstSingleSlashAt < 0 )
+		{
+			// Add one and return
+			outURL = inURL + '/';
+			return outURL;
+		}
+
+		// Now find the last slash in the URL
+		int lastSingleSlashAt = inURL.lastIndexOf( '/' );
+		// Sanity check that we did find one
+		if( lastSingleSlashAt < 0 )
+			return outURL;
+
+		// If it's at the end, we're OK, just return
+		// that URL
+		if( lastSingleSlashAt == inURL.length()-1 )
+			return inURL;
+
+		// OK we have a path section of the URL
+		// and it doesn't end in a slash
+		// Lets look at it further
+
+		// Grab the final portion of the path
+		String finalPath = inURL.substring( lastSingleSlashAt+1 );
+
+		// If it has a dot OR ? OR # in it we probably don't
+		// want to add anything to it
+		if( finalPath.indexOf('.') >= 0 ||
+			finalPath.indexOf('?') >= 0 ||
+			finalPath.indexOf('#') >= 0
+			)
+		{
+			// Just return what we got in
+			return inURL;
+		}
+
+		// OK at this point we know there is a
+		// final bit of path, and it doesn't seem
+		// to be a a file name or CGI call so it
+		// really looks like a plain old DIR reference
+		// so 99 out of 100 times we SHOULD add a slash
+		outURL = inURL + '/';
+		return outURL;
+	}
+
+	// Sometimes when combing URL's we get one with a double slash in it
+	// Clean that case up.
+	// Todo: may be associated with tweak base URL rules
+	public static String cleanURLDoubleSlash( String inURL )
+	{
+		if( inURL == null )
+			return inURL;
+
+		int baseSlashesAt = inURL.indexOf( "//" );
+		if( baseSlashesAt < 0 )
+			return inURL;
+
+		int prefixLen = baseSlashesAt + "//".length() + 1;
+		if( prefixLen == inURL.length() )
+			return inURL;
+		// Get the http:// portion
+		// A little weird math
+		// zero based offset = desired length - 1
+		// sustring offset = final offset + 1
+		// so they cancel
+		String prefix = inURL.substring( 0, prefixLen );
+
+		// Get the rest, this is what we'll be working on
+		// More strange math
+		// Start at prefix length + 1
+		// but offset = start length - 1
+		// so they cancel
+		String suffix = inURL.substring( prefixLen );
+
+		// Short circuit the rest of this mess if we know there's
+		// nothing to be done
+		if( suffix.indexOf('/') != 0 && suffix.indexOf( "//" ) < 0 )
+			return inURL;
+		// Else yes there is something for us to do
+		//else
+		//	System.err.println( "URLBuilder:cleanDoubleSlash: Start.  url='" +
+		//		inURL + "'"
+		//		);
+
+		// Trim off leading /'s, of which there shouldn't be any
+		while( suffix.indexOf('/') == 0 )
+		{
+			if( suffix.length() > 1 )
+				suffix = suffix.substring(1);
+			else
+				suffix = "";
+		}
+
+		while( true )
+		{
+			int doubleSlashAt = suffix.indexOf( "//" );
+			if( doubleSlashAt < 0 )
+				break;
+			int suffixEndingStartsAt = doubleSlashAt + "//".length();
+			if( suffixEndingStartsAt < suffix.length()-1 )
+			{
+				suffix = suffix.substring( 0, doubleSlashAt ) + '/' +
+					suffix.substring( suffixEndingStartsAt );
+			}
+			else
+			{
+				suffix = suffix.substring( 0, doubleSlashAt ) + '/' ;
+			}
+		}
+
+		String outURL = prefix + suffix;
+
+		//System.err.println( "URLBuilder:cleanDoubleSlash: End.  url='" +
+		//	outURL + "'"
+		//	);
+
+		return outURL;
+	}
+
+
+	// Is this a URL or not?
+	// We currently only support http:// prefixes
+	public static boolean isStringAURL( String inCandidateString )
+	{
+
+		if( inCandidateString == null )
+		{
+			System.err.println( "WARNING: NIEUtil:isStringAURL:"
+				+ " Was passed in a null value, returning false."
+				);
+			return false;
+		}
+
+		String tmpStr = inCandidateString.trim().toLowerCase();
+		if( tmpStr.equals("") )
+		{
+			System.err.println( "WARNING: NIEUtil:isStringAURL:"
+				+ " Was passed in an empty value, returning false."
+				);
+			return false;
+		}
+
+		// Is it a URL?
+		if( tmpStr.startsWith("http://") // ||
+			//tmpStr.startsWith("https://") ||
+			//tmpStr.startsWith("ftp://")
+			)
+		{
+			return true;
+		}
+		else
+			return false;
+	}
+
+
+
+
+	private static void __Actual_IO__() {}
+	/////////////////////////////////////////////////////////
+
+	private static void __IO__Returning_Strings__() {}
+
+	public static String fetchURIContentsChar( String inBaseName )
+			throws IOException
+	{
+		return fetchURIContentsChar( inBaseName, null, null, null, null );
+	}
+	public static String fetchURIContentsChar(
+		String inBaseName,
+		String optRelativeRoot
+		)
+		throws IOException
+	{
+		return fetchURIContentsChar(
+			inBaseName, optRelativeRoot,
+			null, null, null
+			);
+	}
+	public static String fetchURIContentsChar(
+		String inBaseName,
+		String optRelativeRoot,
+		String optUsername,
+		String optPassword
+		)
+		throws IOException
+	{
+		return fetchURIContentsChar( inBaseName, optRelativeRoot,
+			optUsername, optPassword, null
+			);
+	}
+	public static String fetchURIContentsChar(
+		String inBaseName,
+		String optRelativeRoot,
+		String optUsername,
+		String optPassword,
+		AuxIOInfo inoutAuxIOInfo
+		)
+		throws IOException
+	{
+
+		//final boolean debug = true;
+		final String kFName = "Debug: NIEUtil.fetchURIContentsChar: ";
+
+		if(debug) System.err.println(
+			kFName + "Start, about to open reader with openURIReadChar."
+			);
+
+		LineNumberReader lReader = openURIReadChar(
+			inBaseName, optRelativeRoot,
+			optUsername, optPassword, inoutAuxIOInfo
+			);
+
+		if(debug) System.err.println(
+			kFName + "Back from openURIReadChar."
+			);
+
+		StringBuffer strBuff = new StringBuffer();
+		String line = null;
+		while(true)
+		{
+			if(debug) System.err.println(
+				kFName + "Top of while read-line loop."
+				);
+
+			line=((BufferedReader)lReader).readLine();
+			if( line!=null )
+			{
+				if(debug) System.err.println(
+					kFName + "Got a line: \"" + line + "\""
+					);
+				strBuff.append( line );
+				// aparently we don't get newlines, so add one
+				strBuff.append( '\n' );
+			}
+			else
+			{
+				if(debug) System.err.println(
+					kFName + "Got a NULL line, will break from loop."
+					);
+				break;
+			}
+		}
+
+		lReader.close();
+		lReader = null;
+
+		if(debug) System.err.println(
+			kFName + "Done."
+			);
+
+		return new String( strBuff );
+	}
+
+
+
+
+
+
+	// Open Sockets
+
+	private static void __IO__Opening_Char_Sockets__() {}
+
+	public static LineNumberReader openURIReadChar( String inBaseName )
+			throws IOException
+	{
+		return openURIReadChar( inBaseName, null, null, null, null );
+	}
+	public static LineNumberReader openURIReadChar(
+		String inBaseName,
+		String optRelativeRoot
+		)
+		throws IOException
+	{
+		return openURIReadChar( inBaseName, optRelativeRoot, null, null, null );
+	}
+
+	public static LineNumberReader openURIReadChar(
+		String inBaseName,
+		String optRelativeRoot,
+		String optUsername,
+		String optPassword
+		)
+		throws IOException
+	{
+		return openURIReadChar( inBaseName, optRelativeRoot,
+			optUsername, optPassword, null
+			);
+	}
+
+	public static LineNumberReader openURIReadChar(
+		String inBaseName,
+		String optRelativeRoot,
+		String optUsername,
+		String optPassword,
+		AuxIOInfo inoutAuxIOInfo
+		)
+			throws IOException
+	{
+
+		// final boolean debug = true;
+		final String kFName = "Debug: NIEUtil.openURIReadChar: ";
+
+		if(debug) System.err.println( kFName +
+			" Start.  About to call openURIReadBin."
+			);
+
+		// Try to get a stream
+		// If it fails it should throw an exception
+		InputStream lStream = openURIReadBin(
+			inBaseName, optRelativeRoot,
+			optUsername, optPassword,
+			inoutAuxIOInfo
+			);
+
+		if(debug) System.err.println( kFName +
+			"Back from openURIReadBin, will now create LineNumberReader."
+			);
+
+
+		// Now convert it to a character reading gizmo
+
+		// BufferedReader has readLine()
+		// LineNumberReader has readLine AND getLineNumber
+		LineNumberReader outReader = new LineNumberReader(
+			new InputStreamReader( lStream ), 2048
+			);
+
+		// return it
+		return outReader;
+
+	}
+
+	// Given a FILE name, open it for character reading
+	// Don't freak out about the LineNumberReader,
+	// you can take the result and assign it to a plain old
+	// Reader interface variable and ignore the extra methods.
+	// You can supply a base reference path if your file is
+	// relative; if you supply a base, you need to tell us whether
+	// you insist we use it, or leave it up to our best judgement.
+	// YOU need to clean up your stream when you're done!
+	// AND you should set the variable to NULL after you close it
+	// so that the underlying stream will go away.
+	// First signature just sets the options to null/false.
+	// Implementation note:
+	// This is just a wrapper around the binary versions of openFileReadBin
+	// coded below.
+	// Just like Reader, except with line numbers.
+	public static LineNumberReader openFileReadChar( String inBaseName )
+			throws IOException
+	{
+		return openFileReadChar( inBaseName, null, null );
+	}
+	public static LineNumberReader openFileReadChar(
+		String inBaseName,
+		String optRelativeRoot
+		)
+			throws IOException
+	{
+		return openFileReadChar( inBaseName, optRelativeRoot, null );
+	}
+	public static LineNumberReader openFileReadChar(
+		String inBaseName,
+		String optRelativeRoot,
+		AuxIOInfo inoutAuxIOInfo
+		)
+			throws IOException
+	{
+
+		// Try to get a stream
+		// If it fails it should throw an exception
+		InputStream lStream = openFileReadBin(
+			inBaseName, optRelativeRoot, inoutAuxIOInfo
+			);
+
+		// Now convert it to a character reading gizmo
+
+		// BufferedReader has readLine()
+		// LineNumberReader has readLine AND getLineNumber
+		LineNumberReader outReader = new LineNumberReader(
+			new InputStreamReader( lStream ), 2048
+			);
+
+		// return it
+		return outReader;
+	}
+
+
+
+	private static void __IO__Opening_Binary_Sockets__() {}
+
+	public static InputStream openURIReadBin( String inBaseName )
+			throws IOException
+	{
+		return openURIReadBin( inBaseName, null, null, null, null );
+	}
+	public static InputStream openURIReadBin(
+		String inBaseName,
+		String optRelativeRoot
+		)
+		throws IOException
+	{
+		return openURIReadBin( inBaseName, optRelativeRoot, null, null, null );
+	}
+	public static InputStream openURIReadBin(
+		String inBaseName, String optRelativeRoot,
+		String optUsername,	String optPassword
+		)
+			throws IOException
+	{
+		return openURIReadBin( inBaseName, optRelativeRoot,
+			optUsername, optPassword, null
+			);
+	}
+	public static InputStream openURIReadBin(
+		String inBaseName,
+		String optRelativeRoot,
+		String optUsername,
+		String optPassword,
+		AuxIOInfo inoutAuxIOInfo
+		)
+			throws IOException
+	{
+
+		// final boolean debug = true;
+		final String kFName = "Debug: NIEUtil.openURIReadBin: ";
+
+		if(debug) System.err.println( kFName +
+			" Start.  URI=\"" + inBaseName + "\""
+			+ ", optional relative root=\"" + optRelativeRoot + "\""
+			);
+
+		// If we have evidence of a URL, call that method
+		if( ( inBaseName!=null && isStringAURL(inBaseName) ) ||
+			( optRelativeRoot!=null && isStringAURL(optRelativeRoot) )
+			)
+		{
+			if(debug) System.err.println( kFName +
+				" Appears to be a URL, will call openURLReadBin."
+				);
+
+			return openURLReadBin( inBaseName, optRelativeRoot,
+				optUsername, optPassword,
+				inoutAuxIOInfo
+				);
+		}
+		// Else no evidence of a URL, try the file related stuff
+		else
+		{
+			if(debug) System.err.println( kFName +
+				" Appears to be a file, will call openFileReadBin."
+				);
+			// Call the file based routine
+			// Notice that we don't currently pass in the user name
+			// and password.
+			if( optUsername!=null || optPassword!=null )
+				System.err.println( "Warning: NIEUtil:openURIReadBin:"
+					+ " A username and/or password was passed in"
+					+ " but the URI seems to be a file name."
+					+ " Usernames/passwords not currently supported"
+					+ " for file access, only for URL's."
+					+ " Ignoring these extranous values and contineuing."
+					+ " File='" + inBaseName + "'"
+					+ " Username='" + optUsername + "'"
+					+ " (password info suppressed in this warning message)"
+					);
+			return openFileReadBin( inBaseName, optRelativeRoot,
+				inoutAuxIOInfo
+				);
+		}
+
+	}
+
+
+	// Given a FILE name, open it for binary reading
+	// You can supply a base reference path if your file is
+	// relative; if you supply a base, you need to tell us whether
+	// you insist we use it, or leave it up to our best judgement.
+	// YOU need to clean up your stream when you're done!
+	// First signature just sets the options to null/false.
+	public static InputStream openFileReadBin( String inBaseName )
+			throws IOException
+	{
+		return openFileReadBin( inBaseName, null, null );
+	}
+	public static InputStream openFileReadBin(
+			String inBaseName, String optRelativeRoot
+			)
+				throws IOException
+	{
+		return openFileReadBin( inBaseName, optRelativeRoot, null );
+	}
+	public static InputStream openFileReadBin(
+		String inBaseName,
+		String optRelativeRoot,
+		AuxIOInfo inoutAuxIOInfo
+		)
+			throws IOException
+	{
+
+		if( inBaseName == null )
+		{
+			throw new IOException( "NIEUtil:openFileReadBin:"
+				+ " Was passed a null input."
+				);
+		}
+
+		// These a bit of logic to decide whether to use the root
+		// or not
+		boolean useRoot = false;
+		// If we have a root and are specifically told to use it,
+		// then use it!
+		boolean tmpForceUseOfRoot = ( inoutAuxIOInfo!=null &&
+					inoutAuxIOInfo.inForceUseOfRoot
+				) ? true : false;
+
+		if( tmpForceUseOfRoot && optRelativeRoot != null )
+		{
+			useRoot = true;
+		}
+		// Else if a root was passed in we normally only use it
+		// if we have a relative path
+		else if( optRelativeRoot != null )
+		{
+			// If the base file does not seem to be absolute
+			// AND know that we do have a base, go ahead and use it
+			File tmpFile = new File( inBaseName );
+			if( ! tmpFile.isAbsolute() )
+				useRoot = true;
+		}
+		// Else we were told to use a root but none was given,
+		// warn them and continue.
+		else if( tmpForceUseOfRoot )
+		{
+			System.err.println( "WARNING: NIEUtil:openFileReadBin:"
+				+ " optForceUseOfRoot was set to TRUE"
+				+ " but optRelativeRoot was NULL."
+				+ " Ignoring this option and continuing."
+				);
+		}
+
+		// If we're using the root, call the file constructor and
+		// try to open a stream
+		File lFile = null;
+		FileInputStream lStream = null;
+		if( useRoot )
+		{
+			// No try block, just toos it up stream
+			lFile = new File(
+				optRelativeRoot, inBaseName
+				);
+			lStream = new FileInputStream( lFile );
+		}
+		// Else not using root
+		else
+		{
+			// We need to catch the first exception in order to retry
+			try
+			{
+				// Try creating with the user.dir current directory
+				lFile = new File(
+					System.getProperty( "user.dir" ), inBaseName
+					);
+				lStream = new FileInputStream( lFile );
+			}
+			// If it didn't work, try by itself
+			catch (Exception e)
+			{
+				lFile = new File( inBaseName );
+				lStream = new FileInputStream( lFile );
+			}
+
+		}
+
+		return lStream;
+	}
+
+	// This is like the file constructor stuff, but it
+	// takes the current directory into account
+	public static File findInputFile( String inFileName )
+		throws FileNotFoundException, IOException
+	{
+		File theFile = null;
+		try
+		{
+			theFile = new File(
+					System.getProperty( "user.dir" ),
+					inFileName
+				);
+			InputStream tmpStream = new FileInputStream( theFile );
+			tmpStream.close();
+		}
+		catch (Exception e)
+		{
+			theFile = new File( inFileName );
+			InputStream tmpStream = new FileInputStream( theFile );
+			tmpStream.close();
+		}
+
+		return theFile;
+	}
+
+
+	// This is just a wrapper around the binary versions of openFileReadBin
+	// coded below.
+	// Just like Reader, except with line numbers.
+	public static LineNumberReader openURLReadChar( String inBaseName )
+			throws IOException
+	{
+		return openURLReadChar( inBaseName, null, null, null, null );
+	}
+	public static LineNumberReader openURLReadChar(
+		String inBaseName,
+		String optRelativeRoot,
+		String optUsername,
+		String optPassword
+		)
+			throws IOException
+	{
+		return openURLReadChar(
+			inBaseName, optRelativeRoot,
+			optUsername, optPassword,
+			null
+			);
+	}
+	public static LineNumberReader openURLReadChar(
+		String inBaseName,
+		String optRelativeRoot,
+		String optUsername,
+		String optPassword,
+		AuxIOInfo inoutAuxIOInfo
+		)
+			throws IOException
+	{
+
+		// Try to get a stream
+		// If it fails it should throw an exception
+		InputStream lStream = openURLReadBin(
+			inBaseName, optRelativeRoot,
+			optUsername, optPassword,
+			inoutAuxIOInfo
+			);
+
+		// Now convert it to a character reading gizmo
+
+		// BufferedReader has readLine()
+		// LineNumberReader has readLine AND getLineNumber
+		LineNumberReader outReader = new LineNumberReader(
+			new InputStreamReader( lStream ), 2048
+			);
+
+		// return it
+		return outReader;
+	}
+
+
+	// First signature just sets the options to null/false.
+	public static InputStream openURLReadBin( String inBaseName )
+			throws IOException
+	{
+		return openURLReadBin( inBaseName, null );
+	}
+	public static InputStream openURLReadBin(
+		String inBaseName,
+		String optRelativeRoot
+		)
+			throws IOException
+	{
+		return openURLReadBin( inBaseName, optRelativeRoot,
+			null, null, null
+			);
+	}
+
+	public static InputStream openURLReadBin(
+		String inBaseName,
+		String optRelativeRoot,
+		String optUsername,
+		String optPassword
+		)
+			throws IOException
+	{
+		return openURLReadBin( inBaseName, optRelativeRoot,
+			optUsername, optPassword, null
+			);
+	}
+
+	// The real deal
+	// WARNING: We only set the "host" and client-name fields if you
+	// don't pass us in an auxIO
+	// Otherwise we ASSUME you've put them in the http header hash
+	// Todo: right now we don't even put host
+	public static InputStream openURLReadBin(
+		String inBaseName,
+		String optRelativeRoot,
+		String optUsername,
+		String optPassword,
+		AuxIOInfo inoutAuxInfo
+		)
+			throws IOException
+	{
+
+		// final boolean debug = true;
+		final String kFName = "Debug: NIEUtil.openURLReadBin: ";
+
+		if(debug) System.err.println( kFName +
+			" Start.  URI=\"" + inBaseName + "\""
+			+ ", optional relative root=\"" + optRelativeRoot + "\""
+			);
+
+
+		if( inBaseName == null )
+		{
+			throw new IOException( "NIEUtil:openURLReadBin:"
+				+ " Was passed a null input."
+				);
+		}
+
+
+		String localClientString = null;
+		// If aux info is not null we will IGNORE this setting
+		if( inoutAuxInfo != null )
+		{
+			localClientString = inoutAuxInfo.getClientName();
+			if(debug) System.err.println( kFName +
+				"Have a non-null aux object, setting to .getClientName"
+				+ " which = \"" + localClientString + "\""
+				);
+		}
+		// If it's null, default to using our default
+		else
+		{
+			localClientString = AuxIOInfo.DEFAULT_HTTP_USER_AGENT_FIELD;
+			if(debug) System.err.println( kFName +
+				"Have a NULL aux object, setting to static default"
+				+ " which = \"" + localClientString + "\""
+				);
+		}
+		// Todo: way to supprsee field all together
+
+
+		// Setup user name and password stuff, if it was indicated
+		if( optUsername != null || optPassword != null )
+		{
+			setupGlobalHTTPAuthentication( optUsername, optPassword );
+			if(debug) System.err.println( kFName +
+				"Setting up global http authentication"
+				);
+		}
+		else
+		{
+			if(debug) System.err.println( kFName +
+				"No username and/or pwd set, not setting up authentication."
+				);
+		}
+
+		// Start with just the base name
+		String theURLString = inBaseName;
+		// If we have a parent base, use it
+		// Notice, unlike the file based method, there is no "force" flag
+		if( optRelativeRoot != null )
+		{
+			if(debug) System.err.println( kFName +
+				"Non null relative base = \"" + optRelativeRoot + "\""
+				);
+			theURLString = combineParentAndChildURLs(
+				optRelativeRoot, inBaseName
+				);
+		}
+
+		// Record the URL we will actually attempt
+		if( inoutAuxInfo != null )
+			inoutAuxInfo.outAttemptedURI = theURLString;
+
+		if(debug) System.err.println( kFName +
+			"Final calculated URL = \"" + theURLString + "\""
+			);
+
+		// Add any CGI fields to URL, if any
+		// Todo: Only works with GET
+		if( inoutAuxInfo != null )
+		{
+			if(debug) System.err.println( kFName +
+				"Will add any cgi fields from aux io object."
+				);
+
+			// Add in any cgi fields
+
+			// If method = GET....
+
+			// Now get all the variables as an encoded string
+			String lCGIBuffer = inoutAuxInfo.getCGIFieldsAsEncodedBuffer();
+			if(debug)
+				System.err.println( kFName + "CGI Buffer = \"" + lCGIBuffer + "\"" );
+
+			// If we got anything back, add it on
+			if( lCGIBuffer != null && lCGIBuffer.length() > 0 )
+			{
+				// Join the two strings together, usually with a "?"
+				theURLString = NIEUtil.concatURLAndEncodedCGIBuffer(
+					theURLString, lCGIBuffer
+					);
+			}
+
+			if(debug)
+				System.err.println( kFName + "theURLString now = \"" + theURLString + "\"" );
+
+		}
+
+		// Now open the URL
+		URL lURL = null;
+		URLConnection lURLConnection = null;
+		try
+		{
+			if(debug) System.err.println( kFName +
+				"Calling URL constructor."
+				);
+			lURL = new URL( theURLString );
+			if(debug) System.err.println( kFName +
+				"Calling URL .openConnection()"
+				);
+			lURLConnection = lURL.openConnection();
+		}
+//		catch(MalformedException me)
+//		{
+//			throw new Exception( "Bad URL '" +
+//				inFetchURLStr + "', error was '" + me + "'"
+//				);
+//		}
+		catch(IOException ioe)
+		{
+			throw new IOException( "Error opening URL '" +
+				theURLString + "', error was '" + ioe + "'"
+				);
+		}
+
+		if(debug) System.err.println( kFName +
+			"Back from calling URL .openConnection()"
+			);
+
+		// Setup the user agent field
+		if( localClientString != null && inoutAuxInfo == null )
+		{
+			if(debug) System.err.println( kFName +
+				"Setting request property for user agent field."
+				);
+			lURLConnection.setRequestProperty(
+				AuxIOInfo.HTTP_USER_AGENT_FIELD_SPELLING,
+				localClientString
+				);
+		}
+
+		// If we have a hash of HTTP info, add it in
+		if( inoutAuxInfo != null )
+		{
+			if(debug) System.err.println( kFName +
+				"Setting addtional HTTP header fields from auxio object."
+				);
+			List keys = inoutAuxInfo.getHTTPFieldFieldKeys();
+			for( Iterator it = keys.iterator(); it.hasNext(); )
+			{
+				// Get the key and value
+				String key = (String)it.next();
+				String value = inoutAuxInfo.getScalarHTTPFieldTrimOrNull( key );
+				// Add if we got a good value
+				if( value != null )
+				{
+					if(debug) System.err.println( kFName +
+						"HTTP header field: \"" + key + "\"=\"" + value + "\""
+						);
+					lURLConnection.setRequestProperty(
+						key,
+						value
+						);
+				}
+			}
+		}
+
+		boolean lMoreHeaders = true;
+		int lHeaderNumber = 0;
+		boolean saw200Header = false;
+
+		if(debug) System.err.println( kFName +
+			"Done with setup, will fetch header fields (which initiates the connection)."
+			);
+
+		// Read until no more headers
+		while( lMoreHeaders )
+		{
+			if(debug) System.err.println( kFName +
+				"Reqeusting header offset " + lHeaderNumber
+				);
+			String lHeaderKey = lURLConnection.getHeaderFieldKey( lHeaderNumber );
+			String lHeader = lURLConnection.getHeaderField( lHeaderNumber );
+			lHeaderNumber++;
+			if(debug) System.err.println( kFName + "Header: "
+				+ "\"" + lHeaderKey + "\"=\"" + lHeader + "\""
+				);
+			if( lHeader != null )
+			{
+				if( inoutAuxInfo != null )
+				{
+					if( inoutAuxInfo.fIoHTTPHeaders == null )
+						inoutAuxInfo.fIoHTTPHeaders = new Vector();
+					inoutAuxInfo.fIoHTTPHeaders.add( lHeader );
+				}
+				lHeader = lHeader.trim().toUpperCase();
+			}
+
+			// If header not null and starts with http/
+			if( lHeader != null && lHeader.startsWith( "HTTP/" ) )
+			{
+				if(debug) System.err.println( kFName +
+					"HTTP Header Row."
+					);
+				// lMoreHeaders = false; <<== todo: mbennett: I think this is wrong
+				lHeader = lHeader.substring( lHeader.indexOf(' ') ).trim();
+				if( lHeader.startsWith("200") )
+					saw200Header = true;
+				else
+					throw new IOException( "Got non-200 HTTP header:" +
+						lHeader +
+						" URL='" + theURLString + "'"
+						);
+			}
+			if( lHeader == null )
+				lMoreHeaders = false;
+		}
+
+		if(debug) System.err.println( kFName +
+			"Done reading header lines, will now call .getInputStream()"
+			);
+
+		//InputStream lStream = lURL.openStream();
+		InputStream returnStream = lURLConnection.getInputStream();
+
+		if(debug) System.err.println( kFName +
+			"At end, returning stream."
+			);
+
+		return returnStream;
+
+	}
+
+
+
+
+//	// Obs?
+//	// Download the actual content, return it as a string
+//	public static String fetchCharContentFromURI( String inFetchURI,
+//		String optURIRelativeBase,
+//		String optUsername,
+//		String optPassword
+//		)
+//		throws Exception
+//	{
+//
+//		final boolean debug = false;
+//
+//		InputStream lStream = lURLConnection.getInputStream();
+//		StringBuffer strBuff = new StringBuffer();
+//
+//		int c;
+//		while( (c=lStream.read()) != -1 )
+//		{
+//			strBuff.append( (char)c );
+//		}
+//
+//		lStream.close();
+//		lStream = null;
+//		lURLConnection = null;
+//
+//		return new String( strBuff );
+//
+//	}
+
+
+
+	private static void __CGI_and_HTTP_Stuff__() {}
+
+	// Read in an HTTP style request, return an AuxIOInfo structure
+	// with the fully parsed request.
+	// Pass in an input stream.
+	// By default we close it when we're done.
+	public static AuxIOInfo readHTTPRequestFromSocket(
+		InputStream inStream
+		)
+	{
+		return readHTTPRequestFromSocket( inStream, true );
+	}
+	public static AuxIOInfo readHTTPRequestFromSocket(
+		InputStream inStream, boolean closeSocketWhenDone
+		)
+	{
+		if( inStream == null )
+		{
+			System.err.println( "Error:NIEUtil:readHTTPRequestFromSocket:"
+					+ " NULL socket passed in, returning null AuxIOInfo."
+				);
+			return null;
+		}
+
+		// allocate an AuxIOInfo structure
+		AuxIOInfo outInfo = new AuxIOInfo();
+
+		// Get all the lines from the header, as a simple string
+		List lRawLines = readAllHTTPHeaderLinesFromSocket(inStream);
+		// Double check what we got back
+		if( lRawLines == null || lRawLines.size() < 1 )
+		{
+			System.err.println( "Error:NIEUtil:readHTTPRequestFromSocket:"
+					+ " No HTTP haeader lines found, returning null AuxIOInfo."
+				);
+			// Were we asked to clean up?
+			if( closeSocketWhenDone )
+			{
+				try { inStream.close(); } catch (Exception e) {};
+			}
+			return null;
+		}
+		outInfo.fIoHTTPHeaders = lRawLines;
+
+		// Break apart the first line
+		String lFirstLine = (String)lRawLines.get(0);
+
+		// set the request type
+		// Will normalize to upper case by default
+		String lRequestType = cgiParseRequestTypeFromCGIHeader( lFirstLine );
+		outInfo.fIoTransactionType = lRequestType;
+		// Sanity check on the request type
+		if( lRequestType == null ||
+			( ! lRequestType.equals("GET") && ! lRequestType.equals("POST") )
+			)
+		{
+			System.err.println( "Error:NIEUtil:readHTTPRequestFromSocket:"
+				+ " Unknown / unhandled / null request type in HTTP header,"
+				+ " requested type = '" + lRequestType + "'"
+				+ " Currently only support GET and POST."
+				+ " WILL attempt to continue, but most of the remaining code"
+				+ " is specific to just GET and POST."
+				);
+		}
+
+		// set the request path
+		String lRequestedPath = cgiParsePathSectionFromCGIHeader( lFirstLine );
+		// Double check what we got back
+		if( lRequestedPath == null || lRawLines.size() < 1 )
+		{
+			System.err.println( "Error:NIEUtil:readHTTPRequestFromSocket:"
+					+ " No requested path found in first line of HTTP haeader"
+					+ ", line was '" + lFirstLine + "'."
+					+ " This is an INVALID HTTP request, returning null AuxIOInfo."
+				);
+			// Were we asked to clean up?
+			if( closeSocketWhenDone )
+			{
+				try { inStream.close(); } catch (Exception e) {};
+			}
+			return null;
+		}
+		outInfo.fOutRequestedPath = lRequestedPath;
+
+		// parse the headers, store results in outInfo
+		parseHTTPHeaderFields( outInfo, lRawLines );
+//		// It skips the first line by default
+//		Hashtable lHeaderHash = parseHTTPHeaderFields( lRawLines );
+//		// It's nice to have at least something in the aux out
+//		lHeaderHash = ( lHeaderHash != null ) ? lHeaderHash : new Hashtable();
+//		// and then store it
+//		outInfo.fIoHTTPHeaderFieldHash = lHeaderHash;
+
+
+		// read the content
+		// and decide on which string buffer to parse
+		// Annoint the character buffer that will hold encoded CGI variables
+		// We start with an empty buffer, and it's OK if we don't get anything,
+		// some valid web requests don't pass in any variables
+		String encodedBuffer = "";
+
+		if( lRequestType.equals("POST") )
+		{
+			// Go for the content length
+			// long lContentLength = cgiGetContentLengthFromHTTPHeaderHash( lHeaderHash );
+			// long lContentLength = cgiGetContentLengthFromHTTPHeaderHash( outInfo );
+			int lContentLength = outInfo.getExpectedContentLength();
+			// outInfo.fOutContentLength = lContentLength;
+			// Sanity check
+			if( lContentLength < 1 )
+				System.err.println(
+					"Warning: NIEUtil.readHTTPRequestFromSocket:"
+					+ " Did not get back a valid content length for a POST."
+					+ " Will attempt to read content until EOF"
+					+ " but may hang if sender keeps socket open."
+					);
+
+			// Read bytes from stream
+			// And tell him it's to read to EOF if length < 0
+			encodedBuffer = readNBytesFromSocket(
+				inStream, lContentLength, true
+				);
+			if( encodedBuffer != null )
+				outInfo.setContent( encodedBuffer );
+
+		}
+		// If it's a GET, pull the variables from after the ?
+		// in the requested path
+		else if( lRequestType.equals("GET") )
+		{
+			// See if there's a question mark
+			int questionMarkAt = lRequestedPath.indexOf( '?' );
+			if( questionMarkAt >= 0
+				&& questionMarkAt < lRequestedPath.length()-1
+				)
+			{
+				// Grab it
+				encodedBuffer = lRequestedPath.substring( questionMarkAt+1 );
+			}
+		}
+		// Else it's not a GET or a POST, but we've already warned
+		// them about that above
+
+		// parse and store the variables
+		cgiDecodeVarsBuffer( outInfo, encodedBuffer );
+
+//		// parse and store the variables
+//		Hashtable cgiVarHash = cgiDecodeVarsBuffer( encodedBuffer );
+//		// It's OK if we didn't get any variables, but it's nice
+//		// to have a least an empty hash in place
+//		cgiVarHash = ( cgiVarHash != null ) ? cgiVarHash : new Hashtable();
+//		// store it in the aux object
+//		outInfo.fIoCGIFieldHash = cgiVarHash;
+
+		// close the socket unless asked not to do so
+		// Were we asked to clean up?
+		if( closeSocketWhenDone )
+		{
+			try { inStream.close(); } catch (Exception e) {};
+		}
+
+		// done
+		return outInfo;
+
+	}
+
+
+
+	// Returns a simple list of header strings, unparsed
+	// Reads until it gets a "blank line", which it does not keep
+	// Strings will not have their End-Of-Line sequences, they are stripped
+	// Handles CR/LF (spec), LF
+	// Does NOT handle sole CR End-Of-Line sequences
+	// Does NOT close the socket
+	// ?? DOES throw IO Exceptions
+	// Will break for:
+	// simple CR lines (mac software maybe?)
+	// LF/CR, which nobody has ever heard of
+	// inconsistent LF, CR, CR/LF
+	// If you need to handle CR revive one of the uncompleted
+	// fancier versions of this routine below, with the OBS1 and OBS2
+	// prefixes - OBS2 is probably easier to understand.
+	static List readAllHTTPHeaderLinesFromSocket( InputStream inStream )
+//		throws IOException
+	{
+		if( inStream == null )
+		{
+//			throw new IOException( "Error:NIEUtil:readAllHTTPHeaderLinesFromSocket:"
+//					+ " Null socket passed in, returning null lines list."
+//				);
+			System.err.println( "Error:NIEUtil:readAllHTTPHeaderLinesFromSocket:"
+					+ " Null socket passed in, returning null lines list."
+				);
+			return null;
+		}
+
+		List lLines = new Vector();
+		StringBuffer lLine = new StringBuffer();
+		boolean hasSeenEOF = false;
+//		boolean hasSeenBlankLine = false;
+
+		// For each line
+		while( true )
+		{
+			// For each character within the line
+			while( true )
+			{
+				// Get the next character and check if it's EOF
+				int lReadInt;
+				try
+				{
+					lReadInt = inStream.read();
+				}
+				catch (IOException e)
+				{
+					System.err.println(
+						"Warning:NIEUtil:readAllHTTPHeaderLinesFromSocket:"
+						+ " Got exception on socket/stream read, treating as EOF."
+						+ " Exception was: '" + e + "'."
+						);
+					lReadInt = -1;
+				}
+
+				if( lReadInt == -1 )
+				{
+					hasSeenEOF = true;
+					break;
+				}
+
+				// Check if we read a possible EOL
+				if( lReadInt == '\r' )
+				{
+					// Just throw it away and continue
+					continue;
+				}
+
+				// Check if we read a possible EOL
+				if( lReadInt == '\n' )
+				{
+					// Let the logic at the end of the innnter for
+					// loop handle it
+					break;
+				}
+
+				// Else it's a regular character
+				// TODO use a character buffer
+				lLine.append( (char)lReadInt );
+
+			}   // End for each character in a line
+
+			// Did we have anything to worry about?
+			if( lLine.length() > 0 )
+			{
+				lLines.add( new String(lLine) );
+				// Reset the line buffer
+				lLine = new StringBuffer();
+			}
+			else
+			{
+				// Blank line, we're done
+				break;
+			}
+
+			if( hasSeenEOF )
+				break;
+
+		}   // End outer for each line in header
+
+		return lLines;
+
+	}
+
+
+	// Returns a simple list of header strings, unparsed
+	// Reads until it gets a "blank line", which it does not keep
+	// Strings will not have their End-Of-Line sequences, they are stripped
+	// Handles CR/LF (spec), LF, or CR End-Of-Line sequences
+	// Does NOT close the socket
+	// DOES throw IO Exceptions
+	// Will break for:
+	// LF/CR, which nobody has ever heard of
+	// inconsistent LF, CR, CR/LF
+	// I know the logic seems overly convoluted.... but trying to handle
+	// all cases correctly
+	static List OBS2readAllHTTPHeaderLinesFromSocket( InputStream inStream )
+//		throws IOException
+	{
+//		if( inStream == null )
+//		{
+//			throw new IOException( "Error:NIEUtil:readAllHTTPHeaderLinesFromSocket:"
+//					+ " Null socket passed in, returning null lines list."
+//				);
+//		}
+
+//		lLines = new Vector();
+
+		// while true for lines
+			// while true within a line
+				// zero out eol count
+				// lasteolchar = null
+				// read a char
+				// if eof
+					// set have seen eof
+					// break
+				// if eol char
+					// increment eol count for this line
+					// if eol char == last eol char
+						// set blank line
+						// break
+					// not have completed first line
+						// set flag am processing end of first line
+						// increment expected eol count
+						// if eol count > 2
+							// set blank line
+							// read one more char, better be a newline
+							// break
+						// if buffer not null
+							// break (and will be nulled out)
+					// else not first line
+						// if greater than expected eol count
+							// warn?
+							// set blank line
+							// count = count - expected eol count
+							// if count < expected eol count
+								// read one more char
+							// break
+				// if char
+					// add to line
+
+
+
+
+
+//		String lLine = "";
+//		boolean hasCR = false;
+//		boolean hasLF = false;
+//		boolean hasSeenFirstLine = false;
+//		boolean atEndOfFirstLine = false;
+//		boolean hasSeenBlankLine = false;
+//		boolean haveSeenEOF = false;
+		// this one starts out as TRUE and is set to false
+		// when we read a character
+//		boolean atEndOfLine = true;
+
+		// a char we may have read and would like to "push back"
+//		int reserveChar = -2;
+
+		// For each line
+//		while( true )
+//		{
+//
+//			// For each character within the line
+//			while( true )
+//			{
+//				/////
+//				// Get the next character and check if it's EOS
+//				/////
+//
+//				int lReadInt;
+//				if( reseveChar != -2 )
+//				{
+//					lReadInt = reseveChar;
+//					reserveChar = -2;
+//				}
+//				else
+//				{
+//					fInputStream.read();
+//				}
+//
+//				if( lReadInt == -1 )
+//				{
+//					hasSeenEOF = true;
+//					break;
+//				}
+//
+//				// ^^^^ similar logic below as well in CR section
+//
+//				/////
+//				// Check if we read a possible EOL
+//				/////
+//
+//				if( lReadInt == '\r' )
+//				{
+//					/////
+//					// Read new line in - check if this is a
+//					// continuation of a CRLF EOL
+//					/////
+//
+//					if( ! hasSeenFirstLine )
+//					{
+//						//hasSeenFirstLine = true;
+//						if( ! hasCR )
+//						{
+//							atEndOfFirstLine = true;
+//							hasCR = true;
+//						}
+//						else  // We've just already seen a CR, so now have 2
+//						{
+//							hasSeenBlankLine = true;
+//							break;
+//						}
+//					}
+//					else    // We're past the end of the first line
+//					{
+//						// we can just throw them away
+//						// If the first line didn't end with one, we shouldn't
+//						// be seeing them at all
+//						if( ! hasCR )
+//						{
+//							System.err.println(
+//								"Warning: NIEUtil:readAllHTTPHeaderLinesFromSocket:"
+//								+ " encountered CR, which is inconsistent with the first header line"."
+//								+ ", will ignore it"
+//								);
+//						}
+//
+//						// Since this is not the first line, we already know
+//						// whether there should or should not be a LF
+//						// So go ahead and grab it now
+//
+//						if( hasLF )
+//						{
+//							// Get the next character
+//							if( reseveChar != -2 )
+//							{
+//								lReadInt = reseveChar;
+//								reserveChar = -2;
+//							}
+//							else
+//							{
+//								fInputStream.read();
+//							}
+//
+//							if( lReadInt == -1 )
+//							{
+//								hasSeenEOF = true;
+//								System.err.println(
+//									"Warning: NIEUtil:readAllHTTPHeaderLinesFromSocket:"
+//									+ " got EOF instead of LF after CR, which is inconsistent with the first header line"."
+//									+ ", will ignore this and finish."
+//									);
+//								break;
+//							}
+//							else if( lReadInt == '\n' )
+//							{
+//								// This is what we expcted, just throw it away
+//								break;
+//							}
+//							else    // Else we got some other weird character?
+//							{
+//								// OK, shove it back into the stream
+//								reserveChar = lReadInt;
+//								// Complain about it
+//								System.err.println(
+//									"Warning: NIEUtil:readAllHTTPHeaderLinesFromSocket:"
+//									+ " got unexpected char instead of LF after CR, which is inconsistent with the first header line"."
+//									+ ", char(int) was '" + lReadInt + "'"
+//									+ ", will ignore this and proceed with this character."
+//									);
+//								// and we still want to break out for now
+//								// to finish up the current line
+//								break;
+//							}
+//
+//						}   // End if has LF
+//
+//
+//
+//					}
+//				}
+//				// Else is it a line feed
+//				else if( lReadInt == '\n' )
+//				{
+//
+//					if( ! hasSeenFirstLine )
+//					{
+//						//hasSeenFirstLine = true;
+//						if( ! hasLF )
+//						{
+//							atEndOfFirstLine = true;
+//							hasLF = true;
+//						}
+//						else  // We've just already seen a LF, so now have 2
+//						{
+//							hasSeenBlankLine = true;
+//							break;
+//						}
+//					}
+//					else    // We're past the end of the first line
+//					{
+//						// we can just throw them away
+//						// If the first line didn't end with one, we shouldn't
+//						// be seeing them at all
+//						if( ! hasLF )
+//						{
+//							System.err.println(
+//								"Warning: NIEUtil:readAllHTTPHeaderLinesFromSocket:"
+//								+ " encountered LF, which is inconsistent with the first header line"."
+//								+ ", will ignore it"
+//								);
+//						}
+//
+//						break;
+//					}
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//					fReadCR = true;
+//					return lLine;
+//				}
+//				else
+//				{
+//					fReadCR = false;
+//					lLine += (char)lReadInt;
+//				}
+//			}  // End while true
+//
+//
+//			// are we at the end of a line
+//			if( atEndOfLine )
+//			{
+//				if( lLine.equals("") || lLine == null )
+//				{
+//					hasSeenBlankLine = true;
+//					break;
+//				}
+//				else
+//				{
+//					lLines.add( lLine );
+//					lLine = "";
+//					haveSeenFirstLine = true;
+//				}
+//				// setting atEndOfLine to false requires that we read
+//				// another character
+//			}
+//
+//			if( haveSeenEOF )
+//				break;
+//
+//
+//		}  // End for each line
+
+		// return results
+		// set the request type
+		// set the request path
+		// set the bare request path?
+		// read the headers
+		// parse the headers and get the content length, if any
+		// read the content
+		// decide on which string buffer to parse
+		// parse and store the variables
+		// done
+		return null;
+	}
+
+
+
+
+
+
+
+	static List OBS1readAllHTTPHeaderLinesFromSocket( InputStream inStream )
+		throws IOException
+	{
+//		if( inStream == null )
+//		{
+//			throw new IOException( "Error:NIEUtil:readAllHTTPHeaderLinesFromSocket:"
+//					+ " Null socket passed in, returning null lines list."
+//				);
+//		}
+//
+//		lLines = new Vector();
+//
+//		String lLine = "";
+//		boolean hasCR = false;
+//		boolean hasLF = false;
+//		boolean hasSeenFirstLine = false;
+//		boolean atEndOfFirstLine = false;
+//		boolean hasSeenBlankLine = false;
+//		boolean haveSeenEOF = false;
+//		// this one starts out as TRUE and is set to false
+//		// when we read a character
+//		boolean atEndOfLine = true;
+//
+//		// a char we may have read and would like to "push back"
+//		int reserveChar = -2;
+//
+//		// For each line
+//		while( true )
+//		{
+//
+//			// For each character within the line
+//			while( true )
+//			{
+//				/////
+//				// Get the next character and check if it's EOS
+//				/////
+//
+//				int lReadInt;
+//				if( reseveChar != -2 )
+//				{
+//					lReadInt = reseveChar;
+//					reserveChar = -2;
+//				}
+//				else
+//				{
+//					fInputStream.read();
+//				}
+//
+//				if( lReadInt == -1 )
+//				{
+//					hasSeenEOF = true;
+//					break;
+//				}
+//
+//				// ^^^^ similar logic below as well in CR section
+//
+//				/////
+//				// Check if we read a possible EOL
+//				/////
+//
+//				if( lReadInt == '\r' )
+//				{
+//					/////
+//					// Read new line in - check if this is a
+//					// continuation of a CRLF EOL
+//					/////
+//
+//					if( ! hasSeenFirstLine )
+//					{
+//						//hasSeenFirstLine = true;
+//						if( ! hasCR )
+//						{
+//							atEndOfFirstLine = true;
+//							hasCR = true;
+//						}
+//						else  // We've just already seen a CR, so now have 2
+//						{
+//							hasSeenBlankLine = true;
+//							break;
+//						}
+//					}
+//					else    // We're past the end of the first line
+//					{
+//						// we can just throw them away
+//						// If the first line didn't end with one, we shouldn't
+//						// be seeing them at all
+//						if( ! hasCR )
+//						{
+//							System.err.println(
+//								"Warning: NIEUtil:readAllHTTPHeaderLinesFromSocket:"
+//								+ " encountered CR, which is inconsistent with the first header line"."
+//								+ ", will ignore it"
+//								);
+//						}
+//
+//						// Since this is not the first line, we already know
+//						// whether there should or should not be a LF
+//						// So go ahead and grab it now
+//
+//						if( hasLF )
+//						{
+//							// Get the next character
+//							if( reseveChar != -2 )
+//							{
+//								lReadInt = reseveChar;
+//								reserveChar = -2;
+//							}
+//							else
+//							{
+//								fInputStream.read();
+//							}
+//
+//							if( lReadInt == -1 )
+//							{
+//								hasSeenEOF = true;
+//								System.err.println(
+//									"Warning: NIEUtil:readAllHTTPHeaderLinesFromSocket:"
+//									+ " got EOF instead of LF after CR, which is inconsistent with the first header line"."
+//									+ ", will ignore this and finish."
+//									);
+//								break;
+//							}
+//							else if( lReadInt == '\n' )
+//							{
+//								// This is what we expcted, just throw it away
+//								break;
+//							}
+//							else    // Else we got some other weird character?
+//							{
+//								// OK, shove it back into the stream
+//								reserveChar = lReadInt;
+//								// Complain about it
+//								System.err.println(
+//									"Warning: NIEUtil:readAllHTTPHeaderLinesFromSocket:"
+//									+ " got unexpected char instead of LF after CR, which is inconsistent with the first header line"."
+//									+ ", char(int) was '" + lReadInt + "'"
+//									+ ", will ignore this and proceed with this character."
+//									);
+//								// and we still want to break out for now
+//								// to finish up the current line
+//								break;
+//							}
+//
+//						}   // End if has LF
+//
+//
+//
+//					}
+//				}
+//				// Else is it a line feed
+//				else if( lReadInt == '\n' )
+//				{
+//
+//					if( ! hasSeenFirstLine )
+//					{
+//						//hasSeenFirstLine = true;
+//						if( ! hasLF )
+//						{
+//							atEndOfFirstLine = true;
+//							hasLF = true;
+//						}
+//						else  // We've just already seen a LF, so now have 2
+//						{
+//							hasSeenBlankLine = true;
+//							break;
+//						}
+//					}
+//					else    // We're past the end of the first line
+//					{
+//						// we can just throw them away
+//						// If the first line didn't end with one, we shouldn't
+//						// be seeing them at all
+//						if( ! hasLF )
+//						{
+//							System.err.println(
+//								"Warning: NIEUtil:readAllHTTPHeaderLinesFromSocket:"
+//								+ " encountered LF, which is inconsistent with the first header line"."
+//								+ ", will ignore it"
+//								);
+//						}
+//
+//						break;
+//					}
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//					fReadCR = true;
+//					return lLine;
+//				}
+//				else
+//				{
+//					fReadCR = false;
+//					lLine += (char)lReadInt;
+//				}
+//			}  // End while true
+//
+//
+//			// are we at the end of a line
+//			if( atEndOfLine )
+//			{
+//				if( lLine.equals("") || lLine == null )
+//				{
+//					hasSeenBlankLine = true;
+//					break;
+//				}
+//				else
+//				{
+//					lLines.add( lLine );
+//					lLine = "";
+//					haveSeenFirstLine = true;
+//				}
+//				// setting atEndOfLine to false requires that we read
+//				// another character
+//			}
+//
+//			if( haveSeenEOF )
+//				break;
+//
+//
+//		}  // End for each line
+//
+//		// return results
+//		// set the request type
+//		// set the request path
+//		// set the bare request path?
+//		// read the headers
+//		// parse the headers and get the content length, if any
+//		// read the content
+//		// decide on which string buffer to parse
+//		// parse and store the variables
+//		// done
+		return null;
+	}
+
+
+	// Set the global authentication stuff
+	// Todo: Revisit, how to set login info for each job?
+	// Maybe check Java 1.4
+	static void setupGlobalHTTPAuthentication( String username, String password )
+	{
+
+		// If they're both null then never mind
+		if( username == null && password == null )
+		{
+			System.err.println( "WARNING: NIEUtil:setupGlobalHTTPAuthenticaion:"
+				+ " Both parameters are null?"
+				+ " Not doing anything."
+				);
+			return;
+		}
+
+		// If only one of the two is missing, set the other to ""
+		if( username == null )
+		{
+			System.err.println( "WARNING: NIEUtil:setupGlobalHTTPAuthenticaion:"
+				+ " password set but no username"
+				+ ", setting username to empty string, hope that's OK"
+				);
+			username = "";
+		}
+		if( password == null )
+		{
+			System.err.println( "WARNING: NIEUtil:setupGlobalHTTPAuthenticaion:"
+				+ " username set but no password"
+				+ ", setting password to empty string, hope that's OK"
+				);
+			username = "";
+		}
+
+		// Install Authenticator
+//		Authenticator.setDefault(
+//			new NIEAuthenticator( username, password )
+//			);
+		//Authenticator tmpAuth;
+		NIEAuthenticator2 tmpAuth;
+		// test tmpTest;
+		System.err.println( "username=" + username + ", password=" + password );
+		//String tmpString = new String( "foo" );
+		// tmpAuth = new NIEAuthenticator( username, password );
+		// tmpTest = new test();
+		tmpAuth = new NIEAuthenticator2( "foo", "bar" );
+		//Authenticator.setDefault( tmpAuth );
+
+	}
+
+	public static String cgiParseRequestTypeFromCGIHeader(
+		String inHeaderLine
+		)
+	{
+		// so by default we normalize the request to upper case
+		return cgiParseRequestTypeFromCGIHeader( inHeaderLine, true );
+	}
+	public static String cgiParseRequestTypeFromCGIHeader(
+		String inHeaderLine, boolean inForceToUpperCase
+		)
+	{
+		if( inHeaderLine == null )
+		{
+			System.err.println(
+				"ERROR: NIEUtil:cgiParseRequestTypeFromCGIHeader:"
+				+ " Was passed a NULL header line."
+				);
+			return null;
+		}
+		int firstSpace = inHeaderLine.indexOf(' ');
+
+		if( firstSpace < 2 )
+		{
+			System.err.println(
+				"ERROR: NIEUtil:cgiParseRequestTypeFromCGIHeader:"
+				+ " Malformed header line."
+				+ " Should be of the general form METHOD /path HTTP/version"
+				+ " where METHOD is something like GET or POST."
+				+ " Header Line: \"" + inHeaderLine + "\""
+				);
+			return null;
+		}
+
+		String outType = inHeaderLine.substring( 0, firstSpace );
+		if( inForceToUpperCase )
+			outType = outType.toUpperCase();
+		return outType;
+	}
+
+	// Return the business section of a GET request
+	public static String cgiParsePathSectionFromCGIHeader(
+		String headerLine
+		)
+	{
+		if( headerLine == null )
+		{
+			System.err.println(
+				"ERROR: NIEUtil:cgiParsePathSectionFromCGIHeader:"
+				+ " Was passed a NULL header line."
+				);
+			return null;
+		}
+		int firstSpace = headerLine.indexOf(' ');
+		int secondSpace = -1;
+		if( firstSpace >= 0 )
+		{
+			secondSpace = headerLine.indexOf( ' ', firstSpace+1 );
+		}
+		int length = firstSpace>=0 && secondSpace>=0
+			? secondSpace - firstSpace - 1 : -1;
+		if( firstSpace < 2 || secondSpace < 0 || length < 1 )
+		{
+			System.err.println(
+				"ERROR: NIEUtil:cgiParsePathSectionFromCGIHeader:"
+				+ " Malformed header line."
+				+ " Should be of the general form METHOD /path HTTP/version"
+				+ " where METHOD is something like GET or POST."
+				+ " Header Line: \"" + headerLine + "\""
+				);
+			return null;
+
+		}
+
+		String outPath = headerLine.substring( firstSpace+1, secondSpace );
+		return outPath;
+	}
+
+	// Given a hash of HTTP header variables, see if we can
+	// find the content length.  By default we don't warn
+	// if we don't get it.
+	// We DO warn, no matter what, if the field is present but is invalid.
+	// If absent we return -1
+	// We'll look for an accept 3 variations in case:
+	//  Content-Length, content-length and CONTENT-LENGTH
+	// By default, HTTP headers are normalized to lower case anyway, so
+	// unless you've messed with that, it should be caught correctly.
+	static long cgiGetContentLengthFromHTTPHeaderHash( AuxIOInfo inAuxInfo )
+	{
+		return cgiGetContentLengthFromHTTPHeaderHash( inAuxInfo, false );
+	}
+	static long cgiGetContentLengthFromHTTPHeaderHash( AuxIOInfo inAuxInfo,
+		boolean inWarnIfMissing
+		)
+	{
+		long outLength = -1;
+		if( inAuxInfo == null )
+		{
+			System.err.println(
+				"Warning: NIEUtil:cgiGetContentLengthFromHTTPHeaderHash:"
+				+ " Was passed in a NULL Aux IO object."
+				+ " Will return -1."
+				);
+			return outLength;
+		}
+		// The proper mixed case version of the string
+		String targetString = "Content-Length";
+		// Look for the proper mixed case version
+		String valueString = inAuxInfo.getScalarHTTPField( targetString );
+		// If null, try the lower case version
+		if( valueString == null )
+		{
+			valueString = inAuxInfo.getScalarHTTPField(
+				targetString.toLowerCase()
+				);
+		}
+		// If still null, try the upper case version
+		if( valueString == null )
+		{
+			valueString = inAuxInfo.getScalarHTTPField(
+				targetString.toUpperCase()
+				);
+		}
+
+
+		// Now do a sanity check on the string, did we find it?
+		if( valueString == null || valueString.trim().equals("") )
+		{
+			// We didn't find it
+			if( inWarnIfMissing )
+			{
+				System.err.println(
+					"Warning: NIEUtil:cgiGetContentLengthFromHTTPHeaderHash:"
+					+ " We did not find Content-Length in the HTTP headers"
+					+ " or it was an empty string."
+					+ " Programmers can suppress this warning with inWarnIfMissing=false."
+					+ " Will return -1."
+					);
+			}
+			return outLength;
+		}   // End if we didn't find the field
+
+		// Now let's try to convert it to a long
+		valueString = valueString.trim();
+		try
+		{
+			outLength = Long.parseLong( valueString );
+		}
+		catch (NumberFormatException e)
+		{
+			outLength = -1;
+			System.err.println(
+				"Error: NIEUtil:cgiGetContentLengthFromHTTPHeaderHash:"
+				+ " Could not parse field Content-Length in the HTTP headers."
+				+ " String was: '" + valueString + "'"
+				+ ", Exception was '" + e + "'."
+				+ " Will return -1."
+				);
+		}
+
+		return outLength;
+
+	}
+
+	// Given a vector of strings, convert it into a hash
+	// by default we normalize everything to lower case
+	// and only keep the first header, and by default we skip
+	// the very first line which mormally doesn't have fields
+	public static void parseHTTPHeaderFields( AuxIOInfo inAux, List inHeaderLines )
+	{
+		// return parseHTTPHeaderFields( inAux, inHeaderLines, true, true, true );
+		parseHTTPHeaderFields( inAux, inHeaderLines, true );
+	}
+	public static void parseHTTPHeaderFields(
+		AuxIOInfo inAux, List inHeaderLines,
+		boolean inSkipFirstLine
+		//, boolean inForceToLowerCase,	boolean inKeepOnlyFirstInstance
+		)
+	{
+		if( inAux == null )
+		{
+			System.err.println(
+				"ERROR: NIEUtil:parseHTTPHeaderFields:"
+				+ " Was passed in a NULL aux info object."
+				+ " No where to store fields."
+				);
+			return;
+		}
+		if( inHeaderLines == null )
+		{
+			System.err.println(
+				"ERROR: NIEUtil:parseHTTPHeaderFields:"
+				+ " Was passed in a NULL list of header lines."
+				+ " Nothing to parse."
+				);
+			return;
+		}
+
+		if( inHeaderLines.size() < 1 && inSkipFirstLine )
+		{
+			System.err.println(
+				"ERROR: NIEUtil:parseHTTPHeaderFields:"
+				+ " Was passed in a zero length list of header lines"
+				+ " and inSkipFirstLine was set"
+				+ ", so there should have been at least that one line."
+				+ " Invalid headers, nothing to parse."
+				);
+			return;
+		}
+
+		// Where to start looking in the list
+		int lStartAt = ! inSkipFirstLine ? 0 : 1;
+
+		Hashtable outHash = new Hashtable();
+
+		// For each line
+		for( int i=lStartAt; i < inHeaderLines.size(); i++ )
+		{
+			String theLine = (String)inHeaderLines.get(i);
+			// Look for proper colon-space sequence
+			int colonAt = theLine.indexOf( ": " );
+			int colonLength = 2;
+			// Or try for technically incorrect colon with no space
+			if( colonAt < 0 )
+			{
+				colonAt = theLine.indexOf( ':' );
+				colonLength = 1;
+			}
+
+			// First sanity check
+			if( colonAt < 0 )
+			{
+				String tmpMsg = "";
+				// Extra info/reminder about how to skip the first line
+				if( i==0 && ! inSkipFirstLine )
+					tmpMsg = " This appears to be the first header line"
+						+ " and therefore perhaps it should not have"
+						+ " any fields anway;"
+						+ " you might try setting inSkipFirstLine=true."
+						;
+				System.err.println(
+					"Warning: NIEUtil:parseHTTPHeaderFields:"
+					+ " No colon was found on header line " + (i+1)
+					+ " Line was: '" + theLine + "'"
+					+ tmpMsg
+					+ " Ignoring this line."
+					);
+				continue;
+			}
+
+			String key = "";
+			String value = "";
+
+			// Grab the key
+			if( colonAt > 0 )
+				key = theLine.substring( 0, colonAt).trim();
+
+			// Grab the value
+			int valueStartsAt = colonAt + colonLength;
+			// if( valueStartsAt < theLine.length()-2 )
+			if( valueStartsAt <= theLine.length()-1 )
+				value = theLine.substring( valueStartsAt ).trim();
+
+			// Whine if either of them is bogus
+			if( key.length() < 1 || value.length() < 1 )
+			{
+				System.err.println(
+					"Warning: NIEUtil:parseHTTPHeaderFields:"
+					+ " Malformed header line:"
+					+ " it has a colon separater, but a null key or value,"
+					+ " Header line " + (i+1)
+					+ " was: '" + theLine + "'"
+					+ " Parsed key = '" + key + "'"
+					+ " Parsed value = '" + value + "'"
+					+ " Some debug info:"
+					+ " colonAt=" + colonAt
+					+ ", colonLength=" + colonLength
+					+ ", valueStartsAt=" + valueStartsAt
+					+ ", theLine.length()=" + theLine.length()
+					+ " Ignoring this line."
+					);
+				continue;
+			}
+
+			// Add this to AuxIO info
+			inAux.addHTTPHeaderField( key, value );
+
+			// Older code
+
+//			// Normalize, if asked to do so
+//			if( inForceToLowerCase )
+//				key = key.toLowerCase();
+//
+//			// Do we already have an entry in the hash for this?
+//			if( outHash.containsKey(key) )
+//			{
+//				// If they didn't tell us to keep just the first instance,
+//				// then they want all instances.
+//				// We don't currently support that!
+//				// TODO: Support it!  Replace a string entry with a vector
+//				if( ! inKeepOnlyFirstInstance )
+//				{
+//					System.err.println(
+//						"Warning: NIEUtil:parseHTTPHeaderFields:"
+//						+ " Multiple values for header field found:"
+//						+ " Found more than one header line with the same field name"
+//						+ " and was asked to keep all instances;"
+//						+ " this insn't supported yet."
+//						+ " Suggest implementing it or setting"
+//						+ " inKeepOnlyFirstInstance=true."
+//						+ " This header line " + (i+1)
+//						+ " was: '" + theLine + "'"
+//						+ " Parsed key = '" + key + "'"
+//						+ " Parsed value = '" + value + "'"
+//						+ " Ignoring this line."
+//						);
+//					continue;
+//				}
+//				// Nothing else to do, we're just ignoring the subsequent value
+//				continue;
+//			}
+//			else    // Else it's new to the hash
+//			{
+//				// So just add it
+//				outHash.put( key, value );
+//			}
+
+		}   // End for each line
+
+//		// check results, warn, return
+//		if( outHash.size() < 1 )
+//			System.err.println(
+//				"Warning: NIEUtil:parseHTTPHeaderFields:"
+//				+ " Didn't find any valud key/value pairs in header."
+//				+ " Started with " + inHeaderLines.size() + " lines."
+//				+ " This may be OK, but seems odd."
+//				+ " Returning zero item hash."
+//				);
+//
+//		return outHash;
+
+	}
+
+	// Read the requested number of bytes from a socket
+	// By default, demand a reasonable expected count.
+	// Zero is NOT a valid number of bytes to read
+	// If no reasoable count and told to read anyway, read until EOF
+	// This could cause a problem if the other end likes to leave a socket open
+	// Warn if fewer bytes read before EOF
+	static String readNBytesFromSocket( InputStream inStream,
+		long inExpectedCount
+		)
+	{
+		return readNBytesFromSocket( inStream, inExpectedCount, false );
+	}
+	static String readNBytesFromSocket( InputStream inStream,
+		long inExpectedCount, boolean inReadToEOFOnBadExprectedCount
+		)
+	{
+		if( inStream == null )
+		{
+			System.err.println( "Error: NIEUtil:readNBytesFromSocket:"
+				+ " NULL stream passed in, returning NULL string."
+				);
+			return null;
+		}
+		// Also check if we're supposed to have a valid byte count and
+		// we don't
+		if( inExpectedCount <= 0L && ! inReadToEOFOnBadExprectedCount )
+		{
+			System.err.println( "Error: NIEUtil:readNBytesFromSocket:"
+				+ " Unreasonable value given for inExpectedCount"
+				+ "=" + inExpectedCount
+				+ ", and told to demand a valid number, > 0."
+				+ " To read to EOF with out giving a valid count"
+				+ " set inReadToEOFOnBadExprectedCount=true."
+				+ " Returning NULL string."
+				);
+			return null;
+		}
+
+		// Init a buffer and loop variables
+		StringBuffer buffer = new StringBuffer();
+		int theChar;
+
+		// For each character
+		while( true )
+		{
+			// Get the next character
+			try
+			{
+				theChar = inStream.read();
+			}
+			catch (IOException e)
+			{
+				System.err.println(
+					"Warning:NIEUtil:readNBytesFromSocket:"
+					+ " Got exception on socket/stream read, treating as EOF."
+					+ " Exception was: '" + e + "'."
+					);
+				theChar = -1;
+			}
+
+			// Check for EOF
+			if( theChar < 0 )
+				break;
+			// Add the character to the buffer
+			buffer.append( (char)theChar );
+			// Break out if we were given a target count and have met it
+			if( inExpectedCount > 0 && buffer.length() >= inExpectedCount )
+				break;
+		}
+
+		int bytesLeft = 0;
+		try
+		{
+			bytesLeft = inStream.available();
+		}
+		catch (IOException ae)
+		{
+			System.err.println(
+				"Warning:NIEUtil:readNBytesFromSocket:"
+				+ " Got exception on socket/stream available(), ignoring."
+				+ " Exception was: '" + ae + "'."
+				);
+		}
+		if( bytesLeft > 0 )
+		{
+			System.err.println( "WARNING: ReadNBytes: done reading, still have "
+				+ bytesLeft + " bytes, will add those."
+				);
+			System.err.println( "Before adding *extra* bytes, buffer is: \""
+				+ (new String(buffer)) + "\""
+				);
+			// For each byte, read it
+			for( int i=0; i<bytesLeft; i++ )
+			{
+				// Get the next character
+				try
+				{
+					theChar = inStream.read();
+				}
+				catch (IOException e2)
+				{
+					System.err.println(
+						"Warning:NIEUtil:readNBytesFromSocket:"
+						+ " (2) Got exception on socket/stream read, treating as EOF."
+						+ " Exception was: '" + e2 + "'."
+						);
+					theChar = -1;
+				}
+
+				// Check for EOF
+				if( theChar < 0 )
+				{
+					System.err.println(
+						"Warning:NIEUtil:readNBytesFromSocket:"
+						+ " Was reading *extra* types, but got EOF."
+						+ " Was expecting " + bytesLeft
+						+ " but have only read " + i + " bytes."
+						);
+						// ^^^ actually i +1 -1 = just i
+					break;
+				}
+				// Add the character to the buffer
+				buffer.append( (char)theChar );
+			}   // End read all the extra bytes
+			System.err.println( "After adding *extra* bytes, buffer is: \""
+				+ (new String(buffer)) + "\""
+				);
+
+		}
+
+
+		// Give appropriate warning messages
+		// No data
+		if( buffer.length() <= 0 )
+		{
+			System.err.println( "Warning: NIEUtil:readNBytesFromSocket:"
+				+ " No data read from socket?"
+				+ " Will be returning zero length string."
+				);
+		}
+		// Not enough data
+		else if( inExpectedCount > 0 && buffer.length() < inExpectedCount )
+		{
+			System.err.println( "Error: NIEUtil:readNBytesFromSocket:"
+				+ " Read fewer bytes from socket than expected."
+				+ " inExpectedCount = " + inExpectedCount
+				+ ", Actual number of bytes read = " + buffer.length()
+				+ " Will return the forshortened data that we did get."
+				);
+		}
+
+		// Convert and return the results
+		return new String( buffer );
+	}
+
+
+//	// Return a hash of strings from a GET style submit
+//	// static Hashtable cgiParseGETVariablesFromCGIHeader(
+//	// Public for now, referenced in XPump/procs/Monitor
+//	public static Hashtable cgiParseGETVariablesFromCGIHeader(
+//		String headerLine
+//		)
+//	{
+//		Hashtable outHash = new Hashtable();
+//		String pathSection = cgiParsePathSectionFromCGIHeader( headerLine );
+//		if( pathSection == null )
+//		{
+//			System.err.println(
+//				"Warning: NIEUtil:cgiParseGETVariablesFromCGIHeader:"
+//				+ " Got null path section from cgiParsePathSectionFromCGIHeader"
+//				);
+//			return outHash;
+//		}
+//
+//		// Todo: finish implementing
+//
+//		// Search for the infamous question mark!
+//		int questionMarkAt = pathSection.indexOf( '?' );
+//		// Bail if don't have a question mark or it's null
+//		// Note that this is NOT an error, url's often don't have one
+//		if( questionMarkAt < 0 || questionMarkAt > pathSection.length()-1 )
+//			return outHash;
+//
+//		String queryString = pathSection.substring( questionMarkAt+1 );
+//
+//		cgiDecodeVarsBuffer( queryString );
+//
+//		return outHash;
+//	}
+
+
+	// Given a string, decode CGI style variables
+	// By default we normalize to lower case
+	// Currently we don't keep multiple values
+	public static void cgiDecodeVarsBuffer( AuxIOInfo inAux, String inBuffer )
+	{
+		cgiDecodeVarsBuffer( inAux, inBuffer, true );
+		// , false );
+	}
+	public static void cgiDecodeVarsBuffer( AuxIOInfo inAux, String inBuffer,
+		boolean inForceToLowerCase
+		// , boolean inKeepOnlyFirstInstance
+		)
+	{
+		// Whether cgi variable names are case sensitive or not
+		// will lower case them if not sensative
+		// final boolean lCaseSenVarNames = false;
+		// replaced by opposite var inForceToLowerCase
+
+		// Whether or not to trim key names before looking them up
+		final boolean lTrimKeyNames = true;
+
+		// Whether to trim values, this can affect the empty logic
+		final boolean lTrimValues = true;
+
+		// Whether we will bother to put something in the hash
+		// even if it's a null string
+		final boolean lKeepEmptyStrings = false;
+
+		// If somebody says foo= with nothing after should we default
+		// to adding a "1" or something
+		final boolean lDoDefaultValue = false;
+
+//		// How to join multiple values
+//		// NULL means DON'T keep additional ones
+//		final String lMultiDelimSeq = null;
+
+//		Hashtable outHash = new Hashtable();
+
+		if( inAux == null || inBuffer == null )
+		{
+			System.err.println(
+				"Error: NIEUtil:cgiDecodeVarsBuffer:"
+				+ " Was passed a NULL Aux structore or string buffer."
+				+ " Nothing to do."
+				);
+			return;
+		}
+
+
+		StringTokenizer st = new StringTokenizer( inBuffer, "&" );
+		while( st.hasMoreTokens() )
+		{
+			String item = st.nextToken();
+			int equalsAt = item.indexOf('=');
+			String key = null;
+			String value = null;
+			// No equals or right at the start
+			if( equalsAt < 0 )
+			{
+				if( lDoDefaultValue )
+				{
+					key = item;
+					value = "1";
+				}
+				else
+				{
+					System.err.println(
+						"Warning: NIEUtil:cgiDecodeVarsBuffer:"
+						+ " A buffer section had no equals sign."
+						+ " Section=\"" + item + "\""
+						+ " Buffer=\"" + inBuffer + "\""
+						);
+					continue;
+				}
+			}
+			else if( equalsAt < 1 )
+			{
+				System.err.println(
+					"Warning: NIEUtil:cgiDecodeVarsBuffer:"
+					+ " A buffer section had a poorly placed equals sign."
+					+ " Section=\"" + item + "\""
+					+ " Buffer=\"" + inBuffer + "\""
+					);
+				continue;
+			}
+			// Else we seem to have a well placed = sign
+			else
+			{
+				key = item.substring( 0, equalsAt );
+				if( equalsAt < item.length()-1 )
+					value = item.substring( equalsAt+1 );
+				else
+					value = "";
+			}
+
+			// At this point we have *something* for key and value
+
+			// Obsess about the key
+			key = key != null ? key : "" ;
+			// Decode the key
+			key = URLDecoder.decode( key );
+			// Normalize, if asked to do so
+			if( inForceToLowerCase )
+				key = key.toLowerCase();
+			// And trim if asked to do so
+			if( lTrimKeyNames )
+				key = key.trim();
+			// Bail on an empty key
+			if( key.equals("") )
+			{
+				System.err.println(
+					"Warning: NIEUtil:cgiDecodeVarsBuffer:"
+					+ " A buffer section had an empty variable name."
+					+ " Section=\"" + item + "\""
+					+ " Buffer=\"" + inBuffer + "\""
+					);
+				continue;
+			}
+
+			// Obsess about the value
+			value = value != null ? value : "" ;
+			// Here's where we actually do the decoding
+			value = URLDecoder.decode( value );
+			if( lTrimValues )
+				value = value.trim();
+			// Bail if we have an unwanted empty value string
+			// This is so common we don't issue a warning
+			if( ! lKeepEmptyStrings && value.equals("") )
+				continue;
+
+			// So by now we have a normalized key and value that we like
+
+			// Tell the aux IO info object to store it
+			inAux.addCGIField( key, value );
+
+//			// We'll look for old values
+//			String prevValue = null;
+//			if( outHash.containsKey( key ) )
+//				prevValue = (String)outHash.get( key );
+
+
+//          // Some logic from the HTTP header parsing routine
+//          // At some point the idea is to maybe put a vector in place
+//          // of a string if there's more than one value
+//				// If they didn't tell us to keep just the first instance,
+//				// then they want all instances.
+//				// We don't currently support that!
+//				// TODO: Support it!  Replace a string entry with a vector
+//				if( ! inKeepOnlyFirstInstance )
+//				{
+//					System.err.println(
+//						"Warning: NIEUtil:parseHTTPHeaderFields:"
+//						+ " Multiple values for header field found:"
+//						+ " Found more than one header line with the same field name"
+//						+ " and was asked to keep all instances;"
+//						+ " this insn't supported yet."
+//						+ " Suggest implementing it or setting"
+//						+ " inKeepOnlyFirstInstance=true."
+//						+ " This header line " + (i+1)
+//						+ " was: '" + theLine + "'"
+//						+ " Parsed key = '" + key + "'"
+//						+ " Parsed value = '" + value + "'"
+//						+ " Ignoring this line."
+//						);
+//					continue;
+//				}
+
+
+//			// Create the new value
+//			String newValue = null;
+//
+//			// Did we have something from before?
+//			if( prevValue != null )
+//			{
+//
+//				// Have we been told to only keep the first instance?
+//				if( inKeepOnlyFirstInstance )
+//				{
+//					// warning about discarding this new value
+//					System.err.println(
+//						"Warning: NIEUtil:cgiDecodeVarsBuffer:"
+//						+ " Found a repeating variable but told to only keep first;"
+//						+ " (inKeepOnlyFirstInstance was true)"
+//						+ " will ignore/drop this newer value."
+//						+ " normalized variable name=\"" + key + "\""
+//						+ ", previously found value=\"" + prevValue + "\""
+//						+ ", new (ignored) value=\"" + value + "\""
+//						+ ", Section=\"" + item + "\""
+//						+ ", Buffer=\"" + inBuffer + "\""
+//						);
+//					continue;
+//				}
+//				else    // Else we're keeping all instances
+//				{
+//					// Do we have a separator?
+//					// Todo: at some point we'll have a full policy in place
+//					// to allow for tabbed lists or vectors
+//					if( lMultiDelimSeq != null )
+//					{
+//						newValue = prevValue + lMultiDelimSeq + value;
+//					}
+//					// Else we were not given a delimiter (or policy)
+//					else
+//					{
+//						System.err.println(
+//							"Warning: NIEUtil:cgiDecodeVarsBuffer:"
+//							+ " Found a repeating variable but not told what the delim is;"
+//							+ " (lMultiDelimSeq was NULL)"
+//							+ " will ignore/drop this newer value."
+//							+ " normalized variable name=\"" + key + "\""
+//							+ ", previously found value=\"" + prevValue + "\""
+//							+ ", new (ignored) value=\"" + value + "\""
+//							+ ", Section=\"" + item + "\""
+//							+ ", Buffer=\"" + inBuffer + "\""
+//							);
+//						continue;
+//					}   // End else we were not given a delimiter
+//				}   // Else we're keeping all instances
+//			}
+//			// Else there was no old value, so just use this
+//			else
+//				newValue = value;
+//
+//			// Save the new/revised value
+//			outHash.put( key, newValue );
+
+		}   // End of the & tokenizer loop
+
+		// And finally we return the fruit of our labor
+		// return outHash;
+	}
+
+
+	private static void __Printing_and_Debugging__() {}
+
+	public static void printStringList( List inList )
+	{
+		printStringList( inList, null );
+	}
+	public static void printStringList( List inList, String optListName )
+	{
+		String buff = printStringListToBuffer( inList, optListName );
+		System.err.print( buff );
+	}
+	public static String printStringListToBuffer( List inList )
+	{
+		return printStringListToBuffer( inList, null );
+	}
+	public static String printStringListToBuffer(
+		List inList, String optListName
+		)
+	{
+		final String nl = "\r\n";
+
+		if( inList == null )
+		{
+			String msg = "Error: NIEUtil:printStringListToBuffer:"
+				+ " Null list passed in, nothing to print."
+				+ " Will return this error message."
+				;
+			System.err.println( msg );
+			return msg + nl;
+		}
+
+		StringBuffer buff = new StringBuffer();
+
+		// The heading
+		if( optListName != null )
+			buff.append( "Displaying \"" + optListName + "\"" );
+		else
+			buff.append( "Debug: NIEUtil:printStringListToBuffer: list" );
+
+		// The number of elements
+		buff.append(
+			" with " + inList.size() + " Strings"
+			+ " (base 0 offsets)"
+			+ nl
+			);
+
+		// Setup loop and itterate
+		for( int i = 0; i < inList.size(); i++ )
+		{
+			String item = (String)inList.get(i);
+			buff.append( "\t" + i + ": \"" + item + "\"" + nl );
+		}
+
+		// Return the results
+		return new String( buff );
+	}
+
+}
+
+//	class test
+//	{
+//		public test()
+//		{
+//		}
+//	}
+
+	// Helper class used for HTTP Basic authentication
+	class NIEAuthenticator2 extends Authenticator
+	{
+//		private String username;
+//		private String password;
+		public NIEAuthenticator2( String u, String p )
+		{
+//			super();
+//			this.username = u;
+//			this.password = p;
+		}
+		protected PasswordAuthentication getPasswordAuthentication()
+		{
+//			return new PasswordAuthentication(
+//				username, password.toCharArray()
+//				);
+			return null;
+		}
+	}
+

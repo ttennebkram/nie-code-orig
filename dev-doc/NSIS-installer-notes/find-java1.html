@@ -1,0 +1,188 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<!-- header.skel.php: begin -->
+<html>
+
+<head>
+
+<title>NSIS Archive</title>
+
+    
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" href="/media/template/nsis.css" type="text/css">
+
+</head>
+
+<body leftmargin="0" topmargin="0" marginwidth="0" marginheight="0">
+
+<table width="778" height="100%" class="maintable" cellspacing="0" cellpadding="0" align="center">
+
+<tr><td colspan="2" height="22">
+ <table width="778">
+   <tr>
+     <td class="auser"><strong>Logged in as:</strong> <i>not logged in</i> ( <a href="login.php?page=0">login</a> )</td>
+     <td class="alinks">
+ 	          [ <a href="picklist.php">Pick List</a> ] [ <a href="search.php">Search</a> ] [ <a href="../index.php">NSIS Site</a> ] [ <a href="http://nsis.sourceforge.net/archive/nsisweb.php">Home</a> ]
+     </td>
+   </tr>
+ </table>
+<tr></td>
+
+  <tr>
+    <td width="150" height="100" class="top"><a href="/index.php"><img src="/media/template/left.gif" width="150" height="100" border="0"></a></td>
+    <td width="628" height="100" class="top"><h1 class="header">NSIS Archive</td>
+  </tr>
+
+  <tr>
+    <td class="content" colspan="2">
+
+<!-- header.skel.php: end --><!-- user_page.skel.php: begin -->
+Parent Pages: <a href="viewpage.php?pageid=23">How to detect if ... is installed</a></a>
+<hr class="aline">
+<table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr>
+    <td class="atitle">
+      Locate Java Runtime/JRE, ensure correct version, write CLASSPATH, PATH and JAVA_HOME to .bat file.    </td>
+    <td>
+      <a href="edit.php?pageid=457"><img src="images/edit2.png" name="edit2" width="20" height="20" border="0" alt="Edit this page"></a> | <a href="delete.php?instanceid=543"><img src="images/cut2.png" name="cut2" width="20" height="20" border="0" alt="Remove this page instance from the Archive"></a> | <a href="picklist.php?action=pick&instanceid=543"><img src="images/copy2.png" name="copy2" width="20" height="20" border="0" alt="Add this page to your pick list"></a> | <a href="viewpage.php?pageid=23"><img src="images/up2.png" name="up2" width="20" height="20" border="0" alt="View the parent of this page"></a>    </td>
+  </tr>
+</table>
+<hr class="aline">
+<table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr>
+    <td align="left" valign="top">
+      Written by <a href="profile.php?userid=791">AshwinJay</a> 2004-03-14 10:49:08    </td>
+    <td align="right" valign="top">
+          </td>
+  </tr>
+  <tr><td><br><br></td></tr>
+  <tr><td colspan="2" align="left" valign="top" class="apage">
+<!-- user_page.skel.php: source -->
+<pre class="afixfont">
+<span class="ahcomment">;--------------------------------
+</span><span class="ahcomment">;Steps
+</span><span class="ahcomment">;--------------------------------
+</span><span class="ahcomment">;Locate Java Runtime/JRE
+</span><span class="ahcomment">;Ensure version 1.4 or higher
+</span><span class="ahcomment">;Write CLASSPATH, PATH and JAVA_HOME to .Bat file
+</span><span class="ahcomment">;
+</span><span class="ahcomment">;If JRE unavailable or version less than 1.4, launch Explorer and open
+</span><span class="ahcomment">;http://www.java.com and inform user to download the correct version of JRE.
+</span><span class="ahcomment">;--------------------------------
+</span>
+<span class="ahcomment">;--------------------------------
+</span><span class="ahcomment">;AUTHOR: Ashwin Jayaprakash
+</span><span class="ahcomment">;WEBSITE: http://www.JavaForU.com
+</span><span class="ahcomment">;--------------------------------
+</span>
+<span class="ahcomment">;--------------------------------
+</span><span class="ahcomment">; Constants
+</span><span class="ahcomment">;--------------------------------
+</span><span class="ahprepro"><b>!define</b></span> GET_JAVA_URL "http://www.java.com"
+
+<span class="ahcomment">;--------------------------------
+</span><span class="ahcomment">; Variables
+</span><span class="ahcomment">;--------------------------------
+</span>  Var JAVA_HOME
+  Var JAVA_VER
+  Var JAVA_INSTALLATION_MSG
+
+<span class="ahcomment">;--------------------------------
+</span><span class="ahcomment">; Main Install settings
+</span><span class="ahcomment">;--------------------------------
+</span><span class="ahattribute">Name</span> <span class="ahstring">"ABC"</span>
+<span class="ahattribute">InstallDir</span> <span class="ahstring">".\ABC"</span>
+<span class="ahattribute">OutFile</span> <span class="ahstring">"ABC_Installer.exe"</span>
+
+<span class="ahcomment">;--------------------------------
+</span><span class="ahattribute">Section</span> <span class="ahstring">"JRE Locate and Set Path and Classpath Section"</span>
+JRECheckAndEnvSection
+    <span class="ahinstruction">Call</span> LocateJVM
+    <span class="ahinstruction">StrCmp</span> <span class="ahstring">""</span> <span class="ahvar">$JAVA_INSTALLATION_MSG</span> Success OpenBrowserToGetJava
+
+<span class="ahlabel">    Success:</span>
+        <span class="ahinstruction">Call</span> SetEnv
+        <span class="ahinstruction">Goto</span> Done
+
+<span class="ahlabel">    OpenBrowserToGetJava:</span>
+        <span class="ahinstruction">Exec</span> <span class="ahstring">'"explorer.exe" <span class="ahvar">${GET_JAVA_URL}</span>'</span>
+        
+<span class="ahlabel">    Done:</span>
+<span class="ahattribute">SectionEnd</span>
+<span class="ahcomment">;--------------------------------
+</span><span class="ahattribute">Function</span> LocateJVM
+    <span class="ahcomment">;Check for Java version and location
+</span>    <span class="ahinstruction">Push</span> <span class="ahvar">$0</span>
+    <span class="ahinstruction">Push</span> <span class="ahvar">$1</span>
+    
+    <span class="ahinstruction">ReadRegStr</span> <span class="ahvar">$JAVA_VER</span> <span class="ahparam">HKLM</span> <span class="ahstring">"SOFTWARE\JavaSoft\Java Runtime Environment"</span>
+CurrentVersion
+    <span class="ahinstruction">StrCmp</span> <span class="ahstring">""</span> <span class="ahstring">"<span class="ahvar">$JAVA_VER</span>"</span> JavaNotPresent CheckJavaVer
+
+<span class="ahlabel">    JavaNotPresent:</span>
+        <span class="ahinstruction">StrCpy</span> <span class="ahvar">$JAVA_INSTALLATION_MSG</span> <span class="ahstring">"Java Runtime Environment is not
+</span>installed <span class="ahparam">on</span> your computer. You need version <span class="ahnumber">1</span>.4 or newer to run this
+program.<span class="ahstring">"
+</span>        <span class="ahinstruction">Goto</span> Done
+
+<span class="ahlabel">    CheckJavaVer:</span>
+        <span class="ahinstruction">ReadRegStr</span> <span class="ahvar">$0</span> <span class="ahparam">HKLM</span> <span class="ahstring">"SOFTWARE\JavaSoft\Java Runtime
+</span>Environment<span class="ahnumber">\</span><span class="ahvar">$JAVA_VER</span><span class="ahstring">" JavaHome
+</span>        <span class="ahinstruction">GetFullPathName</span> <span class="ahparam">/SHORT</span> <span class="ahvar">$JAVA_HOME</span> <span class="ahstring">"<span class="ahvar">$0</span>"</span>
+        <span class="ahinstruction">StrCpy</span> <span class="ahvar">$0</span> <span class="ahvar">$JAVA_VER</span> <span class="ahnumber">1</span> <span class="ahnumber">0</span>
+        <span class="ahinstruction">StrCpy</span> <span class="ahvar">$1</span> <span class="ahvar">$JAVA_VER</span> <span class="ahnumber">1</span> <span class="ahnumber">2</span>
+        <span class="ahinstruction">StrCpy</span> <span class="ahvar">$JAVA_VER</span> <span class="ahstring">"<span class="ahvar">$0</span><span class="ahvar">$1</span>"</span>
+        <span class="ahinstruction">IntCmp</span> <span class="ahnumber">14</span> <span class="ahvar">$JAVA_VER</span> FoundCorrectJavaVer FoundCorrectJavaVer
+JavaVerNotCorrect
+        
+<span class="ahlabel">    FoundCorrectJavaVer:</span>
+        <span class="ahinstruction">IfFileExists</span> <span class="ahstring">"<span class="ahvar">$JAVA_HOME</span>\bin\javaw.exe"</span> <span class="ahnumber">0</span> JavaNotPresent
+        <span class="ahcomment">;MessageBox MB_OK "Found Java: $JAVA_VER at $JAVA_HOME"
+</span>        <span class="ahinstruction">Goto</span> Done
+        
+<span class="ahlabel">    JavaVerNotCorrect:</span>
+        <span class="ahinstruction">StrCpy</span> <span class="ahvar">$JAVA_INSTALLATION_MSG</span> <span class="ahstring">"The version of Java Runtime Environment
+</span>installed <span class="ahparam">on</span> your computer is <span class="ahvar">$JAVA_VER.</span> Version <span class="ahnumber">1</span>.4 or newer is required to
+run this program.<span class="ahstring">"
+</span>        
+<span class="ahlabel">    Done:</span>
+        <span class="ahinstruction">Pop</span> <span class="ahvar">$1</span>
+        <span class="ahinstruction">Pop</span> <span class="ahvar">$0</span>
+<span class="ahattribute">FunctionEnd</span>
+<span class="ahcomment">;--------------------------------
+</span><span class="ahattribute">Function</span> SetEnv
+    <span class="ahinstruction">Push</span> <span class="ahvar">$3</span>
+    <span class="ahinstruction">Push</span> <span class="ahvar">$4</span>
+    
+    <span class="ahinstruction">FileOpen</span> <span class="ahvar">$4</span> <span class="ahstring">"<span class="ahvar">$INSTDIR</span>\setEnv.cmd"</span> w
+    <span class="ahinstruction">StrCpy</span> <span class="ahvar">$3</span> <span class="ahstring">"Set
+</span>CLASSPATH<span class="ahnumber">=</span><span class="ahvar">$JAVA_HOME</span><span class="ahnumber">\</span>jre<span class="ahnumber">\</span>lib<span class="ahnumber">\</span>rt.jar<span class="ahcomment">;$JAVA_HOME\lib\dt.jar;%CLASSPATH%"
+</span>    <span class="ahinstruction">FileWrite</span> <span class="ahvar">$4</span> <span class="ahstring">"<span class="ahvar">$3</span>"</span>
+
+    <span class="ahinstruction">FileWriteByte</span> <span class="ahvar">$4</span> <span class="ahstring">"13"</span>
+    <span class="ahinstruction">FileWriteByte</span> <span class="ahvar">$4</span> <span class="ahstring">"10"</span>
+
+    <span class="ahinstruction">StrCpy</span> <span class="ahvar">$3</span> <span class="ahstring">"Set PATH=<span class="ahvar">$JAVA_HOME</span>\bin;%PATH%"</span>
+    <span class="ahinstruction">FileWrite</span> <span class="ahvar">$4</span> <span class="ahstring">"<span class="ahvar">$3</span>"</span>
+    <span class="ahinstruction">FileClose</span> <span class="ahvar">$4</span>
+    
+    <span class="ahinstruction">Pop</span> <span class="ahvar">$4</span>
+    <span class="ahinstruction">Pop</span> <span class="ahvar">$3</span>
+<span class="ahattribute">FunctionEnd</span>
+<span class="ahcomment">;--------------------------------
+</span><span class="ahcomment">; eof
+</span><span class="ahcomment">;--------------------------------
+</span></pre><!-- user_page.skel.php: end -->
+  </td></tr>
+</table>
+<!-- footer.skel.php: begin -->
+    </td>
+  </tr>
+  <tr>
+    <td colspan="2" height="40" class="alogo">
+      <a href="http://sourceforge.net"><img src="http://sourceforge.net/sflogo.php?group_id=22049&amp;type=1" alt="SourceForge Logo" border="0"></a>
+    </td>
+  </tr> 
+</table>
+</body> 
+</html>
+<!-- footer.skel.php: end -->

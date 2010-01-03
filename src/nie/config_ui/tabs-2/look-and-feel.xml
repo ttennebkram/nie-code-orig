@@ -1,0 +1,129 @@
+	<!-- Look and Feel -->
+	<!-- ============= -->
+	<section
+		title="Look and Feel"
+		level="2"
+		help="xyz.html"
+	>
+		<!--
+		<field type="vertical_spacer" />
+		-->
+		<field
+			type="vertical_spacer"
+		>
+			Set Colors and Fonts, etc.
+		</field>
+		<field type="vertical_spacer" />
+
+
+		<field
+			type="vertical_spacer"
+			font_size_increment="0"
+		>
+			The &quot;Webmaster Suggests&quot; Box
+		</field>
+		<field
+			name="wms_box_bgcolor"
+			label="Box Shading Color"
+			default="#eeeeee"
+			xpath="/nie_config/search_tuning/default_webmaster_suggests_box/@bgcolor"
+		/>
+		<field
+			name="wms_box_width"
+			label="Box Width"
+			default="95%"
+			xpath="/nie_config/search_tuning/default_webmaster_suggests_box/@width"
+		/>
+		<field
+			name="wms_box_border_size"
+			label="Box Border thickness (0=none)"
+			default="1"
+			type="select"
+			xpath="/nie_config/search_tuning/default_webmaster_suggests_box/@border"
+		>
+			<option>0</option>
+			<option>1</option>
+			<option>2</option>
+			<option>3</option>
+		</field>
+		<field
+			name="wms_box_border_color"
+			label="Box Border color (blank=default HTML)"
+			default="#000000"
+			xpath="/nie_config/search_tuning/default_webmaster_suggests_box/@border_color"
+		/>
+
+		<field type="vertical_spacer" />
+
+		<field
+			type="vertical_spacer"
+			font_size_increment="0"
+		>
+			The &quot;Webmaster Suggests&quot; Banner
+		</field>
+		<field
+			name="wms_slogan_text"
+			label="Webmaster Suggests Text"
+			default="The Webmaster Suggests:"
+			xpath="/nie_config/search_tuning/default_webmaster_suggests_header/@text"
+		/>
+		<field
+			name="wms_slogan_color"
+			label="Webmaster Suggests Color"
+			default="#000084"
+			xpath="/nie_config/search_tuning/default_webmaster_suggests_header/@color"
+		/>
+		<field
+			name="wms_slogan_class"
+			label="(Advanced) CSS class name"
+			xpath="/nie_config/search_tuning/default_webmaster_suggests_header/@class"
+		/>
+
+
+		<field type="vertical_spacer" />
+
+
+		<field
+			type="vertical_spacer"
+			font_size_increment="0"
+		>
+			Related Terms and &quot;See Also&quot; Links
+		</field>
+		<field
+			name="alt_slogan_text"
+			label="Default Related Terms Heading Text"
+			default="See Also:"
+			xpath="/nie_config/search_tuning/default_alternate_suggestions_heading/@text"
+		/>
+		<field
+			name="alt_slogan_color"
+			label="Default Related Terms Heading Color"
+			default="#000080"
+			xpath="/nie_config/search_tuning/default_alternate_suggestions_heading/@color"
+		/>
+
+		<field type="vertical_spacer" />
+
+
+		<field
+			type="vertical_spacer"
+			font_size_increment="0"
+		>
+			(Advanced) Additional &quot;Webmaster Suggests&quot; Text Settings
+		</field>
+		<field
+			name="wms_doc_title_class"
+			label="Suggested Title CSS class name"
+			xpath="/nie_config/search_tuning/default_webmaster_suggests_doc_title/@class"
+		/>
+		<field
+			name="wms_doc_url_class"
+			label="URL/Link CSS class name"
+			xpath="/nie_config/search_tuning/default_webmaster_suggests_doc_url/@class"
+		/>
+		<field
+			name="wms_doc_summary_class"
+			label="Summary CSS class name"
+			xpath="/nie_config/search_tuning/default_webmaster_suggests_doc_summary/@class"
+		/>
+	</section>

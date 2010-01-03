@@ -1,0 +1,94 @@
+<form
+	action="..."
+	title="Create Directed Results"
+>
+
+	<section
+		title="Basic Information"
+		help="..."
+	>
+		<field
+			name="terms"
+			label="Search Term(s)"
+			type="textarea"
+			rows="4"
+		>
+			insurance
+		</field>
+	</section>
+
+	<section
+		title="Suggested Web Page"
+		help="..."
+	>
+		<field
+			name="url01"
+			label="URL"
+		>
+			http://www.aopa.org/info/certified/add_faq.html
+		</field>
+		<field
+			name="title01"
+			label="Title"
+		>
+			AOPA Aviation AD&amp;D Insurance FAQ
+		</field>
+		<field
+			name="desc01"
+			label="Description"
+			type="textarea"
+			rows="4"
+		>
+			It's important for pilots and aircarft to haver proper insurance.
+			Topics include: types of insurance, levels of coverage,
+			findiding a broker, and a policy coverage checklist.
+		</field>
+	</section>
+
+	<section
+		title="Related Terms"
+		help="..."
+	>
+		<field
+			name="related_terms"
+			label="Related Term(s)"
+			type="textarea"
+			rows="2"
+		>
+			liability insurance, brokers
+		</field>
+		<field
+			name="related_terms_heading"
+			label="Intro Text"
+			type="select"
+		>
+			<option>You might also want to check out:</option>
+			<option>Did you mean:</option>
+			<option>Related Terms:</option>
+			<option>Related Products:</option>
+			<option>See Also:</option>
+			<option>Accessories:</option>
+			<option>Other helpful links:</option>
+		</field>
+		<field
+			name="related_terms_color"
+			label="Text Color"
+			type="select"
+		>
+			<option>Black</option>
+			<option>White</option>
+			<option>Dark Blue</option>
+		</field>
+	</section>
+
+	<section>
+		<button>
+			&lt; Back
+		</button>
+		<button>
+			OK Create &gt;
+		</button>
+	</section>
+
+
+</form>

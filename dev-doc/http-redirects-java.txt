@@ -1,0 +1,31 @@
+Found this on:
+http://saloon.javaranch.com/cgi-bin/ubb/ultimatebb.cgi?ubb=get_topic&f=7&t=021073
+6/10/08 10:54am: "I found a code sample in the apache commons project:"
+
+public URL handleRedirects(URL url)
+	throws IOException, MalformedURLException
+{
+        java.net.HttpURLConnection.setFollowRedirects(false);
+        HttpURLConnection con = (HttpURLConnection) url.openConnection();
+        int response = con.getResponseCode();
+        log.debug("Response code for " + url + " = " + response);
+ 
+        if( response == java.net.HttpURLConnection.HTTP_MOVED_PERM
+		|| response == java.net.HttpURLConnection.HTTP_MOVED_TEMP
+	) {
+            String location = con.getHeaderField("Location");
+            log.debug("Handling redirect to location: " + location);
+ 
+            if (location.startsWith("http:")) {
+                url = new URL(location);
+            } else if (location.startsWith("/")) {
+                url = new URL("http://" + url.getHost() + location);
+            } else {
+                url = new URL(con.getURL(), location);
+            }
+ 
+            url = handleRedirects(url); // to handle nested redirections
+        }
+ 
+        return url;
+}

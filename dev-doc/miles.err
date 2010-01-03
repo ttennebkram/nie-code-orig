@@ -1,0 +1,35 @@
+ERROR: 6/29/04 7:25:35 PM PDT PageInfo.main: IO Exception for URL: http://www.ca
+pgemeni.com Error: java.io.IOException: Retrieve failed: java.io.IOException
+ERROR: 6/29/04 7:25:57 PM PDT PageInfo.main: IO Exception for URL: http://www.dt
+tus.com Error: java.io.IOException: Retrieve failed: java.io.IOException
+WARNING: 6/29/04 7:25:59 PM PDT PageInfo.getTitle: Multiple title elements decla
+red; returning first valid one. (url: http://www.edgar-online.com)
+WARNING: 6/29/04 7:26:01 PM PDT PageInfo.getTitle: Multiple title elements decla
+red; returning first valid one. (url: http://www.ey.com)
+ERROR: 6/29/04 7:26:03 PM PDT PageInfo.getTitle: Looked at 1 candiate title tags
+ but did not find one with valid non-null href. (url: http://www.ford.com)
+WARNING: 6/29/04 7:26:10 PM PDT PageInfo.getTitle: Multiple title elements decla
+red; returning first valid one. (url: http://www.ibm.com)
+ERROR: 6/29/04 7:26:11 PM PDT PageInfo.getDescription: Looked at 1 candiate meta
+ description tags but did not find one with valid non-null href. (url: http://ww
+w.kaiserpermanente.org)
+WARNING: 6/29/04 7:26:12 PM PDT PageInfo.getTitle: Multiple title elements decla
+red; returning first valid one. (url: http://www.kpmg.com)
+ERROR: 6/29/04 7:26:15 PM PDT PageInfo.main: IO Exception for URL: http://www.lo
+tus.com Error: java.io.IOException: Retrieve failed: java.io.IOException: Got no
+n-200 HTTP header:WWW-306.IBM.COM (IBM-PROXY-WTE) URL='http://www.lotus.com'
+ERROR: 6/29/04 7:26:31 PM PDT PageInfo.getDeclaredBaseUrlOrNull: Looked at 1 can
+diate base tags but did not find one with valid non-null href. (url: http://www.
+pwc.com)
+ERROR: 6/29/04 7:26:36 PM PDT PageInfo.getTitle: Looked at 1 candiate title tags
+ but did not find one with valid non-null href. (url: http://www.sch-plough.com)
+
+ERROR: 6/29/04 7:26:40 PM PDT PageInfo.getTitle: Looked at 1 candiate title tags
+ but did not find one with valid non-null href. (url: http://www.standardcharter
+ed.com)
+ERROR: 6/29/04 7:26:40 PM PDT PageInfo.getTitle: Looked at 1 candiate title tags
+ but did not find one with valid non-null href. (url: http://www.stellent.com)
+ERROR: 6/29/04 7:26:46 PM PDT PageInfo.getTitle: Looked at 1 candiate title tags
+ but did not find one with valid non-null href. (url: http://www.umusic.com)
+WARNING: 6/29/04 7:26:47 PM PDT PageInfo.getTitle: Multiple title elements decla
+red; returning first valid one. (url: http://www.weyerhaeuser.com)

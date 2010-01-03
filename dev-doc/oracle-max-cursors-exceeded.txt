@@ -1,0 +1,28 @@
+Y ORDER BY count(*) DESC"
+Error: java.sql.SQLException: ORA-01000: maximum open cursors exceeded
+
+
+Minimize but not eliminated by dilligent use of myResultsSet.close()
+
+Config items
+open_cursors = 500
+session_cached_cursors = 50
+
+another suggestion to also close the statement, in addition to the
+results and connection
+
+
+presumably in this order
+
+>               rs.close();
+>               stmt.close();
+>               con.close();
+
+also
+Try to debug
+> the jdbc activity by setting the following properties.
+> 
+> jdbc.debug=true
+> debug.jdbc.check=true
+> jdbc.connection.debug=true
+

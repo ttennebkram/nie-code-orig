@@ -1,0 +1,12 @@
+===>  jdk-1.3.1p6_4 You must manually fetch the source distribution and FreeBSD
+patches
+
+j2sdk-1_3_1-src.tar.gz
+bsd-jdk131-patches-6.tar.gz
+from
+http://www.sun.com/software/java2/download.html
+http://www.eyesbeyond.com/freebsddom/java/jdk13.html
+
+place it in /usr/ports/distfiles
+
+and then run make again.

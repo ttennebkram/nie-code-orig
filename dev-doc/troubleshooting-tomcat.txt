@@ -1,0 +1,12 @@
+long errors when first loading page
+says something about no new compiler, looking for classic compiler
+this is because tools.jar is not in path, HOWEVER, what it probably really
+indicates is wrong Java
+look for tools.jar
+change JAVA_HOME to that
+unintall tomcat, reboot, then reinstall, pay careful attention to where it
+says it's getting java from
+
+always Session Expired, please login
+this is the "generic" error screen
+general error with code or configuration

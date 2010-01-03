@@ -1,0 +1,26 @@
+<table name="nie_domain_names">
+
+<field name="client_host"
+	type="text"
+	size="50"
+	is_not_null="TRUE"
+	is_indexed="TRUE"
+	description="ipv6 addresses are approx 40 characters in length"
+/>
+<field name="dns_name"
+	type="text"
+	size="128"
+	is_not_null="TRUE"
+	is_indexed="FALSE"
+/>
+<field name="lookup_date"
+	type="timestamp"
+	_is_not_null="TRUE"
+	is_indexed="TRUE"
+/>
+<field name="was_resolved"
+	type="boolean"
+	is_indexed="TRUE"
+/>
+
+</table>

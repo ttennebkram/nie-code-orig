@@ -1,0 +1,6 @@
+nie_sepcial_data_cell / nie_report_link (low) vert=bottom
+nie_numeric_xcell (low) vert=bottom
+nie_percentage_cell (low)  vert=bottom
+nie_data_cell / rept link (higher)
+nothing for image icon
+nie_data_cell

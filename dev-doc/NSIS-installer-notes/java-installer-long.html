@@ -1,0 +1,380 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<!-- header.skel.php: begin -->
+<html>
+
+<head>
+
+<title>NSIS Archive</title>
+
+    
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" href="/media/template/nsis.css" type="text/css">
+
+</head>
+
+<body leftmargin="0" topmargin="0" marginwidth="0" marginheight="0">
+
+<table width="778" height="100%" class="maintable" cellspacing="0" cellpadding="0" align="center">
+
+<tr><td colspan="2" height="22">
+ <table width="778">
+   <tr>
+     <td class="auser"><strong>Logged in as:</strong> <i>not logged in</i> ( <a href="login.php?page=0">login</a> )</td>
+     <td class="alinks">
+ 	          [ <a href="picklist.php">Pick List</a> ] [ <a href="search.php">Search</a> ] [ <a href="../index.php">NSIS Site</a> ] [ <a href="http://nsis.sourceforge.net/archive/nsisweb.php">Home</a> ]
+     </td>
+   </tr>
+ </table>
+<tr></td>
+
+  <tr>
+    <td width="150" height="100" class="top"><a href="/index.php"><img src="/media/template/left.gif" width="150" height="100" border="0"></a></td>
+    <td width="628" height="100" class="top"><h1 class="header">NSIS Archive</td>
+  </tr>
+
+  <tr>
+    <td class="content" colspan="2">
+
+<!-- header.skel.php: end --><!-- user_page.skel.php: begin -->
+Parent Pages: <a href="viewpage.php?pageid=71">Real World Installers</a></a>
+<hr class="aline">
+<table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr>
+    <td class="atitle">
+      Simple installer with JRE check    </td>
+    <td>
+      <a href="edit.php?pageid=268"><img src="images/edit2.png" name="edit2" width="20" height="20" border="0" alt="Edit this page"></a> | <a href="delete.php?instanceid=322"><img src="images/cut2.png" name="cut2" width="20" height="20" border="0" alt="Remove this page instance from the Archive"></a> | <a href="picklist.php?action=pick&instanceid=322"><img src="images/copy2.png" name="copy2" width="20" height="20" border="0" alt="Add this page to your pick list"></a> | <a href="viewpage.php?pageid=71"><img src="images/up2.png" name="up2" width="20" height="20" border="0" alt="View the parent of this page"></a>    </td>
+  </tr>
+</table>
+<hr class="aline">
+<table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr>
+    <td align="left" valign="top">
+      Written by <a href="profile.php?userid=224">weebib</a> 2003-06-06 08:37:18    </td>
+    <td align="right" valign="top">
+      Last updated by <a href="profile.php?userid=8">joost</a> 2004-02-27 11:53:15    </td>
+  </tr>
+  <tr><td><br><br></td></tr>
+  <tr><td colspan="2" align="left" valign="top" class="apage">
+<!-- user_page.skel.php: source -->
+This is a not very fancy install that has one interesting feature though. It can achieve a JRE version check. Depending on the outcome of the check procedure, it will display a Window warning the user that a newer version will be installed (or the user should install it manually).<br><br>As it has been pointed out in the forum, there ought to be another solution to perform a much more thorough search for the JRE than the one achieved by the present installer.<br><br>The big effort of this install was to use an (optional) InstFile window while installing the jre.<br><br><a href="savescript.php?pageid=268&script=1" target="_blank"><img border="0" src="images/disk.gif" width="19" height="19" class="aicon">Save this script</a><br><pre class="afixfont"><span class="ahcomment">; Credit given to so many people of the NSIS forum.
+</span>
+<span class="ahprepro"><b>!define</b></span> JRE_VERSION "1.4.1"
+
+<span class="ahprepro"><b>!include</b></span> "MUI.nsh"
+<span class="ahprepro"><b>!include</b></span> "Sections.nsh"
+
+<span class="ahprepro"><b>!define</b></span> TEMP $R0
+<span class="ahprepro"><b>!define</b></span> TEMP2 $R1
+<span class="ahprepro"><b>!define</b></span> VAL1 $R2
+<span class="ahprepro"><b>!define</b></span> VAL2 $R3
+
+<span class="ahprepro"><b>!define</b></span> DOWNLOAD_JRE_FLAG $8
+
+<span class="ahcomment">; define your own download path
+</span><span class="ahprepro"><b>!define</b></span> JRE_URL "/jre.exe"
+
+<span class="ahcomment">;--------------------------------
+</span><span class="ahcomment">;Configuration
+</span>
+  <span class="ahcomment">;General
+</span>  <span class="ahattribute">Name</span> <span class="ahstring">"JRE Test"</span>
+  <span class="ahattribute">OutFile</span> <span class="ahstring">"jretest.exe"</span>
+
+  <span class="ahcomment">;Folder selection page
+</span>  <span class="ahattribute">InstallDir</span> <span class="ahstring">"<span class="ahvar">$PROGRAMFILES</span>\JRE Test"</span>
+  
+  <span class="ahcomment">;Get install folder from registry if available
+</span>  <span class="ahattribute">InstallDirRegKey</span> <span class="ahparam">HKLM</span> <span class="ahstring">"SOFTWARE\JRE Test "</span><span class="ahstring">"
+</span>
+<span class="ahcomment">;--------------------------------
+</span><span class="ahcomment">;Pages
+</span>
+  <span class="ahattribute">Page</span> custom CheckInstalledJRE
+<span class="ahprepro"><b>  !insertmacro</b></span> MUI_PAGE_INSTFILES
+<span class="ahprepro"><b>  !define</b></span> MUI_PAGE_CUSTOMFUNCTION_PRE myPreInstfiles
+<span class="ahprepro"><b>  !define</b></span> MUI_PAGE_CUSTOMFUNCTION_LEAVE RestoreSections
+<span class="ahprepro"><b>  !insertmacro</b></span> MUI_PAGE_DIRECTORY
+<span class="ahprepro"><b>  !insertmacro</b></span> MUI_PAGE_INSTFILES
+
+<span class="ahprepro"><b>  !insertmacro</b></span> MUI_UNPAGE_CONFIRM
+<span class="ahprepro"><b>  !insertmacro</b></span> MUI_UNPAGE_INSTFILES
+  
+<span class="ahcomment">;--------------------------------
+</span><span class="ahcomment">;Modern UI Configuration
+</span>
+<span class="ahprepro"><b>  !define</b></span> MUI_ABORTWARNING
+
+<span class="ahcomment">;--------------------------------
+</span><span class="ahcomment">;Languages
+</span>
+<span class="ahprepro"><b>  !insertmacro</b></span> MUI_LANGUAGE "English"
+
+<span class="ahcomment">;--------------------------------
+</span><span class="ahcomment">;Language Strings
+</span>
+  <span class="ahcomment">;Description
+</span>  <span class="ahattribute">LangString</span> DESC_SecJRETest <span class="ahvar">${LANG_ENGLISH}</span> <span class="ahstring">"Application files copy"</span>
+
+  <span class="ahcomment">;Header
+</span>  <span class="ahattribute">LangString</span> TEXT_JRE_TITLE <span class="ahvar">${LANG_ENGLISH}</span> <span class="ahstring">"Java Runtime Environment"</span>
+  <span class="ahattribute">LangString</span> TEXT_JRE_SUBTITLE <span class="ahvar">${LANG_ENGLISH}</span> <span class="ahstring">"Installation"</span>
+  <span class="ahattribute">LangString</span> TEXT_PRODVER_TITLE <span class="ahvar">${LANG_ENGLISH}</span> <span class="ahnumber">\</span>
+<span class="ahstring">"Installed version of JRE Test"</span>
+  <span class="ahattribute">LangString</span> TEXT_PRODVER_SUBTITLE <span class="ahvar">${LANG_ENGLISH}</span> <span class="ahstring">"Installation cancelled"</span>
+
+<span class="ahcomment">;--------------------------------
+</span><span class="ahcomment">;Reserve Files
+</span>
+  <span class="ahcomment">;Only useful for BZIP2 compression
+</span>
+  <span class="ahattribute">ReserveFile</span> <span class="ahstring">"jre.ini"</span>
+<span class="ahprepro"><b>  !insertmacro</b></span> MUI_RESERVEFILE_INSTALLOPTIONS
+
+<span class="ahcomment">;--------------------------------
+</span><span class="ahcomment">;Installer Sections
+</span>
+<span class="ahattribute">Section</span> <span class="ahnumber">-</span>installjre jre
+  <span class="ahinstruction">DetailPrint</span> <span class="ahstring">"Starting the JRE installation"</span>
+<span class="ahprepro"><b>  !ifdef</b></span> WEB_INSTALL
+    <span class="ahinstruction">DetailPrint</span> <span class="ahstring">"Downloading the JRE setup"</span>
+<span class="ahlabel">    NSISdl:</span><span class="ahnumber">:</span>download <span class="ahparam">/TIMEOUT</span><span class="ahnumber">=</span><span class="ahnumber">30000</span> <span class="ahvar">${JRE_URL}</span> <span class="ahstring">"<span class="ahvar">$TEMP</span>\jre_setup.exe"</span>
+    <span class="ahinstruction">Pop</span> <span class="ahvar">$0</span> <span class="ahcomment">;Get the return value
+</span>    <span class="ahinstruction">StrCmp</span> <span class="ahvar">$0</span> <span class="ahstring">"success"</span> InstallJRE <span class="ahnumber">0</span>
+    <span class="ahinstruction">StrCmp</span> <span class="ahvar">$0</span> <span class="ahstring">"cancel"</span> <span class="ahnumber">0</span> <span class="ahnumber">+</span><span class="ahnumber">3</span>
+    <span class="ahinstruction">Push</span> <span class="ahstring">"Download cancelled."</span>
+    <span class="ahinstruction">Goto</span> ExitInstallJRE
+    <span class="ahinstruction">Push</span> <span class="ahstring">"Unkown error during download."</span>
+    <span class="ahinstruction">Goto</span> ExitInstallJRE
+<span class="ahprepro"><b>  !else</b></span>
+    <span class="ahinstruction">File</span> <span class="ahparam">/oname</span><span class="ahnumber">=</span><span class="ahvar">$TEMP</span><span class="ahnumber">\</span>jre_setup.exe j2re<span class="ahnumber">-</span>setup.exe
+<span class="ahprepro"><b>  !endif</b></span>
+<span class="ahlabel">InstallJRE:</span>
+  <span class="ahinstruction">DetailPrint</span> <span class="ahstring">"Launching JRE setup"</span>
+  <span class="ahinstruction">ExecWait</span> <span class="ahstring">"<span class="ahvar">$TEMP</span>\jre_setup.exe"</span> <span class="ahvar">$0</span>
+  <span class="ahinstruction">DetailPrint</span> <span class="ahstring">"Setup finished"</span>
+  <span class="ahinstruction">Delete</span> <span class="ahstring">"<span class="ahvar">$TEMP</span>\jre_setup.exe"</span>
+  <span class="ahinstruction">StrCmp</span> <span class="ahvar">$0</span> <span class="ahstring">"0"</span> InstallVerif <span class="ahnumber">0</span>
+  <span class="ahinstruction">Push</span> <span class="ahstring">"The JRE setup has been abnormally interrupted."</span>
+  <span class="ahinstruction">Goto</span> ExitInstallJRE
+
+<span class="ahlabel">InstallVerif:</span>
+  <span class="ahinstruction">DetailPrint</span> <span class="ahstring">"Checking the JRE Setup's outcome"</span>
+  <span class="ahinstruction">Call</span> DetectJRE
+  <span class="ahinstruction">Pop</span> <span class="ahvar">$0</span>
+  <span class="ahinstruction">StrCmp</span> <span class="ahvar">$0</span> <span class="ahstring">"OK"</span> JavaExeVerif <span class="ahnumber">0</span>
+  <span class="ahinstruction">Push</span> <span class="ahstring">"The JRE setup failed"</span>
+  <span class="ahinstruction">Goto</span> ExitInstallJRE
+
+<span class="ahlabel">JavaExeVerif:</span>
+  <span class="ahinstruction">Pop</span> <span class="ahvar">$1</span>
+  <span class="ahinstruction">IfFileExists</span> <span class="ahvar">$1</span> JREPathStorage <span class="ahnumber">0</span>
+  <span class="ahinstruction">Push</span> <span class="ahstring">"The following file : <span class="ahvar">$1</span>, cannot be found."</span>
+  <span class="ahinstruction">Goto</span> ExitInstallJRE
+  
+<span class="ahlabel">JREPathStorage:</span>
+<span class="ahprepro"><b>  !insertmacro</b></span> MUI_INSTALLOPTIONS_WRITE "jre.ini" \
+"UserDefinedSection" "JREPath" $1
+  <span class="ahinstruction">Goto</span> End
+  
+<span class="ahlabel">ExitInstallJRE:</span>
+  <span class="ahinstruction">Pop</span> <span class="ahvar">$2</span>
+  <span class="ahinstruction">MessageBox</span> <span class="ahparam">MB_OK</span> <span class="ahstring">"The setup is about to be interrupted for the following
+</span><span class="ahlabel">reason :</span> <span class="ahvar">$2</span><span class="ahstring">"
+</span>  <span class="ahinstruction">Quit</span>
+<span class="ahlabel">End:</span>
+
+<span class="ahattribute">SectionEnd</span>
+
+<span class="ahattribute">Section</span> <span class="ahparam">/o</span> <span class="ahstring">"Installation of JRE Test"</span> SecJRETest
+
+  <span class="ahinstruction">SetOutPath</span> <span class="ahvar">$INSTDIR</span>
+  <span class="ahinstruction">File</span> <span class="ahparam">/r</span> <span class="ahstring">"installDir\*"</span>
+
+<span class="ahprepro"><b>  !insertmacro</b></span> MUI_INSTALLOPTIONS_READ $0 "jre.ini" "UserDefinedSection"
+<span class="ahstring">"JREPath"</span>
+  <span class="ahcomment">;Store install folder
+</span>  <span class="ahinstruction">WriteRegStr</span> <span class="ahparam">HKLM</span> <span class="ahstring">"SOFTWARE\JRE Test"</span> <span class="ahstring">""</span> <span class="ahvar">$INSTDIR</span>
+
+  <span class="ahinstruction">WriteRegStr</span> <span class="ahparam">HKLM</span> <span class="ahnumber">\</span>
+<span class="ahstring">"Software\Microsoft\Windows\CurrentVersion\Uninstall\JRE Test"</span> <span class="ahnumber">\</span>
+<span class="ahstring">"DisplayName"</span> <span class="ahstring">"JRE Test"</span>
+  <span class="ahinstruction">WriteRegStr</span> <span class="ahparam">HKLM</span> <span class="ahnumber">\</span>
+<span class="ahstring">"Software\Microsoft\Windows\CurrentVersion\Uninstall\JRE Test"</span> <span class="ahnumber">\</span>
+<span class="ahstring">"UninstallString"</span> <span class="ahstring">'"<span class="ahvar">$INSTDIR</span>\uninstall.exe"'</span>
+  <span class="ahinstruction">WriteRegDWORD</span> <span class="ahparam">HKLM</span> <span class="ahnumber">\</span>
+<span class="ahstring">"Software\Microsoft\Windows\CurrentVersion\Uninstall\JRE Test"</span> <span class="ahnumber">\</span>
+<span class="ahstring">"NoModify"</span> <span class="ahstring">"1"</span>
+  <span class="ahinstruction">WriteRegDWORD</span> <span class="ahparam">HKLM</span> <span class="ahnumber">\</span>
+<span class="ahstring">"Software\Microsoft\Windows\CurrentVersion\Uninstall\JRE Test"</span> <span class="ahnumber">\</span>
+<span class="ahstring">"NoRepair"</span> <span class="ahstring">"1"</span>
+  
+  <span class="ahcomment">;Create uninstaller
+</span>  <span class="ahinstruction">WriteUninstaller</span> <span class="ahstring">"<span class="ahvar">$INSTDIR</span>\Uninstall.exe"</span>
+
+<span class="ahattribute">SectionEnd</span>
+
+<span class="ahattribute">Section</span> <span class="ahparam">/o</span> <span class="ahstring">"Start menu shortcuts"</span> SecCreateShortcut
+
+  <span class="ahinstruction">CreateDirectory</span> <span class="ahstring">"<span class="ahvar">$SMPROGRAMS</span>\JRE Test"</span>
+  <span class="ahinstruction">CreateShortCut</span> <span class="ahstring">"<span class="ahvar">$SMPROGRAMS</span>\JRE Test\Uninstall.lnk"</span> <span class="ahnumber">\</span>
+<span class="ahstring">"<span class="ahvar">$INSTDIR</span>\uninstall.exe"</span> <span class="ahstring">""</span> <span class="ahstring">"<span class="ahvar">$INSTDIR</span>\uninstall.exe"</span> <span class="ahnumber">0</span>
+  <span class="ahinstruction">CreateShortCut</span> <span class="ahstring">"<span class="ahvar">$SMPROGRAMS</span>\JRE Test\JRE Test.lnk"</span> <span class="ahnumber">\</span>
+<span class="ahstring">"<span class="ahvar">$INSTDIR</span>\jretext.exe"</span> <span class="ahstring">""</span> <span class="ahstring">"<span class="ahvar">$INSTDIR</span>\jretest.exe"</span> <span class="ahnumber">0</span>
+
+<span class="ahattribute">SectionEnd</span>
+
+<span class="ahcomment">;--------------------------------
+</span><span class="ahcomment">;Descriptions
+</span>
+<span class="ahprepro"><b>!insertmacro</b></span> MUI_FUNCTION_DESCRIPTION_BEGIN
+<span class="ahprepro"><b>  !insertmacro</b></span> MUI_DESCRIPTION_TEXT ${SecJRETest} $(DESC_SecJRETest)
+<span class="ahprepro"><b>!insertmacro</b></span> MUI_FUNCTION_DESCRIPTION_END
+
+<span class="ahcomment">;--------------------------------
+</span><span class="ahcomment">;Installer Functions
+</span>
+<span class="ahattribute">Function</span> <span class="ahcallback">.onInit</span>
+
+  <span class="ahcomment">;Extract InstallOptions INI Files
+</span><span class="ahprepro"><b>  !insertmacro</b></span> MUI_INSTALLOPTIONS_EXTRACT "jre.ini"
+  <span class="ahinstruction">Call</span> SetupSections
+
+<span class="ahattribute">FunctionEnd</span>
+
+<span class="ahattribute">Function</span> myPreInstfiles
+
+  <span class="ahinstruction">Call</span> RestoreSections
+  <span class="ahinstruction">SetAutoClose</span> <span class="ahparam">true</span>
+  
+<span class="ahattribute">FunctionEnd</span>
+  
+<span class="ahattribute">FunctionEnd</span>
+
+<span class="ahattribute">Function</span> CheckInstalledJRE
+  <span class="ahinstruction">Call</span> DetectJRE
+  <span class="ahinstruction">Pop</span> <span class="ahvar">${TEMP}</span>
+  <span class="ahinstruction">StrCmp</span> <span class="ahvar">${TEMP}</span> <span class="ahstring">"OK"</span> NoDownloadJRE
+  <span class="ahinstruction">Pop</span> <span class="ahvar">${TEMP2}</span>
+  <span class="ahinstruction">StrCmp</span> <span class="ahvar">${TEMP2}</span> <span class="ahstring">"None"</span> NoFound FoundOld
+  
+<span class="ahlabel">FoundOld:</span>
+<span class="ahprepro"><b>  !insertmacro</b></span> MUI_INSTALLOPTIONS_WRITE "jre.ini" "Field 1" "Text" "JRE Test
+requires a more recent version of the Java Runtime Environment <span class="ahnumber">\</span>
+than the one found <span class="ahparam">on</span> your computer.<span class="ahnumber">\</span>r<span class="ahnumber">\</span>nThe installation of JRE <span class="ahnumber">\</span>
+<span class="ahvar">${JRE_VERSION}</span> will start.<span class="ahstring">"
+</span><span class="ahprepro"><b>  !insertmacro</b></span> MUI_HEADER_TEXT "$(TEXT_JRE_TITLE)" "$(TEXT_JRE_SUBTITLE)"
+<span class="ahprepro"><b>  !insertmacro</b></span> MUI_INSTALLOPTIONS_DISPLAY_RETURN "jre.ini"
+  <span class="ahinstruction">Goto</span> DownloadJRE
+
+<span class="ahlabel">NoFound:</span>
+<span class="ahprepro"><b>  !insertmacro</b></span> MUI_INSTALLOPTIONS_WRITE "jre.ini" "Field 1" "Text" "No Java
+Runtime Environment could be found <span class="ahparam">on</span> your computer <span class="ahnumber">\</span>
+ <span class="ahnumber">\</span>r<span class="ahnumber">\</span>nThe installation of JRE v<span class="ahvar">${JRE_VERSION}</span> will start.<span class="ahstring">"
+</span><span class="ahprepro"><b>  !insertmacro</b></span> MUI_HEADER_TEXT "$(TEXT_JRE_TITLE)" "$(TEXT_JRE_SUBTITLE)"
+<span class="ahprepro"><b>  !insertmacro</b></span> MUI_INSTALLOPTIONS_DISPLAY "jre.ini"
+  <span class="ahinstruction">Goto</span> DownloadJRE
+
+<span class="ahlabel">DownloadJRE:</span>
+  <span class="ahinstruction">StrCpy</span> <span class="ahvar">${DOWNLOAD_JRE_FLAG}</span> <span class="ahstring">"Download"</span>
+  <span class="ahinstruction">Return</span>
+  
+<span class="ahlabel">NoDownloadJRE:</span>
+  <span class="ahinstruction">Pop</span> <span class="ahvar">${TEMP2}</span>
+  <span class="ahinstruction">StrCpy</span> <span class="ahvar">${DOWNLOAD_JRE_FLAG}</span> <span class="ahstring">"NoDownload"</span>
+<span class="ahprepro"><b>  !insertmacro</b></span> MUI_INSTALLOPTIONS_WRITE "jre.ini" \
+"UserDefinedSection" "JREPath" \
+${TEMP2}
+  <span class="ahinstruction">Return</span>
+  
+<span class="ahlabel">ExitInstall:</span>
+  <span class="ahinstruction">Quit</span>
+
+<span class="ahattribute">FunctionEnd</span>
+
+
+<span class="ahattribute">Function</span> DetectJRE
+  <span class="ahinstruction">ReadRegStr</span> <span class="ahvar">${TEMP2}</span> <span class="ahparam">HKLM</span> <span class="ahstring">"SOFTWARE\JavaSoft\Java Runtime Environment"</span> <span class="ahnumber">\</span>
+<span class="ahstring">"CurrentVersion"</span>
+  <span class="ahinstruction">StrCmp</span> <span class="ahvar">${TEMP2}</span> <span class="ahstring">""</span> DetectTry2
+  <span class="ahinstruction">ReadRegStr</span> <span class="ahvar">${TEMP3}</span> <span class="ahparam">HKLM</span> <span class="ahnumber">\</span>
+<span class="ahstring">"SOFTWARE\JavaSoft\Java Runtime Environment\<span class="ahvar">${TEMP2}</span>"</span> <span class="ahstring">"JavaHome"</span>
+  <span class="ahinstruction">StrCmp</span> <span class="ahvar">${TEMP3}</span> <span class="ahstring">""</span> DetectTry2
+  <span class="ahinstruction">Goto</span> GetJRE
+
+<span class="ahlabel">DetectTry2:</span>
+  <span class="ahinstruction">ReadRegStr</span> <span class="ahvar">${TEMP2}</span> <span class="ahparam">HKLM</span> <span class="ahstring">"SOFTWARE\JavaSoft\Java Development Kit"</span> <span class="ahnumber">\</span>
+<span class="ahstring">"CurrentVersion"</span>
+  <span class="ahinstruction">StrCmp</span> <span class="ahvar">${TEMP2}</span> <span class="ahstring">""</span> NoFound
+  <span class="ahinstruction">ReadRegStr</span> <span class="ahvar">${TEMP3}</span> <span class="ahparam">HKLM</span> <span class="ahnumber">\</span>
+<span class="ahstring">"SOFTWARE\JavaSoft\Java Runtime Environment\<span class="ahvar">${TEMP2}</span>"</span> <span class="ahstring">"JavaHome"</span>
+  <span class="ahinstruction">StrCmp</span> <span class="ahvar">${TEMP3}</span> <span class="ahstring">""</span> NoFound
+
+<span class="ahlabel">GetJRE:</span>
+  <span class="ahinstruction">IfFileExists</span> <span class="ahstring">"<span class="ahvar">${TEMP3}</span>\bin\java.exe"</span> <span class="ahnumber">0</span> NoFound
+  <span class="ahinstruction">StrCpy</span> <span class="ahvar">${VAL1}</span> <span class="ahvar">${TEMP2}</span> <span class="ahnumber">1</span>
+  <span class="ahinstruction">StrCpy</span> <span class="ahvar">${VAL2}</span> <span class="ahvar">${JRE_VERSION}</span> <span class="ahnumber">1</span>
+  <span class="ahinstruction">IntCmp</span> <span class="ahvar">${VAL1}</span> <span class="ahvar">${VAL2}</span> <span class="ahnumber">0</span> FoundOld FoundNew
+  <span class="ahinstruction">StrCpy</span> <span class="ahvar">${VAL1}</span> <span class="ahvar">${TEMP2}</span> <span class="ahnumber">1</span> <span class="ahnumber">2</span>
+  <span class="ahinstruction">StrCpy</span> <span class="ahvar">${VAL2}</span> <span class="ahvar">${JRE_VERSION}</span> <span class="ahnumber">1</span> <span class="ahnumber">2</span>
+  <span class="ahinstruction">IntCmp</span> <span class="ahvar">${VAL1}</span> <span class="ahvar">${VAL2}</span> FoundNew FoundOld FoundNew
+
+<span class="ahlabel">NoFound:</span>
+  <span class="ahinstruction">Push</span> <span class="ahstring">"None"</span>
+  <span class="ahinstruction">Push</span> <span class="ahstring">"NOK"</span>
+  <span class="ahinstruction">Return</span>
+
+<span class="ahlabel">FoundOld:</span>
+  <span class="ahinstruction">Push</span> <span class="ahvar">${TEMP2}</span>
+  <span class="ahinstruction">Push</span> <span class="ahstring">"NOK"</span>
+  <span class="ahinstruction">Return</span>
+  
+<span class="ahlabel">FoundNew:</span>
+  <span class="ahinstruction">Push</span> <span class="ahstring">"<span class="ahvar">${TEMP3}</span>\bin\java.exe"</span>
+  <span class="ahinstruction">Push</span> <span class="ahstring">"OK"</span>
+  <span class="ahinstruction">Return</span>
+
+<span class="ahattribute">FunctionEnd</span>
+
+<span class="ahattribute">Function</span> RestoreSections
+<span class="ahprepro"><b>  !insertmacro</b></span> UnselectSection ${jre}
+<span class="ahprepro"><b>  !insertmacro</b></span> SelectSection ${SecJRETest}
+<span class="ahprepro"><b>  !insertmacro</b></span> SelectSection ${SecCreateShortcut}
+  
+<span class="ahattribute">FunctionEnd</span>
+
+<span class="ahattribute">Function</span> SetupSections
+<span class="ahprepro"><b>  !insertmacro</b></span> SelectSection ${jre}
+<span class="ahprepro"><b>  !insertmacro</b></span> UnselectSection ${SecJRETest}
+<span class="ahprepro"><b>  !insertmacro</b></span> UnselectSection ${SecCreateShortcut}
+<span class="ahattribute">FunctionEnd</span>
+
+<span class="ahcomment">;--------------------------------
+</span><span class="ahcomment">;Uninstaller Section
+</span>
+<span class="ahattribute">Section</span> <span class="ahstring">"Uninstall"</span>
+
+  <span class="ahcomment">; remove registry keys
+</span>  <span class="ahinstruction">DeleteRegKey</span> <span class="ahparam">HKLM</span> <span class="ahnumber">\</span>
+<span class="ahstring">"Software\Microsoft\Windows\CurrentVersion\Uninstall\JRE Test"</span>
+  <span class="ahinstruction">DeleteRegKey</span> <span class="ahparam">HKLM</span>  <span class="ahstring">"SOFTWARE\JRE Test"</span>
+  <span class="ahcomment">; remove shortcuts, if any.
+</span>  <span class="ahinstruction">Delete</span> <span class="ahstring">"<span class="ahvar">$SMPROGRAMS</span>\JRE Test\*.*"</span>
+  <span class="ahcomment">; remove files
+</span>  <span class="ahinstruction">RMDir</span> <span class="ahparam">/r</span> <span class="ahstring">"<span class="ahvar">$INSTDIR</span>"</span>
+
+<span class="ahattribute">SectionEnd</span></pre><!-- user_page.skel.php: end -->
+  </td></tr>
+</table>
+<!-- footer.skel.php: begin -->
+    </td>
+  </tr>
+  <tr>
+    <td colspan="2" height="40" class="alogo">
+      <a href="http://sourceforge.net"><img src="http://sourceforge.net/sflogo.php?group_id=22049&amp;type=1" alt="SourceForge Logo" border="0"></a>
+    </td>
+  </tr> 
+</table>
+</body> 
+</html>
+<!-- footer.skel.php: end -->

@@ -1,0 +1,124 @@
+<table>
+  <tr>
+    <th colspan="4" align="center">Search Activity Trends</th>
+  </tr>
+  <tr>
+    <td colspan="4" align="center">
+      <font class="nie_trend_font" size="-1">for the last 7 days</font>
+    </td>
+  </tr>
+  <tr>
+    <td />
+    <td colspan="3" align="center">
+      <font class="nie_trend_font" size="-1">Results List Ranking</font>
+    </td>
+  </tr>
+  <tr>
+    <td align="left">
+      <font class="nie_trend_font" size="-1">Search Term</font>
+    </td>
+    <td align="center">
+      <font class="nie_trend_font" size="-1">Change</font>
+    </td>
+    <td align="center">
+      <font class="nie_trend_font" size="-1">Last 7 days</font>
+    </td>
+    <td align="center">
+      <font class="nie_trend_font" size="-1">Prior 7 days</font>
+    </td>
+  </tr>
+  <tr>
+    <td>
+      <hr />
+    </td>
+    <td>
+      <hr />
+    </td>
+    <td>
+      <hr />
+    </td>
+    <td>
+      <hr />
+    </td>
+  </tr>
+  <tr>
+    <td align="left">
+      <font class="nie_trend_font" size="-1">k2</font>
+    </td>
+    <td align="center">
+      <img width="12" height="12" alt="New Term" src="/file/images/sr2/new-1.gif" />
+    </td>
+    <td align="center">
+      <font class="nie_trend_font" size="-1">1</font>
+    </td>
+    <td align="center">
+      <font class="nie_trend_font" size="-1">-</font>
+    </td>
+  </tr>
+  <tr>
+    <td align="left">
+      <font class="nie_trend_font" size="-1">microsoft</font>
+    </td>
+    <td align="center">
+      <img width="12" height="12" alt="New Term" src="/file/images/sr2/new-1.gif" />
+    </td>
+    <td align="center">
+      <font class="nie_trend_font" size="-1">2</font>
+    </td>
+    <td align="center">
+      <font class="nie_trend_font" size="-1">-</font>
+    </td>
+  </tr>
+  <tr>
+    <td align="center">
+      <font class="nie_trend_font" size="-1">-</font>
+    </td>
+    <td align="center">
+      <font class="nie_trend_font" size="-1">-</font>
+    </td>
+    <td align="center">
+      <font class="nie_trend_font" size="-1">-</font>
+    </td>
+    <td align="center">
+      <font class="nie_trend_font" size="-1">-</font>
+    </td>
+  </tr>
+  <tr>
+    <td align="center">
+      <font class="nie_trend_font" size="-1">-</font>
+    </td>
+    <td align="center">
+      <font class="nie_trend_font" size="-1">-</font>
+    </td>
+    <td align="center">
+      <font class="nie_trend_font" size="-1">-</font>
+    </td>
+    <td align="center">
+      <font class="nie_trend_font" size="-1">-</font>
+    </td>
+  </tr>
+  <tr>
+    <td align="center">
+      <font class="nie_trend_font" size="-1">-</font>
+    </td>
+    <td align="center">
+      <font class="nie_trend_font" size="-1">-</font>
+    </td>
+    <td align="center">
+      <font class="nie_trend_font" size="-1">-</font>
+    </td>
+    <td align="center">
+      <font class="nie_trend_font" size="-1">-</font>
+    </td>
+  </tr>
+  <tr>
+    <td colspan="4" align="center">
+      <hr width="70%" />
+    </td>
+  </tr>
+  <tr>
+    <td colspan="4" align="center">
+      <img alt="Icon Legend" src="/file/images/sr2/legend.gif" />
+    </td>
+  </tr>
+</table>

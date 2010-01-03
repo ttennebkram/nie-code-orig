@@ -1,0 +1,45 @@
+Dates and Times
+	current datetime
+	date math (add/subtract, average, first/last in week, month, etc)
+	date formats
+	truncate datetime to just date
+	date range, precision
+	timezone policy
+
+Other datatype issues
+	boolean (we use small ints)
+	length of int, largest int
+		^^^ may be used for non-colliding IDs
+	strings, max len, vs. blobs
+	encoding, effects length?
+
+SQL syntax
+	null value test
+	decode/lookup function (1=red, 2=green, etc)
+	Alias "AS"
+	Oracle dual
+	Outer joins
+	row ID
+	decode/encode apostrophes
+	unique/distinct
+	sorting, nulls and upper/lowercase
+	sequence numbers
+	stored procedures
+
+JDBC
+	JDBC "URL" syntax
+	jdbc v1 vs v2
+	type: "thin/socket" vs. "thick/JNI"
+	mode: read-only and flags vs. modify in place
+	driver versions
+	driver distribution
+	string encoding (usually utf8?)
+
+Administration
+	create database
+	create user
+	grant user access to database with create
+	create table
+	create index
+	load data
+	unload data

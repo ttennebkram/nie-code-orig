@@ -1,0 +1,1333 @@
+package nie.core;
+
+import java.io.*;
+import java.util.*;
+import java.net.*;
+
+// Helper class used for additional communications between
+// users of our file and URL IO functions
+// Use this if you:
+// - get/set detailed information about CGI requests
+// - (future) Would like set addtional, infrequently used options
+// - Would like us to provide you with additonal information about
+//      our efforts
+// HASH WARNING:
+// Currently you are responsible for your own key normalization
+public class AuxIOInfo
+{
+
+	// private static boolean debug = true;
+	// Don't specifically set it if you want FALSE, it'll default to that
+	private static boolean debug;
+	public static void setDebug( boolean flag )
+	{
+		debug = flag;
+	}
+
+	public AuxIOInfo()
+	{
+
+		// Init some of the containers
+		// For reading HTTP requests
+		fIoHTTPHeaders = new Vector();
+		fIoHTTPHeaderFieldHash = new Hashtable();
+		fIoCGIFieldHash = new Hashtable();
+	}
+
+
+	public String displayRequestIntoBuffer()
+	{
+		String str1 = displayRawHTTPHeaderLinesIntoBuffer();
+		String str2 = displayHTTPHeaderFieldsIntoBuffer();
+		String str3 = displayCGIFieldsIntoBuffer();
+		return str1 + str2 + str3;
+	}
+
+
+	// Get the named field, force to scalar
+	// Note that we do NOT normalize the output since it is
+	// valid to have field= with no value, which in some applications
+	// may be different then not having the value at all
+	public String getScalarCGIField( String inFieldName )
+	{
+		inFieldName = NIEUtil.trimmedStringOrNull( inFieldName );
+		if( inFieldName == null )
+		{
+			System.err.println( "Error: AuxIOInfo: getScalarCGIField:"
+				+ " Was passed in null/empty field name."
+				+ " Returning null."
+				);
+			return null;
+		}
+
+		// Go ahead and return the results
+		return getScalarFromHash(
+			fIoCGIFieldHash, inFieldName, DEFAULT_HASH_KEY_NORMALIZE_CASE
+			);
+	}
+
+	public List getCGIFieldKeys()
+	{
+		List keys = new Vector();
+		if( fIoCGIFieldHash != null )
+		{
+			Set tmpSet = fIoCGIFieldHash.keySet();
+			keys.addAll( tmpSet );
+		}
+		return keys;
+	}
+
+	public String getScalarCGIFieldTrimOrNull( String inFieldName )
+	{
+		String tmpStr = getScalarCGIField( inFieldName );
+		tmpStr = NIEUtil.trimmedStringOrNull( tmpStr );
+		return tmpStr;
+	}
+
+	public List getMultivalueCGIField( String inFieldName )
+	{
+		inFieldName = NIEUtil.trimmedStringOrNull( inFieldName );
+		if( inFieldName == null )
+		{
+			System.err.println( "Error: AuxIOInfo: getMultivalueCGIField:"
+				+ " Was passed in null/empty field name."
+				+ " Returning null."
+				);
+			return new Vector();
+		}
+
+		// Go ahead and return the results
+		return getMultivalueFromHash(
+			fIoCGIFieldHash, inFieldName, DEFAULT_HASH_KEY_NORMALIZE_CASE
+			);
+	}
+
+
+
+	// Get the fields as color=red&size=large&name=john+doe
+	public String getCGIFieldsAsEncodedBuffer()
+	{
+
+		final String kFName = "getCGIFieldsAsEncodedBuffer";
+
+		if( fIoCGIFieldHash == null )
+		{
+			System.err.println(
+				"Error: AuxIOInfo: getCGIFieldsAsEncodedBuffer:"
+				+ " No cgi fields to encode."
+				+ " returning empty string."
+				);
+			return "";
+		}
+
+		// The output buffer
+		StringBuffer outBuff = new StringBuffer();
+
+		// Loop through the hash keys
+		Set keys = fIoCGIFieldHash.keySet();
+		if(debug)
+			System.err.println( kFName + ": Will encode " + keys.size() + " keys." );
+		for( Iterator it = keys.iterator(); it.hasNext() ; )
+		{
+			// Get the key
+			String newKey = (String) it.next();
+
+			// We need to encode the key into x-www-form-urlencoded format
+			String encodedKey = URLEncoder.encode( newKey );
+
+			// Now get the object
+			Object obj = fIoCGIFieldHash.get( newKey );
+
+			// If it's a simple string, just add it in
+			if( obj instanceof String )
+			{
+				// Convert to String
+				String strValue = (String)obj;
+				// We need to encode the key into x-www-form-urlencoded format
+				String encodedValue = URLEncoder.encode( strValue );
+
+				// Add delimiter, if not first
+				if( outBuff.length() > 0 )
+					outBuff.append( '&' );
+
+				// And add it
+				// The header field name
+				outBuff.append( encodedKey );
+				// The separator
+				outBuff.append( '=' );
+				// The actual value
+				outBuff.append( encodedValue );
+
+			}
+			// If it's a list, add the list's elements
+			else if( obj instanceof List || obj instanceof Vector )
+			{
+				// Convert to String
+				List listOfValues = (List)obj;
+
+				// And loop through the list
+				for( Iterator it2 = listOfValues.iterator(); it2.hasNext() ;)
+				{
+					// Grab the value
+					String tmpValue = (String) it2.next();
+					// We need to encode the value into x-www-form-urlencoded format
+					String encodedValue = URLEncoder.encode( tmpValue );
+
+					// Add delimiter, if not first
+					if( outBuff.length() > 0 )
+						outBuff.append( '&' );
+
+					// And add it
+					// The header field name
+					outBuff.append( encodedKey );
+					// The separator
+					outBuff.append( '=' );
+					// The actual value
+					outBuff.append( encodedValue );
+
+				}
+			}
+			else
+			{
+				// Else we don't know what to do
+				System.err.println(
+					"Error: AuxIOInfo: getCGIFieldsAsEncodedBuffer:"
+					+ " Unable to convert requested Hash object into buffer."
+					+ " Requested hash key = \"" + newKey + "\""
+					+ " Unhandled object class = \"" + obj.getClass().getName() + "\""
+					+ " Ingoring this item."
+					);
+			}
+
+		}   // End of for each key in hash
+
+		// Done
+		return new String( outBuff );
+
+	}
+
+
+
+
+	public String getScalarHTTPFieldTrimOrNull( String inFieldName )
+	{
+		String tmpStr = getScalarHTTPField( inFieldName );
+		tmpStr = NIEUtil.trimmedStringOrNull( tmpStr );
+		return tmpStr;
+	}
+	public String getScalarHTTPField( String inFieldName )
+	{
+		inFieldName = NIEUtil.trimmedStringOrNull( inFieldName );
+		if( inFieldName == null )
+		{
+			System.err.println( "Error: AuxIOInfo: getScalarHTTPField:"
+				+ " Was passed in null/empty field name."
+				+ " Returning null."
+				);
+			return null;
+		}
+
+		// Go ahead and return the results
+		return getScalarFromHash(
+			fIoHTTPHeaderFieldHash, inFieldName, DEFAULT_HASH_KEY_NORMALIZE_CASE
+			);
+	}
+
+	public List getHTTPFieldFieldKeys()
+	{
+		List keys = new Vector();
+		if( fIoHTTPHeaderFieldHash != null )
+		{
+			Set tmpSet = fIoHTTPHeaderFieldHash.keySet();
+			keys.addAll( tmpSet );
+		}
+		return keys;
+	}
+
+
+	public void addHTTPHeaderField( String inKey, String inValue )
+	{
+		addFieldToMultivalueHash( fIoHTTPHeaderFieldHash,
+			inKey, inValue, true
+			);
+	}
+	public void setOrOverwriteHTTPHeaderField( String inKey, String inValue )
+	{
+		setOrOverwriteHashValue( fIoHTTPHeaderFieldHash,
+			inKey, inValue, true
+			);
+	}
+
+
+
+	// Copy in the CGI fields from a second (donor) Aux Info object
+	// By default, copy all fields
+	public void copyInHTTPFields( AuxIOInfo inDonorInfo )
+	{
+		copyInHTTPFields( inDonorInfo, null );
+	}
+	public void copyInHTTPFields(
+		AuxIOInfo inDonorInfo, List inExcludeFields
+		)
+	{
+		if( inDonorInfo == null )
+		{
+			System.err.println(
+				"Error: AuxIOInfo: copyInHTTPFields:"
+				+ " Was passed in a null donor object."
+				+ " Nothing to copy in."
+				);
+			return;
+		}
+
+		// Go ahead and call the static hash copy method, with
+		// the appropriate member fields
+		combineMultivalueHashes(
+			fIoHTTPHeaderFieldHash,
+			inDonorInfo.fIoHTTPHeaderFieldHash,
+			inExcludeFields,
+			true
+			);
+
+	}
+
+
+
+
+
+	public String getHTTPHeadersAsBuffer()
+	{
+
+		if( fIoHTTPHeaderFieldHash == null )
+		{
+			System.err.println(
+				"Error: AuxIOInfo: getHTTPHeadersAsBuffer:"
+				+ " No header fields to encode."
+				+ " returning empty string."
+				);
+			return "";
+		}
+
+		// The output buffer
+		StringBuffer outBuff = new StringBuffer();
+
+		// Loop through the hash keys
+		Set keys = fIoHTTPHeaderFieldHash.keySet();
+		for( Iterator it = keys.iterator(); it.hasNext() ; )
+		{
+			String newKey = (String) it.next();
+
+			// Now get the object
+			Object obj = fIoHTTPHeaderFieldHash.get( newKey );
+
+			// If it's a simple string, just add it in
+			if( obj instanceof String )
+			{
+				// Convert to String
+				String strValue = (String)obj;
+				// And add it
+				// The header field name
+				outBuff.append( newKey );
+				// The separator
+				outBuff.append( ": " );
+				// The actual value
+				outBuff.append( strValue );
+				// And the newline sequence
+				outBuff.append( HEADER_EOL );
+
+			}
+			// If it's a list, add the list's elements
+			else if( obj instanceof List || obj instanceof Vector )
+			{
+				// Convert to String
+				List listOfValues = (List)obj;
+
+				// And loop through the list
+				for( Iterator it2 = listOfValues.iterator(); it2.hasNext() ;)
+				{
+					// Grab the value
+					String tmpValue = (String) it2.next();
+					// And add it
+					// The header field name
+					outBuff.append( newKey );
+					// The separator
+					outBuff.append( ": " );
+					// The actual value
+					outBuff.append( tmpValue );
+					// And the newline sequence
+					outBuff.append( HEADER_EOL );
+				}
+			}
+			else
+			{
+				// Else we don't know what to do
+				System.err.println(
+					"Error: AuxIOInfo: getHTTPHeadersAsBuffer:"
+					+ " Unable to convert requested Hash object into buffer."
+					+ " Requested hash key = \"" + newKey + "\""
+					+ " Unhandled object class = \"" + obj.getClass().getName() + "\""
+					+ " Returning null."
+					);
+			}
+
+
+		}   // End of for each key in hash
+
+		// Done
+		return new String( outBuff );
+	}
+
+
+	public String displayHTTPHeaderFieldsIntoBuffer()
+	{
+		return displayHashIntoBuffer(
+			fIoHTTPHeaderFieldHash, "Parsed HTTP Fields"
+			);
+	}
+
+	public String displayRawHTTPHeaderLinesIntoBuffer()
+	{
+		return NIEUtil.printStringListToBuffer(
+			fIoHTTPHeaders, "Raw HTTP Header Lines"
+			);
+	}
+
+	public void addCGIField( String inKey, String inValue )
+	{
+		addFieldToMultivalueHash( fIoCGIFieldHash,
+			inKey, inValue, true
+			);
+	}
+	public void setOrOverwriteCGIField( String inKey, String inValue )
+	{
+		setOrOverwriteHashValue( fIoCGIFieldHash,
+			inKey, inValue, true
+			);
+	}
+
+
+
+
+	// Copy in the CGI fields from a second (donor) Aux Info object
+	// By default, copy all fields
+	public void copyInCGIFields( AuxIOInfo inDonorInfo )
+	{
+		copyInCGIFields( inDonorInfo, null );
+	}
+	public void copyInCGIFields(
+		AuxIOInfo inDonorInfo, List inExcludeFields
+		)
+	{
+		if( inDonorInfo == null )
+		{
+			System.err.println(
+				"Error: AuxIOInfo: copyInCGIFields:"
+				+ " Was passed in a null donor object."
+				+ " Nothing to copy in."
+				);
+			return;
+		}
+
+		// Go ahead and call the static hash copy method, with
+		// the appropriate member fields
+		combineMultivalueHashes(
+			fIoCGIFieldHash,
+			inDonorInfo.fIoCGIFieldHash,
+			inExcludeFields,
+			true
+			);
+
+	}
+
+	// Clear out all CGI fields
+	public void deleteAllCGIFields()
+	{
+		fIoCGIFieldHash = new Hashtable();
+	}
+
+	public String displayCGIFieldsIntoBuffer()
+	{
+		return displayHashIntoBuffer(
+			fIoCGIFieldHash, "Parsed CGI Fields"
+			);
+	}
+
+	private static String getScalarFromHash(
+		Hashtable inHash, String inKey, boolean inNormalizeCase
+		)
+	{
+		if( inHash == null )
+		{
+			System.err.println( "Warning: AuxIOInfo: getScalarFromHash:"
+				+ " Was passed in a NULL hash table."
+				+ " Returning null."
+				);
+			return null;
+		}
+
+		inKey = NIEUtil.trimmedStringOrNull( inKey );
+		if( inKey == null )
+		{
+			System.err.println( "Error: AuxIOInfo: getScalarFromHash:"
+				+ " Was passed in null/empty field name."
+				+ " Returning null."
+				);
+			return null;
+		}
+
+		// Normalize if asked to do so
+		if( inNormalizeCase )
+			inKey = inKey.toLowerCase();
+
+		// Return null if we don't have it
+		// No need for a warning, this is a normal event
+		if( ! inHash.containsKey( inKey ) )
+			return null;
+
+		// Get the object and see what it is
+		Object obj = inHash.get( inKey );
+
+		// If it's a simple string, just return it
+		if( obj instanceof String )
+			return (String)obj;
+
+		if( obj instanceof List || obj instanceof Vector )
+		{
+			List tmpList = (List)obj;
+			StringBuffer strbuff = new StringBuffer();
+			for( Iterator it = tmpList.iterator(); it.hasNext(); )
+			{
+				String nextStr = (String)it.next();
+				// If it's the first to be added, just append it
+				if( strbuff.length() < 1 )
+				{
+					strbuff.append( nextStr );
+				}
+				// It's not the first, so add delimiter and then string
+				else
+				{
+					strbuff.append( DEFAULT_MULTI_VALUE_FIELD_DELIMITER );
+					strbuff.append( nextStr );
+				}
+			}
+			// Convert string to buffer and return
+			return new String( strbuff );
+		}
+
+		// Else we don't know what to do
+		System.err.println( "Error: AuxIOInfo: getScalarFromHash:"
+			+ " Unable to convert requested Hash object to scalar String."
+			+ " Requested hash key = \"" + inKey + "\""
+			+ " Unhandled object class = \"" + obj.getClass().getName() + "\""
+			+ " Returning null."
+			);
+		return null;
+	}
+
+	// We will ALWAYS return a list, even if it's zero items long
+	// Return values are NOT normalized
+	private static List getMultivalueFromHash(
+		Hashtable inHash, String inKey, boolean inNormalizeCase
+		)
+	{
+		if( inHash == null )
+		{
+			System.err.println( "Warning: AuxIOInfo: getMultivalueFromHash:"
+				+ " Was passed in a NULL hash table."
+				+ " Returning null."
+				);
+			return new Vector();
+		}
+
+		inKey = NIEUtil.trimmedStringOrNull( inKey );
+		if( inKey == null )
+		{
+			System.err.println( "Error: AuxIOInfo: getMultivalueFromHash:"
+				+ " Was passed in null/empty field name."
+				+ " Returning null."
+				);
+			return new Vector();
+		}
+
+		// Normalize if asked to do so
+		if( inNormalizeCase )
+			inKey = inKey.toLowerCase();
+
+		// Return null if we don't have it
+		// No need for a warning, this is a normal event
+		if( ! inHash.containsKey( inKey ) )
+			return new Vector();
+
+		// Start working on the return value
+		List outVect = new Vector();
+
+		// Get the object and see what it is
+		Object obj = inHash.get( inKey );
+
+		// If it's a simple string, just add it in
+		if( obj instanceof String )
+		{
+			outVect.add( (String)obj );
+		}
+		// If it's a list, add the list's elements
+		// Todo: could scan list and do error checking
+		// Todo: could have option to normalize values, skip nulls, etc.
+		else if( obj instanceof List || obj instanceof Vector )
+		{
+			List tmpList = (List)obj;
+			outVect.addAll( tmpList );
+		}
+		else
+		{
+			// Else we don't know what to do
+			System.err.println( "Error: AuxIOInfo: getMultivalueFromHash:"
+				+ " Unable to convert requested Hash object into multivalue list."
+				+ " Requested hash key = \"" + inKey + "\""
+				+ " Unhandled object class = \"" + obj.getClass().getName() + "\""
+				+ " Returning null."
+				);
+		}
+		// Return the answer, whatever it is
+		return outVect;
+	}
+
+
+
+
+	// Add a field to a hash.  If there is already a value (or values),
+	// make a list and add this to the end
+	// This version adds in an additional scalar field value
+	private static void addFieldToMultivalueHash(
+		Hashtable inHash,
+		String inKey, String inValue,
+		boolean inNormalizeCase
+		)
+	{
+		if( inHash == null )
+		{
+			System.err.println( "Warning: AuxIOInfo: addFieldToMultivalueHash:"
+				+ " Was passed in a NULL hash table."
+				+ " Nowhere to store values, will discard values."
+				);
+			return;
+		}
+
+		// Normalize inputs
+		inKey = NIEUtil.trimmedStringOrNull( inKey );
+		// Note that we don't normalize the value
+
+		// Sanity check
+		if( inKey == null || inValue == null )
+		{
+			System.err.println( "Error: AuxIOInfo: addFieldToMultivalueHash:"
+				+ " Was passed in null/empty field name or null value."
+				+ ", key=\"" + inKey + "\""
+				+ ", value=\"" + inValue + "\""
+				+ " Nothing to store."
+				);
+			return;
+		}
+
+		// Normalize if asked to do so
+		if( inNormalizeCase )
+			inKey = inKey.toLowerCase();
+
+		// If we don't have it, which is usually the case, just add it
+		if( ! inHash.containsKey( inKey ) )
+		{
+			inHash.put( inKey, inValue );
+			return;
+		}
+
+		// The list we will create / update and restore into the hash
+		List lVect = null;
+
+		// Get the object and see what it is
+		Object obj = inHash.get( inKey );
+
+		// If it's a simple string, just add it in
+		if( obj instanceof String )
+		{
+			lVect = new Vector();
+			// Add the old value
+			lVect.add( (String)obj );
+			// And then add the new value
+			lVect.add( inValue );
+			// Store the new vector
+			inHash.put( inKey, lVect );
+		}
+		// If it's a list, add the list's elements
+		// Todo: could scan list and do error checking
+		// Todo: could have option to normalize values, skip nulls, etc.
+		else if( obj instanceof List || obj instanceof Vector )
+		{
+			lVect = (List)obj;
+			lVect.add( inValue );
+			// No need to store in hash, it's already there, we were
+			// just using a reference
+		}
+		else
+		{
+			// Else we don't know what to do
+			System.err.println( "Error: AuxIOInfo: addFieldToMultivalueHash:"
+				+ " Unable to convert requested Hash object into multivalue list."
+				+ " Requested hash key = \"" + inKey + "\""
+				+ ", value = \"" + inValue + "\""
+				+ " Unhandled object class = \"" + obj.getClass().getName() + "\""
+				+ " Returning null."
+				);
+			// And we leave the obj that we found "as is"
+		}
+
+		// Done
+	}
+
+
+
+
+
+	// Add a field to a hash.  If there is already a value (or values),
+	// make a list and add this to the end
+	// This version adds in a list of additional field values
+	private static void addFieldToMultivalueHash(
+		Hashtable inHash,
+		String inKey, List inValues,
+		boolean inNormalizeCase
+		)
+	{
+		if( inHash == null || inValues == null )
+		{
+			System.err.println(
+				"Error: AuxIOInfo: addFieldToMultivalueHash(2):"
+				+ " Was passed in a NULL hash table."
+				+ " Nowhere to store values, will discard values."
+				);
+			return;
+		}
+
+		// Normalize inputs
+		inKey = NIEUtil.trimmedStringOrNull( inKey );
+
+		// Sanity check
+		if( inKey == null )
+		{
+			System.err.println(
+				"Error: AuxIOInfo: addFieldToMultivalueHash(2):"
+				+ " Was passed in null/empty field name."
+				+ ", key=\"" + inKey + "\""
+				+ " Nothing to store."
+				);
+			return;
+		}
+
+		// Normalize if asked to do so
+		if( inNormalizeCase )
+			inKey = inKey.toLowerCase();
+
+		// If we don't have it, which is usually the case, just add it
+		if( ! inHash.containsKey( inKey ) )
+		{
+			inHash.put( inKey, inValues );
+			return;
+		}
+
+		// The list we will create / update and restore into the hash
+		List lVect = null;
+
+		// Get the object and see what it is
+		Object obj = inHash.get( inKey );
+
+		// If it's a simple string, just add it in
+		if( obj instanceof String )
+		{
+			lVect = new Vector();
+			// Add the old value
+			lVect.add( (String)obj );
+			// And then add the new value
+			lVect.addAll( inValues );
+			// Store the new vector
+			inHash.put( inKey, lVect );
+		}
+		// If it's a list, add the list's elements
+		// Todo: could scan list and do error checking
+		// Todo: could have option to normalize values, skip nulls, etc.
+		else if( obj instanceof List || obj instanceof Vector )
+		{
+			lVect = (List)obj;
+			lVect.addAll( inValues );
+			// No need to store in hash, it's already there, we were
+			// just using a reference
+		}
+		else
+		{
+			// Else we don't know what to do
+			System.err.println(
+				"Error: AuxIOInfo: addFieldToMultivalueHash(2):"
+				+ " Unable to convert requested Hash object into multivalue list."
+				+ " Requested hash key = \"" + inKey + "\""
+				+ " Unhandled object class = \"" + obj.getClass().getName() + "\""
+				+ " Returning null."
+				);
+			// And we leave the obj that we found "as is"
+		}
+
+		// Done
+	}
+
+
+
+
+
+
+	// Join the contents of a second multivalue hash to the original
+	// Todo: could be slightly more efficient
+	private static void combineMultivalueHashes(
+		Hashtable inCombinedHash,
+		Hashtable inAdditionalValuesHash,
+		List inExcludeKeys,
+		boolean inNormalizeCase
+		)
+	{
+		final String kFName = "AuxIOInfo.combineMultivalueHashes: ";
+
+		if( inCombinedHash == null || inAdditionalValuesHash == null )
+		{
+			System.err.println(
+				"Error: AuxIOInfo: combineMultivalueHashes:"
+				+ " Was passed in a NULL hash table."
+				+ " Nothing to do."
+				);
+			return;
+		}
+
+		if( debug )
+		{
+			System.err.println( "Debug: " + kFName
+				+ " Asked to combine two hashes."
+				+ " Hash 1 (destination) already has "
+					+ inCombinedHash.keySet().size() + " keys."
+				+ " Hash 2 (donar) has "
+					+ inAdditionalValuesHash.keySet().size() + " keys."
+				);
+			if( inExcludeKeys != null )
+				System.err.println(
+					"Exclude list has "
+					+ inExcludeKeys.size() + " keys."
+					);
+			else
+				System.err.println( "No exclude list." );
+		}
+
+
+		// The hash we will use for quick lookup of excluded values
+		Hashtable lExcludeHash = new Hashtable();
+		// Were there any keys to exclude?
+		if( inExcludeKeys != null )
+		{
+			// For each key
+			for( Iterator it = inExcludeKeys.iterator(); it.hasNext() ; )
+			{
+				String tmpKey = (String) it.next();
+				tmpKey = NIEUtil.trimmedStringOrNull( tmpKey );
+				if( tmpKey == null )
+					continue;
+					// Todo: could add warning
+				// Normalize if needed
+				if( inNormalizeCase )
+					tmpKey = tmpKey.toLowerCase();
+				// Only store if not in the hash
+				if( ! lExcludeHash.containsKey( tmpKey ) )
+				{
+					lExcludeHash.put( tmpKey, tmpKey );
+				}
+				// else it already had this key
+				//  Todo: I suppose we could have an option to warn them
+			}
+		}   // End if we have some keys to exclude
+
+
+		// Loop through the second hash
+		Set newKeys = inAdditionalValuesHash.keySet();
+		for( Iterator it2 = newKeys.iterator(); it2.hasNext() ; )
+		{
+			String newKey = (String) it2.next();
+			newKey = NIEUtil.trimmedStringOrNull( newKey );
+			if( newKey == null )
+				continue;
+				// Todo: could issue a warning
+			// Normalize if asked to do so
+			if( inNormalizeCase )
+				newKey = newKey.toLowerCase();
+			// If it's in the exclude hash, ignore it
+			if( lExcludeHash.containsKey( newKey ) )
+				continue;
+				// No warning necessary, this is an expected condition
+
+			// Now get the object
+			Object obj = inAdditionalValuesHash.get( newKey );
+
+			// If it's a simple string, just add it in
+			if( obj instanceof String )
+			{
+				// Convert to String
+				String strValue = (String)obj;
+				// Call static method to add it in
+				addFieldToMultivalueHash(
+					inCombinedHash,
+					newKey, strValue,
+					inNormalizeCase
+					);
+			}
+			// If it's a list, add the list's elements
+			else if( obj instanceof List || obj instanceof Vector )
+			{
+				// Convert reference to List
+				List listOfValues = (List)obj;
+				// Call static method to add it in
+				addFieldToMultivalueHash(
+					inCombinedHash,
+					newKey, listOfValues,
+					inNormalizeCase
+					);
+			}
+			else
+			{
+				// Else we don't know what to do
+				System.err.println(
+					"Error: AuxIOInfo: combineMultivalueHashes:"
+					+ " Unable to convert requested Hash object into multivalue list."
+					+ " Requested hash key = \"" + newKey + "\""
+					+ " Unhandled object class = \"" + obj.getClass().getName() + "\""
+					+ " Returning null."
+					);
+			}
+
+
+		}
+
+		// Done
+
+		if( debug )
+		{
+			System.err.println( "Debug: " + kFName
+				+ " At end."
+				+ " Hash 1 (destination) now has "
+					+ inCombinedHash.keySet().size() + " keys."
+				);
+		}
+
+	}
+
+
+
+
+
+	private void setOrOverwriteHashValue( Hashtable inHash,
+		String inKey, String inValue,
+		boolean inNormalizeCase
+		)
+	{
+		if( inHash == null )
+		{
+			System.err.println(
+				"Warning: AuxIOInfo: setOrOverwriteHashValue:"
+				+ " Was passed in a NULL hash table."
+				+ " Nowhere to store values, will discard values."
+				);
+			return;
+		}
+
+		// Normalize inputs
+		inKey = NIEUtil.trimmedStringOrNull( inKey );
+		// Note that we don't normalize the value
+
+		// Sanity check
+		if( inKey == null || inValue == null )
+		{
+			System.err.println(
+				"Error: AuxIOInfo: setOrOverwriteHashValue:"
+				+ " Was passed in null/empty field name or null value."
+				+ ", key=\"" + inKey + "\""
+				+ ", value=\"" + inValue + "\""
+				+ " Nothing to store."
+				);
+			return;
+		}
+
+		// Normalize if asked to do so
+		if( inNormalizeCase )
+			inKey = inKey.toLowerCase();
+
+		// Now the easy part, just store the value!
+		// Hashes generally have the correct behavior we want
+		// Still nice to have a method for it, for consistency
+		inHash.put( inKey, inValue );
+	}
+
+
+
+
+
+	// list the entire hash into a text buffer
+	private String displayHashIntoBuffer( Hashtable inHash, String optHashName )
+	{
+
+		final String nl = "\r\n";
+
+		if( inHash == null )
+		{
+			String msg =
+				"Error: AuxIOInfo: displayHashIntoBuffer:"
+				+ " No hash to display."
+				+ " Returning this error message."
+				;
+			System.err.println( msg );
+			return msg + nl;
+		}
+
+		// The output buffer
+		StringBuffer outBuff = new StringBuffer();
+
+		if( optHashName != null )
+			outBuff.append( "Displaying hash \"" + optHashName + "\"" + nl );
+
+		// Loop through the hash keys
+		Set keys = inHash.keySet();
+		for( Iterator it = keys.iterator(); it.hasNext() ; )
+		{
+			// Get the key
+			String newKey = (String) it.next();
+
+			// Now get the object
+			Object obj = inHash.get( newKey );
+
+			// If it's a simple string, just add it in
+			if( obj instanceof String )
+			{
+				// Convert to String
+				String strValue = (String)obj;
+
+				outBuff.append( "\tkey \"" + newKey + "\"");
+				outBuff.append( " (scalar value) \"" + strValue + "\"" + nl );
+
+			}
+			// If it's a list, add the list's elements
+			else if( obj instanceof List || obj instanceof Vector )
+			{
+				// Convert to String
+				List listOfValues = (List)obj;
+
+				outBuff.append( "\tkey \"" + newKey + "\"" );
+				outBuff.append( " multivalue with " + listOfValues.size()
+					+ " entries:" + nl
+					);
+
+				// And loop through the list
+				for( Iterator it2 = listOfValues.iterator(); it2.hasNext() ;)
+				{
+					// Grab the value
+					String tmpValue = (String) it2.next();
+					outBuff.append( "\t\t\"" + tmpValue + "\"" + nl );
+				}
+			}
+			else
+			{
+				// Else we don't know what to do
+				outBuff.append(
+					"Error: AuxIOInfo: getCGIFieldsAsEncodedBuffer:"
+					+ " Unable to convert requested Hash object into buffer."
+					+ " Requested hash key = \"" + newKey + "\""
+					+ " Unhandled object class = \"" + obj.getClass().getName() + "\""
+					+ " Ingoring this item."
+					+ nl
+					);
+			}
+
+		}   // End of for each key in hash
+
+		// Done
+		return new String( outBuff );
+
+	}
+
+
+
+
+
+
+
+	public int getHTTPResponseCode()
+	{
+		return fIoHTTPResponseCode;
+	}
+	// You can ask for code and give us a default to use
+	// Or ask for a for the code and ask US to pick a default for you
+	public int getHTTPResponseCodeWithDefault()
+	{
+		// When choosing a default value, we should check for a redirect
+		// field first
+		String tmpLoc = getRedirectURL();
+
+		// If no redirect URL, default to regular default code
+		if( tmpLoc == null || tmpLoc.trim().equals("") )
+		{
+			return getHTTPResponseCodeWithDefault(
+				DEFAULT_HTTP_RESPONSE_CODE
+				);
+		}
+		// Else there is a redirect field, so the DEFAULT would be for that
+		else
+		{
+			return getHTTPResponseCodeWithDefault(
+				DEFAULT_HTTP_REDIRECT_CODE
+				);
+		}
+	}
+	public int getHTTPResponseCodeWithDefault( int inDefaultCode )
+	{
+		int tmpCode = getHTTPResponseCode();
+		if( tmpCode < 1 )
+			tmpCode = inDefaultCode;
+		return tmpCode;
+	}
+	public void setHTTPResponseCode( int inCode )
+	{
+		fIoHTTPResponseCode = inCode;
+	}
+
+	public String getContentTypeWithDefault()
+	{
+		return getContentTypeWithDefault( DEFAULT_MIME_TYPE );
+	}
+	public String getContentTypeWithDefault( String inDefaultMimeType )
+	{
+		String tmpStr = getContentType();
+		if( tmpStr != null )
+			return tmpStr;
+		else
+			return inDefaultMimeType;
+	}
+	public String getContentType()
+	{
+		// If it's already set, return it
+		if( fIoContentType != null )
+			return fIoContentType;
+		// Else if we have headers, look in there
+		String outType = null;
+		if( fIoHTTPHeaderFieldHash != null )
+		{
+			outType = getScalarHTTPFieldTrimOrNull( "content-type" );
+		}
+		if( outType != null )
+			outType = outType.toLowerCase();
+		return outType;
+	}
+	public void setContentType( String inType )
+	{
+		fIoContentType = inType;
+	}
+
+	public String getRedirectURL()
+	{
+		// If it's already set, return it
+		if( fRedirectURL != null )
+			return fRedirectURL;
+		// Else if we have headers, look in there
+		String outURL = null;
+		if( fIoHTTPHeaderFieldHash != null )
+		{
+			outURL = getScalarHTTPFieldTrimOrNull( "Location" );
+		}
+		return outURL;
+	}
+	public void setRedirectURL( String inURL )
+	{
+		fRedirectURL = inURL;
+		// Todo: do we need to do this?  Will be set by default if no other
+		// code is set
+		// setHTTPResponseCode( DEFAULT_HTTP_REDIRECT_CODE );
+	}
+
+	public String getReferer()
+	{
+		// If it's already set, return it
+		if( fIoRefererURL != null )
+			return fIoRefererURL;
+		// Else if we have headers, look in there
+		String outURL = null;
+		if( fIoHTTPHeaderFieldHash != null )
+		{
+			outURL = getScalarHTTPFieldTrimOrNull( "Referer" );
+		}
+		return outURL;
+	}
+	public AuxIOInfo getCompleteRefererInfo()
+	{
+		// If it's already set, return it
+		if( fIoRefererInfo != null )
+			return fIoRefererInfo;
+
+		// Get the string, if it's there
+		String refURL = getReferer();
+
+		// If we don't have one, return null
+		// No need for warning, since this is rather common
+		if( refURL == null )
+			return null;
+
+		// Intialize a new record
+		fIoRefererInfo = new AuxIOInfo();
+
+		// See if there's a question mark
+		int questionMarkAt = refURL.indexOf( '?' );
+		if( questionMarkAt >= 0
+			&& questionMarkAt < refURL.length()-1
+			)
+		{
+			// Grab it
+			String encodedBuffer = refURL.substring( questionMarkAt+1 );
+			// And now decode it
+
+			// parse and store the variables
+			NIEUtil.cgiDecodeVarsBuffer( fIoRefererInfo, encodedBuffer );
+		}
+
+		// Return what we got
+		return fIoRefererInfo;
+
+	}
+
+	public String getClientName()
+	{
+		// If it's already set, return it
+		if( fIoHTTPUserAgentString != null )
+			return fIoHTTPUserAgentString;
+		// Else if we have headers, look in there
+		String tmpStr = null;
+		if( fIoHTTPHeaderFieldHash != null )
+		{
+			tmpStr = getScalarHTTPFieldTrimOrNull( HTTP_USER_AGENT_FIELD_SPELLING );
+		}
+		return tmpStr;
+	}
+
+	public String getContent()
+	{
+		return fIoContent;
+	}
+	public void setContent( String inContent )
+	{
+		fIoContent = inContent;
+	}
+
+	// Return the content length as recorded in the http header HASH
+	// We do NOT look at the raw lines
+	// Return -1 if don't have one
+	public int getExpectedContentLength()
+	{
+		// Just return -1 if no header fields
+		if( fIoHTTPHeaderFieldHash == null )
+			return -1;
+
+		// Look it up
+		String tmpStr = getScalarHTTPFieldTrimOrNull(
+			"Content-Length"
+			);
+
+		// If not found, return -1
+		if( tmpStr == null )
+			return -1;
+
+		// Now convert it
+		int outInt = NIEUtil.stringToIntOrDefaultValue( tmpStr, -1 );
+
+		// A sanity check warning for malformed header strings
+		// Missing is one thing, but present and can't convert is
+		// bad
+		if( outInt < 0 )
+			System.err.println(
+				"Error: AuxIOInfo:getExpectedContentLength:"
+				+ " Could not convert string to valid content length"
+				+ " from http header fields."
+				+ " String=\"" + tmpStr + "\""
+				+ " Returning -1."
+				);
+
+		// Return the answer
+		return outInt;
+	}
+//		public void setContentLength()
+//		{
+//          setOrOverwriteHTTPHeaderField
+//		}
+	public int getActualContentLength()
+	{
+		String tmpStr = getContent();
+		if( tmpStr == null )
+			return 0;
+		else
+			return tmpStr.length();
+	}
+
+
+	public static final char DEFAULT_MULTI_VALUE_FIELD_DELIMITER = '\t';
+	public static final boolean DEFAULT_HASH_KEY_NORMALIZE_CASE = true;
+
+	// If given a relative parent URI path, should we be forced
+	// to use it, or only use it if we think it's reasonable (the default)
+	// Note: Currently only implemented in the file logic, not for urls.
+	public boolean inForceUseOfRoot;
+	// The client name we would like to present to the remote server
+	// See the default below
+	private String fIoHTTPUserAgentString;
+	// We may have been given a relative URI and base root
+	// so let them know what we finally conjured up
+	public String outAttemptedURI;
+	// In the case of an HTTP redirect, the URL we got might not be
+	// what we started with
+	public String outFinalURI;
+	// Contains all the HTTP headers we got back
+	public List fIoHTTPHeaders;
+
+	// For reading HTTP requests
+	private int fIoHTTPResponseCode;
+	private Hashtable fIoHTTPHeaderFieldHash;
+	private Hashtable fIoCGIFieldHash;
+	public String fIoTransactionType;
+	public String fOutRequestedPath;
+	public long fOutContentLength;
+	private String fIoContent;
+	private String fIoContentType;
+	private String fRedirectURL;
+
+	// Information about possibly referring URL's passed via the HTTP headers
+	private String fIoRefererURL;
+	private AuxIOInfo fIoRefererInfo;
+
+	// Some static constants
+	public static final String DEFAULT_HTTP_USER_AGENT_FIELD =
+	"Mozilla/4.0 (compatible; MSIE 5.01; Windows NT 5.0; NetCaptor 6.5.0)";
+	// The exact spelling of the HTTP user agent field
+	public static final String HTTP_USER_AGENT_FIELD_SPELLING =
+		"User-Agent";
+
+	// What to return
+	// See http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html
+	public static final int DEFAULT_HTTP_RESPONSE_CODE = 200;
+	public static final int DEFAULT_HTTP_REDIRECT_CODE = 302;
+	// public static final int DEFAULT_HTTP_GENERAL_ERROR_CODE = 400;
+	// MS won't display any 400 or 500 errors even though we send text
+	// You can disable in Internet Options advanced settings, but a pain
+	public static final int DEFAULT_HTTP_GENERAL_ERROR_CODE = 203;
+	public static final int DEFAULT_HTTP_FATAL_ERROR_CODE = 500;
+
+	// Some mime types
+	public static final String MIME_TYPE_HTML = "text/html";
+	public static final String MIME_TYPE_TEXT = "text/plain";
+	public static final String MIME_TYPE_XML = "text/xml";
+	public static final String DEFAULT_MIME_TYPE = MIME_TYPE_HTML;
+
+	// End of line marker
+	public static final String HEADER_EOL = "\r\n";
+
+}

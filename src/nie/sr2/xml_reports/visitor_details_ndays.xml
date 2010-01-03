@@ -1,0 +1,110 @@
+<report>
+	<title>Visitor Activity Details</title>
+	<subtitle>
+		From IP address $cgi.client_host
+		for the past $cgi.days day(s)
+	</subtitle>
+
+	<field
+		should_display="FALSE"
+
+		heading="Visitor IP Address"
+		null_value_display="(not logged)"
+
+		is_filter_field="TRUE"
+		do_filter_if_null="TRUE"
+
+		is_report_link="TRUE"
+		link_title="Click to see this Visitor's searches"
+		do_link_if_null="TRUE"
+	>
+		CLIENT_HOST
+	</field>
+
+	<field heading="Trans Type">
+		TRANSACTION_TYPE
+		<decode>
+			<item key="1">Search</item>
+			<item key="2">Doc-Click</item>
+			<item key="3">Usr-Fdbk</item>
+			<item key="4">Ad-Exp</item>
+			<item key="5">Ad-Click</item>
+			<default_item>Unknown</default_item>
+		</decode>
+	</field>
+
+	<field
+		heading="Date &amp; Time"
+		css_class="nie_datetime"
+		format_as="datetime"
+	>
+		START_TIME
+	</field>
+
+	<!-- This is both a filter link and a filter target -->
+	<field
+		heading="Search Term(s)"
+		sql_alias="search"
+		null_value_display="(null search)"
+
+		is_filter_field="TRUE"
+		do_filter_if_null="TRUE"
+
+		is_report_link="TRUE"
+		link_report_name="search_details_ndays"
+		link_title="Click to see all instances of this search"
+		do_link_if_null="TRUE"
+	>
+		NORMALIZED_QUERY
+	</field>
+
+	<field heading="# Pages"
+		format_as="number"
+	>
+		NUM_RESULTS
+	</field>
+
+	<field
+		heading="Map'd?"
+		format_as="boolean"
+	>
+		WAS_SEARCH_NAMES_TERM
+	</field>
+
+	<field
+		heading="Adv Code"
+		sql_alias="ad_code"
+		is_report_link="TRUE"
+		link_title="Click to see Activity for this Advertiser"
+		link_report_name="advertiser_detail_ndays"
+	>
+		ADVERTISEMENT_CODE_SENT
+	</field>
+
+	<field heading="Form">
+		FORM_NAME
+	</field>
+
+	<!--
+	<field
+		heading="Referring Page"
+		is_external_link="TRUE"
+	>
+		REFERER
+	</field>
+	-->
+
+	<raw_where_filter>
+		<!-- TRUNC(SYSDATE) - $cgi.days -->
+		<![CDATA[
+			start_time >= $system.from_date
+		]]>
+	</raw_where_filter>
+
+	<raw_sort>
+		SEARCH_TRANSACTION_NUMBER desc, TRANSACTION_TYPE desc
+	</raw_sort>
+
+	<include location="includes/standard_ndays_link_suggestions.xml" />
+
+</report>

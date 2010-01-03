@@ -1,0 +1,111 @@
+<report>
+	<title>Raw Transactions Log</title>
+	<subtitle>For the past $cgi.days day(s)</subtitle>
+
+	<link_text>Raw Transactions in last:</link_text>
+
+	<!--
+	<field heading="Trans #">SEARCH_TRANSACTION_NUMBER</field>
+	<field heading="Ref Trans #">REFERRING_TRANSACTION_NUMBER</field>
+	-->
+
+	<field heading="Trans Type">
+		TRANSACTION_TYPE
+		<decode>
+			<item key="1">Search</item>
+			<item key="2">Doc-Click</item>
+			<item key="3">Usr-Fdbk</item>
+			<item key="4">Ad-Exp</item>
+			<item key="5">Ad-Click</item>
+			<default_item>Unknown</default_item>
+		</decode>
+	</field>
+
+	<field
+		heading="Time"
+		css_class="nie_datetime"
+		format_as="datetime"
+	>
+		START_TIME
+	</field>
+
+	<field
+		heading="Search Term(s)"
+		sql_alias="search"
+		null_value_display="(null search)"
+
+		is_report_link="TRUE"
+		link_report_name="search_details_ndays"
+		link_title="Click for Details"
+		do_link_if_null="TRUE"
+	>
+		NORMALIZED_QUERY
+	</field>
+
+	<field heading="Num Results"
+		format_as="number"
+	>
+		NUM_RESULTS
+	</field>
+
+	<field
+		heading="SN Term?"
+		format_as="boolean"
+	>
+		WAS_SEARCH_NAMES_TERM
+	</field>
+
+
+	<field
+		heading="Adv Code"
+		sql_alias="ad_code"
+		is_report_link="TRUE"
+		link_title="Click to see Activity for this Advertiser"
+		link_report_name="advertiser_detail_ndays"
+	>
+		ADVERTISEMENT_CODE_SENT
+	</field>
+
+	<field
+		heading="Adv URL"
+		is_external_link="TRUE"
+	>
+		ADVERTISEMENT_HREF
+	</field>
+
+	<raw_where_filter>
+		<![CDATA[
+			start_time >= $system.from_date
+		]]>
+	</raw_where_filter>
+
+	<raw_sort>
+		<!-- start_time desc, -->
+		SEARCH_TRANSACTION_NUMBER, TRANSACTION_TYPE
+	</raw_sort>
+
+
+	<include location="includes/standard_ndays_link_suggestions.xml" />
+
+	<!--
+	<suggested_links>
+		<link>
+			<title>So far today</title>
+			<parameter name="days" value="0" />
+		</link>
+		<link>
+			<title>For yesterday and today</title>
+			<parameter name="days" value="1" />
+		</link>
+		<link>
+			<title>In the past week</title>
+			<parameter name="days" value="7" />
+		</link>
+		<link>
+			<title>In the past 30 days</title>
+			<parameter name="days" value="30" />
+		</link>
+	</suggested_links>
+	-->
+
+</report>

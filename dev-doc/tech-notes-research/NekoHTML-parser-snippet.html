@@ -1,0 +1,170 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [jdom-interest] Parsing Microsoft Word Documents
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:jdom-interest%40jdom.org?Subject=%5Bjdom-interest%5D%20Parsing%20Microsoft%20Word%20Documents&In-Reply-To=BAY102-F27250BEF5337A63CC0EB49CCA60%40phx.gbl">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="014503.html">
+   <LINK REL="Next"  HREF="014506.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[jdom-interest] Parsing Microsoft Word Documents</H1>
+    <B>Hugo Garcia</B> 
+    <A HREF="mailto:jdom-interest%40jdom.org?Subject=%5Bjdom-interest%5D%20Parsing%20Microsoft%20Word%20Documents&In-Reply-To=BAY102-F27250BEF5337A63CC0EB49CCA60%40phx.gbl"
+       TITLE="[jdom-interest] Parsing Microsoft Word Documents">hugo.a.garcia at gmail.com
+       </A><BR>
+    <I>Fri Dec 24 10:54:37 PST 2004</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="014503.html">[jdom-interest] Parsing Microsoft Word Documents
+</A></li>
+        <LI>Next message: <A HREF="014506.html">[jdom-interest] Parsing Microsoft Word Documents
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#14504">[ date ]</a>
+              <a href="thread.html#14504">[ thread ]</a>
+              <a href="subject.html#14504">[ subject ]</a>
+              <a href="author.html#14504">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>AHA!
+
+Using the org.apache.xml.serialize.HTMLSerializer worked perfectly. No
+more funny characthers in the output. This works. I will explore the
+JTidy option later when I finish the alpha I am trying to build.
+
+thanks and have a good holiday
+
+-H
+
+
+On Fri, 24 Dec 2004 10:37:13 +0000, Paul Reeves &lt;<A HREF="http://www.jdom.org/mailman/listinfo/jdom-interest">p_a_reeves at hotmail.com</A>&gt; wrote:
+&gt;<i> Hugo
+</I>&gt;<i> 
+</I>&gt;<i> There hasn't been an offical jtidy release for donkeys years but that doesnt
+</I>&gt;<i> mean it doesnt work! It is more than up to the task. I wouldn't hold your
+</I>&gt;<i> breath for a new release  in the next few months......
+</I>&gt;<i> 
+</I>&gt;<i> If you are using nekohtml i find that if you output the document by
+</I>&gt;<i> converting it back from a jdom document to a dom document and use an
+</I>&gt;<i> org.apache.xml.serialize.HTMLSerializer to output it, it usually comes out
+</I>&gt;<i> looking o.k.
+</I>&gt;<i> 
+</I>&gt;<i> merry chrimbo
+</I>&gt;<i> 
+</I>&gt;<i> Paul
+</I>&gt;<i> 
+</I>&gt;<i> &gt;From: Hugo Garcia &lt;<A HREF="http://www.jdom.org/mailman/listinfo/jdom-interest">hugo.a.garcia at gmail.com</A>&gt;
+</I>&gt;<i> &gt;Reply-To: Hugo Garcia &lt;<A HREF="http://www.jdom.org/mailman/listinfo/jdom-interest">hugo.a.garcia at gmail.com</A>&gt;
+</I>&gt;<i> &gt;To: <A HREF="http://www.jdom.org/mailman/listinfo/jdom-interest">jdom-interest at jdom.org</A>
+</I>&gt;<i> &gt;Subject: Re: [jdom-interest] Parsing Microsoft Word Documents
+</I>&gt;<i> &gt;Date: Thu, 23 Dec 2004 14:56:13 -0500
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt;I didn't try jtidy since the realease is so old. I rahter wait on the
+</I>&gt;<i> &gt;new release.  TagSoup didn't work becasue ti doesn't support
+</I>&gt;<i> &gt;namespaces in order to use XPath.
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt;NekoHTML parses the doument correctily yet when I see the result in
+</I>&gt;<i> &gt;Firefox (Linux) the document looks funny. I suspect it might be the
+</I>&gt;<i> &gt;characther set where  it is specified as windows but I am not sure. I
+</I>&gt;<i> &gt;am using XPath to modify a clone of the input document.
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt;Any input of your experience parsing the HTML generated from Microsoft
+</I>&gt;<i> &gt;Word is welcome.
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt;This is the intial code that sets things in motion:
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt;       public void run() throws FitException {
+</I>&gt;<i> &gt;               fixtureDocumentProccessor = new FixtureDocumentProcessor();
+</I>&gt;<i> &gt;               Document fixtureDocument = null;
+</I>&gt;<i> &gt;               try {
+</I>&gt;<i> &gt;                       SAXBuilder builder = new
+</I>&gt;<i> &gt;SAXBuilder(&quot;org.cyberneko.html.parsers.SAXParser&quot;);
+</I>&gt;<i> &gt;                                       builder.setProperty(&quot;<A HREF="http://cyberneko.org/html/properties/names/elems&quot;,">http://cyberneko.org/html/properties/names/elems&quot;,</A>
+</I>&gt;<i> &gt;&quot;lower&quot;);
+</I>&gt;<i> &gt;                       builder.setFeature(&quot;<A HREF="http://cyberneko.org/html/features/override-doctype&quot;,">http://cyberneko.org/html/features/override-doctype&quot;,</A>
+</I>&gt;<i> &gt;false);
+</I>&gt;<i> &gt;                       URL fileURL = inputFile.toURL();
+</I>&gt;<i> &gt;                       fixtureDocument = builder.build(fileURL);
+</I>&gt;<i> &gt;               } catch (IOException e) {
+</I>&gt;<i> &gt;                       e.printStackTrace();
+</I>&gt;<i> &gt;               } catch (JDOMException e) {
+</I>&gt;<i> &gt;                       e.printStackTrace();
+</I>&gt;<i> &gt;               }
+</I>&gt;<i> &gt;               this.outputFitResults(fixtureDocumentProccessor.parse(fixtureDocument));
+</I>&gt;<i> &gt;       }
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt;-------------
+</I>&gt;<i> &gt;-H
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt;On Sat, 18 Dec 2004 11:14:11 +0000, Paul Reeves &lt;<A HREF="http://www.jdom.org/mailman/listinfo/jdom-interest">p_a_reeves at hotmail.com</A>&gt;
+</I>&gt;<i> &gt;wrote:
+</I>&gt;<i> &gt; &gt; This isnt technically a jdom question....
+</I>&gt;<i> &gt; &gt;
+</I>&gt;<i> &gt; &gt; Get hold of JTidy <A HREF="http://sourceforge.net/projects/jtidy">http://sourceforge.net/projects/jtidy</A> or even better,
+</I>&gt;<i> &gt; &gt; nekohtml <A HREF="http://www.apache.org/~andyc/neko/doc/html/">http://www.apache.org/~andyc/neko/doc/html/</A>
+</I>&gt;<i> &gt; &gt;
+</I>&gt;<i> &gt; &gt; Both will fix your unquotted attribute problem and also attempt to
+</I>&gt;<i> &gt;correct
+</I>&gt;<i> &gt; &gt; unbalanced tags - jtidy also has a &quot;clean word&quot; facility which is rather
+</I>&gt;<i> &gt; &gt; useful
+</I>&gt;<i> &gt; &gt;
+</I>&gt;<i> &gt; &gt; Paul
+</I>&gt;<i> &gt; &gt;
+</I>&gt;<i> &gt; &gt; &gt;From: Hugo Garcia &lt;<A HREF="http://www.jdom.org/mailman/listinfo/jdom-interest">hugo.a.garcia at gmail.com</A>&gt;
+</I>&gt;<i> &gt; &gt; &gt;Reply-To: Hugo Garcia &lt;<A HREF="http://www.jdom.org/mailman/listinfo/jdom-interest">hugo.a.garcia at gmail.com</A>&gt;
+</I>&gt;<i> &gt; &gt; &gt;To: <A HREF="http://www.jdom.org/mailman/listinfo/jdom-interest">jdom-interest at jdom.org</A>
+</I>&gt;<i> &gt; &gt; &gt;Subject: [jdom-interest] Parsing Microsoft Word Documents
+</I>&gt;<i> &gt; &gt; &gt;Date: Fri, 17 Dec 2004 11:56:57 -0500
+</I>&gt;<i> &gt; &gt; &gt;
+</I>&gt;<i> &gt; &gt; &gt;Hi
+</I>&gt;<i> &gt; &gt; &gt;
+</I>&gt;<i> &gt; &gt; &gt;I am trying to parse a Microsoft Wrod document with the SAXBuilder but
+</I>&gt;<i> &gt; &gt; &gt;I get an error that attributes must be qouted. When I look at the
+</I>&gt;<i> &gt; &gt; &gt;document I see that indeed some attibutes, especially in various meta
+</I>&gt;<i> &gt; &gt; &gt;tags are not quoted. I wonder if anyone has run into this problem and
+</I>&gt;<i> &gt; &gt; &gt;if so if you have a work around or solution.
+</I>&gt;<i> &gt; &gt; &gt;
+</I>&gt;<i> &gt; &gt; &gt;thanks
+</I>&gt;<i> &gt; &gt; &gt;
+</I>&gt;<i> &gt; &gt; &gt;-H
+</I>&gt;<i> &gt; &gt; &gt;_______________________________________________
+</I>&gt;<i> &gt; &gt; &gt;To control your jdom-interest membership:
+</I>&gt;<i> &gt; &gt; &gt;<A HREF="http://www.jdom.org/mailman/options/jdom-interest/youraddr@yourhost.com">http://www.jdom.org/mailman/options/jdom-interest/youraddr@yourhost.com</A>
+</I>&gt;<i> &gt; &gt;
+</I>&gt;<i> &gt; &gt;
+</I>&gt;<i> &gt;_______________________________________________
+</I>&gt;<i> &gt;To control your jdom-interest membership:
+</I>&gt;<i> &gt;<A HREF="http://www.jdom.org/mailman/options/jdom-interest/youraddr@yourhost.com">http://www.jdom.org/mailman/options/jdom-interest/youraddr@yourhost.com</A>
+</I>&gt;<i> 
+</I>&gt;<i>
+</I></PRE>
+
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="014503.html">[jdom-interest] Parsing Microsoft Word Documents
+</A></li>
+	<LI>Next message: <A HREF="014506.html">[jdom-interest] Parsing Microsoft Word Documents
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#14504">[ date ]</a>
+              <a href="thread.html#14504">[ thread ]</a>
+              <a href="subject.html#14504">[ subject ]</a>
+              <a href="author.html#14504">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="http://www.jdom.org/mailman/listinfo/jdom-interest">More information about the jdom-interest
+mailing list</a><br>
+</body></html>

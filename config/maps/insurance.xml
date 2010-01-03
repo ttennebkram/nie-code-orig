@@ -1,0 +1,20 @@
+<map>
+
+	<term>insurance</term>
+	<term>airplane insurance</term>
+	<term>pilot insurance</term>
+	<term>pilot's insurance</term>
+	<term>affordable insurance</term>
+
+	<!-- Advertisements -->
+	<user_data_markup_items class="text_ad">
+		<!--
+		<include location="../ads/aopi.xml" />
+		-->
+		<include location="D:\data\Customer\AOPA\fix_ad_url\aopa_term_life_insurance.xml" />
+		<include location="../ads/avemco.xml" />
+	</user_data_markup_items>
+
+	<!-- Currently no suggestions for this map -->
+
+</map>

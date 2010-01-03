@@ -1,0 +1,17 @@
+isRelativeFilePath()
+isAbsoluteFilePath()
+
+
+
+lic static String extractDirFromURL( String inURL,
+		boolean assertAmbiguousDirectory,
+		boolean includeEndingSlash
+
+
+
+OBS
+public static String concatPaths(
+		String inStr1, String inStr2, boolean inDoWarnings
+		)
+
+

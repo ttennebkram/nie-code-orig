@@ -1,0 +1,4 @@
+
+
+Firefox chooses UTF-8 though the meta data item says ISO, http header says???
+http://www.devx.com/tips/Tip/14619

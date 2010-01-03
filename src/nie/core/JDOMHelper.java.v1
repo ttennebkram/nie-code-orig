@@ -1,0 +1,4616 @@
+package nie.core;
+
+import java.io.*;
+import java.util.*;
+
+import org.jdom.Document;
+import org.jdom.Element;
+import org.jdom.CDATA;
+import org.jdom.Text;
+import org.jdom.input.SAXBuilder;
+import org.jdom.output.XMLOutputter;
+import org.jdom.JDOMException;
+
+import org.jdom.transform.*;
+import javax.xml.transform.*;
+import javax.xml.transform.stream.*;
+
+/**
+ * <p><code>JDomUtil</code></p> encapsulates some shortcuts
+ * for creating objects around JDom.
+ * </p>
+ * <p>Originally classes were derived from this class, so the functions
+ * were implemented that way.  Now you can also do a "has a" vs "is a"
+ * mode, see Constructor # 4.
+ * </p>
+ * Copyright 2001 New Idea Engineering, Inc.
+ * {@link www.ideaeng.com}
+ * @author Mark Bennett (mbennett@ideaeng.com)
+ * @version 0.1
+ **/
+
+
+public class JDOMHelper implements Cloneable
+{
+
+//  Moved to it's own file
+//	public class JDOMHelperException extends Exception
+//	{
+//		public JDOMHelperException( String inMessage )
+//		{
+//			super( inMessage );
+//		}
+//	}
+
+	// The name of the top level element
+	// OVERRIDE THIS if you want to have us check.
+	// Of course you can only override this if you are inheriting
+	// from it.
+	// Have it return null if you don't want this check performed.
+	// return a white space separated list if you will accept multiple ones
+
+	public String _getDesiredTopLevelElementName()
+	{
+		// Will normally be NULL, which will casue an error,
+		// so you should really override.
+
+		return null;
+	}
+
+	// private static boolean debug = true;
+	// Don't specifically set it if you want FALSE, it'll default to that
+	private static boolean debug;
+	public static void setDebug( boolean flag )
+	{
+		debug = flag;
+	}
+
+	/**********************************************
+	 *
+	 *		Member Variables
+	 *
+	 ***********************************************/
+
+	// WARNING!!!!!!
+	// We implement cloneable, so remember to update the clone
+	// method if you add non-static, mutable member variables
+
+	// The main element that defines this object
+	private Element myElement = null;
+	// Optional: if read from a file/url, where was it?
+	private String sourceURI = null;
+	// Optional: if a parser or document was constructed, save it
+	private static SAXBuilder jdomBuilder = new SAXBuilder();
+	private Document jdomDocument = null;
+	// A cache for attribute lists
+	// Assumes READ ONLY
+	private Hashtable attrListCache = null;
+
+
+	/**********************************************
+	 *
+	 *		Constructors
+	 *
+	 ***********************************************/
+
+	/**
+	 * Constructor # 1: Create from an existing element.
+	 * <p>
+	 * This will create an instance of a <code>JDOMHelper</code>
+	 * </p>
+	 *
+	 * @param jdom Element <code>element</code>
+	 * An element describing the Stream to create.
+	 **/
+
+	public JDOMHelper( Element inputElement )
+		throws JDOMHelperException
+	{
+		_jdomInit( inputElement );
+		// Can't use this() because other constructors
+	}
+
+	/**
+	 * Constructor # 2: Create from an XML file, given a filename or url
+	 * <p>
+	 * This will create an instance of a <code>JDOMHelper</code>
+	 * </p>
+	 *
+	 * @param String <code>uri</code>
+	 * Where to get the source document from
+	 **/
+	public JDOMHelper( String uri )
+		throws JDOMHelperException
+	{
+		//synchronized( jdomBuilder )
+		//{
+		//  if( jdomBuilder == null )
+		//		jdomBuilder = new SAXBuilder();
+		//	jdomDocument = jdomBuilder.build(uri);
+		//}
+		try
+		{
+			jdomDocument = jdomBuilder.build(uri);
+		}
+		catch(JDOMException e)
+		{
+			jdomDocument = null;
+			throw new JDOMHelperException(
+				"jdh(uri): exception for uri '" + uri + "'"
+				+ " error:" + e
+				);
+		}
+		_jdomInit( jdomDocument.getRootElement() );
+	}
+
+	/*
+	 * Constructor # 3: Create from an XML blob of text
+	 * <p>
+	 * Create an object from a string representation of an element.
+	 * </p>
+	 *
+	 * @param String <code>XML text</code>, Builder <code>builder</code>
+	 * null is OK for builder
+	 */
+	public JDOMHelper( String sourceString, SAXBuilder builder )
+		throws JDOMHelperException
+	{
+
+		/* A little convoluted logic, but it makes sense.
+		   If I pass you a builder, use it.
+		   If I don't pass you a builder, see if there's already
+		   one assigned to this object.
+		   If none passed and none in object, create one.
+		   And whatever you do, if you find the object's was
+		   null, set it with whatever you come up with.
+		*/
+		//synchronized( jdomBuilder )
+		//{
+			if( builder == null )
+			{
+				if( jdomBuilder == null )
+				{
+					builder = new SAXBuilder();
+					jdomBuilder = builder;
+				}
+				else
+					builder = jdomBuilder;
+			}
+			else
+				if( jdomBuilder == null )
+					jdomBuilder = builder;
+		//}   // End Sync block
+
+
+		/* By this point, builder is pointed to something reasonable */
+
+		// Create a character reader from the string
+
+		StringReader sr = new StringReader( sourceString );
+		try
+		{
+			jdomDocument = jdomBuilder.build(sr);
+		}
+		catch(JDOMException e)
+		{
+			jdomDocument = null;
+			try { sr.close(); } catch (Exception e2) { }
+			throw new JDOMHelperException(
+				"jdh(from String): exception"
+				+ " error:" + e
+				);
+
+		}
+
+		try { sr.close(); } catch (Exception e2) { }
+		sr = null;
+		_jdomInit( jdomDocument.getRootElement() );
+	}
+
+	/*
+	 * Constructor # 4: Create from a Java File object
+	 * <p>
+	 * Create an object from a Java File representation of an element.
+	 * </p>
+	 *
+	 * @param File <code>XML file</code>
+	 */
+	public JDOMHelper( File inFile )
+		throws JDOMHelperException
+	{
+		// final boolean debug = false;
+		if(debug)
+		{
+			System.err.println( "JDH const(file) start" );
+			System.err.flush();
+		}
+//		synchronized( jdomBuilder )
+//		{
+//			//if( jdomBuilder == null )
+//				jdomBuilder = new SAXBuilder();
+//			if(debug)
+//			{
+//				System.err.println( "JDH const(file) B" );
+//				System.err.flush();
+//			}
+//			jdomDocument = jdomBuilder.build( inFile );
+//		}
+
+		try
+		{
+			jdomDocument = jdomBuilder.build(inFile);
+		}
+		catch(JDOMException e)
+		{
+			jdomDocument = null;
+			throw new JDOMHelperException(
+				"jdh(File): exception"
+				+ " error:" + e
+				);
+		}
+
+//		//jdomDocument = jdomBuilder.build( inFile.getCanonicalPath() );
+//		String tmpName = inFile.getCanonicalPath();
+//		System.err.println( "before: " + tmpName );
+//		tmpName = tmpName.replace( '\\', '/' );
+//		System.err.println( "after: " + tmpName );
+//		//tmpName = "/test/cisco_cache_small/wu_10007.xml";
+//		tmpName = tmpName.substring( 2 );
+//		System.err.println( "and then: " + tmpName );
+//		jdomDocument = jdomBuilder.build( tmpName );
+		if(debug)
+		{
+			System.err.println( "JDH const(file) C" );
+			System.err.flush();
+		}
+		if( jdomDocument == null )
+			throw new JDOMHelperException(
+				"jdh(inFile): null document from File '" + inFile + "'"
+				);
+		if(debug)
+		{
+			System.err.println( "JDH const(file) D" );
+			System.err.flush();
+		}
+		_jdomInit( jdomDocument.getRootElement() );
+		if(debug)
+		{
+			System.err.println( "JDH const(file) end" );
+			System.err.flush();
+		}
+	}
+
+	/**
+	 * Constructor # 5: Create from an InputStream
+	 * <p>
+	 * This will create an instance of a <code>JDOMHelper</code>
+	 * </p>
+	 *
+	 * @param InputStream <code>inStream</code>
+	 * Where to get the source document from
+	 * REMEMBER TO CLOSE YOUR STREAM!!!!!
+	 **/
+	public JDOMHelper( InputStream inStream )
+		throws JDOMHelperException
+	{
+//		synchronized( jdomBuilder )
+//		{
+//			//if( jdomBuilder == null )
+//				jdomBuilder = new SAXBuilder();
+//			jdomDocument = jdomBuilder.build( inStream );
+//		}
+
+		try
+		{
+			jdomDocument = jdomBuilder.build(inStream);
+		}
+		catch(JDOMException e)
+		{
+			jdomDocument = null;
+			throw new JDOMHelperException(
+				"jdh(Stream): exception"
+				+ " error:" + e
+				);
+		}
+
+		if( jdomDocument == null )
+			throw new JDOMHelperException(
+				"jdh(inStream): null document from stream '" +
+				inStream + "'"
+				);
+
+		_jdomInit( jdomDocument.getRootElement() );
+
+		//jdomDocument.getRootElement().detach();
+	}
+
+
+
+	/*
+	 * Constructor # 6: default constructor
+	 */
+
+	public JDOMHelper()
+		throws JDOMHelperException
+	{
+		//synchronized( jdomBuilder )
+		//{
+			//if( jdomBuilder == null )
+			//	jdomBuilder = new SAXBuilder();
+			jdomDocument = new Document( new Element("root") );
+		//}
+		_jdomInit( jdomDocument.getRootElement() );
+	}
+
+	private void _jdomInit( Element inputElement )
+		throws JDOMHelperException
+	{
+		if( inputElement == null )
+			throw new JDOMHelperException( "Null element passed in to init." );
+
+		// Store the reference to our jdom element
+		myElement = inputElement;
+
+		String desiredElementName = _getDesiredTopLevelElementName();
+		if( desiredElementName != null )
+		{
+			boolean haveSeenValidName = false;
+			String buffer = desiredElementName;
+			StringTokenizer st = new StringTokenizer( buffer );
+			while( st.hasMoreTokens() )
+			{
+				String item = st.nextToken();
+
+				// todo: revisit case sensitivity, probably bad, would also
+				// have to change logic in dpapp
+				//item = item.trim().toLowerCase();
+
+				if( item != null && ! item.equals("") )
+				{
+					if( getElementName().equals(item) )
+					{
+						haveSeenValidName = true;
+						break;
+					}
+				}
+			}
+			if( ! haveSeenValidName )
+				throw new JDOMHelperException(
+					"Expected the element name to match in '" +
+					desiredElementName + "' but got a '" +
+					inputElement.getName() + "' element instead."
+					);
+		}  // end if have a desired name
+
+	}
+
+	// Do a "deep" clone
+	public synchronized Object clone()
+	{
+
+		// Cloning should take place in a try block
+		try
+		{
+			// Get a default clone of myself
+			JDOMHelper me2 = (JDOMHelper)(super.clone());
+
+			// Duplicate memeber variables
+
+			// If we have a document, we need to reproduce both
+			// the document and the my element variable
+			// in the proper order
+			if( jdomDocument != null )
+			{
+				// Clone the document
+				me2.jdomDocument = (Document)jdomDocument.clone();
+				// Just adjust the reference to the new document
+				// in the clone
+				if( myElement != null )
+					me2.myElement = (Element)me2.jdomDocument.getRootElement();
+			}
+			// Else we didn't have a document
+			// but we probably still have an element
+			else
+			{
+				if( myElement != null )
+					me2.myElement = (Element)myElement.clone();
+			}
+
+			if( attrListCache != null )
+				me2.attrListCache = (Hashtable)attrListCache.clone();
+
+			// sourceURI is an immutable string
+			// SAXBuilder is static
+			// debug is static
+
+			return me2;
+
+		}
+		catch (CloneNotSupportedException e)
+		{
+			System.err.println( "JDOMHelper: clone failed\n" + e );
+			return this;
+		}
+
+	}
+
+	/********************************************
+	 *
+	 *		Simple Get / Set Methods
+	 *
+	 *********************************************/
+
+	private void __sep__Simple_Get_Set_Methods__() {}
+
+	public Element getJdomElement()
+	{
+		return myElement;
+	}
+
+	public String getElementName()
+	{
+		return getJdomElement().getName();
+	}
+
+	public String getTextTrim()
+	{
+		return getTextTrim( getJdomElement() );
+	}
+	public static String getTextTrim( Element inElem )
+	{
+		return inElem.getTextTrim();
+	}
+
+	public String getTextTrimOrNull()
+	{
+		return getTextTrimOrNull( getJdomElement() );
+	}
+	public static String getTextTrimOrNull( Element inElem )
+	{
+		String tmpStr = inElem.getText();
+		tmpStr = NIEUtil.trimmedStringOrNull( tmpStr );
+		return tmpStr;
+	}
+
+	public String getTextSuperTrimOrNull()
+	{
+		return getTextSuperTrimOrNull( getJdomElement() );
+	}
+	public static String getTextSuperTrimOrNull( Element inElem )
+	{
+		String tmpStr = inElem.getTextNormalize();
+		tmpStr = NIEUtil.trimmedStringOrNull( tmpStr );
+		return tmpStr;
+	}
+
+	public List getJdomChildren()
+	{
+		return getJdomElement().getChildren();
+	}
+
+	public int getJdomChildrenCount()
+	{
+		return getJdomChildren().size();
+	}
+
+	public Element getJdomChildByOffset( int i )
+	{
+		return (Element)getJdomChildren().get(i);
+	}
+
+	public String getClassName()
+	{
+		return this.getClass().getName();
+	}
+
+	// void setDesiredTopLevelElementName( String target )
+	// {
+	//		 acceptableName = target;
+	// }
+	// no way to call this before constructor, don't feel like
+	// complicating constructors right now.
+
+
+	private void __sep__Simple_JDOM_Wrappers_() {}
+	public Element addContent( JDOMHelper newNode )
+	{
+		return addContent( this, newNode );
+	}
+	public static Element addContent( JDOMHelper inParent,
+		JDOMHelper inNewChild
+		)
+	{
+		if( inParent==null || inNewChild==null )
+		{
+			System.err.println( "ERROR:JDOMHelper:addContent(j,j):"
+				+ " Null inputs."
+				+ " inParent=" + inParent
+				+ " inNewChild=" + inNewChild
+				);
+		}
+		Element parent = inParent.getJdomElement();
+		Element child = inNewChild.getJdomElement();
+		child.detach();
+		return parent.addContent( child );
+	}
+	public Element addContent( Element newNode )
+	{
+		return addContent( this, newNode );
+	}
+	public static Element addContent( JDOMHelper inParent, Element inNewChild )
+	{
+		if( inParent==null || inNewChild==null )
+		{
+			System.err.println( "ERROR:JDOMHelper:addContent(j,e):"
+				+ " Null inputs."
+				+ " inParent=" + inParent
+				+ " inNewChild=" + inNewChild
+				);
+		}
+		Element parent = inParent.getJdomElement();
+		inNewChild.detach();
+		return parent.addContent( inNewChild );
+	}
+
+
+	public static Element addContent( Element inParent, JDOMHelper inNewChild )
+	{
+		if( inParent==null || inNewChild==null )
+		{
+			System.err.println( "ERROR:JDOMHelper:addContent(e,j):"
+				+ " Null inputs."
+				+ " inParent=" + inParent
+				+ " inNewChild=" + inNewChild
+				);
+		}
+		Element child = inNewChild.getJdomElement();
+		child.detach();
+		return inParent.addContent( child );
+	}
+
+	/********************************************************
+	 *
+	 *		Help with Reading and Writing Attributes
+	 *
+	 *********************************************************/
+	private void __sep__Reading_and_Writing_Attributes() {}
+
+	// When requesting a string, do NOT look for plural by default
+
+	public String getStringFromAttribute( String target )
+	{
+		return getStringFromAttribute( myElement, target, false );
+	}
+	public static String getStringFromAttribute( Element elem, String target )
+	{
+		return getStringFromAttribute( elem, target, false );
+	}
+
+	// These versions trim strings and force empty strings to nulls
+	public String getStringFromAttributeTrimOrNull( String target )
+	{
+		return getStringFromAttributeTrimOrNull( myElement, target, false );
+	}
+	public static String getStringFromAttributeTrimOrNull( Element elem, String target )
+	{
+		return getStringFromAttributeTrimOrNull( elem, target, false );
+	}
+
+	// Get a string, optionally check for plural form
+	// We always prefer the singular form
+
+	public String getStringFromAttribute( String target,
+		boolean allowPlural )
+	{
+		return getStringFromAttribute( myElement, target, allowPlural );
+	}
+	public String getStringFromAttributeTrimOrNull( String target,
+		boolean allowPlural )
+	{
+		return getStringFromAttributeTrimOrNull( myElement, target, allowPlural );
+	}
+	public static String getStringFromAttribute( Element elem, String target,
+		boolean allowPlural )
+	{
+
+		String tmp = null;
+		tmp = elem.getAttributeValue(target);
+		if( tmp == null && allowPlural )
+			tmp = elem.getAttributeValue( target+"s" );
+		return tmp;
+	}
+	public static String getStringFromAttributeTrimOrNull( Element elem,
+		String inTarget, boolean inAllowPlural
+		)
+	{
+		String tmpStr = null;
+		tmpStr = elem.getAttributeValue( inTarget );
+		tmpStr = NIEUtil.trimmedStringOrNull( tmpStr );
+		if( tmpStr == null && inAllowPlural )
+		{
+			tmpStr = elem.getAttributeValue( inTarget + "s" );
+			tmpStr = NIEUtil.trimmedStringOrNull( tmpStr );
+		}
+		return tmpStr;
+	}
+
+	public boolean setAttributeString( String attrName, String attrValue )
+	{
+		return setAttributeString( getJdomElement(), attrName, attrValue );
+	}
+	public static boolean setAttributeString( Element elem, String attrName,
+		String attrValue
+		)
+	{
+		if( elem==null || attrName==null || attrName.trim().equals("")
+			|| attrValue==null
+			)
+		{
+			System.err.println( "ERROR: JDOMHelper: setAttributeString:"
+				+ " Null/empty values input."
+				+ " elem=" + elem
+				+ " attrName=" + attrName
+				+ " attrValue=" + attrValue
+				+ " (attrValue can be an empty string, but not a true NULL)"
+				);
+			return false;
+		}
+		attrName = attrName.trim();
+		elem.setAttribute( attrName, attrValue );
+		return true;
+	}
+
+	public boolean setAttributeInt( String attrName, int attrValue )
+	{
+		return setAttributeInt( getJdomElement(), attrName, attrValue );
+	}
+	public static boolean setAttributeInt( Element elem, String attrName,
+		int attrValue
+		)
+	{
+		if( elem==null || attrName==null || attrName.trim().equals("") )
+		{
+			System.err.println( "ERROR: JDOMHelper: setAttributeInt:"
+				+ " Null/empty values input."
+				+ " elem=\"" + elem + "\""
+				+ " attrName=\"" + attrName + "\""
+				+ " attrValue=\"" + attrValue + "\""
+				);
+			return false;
+		}
+		attrName = attrName.trim();
+		elem.setAttribute( attrName, "" + attrValue );
+		return true;
+	}
+
+	public boolean setAttributeStringForPath(
+		String inPath, String inAttrName, String inAttrValue
+		)
+	{
+		return setAttributeStringForPath(
+			getJdomElement(),
+			inPath, inAttrName, inAttrValue
+			);
+	}
+	public static boolean setAttributeStringForPath(
+		Element inStartElem,
+		String inPath, String inAttrName, String inAttrValue
+		)
+	{
+		if( inStartElem==null || inPath==null
+			|| inAttrName==null || inAttrValue==null
+			)
+		{
+			System.err.println( "ERROR:JDOMHelper:setAttributeStringForPath:"
+				+ " Was passed NULL argument(s)."
+				+ " inStartElem=" + inStartElem
+				+ " inPath=" + inPath
+				+ " inAttrName=" + inAttrName
+				+ " inAttrValue=" + inAttrValue
+				);
+			return false;
+		}
+
+		Element destElem = findElementByPath( inStartElem, inPath );
+		if( destElem == null )
+			return false;
+
+		destElem.setAttribute( inAttrName, inAttrValue );
+
+		return true;
+	}
+
+
+	public static boolean decodeBooleanString( String inData, boolean defaultValue )
+	{
+		if( inData == null || inData.trim().equals("") )
+			return defaultValue;
+
+		inData = inData.trim().toLowerCase();
+
+		// Todo: other ideas: good, pass, passed
+		if( inData.equals("1") ||
+			inData.equals("yes") || inData.equals("y") ||
+			inData.equals("true") || inData.equals("t") ||
+			inData.equals("affirmative") ||
+			inData.equals("positive") || inData.equals("+")
+			)
+		{
+			return true;
+		}
+		// Todo: other ideas: bad, fail, failed
+		else if( inData.equals("0") ||
+			inData.equals("no") || inData.equals("n") ||
+			inData.equals("false") || inData.equals("f") ||
+			inData.equals("negative") || inData.equals("-")
+			)
+		{
+			return false;
+		}
+		else
+		{
+			System.err.println( "Warning: Jdh:decodeBoolean: unknown string"
+				+ " \"" + inData + "\""
+				+ " return default value \"" + defaultValue + "\""
+				);
+			return defaultValue;
+		}
+	}
+
+	public boolean getBooleanFromAttribute( String target )
+	{
+		return getBooleanFromAttribute( myElement, target, false );
+	}
+	public static boolean getBooleanFromAttribute( Element elem, String target )
+	{
+		return getBooleanFromAttribute( elem, target, false );
+	}
+
+	public boolean getBooleanFromAttribute( String target,
+		boolean defaultValue )
+	{
+		return getBooleanFromAttribute( myElement, target, defaultValue );
+	}
+	public static boolean getBooleanFromAttribute( Element elem,
+		String target, boolean defaultValue
+		)
+	{
+		if(debug)
+			System.err.println( "Debug: JDOMHelper:getBooleanFromAttribute(2): Start.\n\ttarget='" + target + "', default value='" + defaultValue + "'" );
+		String tmpFlag = getStringFromAttribute( elem, target );
+		if(debug)
+			System.err.println( "Debug: JDOMHelper:getBooleanFromAttribute(2): tmpFlag='" + tmpFlag + "'" );
+		if( tmpFlag == null || tmpFlag.trim().equals("") )
+		{
+			if(debug)
+				System.err.println( "\tIt was null, returning default." );
+			return defaultValue;
+		}
+		boolean answer = decodeBooleanString( tmpFlag, defaultValue );
+		if(debug)
+			if( answer )
+				System.err.println( "\tit was a 1 or Yes or True, returning true" );
+			else
+				System.err.println( "\tit was NOT a 1 or Yes or True, so returning false" );
+		return answer;
+	}
+
+	public int getIntFromAttribute( String target,
+		int defaultValue )
+	{
+		return getIntFromAttribute( myElement, target, defaultValue );
+	}
+	public static int getIntFromAttribute( Element elem,
+		String target, int defaultValue
+		)
+	{
+		if(debug)
+			System.err.println( "Debug: JDOMHelper:getIntFromAttribute(2): Start.\n\ttarget='" + target + "', default value='" + defaultValue + "'" );
+		String tmpFlag = getStringFromAttribute( elem, target );
+		if(debug)
+			System.err.println( "Debug: JDOMHelper:getIntFromAttribute(2): tmpFlag='" + tmpFlag + "'" );
+		if( tmpFlag == null || tmpFlag.trim().equals("") )
+		{
+			if(debug)
+				System.err.println( "\tIt was null, returning default." );
+			return defaultValue;
+		}
+		tmpFlag = tmpFlag.trim();
+		int retValue = defaultValue;
+		try
+		{
+			retValue = Integer.parseInt( tmpFlag );
+		}
+		catch(Exception e)
+		{
+			retValue = defaultValue;
+		}
+
+		return retValue;
+
+	}
+
+	// XML allows for a tag attribute to contain a LIST of
+	// values, separated by white space.
+	// These methods help manage that.
+
+	// Will always return a list (assuming valid cache)
+
+	public List getListFromAttribute( String target )
+	{
+		return getListFromAttribute( target, false );
+	}
+
+	public static List getListFromAttribute( Element elem, String target )
+	{
+		return getListFromAttribute( elem, target, false );
+	}
+
+
+	public List getListFromAttribute( String target,
+		boolean allowPlural
+		)
+	{
+		// Create the global cache table if it's not there
+
+		if( attrListCache == null )
+			attrListCache = new Hashtable();
+
+		// Do we already know the answer?
+		// No, calculate it and cache it
+
+		if( ! attrListCache.containsKey(target) )
+		{
+
+			// Call the static version
+			List retList = getListFromAttribute(
+				myElement, target, allowPlural
+				);
+
+			// Cache the results
+			attrListCache.put(target, retList);
+		}
+
+		// Return the answer
+
+		return (List)attrListCache.get(target);
+	}
+
+	// This is the static version
+	// Of course it does no caching
+	// This also does the real work for the non-static version,
+	// but the non-static version implements caching and wraps
+	// that logic on top of this
+	public static List getListFromAttribute( Element elem,
+		String target, boolean allowPlural
+		)
+	{
+
+		List retList = new Vector();
+		String tmpStr = getStringFromAttribute( elem, target, allowPlural );
+		if( tmpStr != null )
+		{
+			StringTokenizer st = new StringTokenizer( tmpStr );
+			while( st.hasMoreTokens() )
+			{
+				String item = st.nextToken();
+				item = item.trim().toLowerCase();
+				if( ! item.equals("") )
+				{
+					if( ! retList.contains(item) )
+						retList.add(item);
+				}
+			}
+		}
+
+		return retList;
+	}
+
+
+	// Given the name of an attribute that nornally contains one or
+	// more values, separated by white space, does that list contain
+	// a particular value?
+
+	public boolean hasItemInAttrList( String listName,
+		String target
+		)
+	{
+		return hasItemInAttrList( listName, target, false );
+	}
+
+	public static boolean hasItemInAttrList( Element elem, String listName,
+		String target
+		)
+	{
+		return hasItemInAttrList( elem, listName, target, false );
+	}
+
+	public boolean hasItemInAttrList( String listAttrName,
+		String targetAttrValue, boolean allowPlural
+		)
+	{
+		String tmpTarget = targetAttrValue.trim();
+		return (getListFromAttribute(listAttrName,allowPlural)).contains(tmpTarget);
+	}
+
+	public static boolean hasItemInAttrList( Element elem, String listName,
+		String target, boolean allowPlural
+		)
+	{
+		String tmpTarget = target.trim();
+		return (getListFromAttribute(elem,listName,allowPlural)).contains(tmpTarget);
+	}
+
+	public int getAttrListCount( String listName )
+	{
+		return getAttrListCount( listName, false );
+	}
+
+	public static int getAttrListCount( Element elem, String listName )
+	{
+		return getAttrListCount( elem, listName, false );
+	}
+
+	public int getAttrListCount( String listName,
+		boolean allowPlural
+		)
+	{
+		return (getListFromAttribute(listName,allowPlural)).size();
+	}
+
+	public static int getAttrListCount( Element elem, String listName,
+		boolean allowPlural
+		)
+	{
+		return (getListFromAttribute(elem,listName,allowPlural)).size();
+	}
+
+	// Add a string to the attribute list
+	// It returns true or false depending on whether it really
+	// added it or not; it won't add it if it's already there.
+
+	public boolean addStringToAttrList( String listAttrName,
+		String newValue
+		)
+	{
+		return addStringToAttrList( listAttrName, newValue, false );
+	}
+
+	public static boolean addStringToAttrList( Element elem,
+		String listAttrName, String newValue
+		)
+	{
+		return addStringToAttrList( elem, listAttrName, newValue, false );
+	}
+
+	public boolean addStringToAttrList( String listAttrName,
+		String newValue, boolean allowPlural
+		)
+	{
+		boolean success = addStringToAttrList( myElement,
+			listAttrName, newValue, allowPlural
+			);
+
+		// The non-static list attribute list methods employ caching
+		// so we need to make sure and update caches in all non-static
+		// attr list methods
+
+		// If the static version was successful, then we need to clean
+		// up the old cache
+		if( success )
+		{
+			// Null out any cache
+			if( attrListCache != null )
+			{
+				if( attrListCache.containsKey(listAttrName) )
+					attrListCache.remove(listAttrName);
+				// Check the plural form, if applicable
+				if( allowPlural )
+				{
+					String pluralListName = listAttrName + 's';
+					if( attrListCache.containsKey(pluralListName) )
+						attrListCache.remove(pluralListName);
+				}
+			}
+		}
+
+		return success;
+	}
+
+	public static boolean addStringToAttrList( Element elem,
+		String listAttrName, String newValue, boolean allowPlural
+		)
+	{
+
+		if( newValue == null )
+			return false;
+
+		String tmpValue = newValue.trim();
+
+		// bail if no value sent, this is not allowed in xml
+		if( tmpValue.equals("") )
+			return false;
+
+		// bail if this is ALREADY in the list
+		if( hasItemInAttrList( elem, listAttrName, tmpValue, allowPlural) )
+			return false;
+
+		// Get the string from the attribute
+		String tmpAttrStr1 = null;
+		String pluralListName = listAttrName + "s";
+		tmpAttrStr1 = elem.getAttributeValue( listAttrName );
+
+		// Do we already have a string/list there?
+		if( tmpAttrStr1 != null )
+		{
+			// Replace the old list with a new one, with this
+			// value added to the end
+			elem.removeAttribute( listAttrName );
+			elem.setAttribute( listAttrName,
+				tmpAttrStr1 + " " + tmpValue
+			);
+		}
+		// Else we don't already have attribute with this name
+		else
+		{
+			// If we're allowing plural, check that string
+			if( allowPlural )
+			{
+				String tmpAttrStr2 = null;
+				tmpAttrStr2 = elem.getAttributeValue( pluralListName );
+				// Did we find a plural form?
+				if( tmpAttrStr2 != null )
+				{
+					elem.removeAttribute( pluralListName );
+					elem.setAttribute( pluralListName,
+						tmpAttrStr2 + " " + tmpValue
+						);
+				}
+				// Else no plural, so add in proper singular form
+				else
+				{
+					elem.setAttribute( listAttrName, tmpValue );
+				}
+			}
+			// Else not allowing plural
+			else
+			{
+				// So just create new singular form
+				elem.setAttribute( listAttrName, tmpValue );
+			}
+		}
+
+		return true;
+
+	}
+
+	/******************************************************************
+	 *
+	 *		Support for psuedo xpath syntax and simple operations
+	 *
+	 *******************************************************************/
+	private void __sep__Pseudo_XPath_Syntax_Support_ () {}
+
+	public static Element findElementByPathOLD( Element sourceElem,
+		String target, boolean inDoNavigationWarnings
+		)
+	{
+
+		// We'll save an unmodified copy for error/debug messages
+		String saveInitPath = target;
+
+		if(debug) System.err.println( "Debug: JDOMHelper.path: Start: given '"+
+			target + "'"
+			);
+
+		if( sourceElem == null )
+		{
+			System.err.println( "Error: JDOMHelper:findElementByPath:"
+				+ " Was called with a null or empty starting element."
+				+ " Returning null."
+				);
+			return null;
+		}
+
+		target = NIEUtil.trimmedStringOrNull( target );
+		if( target == null )
+		{
+			System.err.println( "Error: JDOMHelper:findElementByPath:"
+				+ " Was called with a null or empty path string."
+				+ " Returning null."
+				);
+			return null;
+		}
+
+		// Init the return element, this will be
+		// "walked" down the tree as we traverse the path
+		Element retElem = null;
+
+		if( ! target.substring(0,1).equals("/") )
+		{
+			// If it does NOT start with a /, then it's
+			// relative to the top level node; ie the
+			// first part/part2 is a child of root.
+			retElem = sourceElem;
+		}
+		else
+		{
+			// Else we're starting at "root"
+			// Kill the initial slash AND
+			// we leave the retELem set to null from
+			// above, so it will be handled correctly below.
+			target = target.substring(1);
+		}
+
+		if(debug) System.err.println( "Debug: JDOMHelper.path: target now ='"+
+			target + "'"
+			);
+
+		// Keep walking the path until we're done or run out of path
+		while( true )
+		{
+			// sanity check if we're out of path
+			if( target.length() < 1 )
+				break;
+
+			// Find the next slash
+			int nextSlash = target.indexOf('/');
+
+			// Init the current path section
+			String pathSection = "";
+
+			// If no slash, just grab the rest
+			if( nextSlash < 0 )
+			{
+				pathSection = target;
+				target = "";
+			}
+			else // else it was >= 0
+			{
+				// If a slash, then grab the next section and
+				// move forward
+				if( nextSlash == 0 || nextSlash == target.length()-1 )
+				{
+					System.err.println( "Error: JDOMHelper:findElementByPath:"
+						+ " Found misplaced forward slash when walking through the path."
+						+ " This might have happened if, for example, there were accidently 2 slashes"
+						+ " next to each other, or if it ended in a slash."
+						+ " Initial path passed in was \"" + saveInitPath + "\"."
+						+ " The path currently being checked was \"" + target + "\"."
+						+ " Returning null."
+						);
+					return null;
+				}
+				// Grab the next section, and move the target along
+				pathSection = target.substring( 0, nextSlash );
+				target = target.substring( nextSlash+1 );
+			}
+
+			pathSection = pathSection.trim();
+
+			// Sanity check, we don't allow /(null)/
+			// This shouldn't really be possible...
+			if( pathSection.equals("") )
+			{
+				System.err.println( "Error: JDOMHelper:findElementByPath:"
+					+ " Found empty path segment when walking through the path."
+					+ " This might have happened if, for example, there were accidently 2 slashes"
+					+ " next to each other or were separated by just whitespace."
+					+ " Initial path passed in was \"" + saveInitPath + "\"."
+					+ " Returning null."
+					);
+				return null;
+			}
+
+			// Look for offset stuff
+			// Offsets are ONE based, not zero based, to comply with xpath
+			int listIndex = 0;
+			int openBracketAt = pathSection.indexOf( '[' );
+
+			// If we found an opening bracket
+			if( openBracketAt >= 0 )
+			{
+				// Look for ending bracket
+				int closeBracketAt = pathSection.indexOf( ']',
+					openBracketAt
+					);
+				// Open bracket with no close is bad
+				if( closeBracketAt < 0 )
+				{
+					System.err.println( "Error: JDOMHelper:findElementByPath:"
+						+ " Found unbalanced square brackets."
+						+ " Initial path passed in was \"" + saveInitPath + "\"."
+						+ " Section of the path being checked was \"" + pathSection + "\"."
+						+ " Returning null."
+						);
+					return null;
+				}
+
+				// If there's no characters between the
+				// brackets that's bad as well
+				if( closeBracketAt == openBracketAt-1 )
+				{
+					System.err.println( "Error: JDOMHelper:findElementByPath:"
+						+ " Found adjacent set of square brackets."
+						+ " Square brackets must have something between them."
+						+ " Initial path passed in was \"" + saveInitPath + "\"."
+						+ " Section of the path being checked was \"" + pathSection + "\"."
+						+ " Returning null."
+						);
+					return null;
+				}
+
+				String indexString = pathSection.substring(
+					openBracketAt+1, closeBracketAt
+					);
+				indexString = indexString.trim();
+
+				pathSection = pathSection.substring( 0, openBracketAt );
+				pathSection = pathSection.trim();
+
+				// Sanity check, can't have []
+				if( indexString.equals("") )
+				{
+					System.err.println( "Error: JDOMHelper:findElementByPath:"
+						+ " Found empty set of square brackets."
+						+ " Square brackets must have something between them."
+						+ " Initial path passed in was \"" + saveInitPath + "\"."
+						+ " Section of the path being checked was \"" + pathSection + "\"."
+						+ " Returning null."
+						);
+					return null;
+				}
+				// Convert the index to an integer
+				try
+				{
+					listIndex = new Integer(indexString).intValue();
+				}
+				catch( Exception e )
+				{
+					// Bail on bad integers
+					System.err.println( "Error: JDOMHelper:findElementByPath:"
+						+ " Found bad string inside a set of square brackets."
+						+ " Unable to convert the string to an integer."
+						+ " Initial path passed in was \"" + saveInitPath + "\"."
+						+ " Section of the path being checked was \"" + pathSection + "\"."
+						+ " Extracted string we were trying to convert was \"" + indexString + "\"."
+						+ " The Java exception was \"" + e + "\"."
+						+ " Returning null."
+						);
+					return null;
+				}
+
+				// Sanity check, IF there was an index specified, it
+				// must not be zero.  Later on a value of zero will
+				// then mean that none was specified.
+				if( listIndex == 0 )
+				{
+					System.err.println( "Error: JDOMHelper:findElementByPath:"
+						+ " Invalid integer inside a set of square brackets."
+						+ " The value must not be zero."
+						+ " List indicies are ONE-based, not zero based."
+						+ " So the first element is addressed with [1], not [0]."
+						+ " Negative integers can also be used to index from the end of the list."
+						+ " For example the last element is addressed with [-1]."
+						+ " Initial path passed in was \"" + saveInitPath + "\"."
+						+ " Section of the path being checked was \"" + pathSection + "\"."
+						+ " Extracted string we were trying to convert was \"" + indexString + "\"."
+						+ " Returning null."
+						);
+					return null;
+				}
+			}
+
+			if(debug) System.err.println( "Debug: JDOMHelper.path: decoded '"+
+				pathSection + "' index=" + listIndex
+				);
+
+			// Another Sanity check
+			if( pathSection.equals("") && listIndex == 0 )
+			{
+				System.err.println( "Error: JDOMHelper:findElementByPath:"
+					+ " Each section of a path must have a name or a bracketed index integer, or both."
+					+ " In this case we found both a null name and a null, empty or zero index."
+					+ " Initial path passed in was \"" + saveInitPath + "\"."
+					+ " Returning null."
+					);
+				return null;
+			}
+
+			// By now we have a path section and/or index
+
+			// If this is not the first node (or first and not rooted)
+			if( retElem != null )
+			{
+				// If no index, just use the getChild method
+				if( listIndex == 0 )
+				{
+					// Grab the element by name
+					retElem = retElem.getChild( pathSection );
+					if( retElem == null )
+					{
+						if( inDoNavigationWarnings )
+						{
+							System.err.println(
+								"Warning: JDOMHelper:findElementByPath:"
+								+ " No children found while walking path (1)."
+								+ " Looking for named children \"" + pathSection + "\"."
+								+ " Initial path passed in was \"" + saveInitPath + "\"."
+								+ " Returning null."
+								);
+						}
+						return null;
+					}
+				}
+				// Else we do have an index
+				else
+				{
+					// Else we have an index, get the entire list and
+					// do the math
+					List children = null;
+					// If no path section, get all children
+					if( pathSection.equals("") )
+						children = retElem.getChildren();
+					// Else get all named children
+					else
+						children = retElem.getChildren( pathSection );
+
+					// Sanity check on results
+					if( children == null || children.size() < 1 )
+					{
+						if( inDoNavigationWarnings )
+						{
+							System.err.println(
+								"Warning: JDOMHelper:findElementByPath:"
+								+ " No children found while walking path (2)."
+								+ " Children with \"" + pathSection + "\" name (null is OK)."
+								+ " Initial path passed in was \"" + saveInitPath + "\"."
+								+ " Returning null."
+								);
+						}
+						return null;
+					}
+
+					int childCount = children.size();
+					if( listIndex > 0 )
+					{
+						// Bounds sanity check
+						if( listIndex > childCount )
+						{
+							if( inDoNavigationWarnings )
+							{
+								System.err.println(
+									"Warning: JDOMHelper:findElementByPath:"
+									+ " Positive index out of bounds."
+									+ " Children with \"" + pathSection + "\" name (null is OK)."
+									+ " Requested index was " + listIndex + "."
+									+ " Number of matching children was " + childCount + "."
+									+ " Initial path passed in was \"" + saveInitPath + "\"."
+									+ " Returning null."
+									);
+							}
+							return null;
+						}
+
+						// grab the element, convert from one based to
+						// zero based
+						retElem = (Element)children.get( listIndex - 1 );
+					}
+					// Else we're dealing with a negative index
+					else
+					{
+						// Else it's negative, count from the end
+						// Bounds sanity check
+						if( childCount + listIndex < 0 )
+						{
+							if( inDoNavigationWarnings )
+							{
+								System.err.println(
+									"Warning: JDOMHelper:findElementByPath:"
+									+ " Negative index out of bounds."
+									+ " Children with \"" + pathSection + "\" name (null is OK)."
+									+ " Requested index was " + listIndex + "."
+									+ " Number of matching children was " + childCount + "."
+									+ " Initial path passed in was \"" + saveInitPath + "\"."
+									+ " Returning null."
+									);
+							}
+							return null;
+						}
+
+						// Grab the child from the end of the list
+						// Since the offset is negative, we ADD it to the
+						// # of children to get the index.
+						// As a coincidence, this also converts from
+						// one based to zero based for us.
+						// Example:
+						//		3 node list
+						//		index of -1, meaning the last/3rd element, offset=2
+						//		3 + -1 = 2
+						//		index of -3, meaning first element, offset=0
+						//		3 + -3 = 0
+						retElem = (Element)children.get(
+							childCount + listIndex
+							);
+					}
+
+				}		// end else we do have an index
+
+				// Final sanity check, if we were working with
+				// a valid node and now it's null then something is
+				// wrong, we don't want to accidently start over
+				// back at the root.
+				if( retElem == null )
+				{
+					if( inDoNavigationWarnings )
+					{
+						System.err.println(
+							"Warning: JDOMHelper:findElementByPath:"
+							+ " Encountered a null node while walking the path."
+							+ " Children with \"" + pathSection + "\" name (null is OK)."
+							+ " Requested index was " + listIndex + "."
+							+ " Initial path passed in was \"" + saveInitPath + "\"."
+							+ " Returning null."
+							);
+					}
+					return null;
+				}
+			}
+			// Else this is the first node AND it is rooted
+			else
+			{
+
+				// If retElem is null then this is the first time through
+				// and it's rooted
+				// We are not allowed to specify an index offset
+				// for the root
+				if( listIndex != 0  )
+				{
+					System.err.println(
+						"Error: JDOMHelper:findElementByPath:"
+						+ " Rooted paths can not have index offsets"
+						+ " in the first part of their path."
+						+ " If you're trying to get to the Nth child of the root"
+						+ " then you probably want to drop the initial slash."
+						+ " Examing path segment \"" + pathSection + "\"."
+						+ " Requested index was " + listIndex + "."
+						+ " Initial path passed in was \"" + saveInitPath + "\"."
+						+ " Returning null."
+						);
+					return null;
+				}
+
+				// Verify that the names match
+				if( sourceElem.getName().equals(pathSection) )
+					retElem = sourceElem;
+				else		// Error, should match top node
+				{
+					System.err.println(
+						"Error: JDOMHelper:findElementByPath:"
+						+ " The first section of a ROOTED path must match"
+						+ " the top level element we're starting from."
+						+ " If you're trying to get to a named CHILD of the root"
+						+ " then you should drop the leading slash."
+						+ " Reminder: XML paths ARE case sensitive."
+						+ " Expected to match segment \"" + pathSection + "\""
+						+ ", but actual root node name is \"" + sourceElem.getName() + "\"."
+						+ " Initial path passed in was \"" + saveInitPath + "\"."
+						+ " Returning null."
+						);
+					return null;
+				}
+			}
+
+		}		// End of while loop
+
+		// Return whatever's left!
+		// One final check, and this is an error since I can't figure out
+		// how this could happen
+		if( retElem == null )
+		{
+			System.err.println(
+				"Error: JDOMHelper:findElementByPath:"
+				+ " At end of method retElem is still null."
+				+ " Initial path passed in was \"" + saveInitPath + "\"."
+				+ " Returning null."
+				);
+		}
+		// return it
+		return retElem;
+	}
+
+
+	// Return multiple elements from a path query
+	// We do NOT allow for "/foo" queries here.
+	// And we do not allow for offsets in the final part
+	// of the path.
+	public List findElementsByPath( String target )
+	{
+		return findElementsByPath( getJdomElement(), target );
+	}
+	public static List findElementsByPath( Element sourceElem,
+		String target
+		)
+	{
+		List retList = new Vector();
+		if( sourceElem == null || target == null )
+		{
+			System.err.println( "Error:JDOMHelper:findElementsByPath:"
+				+ " Was passed in at least one null argument."
+				+ "sourceElem='" + sourceElem + "'"
+				+ "target='" + target + "'"
+				);
+			return retList;
+		}
+
+		// Chop up the string into the lead and last part
+		int lastSlashAt = target.lastIndexOf( '/' );
+
+		// Sanity check, and we do NOT allow "/foo" in this method
+		if( lastSlashAt == 0 || lastSlashAt == target.length()-1 )
+		{
+			System.err.println( "Error:JDOMHelper:findElementsByPath:"
+				+ " We don't accept rooted paths, so no /path."
+				+ " target='" + target + "'"
+				+ " (Todo: possibly implement later)"
+				);
+			return retList;
+		}
+
+		// The two parts of the path
+		String partA = null;
+		String partB = null;
+
+		// Do we have a leading part?
+		if( lastSlashAt > 0 )
+		{
+			partA = target.substring( 0, lastSlashAt );
+			partB = target.substring( lastSlashAt+1 );
+		}
+		else		// Else just the second half of the path
+		{
+			partA = "";
+			partB = target;
+		}
+
+		// Sanity check
+		if( partB.indexOf('[') >= 0 || partB.indexOf(']') >= 0 )
+			return retList;
+		partB = partB.trim();
+		if( partB.equals("") )
+			return retList;
+
+		// Figure out what the parent is
+		Element parent = null;
+
+		// If there's any partA path, look it up
+		if( ! partA.trim().equals("") )
+			parent = findElementByPath( sourceElem, partA );
+		else
+			parent = sourceElem;
+
+		// Sanity check
+		if( parent == null )
+			return retList;
+
+		// Have jdom do the rest
+		return parent.getChildren( partB );
+
+	}
+
+
+	// Below are some of the new style basic building block routines
+	// we're using
+	private void __sep__XPath_Building_Block_Routines_ () {}
+
+
+	// Walk a tree looking for elements
+	// By default we do NOT warn you about why/when we stopped walking
+	// the tree, because it's quite common to ask for things that you know
+	// may not be there.
+	// However, path syntax problems are ERRORS and are reported, no matter
+	// what warning is set to
+	// The instance specific versions
+	public Element findElementByPath( String target )
+	{
+		return findElementByPath( getJdomElement(), target, false );
+	}
+	public Element findElementByPath(
+		String target, boolean inDoNavigationWarnings
+		)
+	{
+		return findElementByPath(
+			getJdomElement(), target, inDoNavigationWarnings
+			);
+	}
+	// The static versions that do all the actual work
+	public static Element findElementByPath( Element findElementByPath,
+		String target
+		)
+	{
+		return findElementByPath( findElementByPath, target, false );
+	}
+
+	// A revised method header redirecting to the new find Element routines
+	public static Element findElementByPath( Element inStartElem,
+		String inTargetPath, boolean inDoNavigationWarnings
+		)
+	{
+
+		inTargetPath = NIEUtil.trimmedStringOrNull( inTargetPath );
+
+		if( inStartElem == null || inTargetPath == null )
+		{
+			System.err.println( "Error: JDOMHelper:findElementByPath:"
+				+ " Null or empty input parameter(s)."
+				+ ", inStartElem=" + inStartElem
+				+ ", inPath=" + inTargetPath
+				);
+			return null;
+		}
+
+		List choppedPath = fullPathChopper( inTargetPath );
+
+		return findElementByPath( inStartElem,
+			choppedPath, false, null,
+			inDoNavigationWarnings, 0,
+			false
+			);
+	}
+	// Same as above, but OK to create path as we go
+	public static Element findOrCreateElementByPath( Element inStartElem,
+		String inTargetPath, boolean inDoNavigationWarnings
+		)
+	{
+
+		inTargetPath = NIEUtil.trimmedStringOrNull( inTargetPath );
+
+		if( inStartElem == null || inTargetPath == null )
+		{
+			System.err.println( "Error: JDOMHelper:findOrCreateElementByPath:"
+				+ " Null or empty input parameter(s)."
+				+ ", inStartElem=" + inStartElem
+				+ ", inPath=" + inTargetPath
+				);
+			return null;
+		}
+
+		List choppedPath = fullPathChopper( inTargetPath );
+
+		// Find element, and tell them it's OK to create
+		return findElementByPath( inStartElem,
+			choppedPath, true, null,
+			inDoNavigationWarnings, 0,
+			false
+			);
+	}
+
+	// This version of findElement lets you give it a list of elements
+	// as it's traversal path
+	// You can also specify an alternate node to use if we encounter root
+	// Or you can have us automatically calculate the root
+	// Or, by default, we'll just use the node you passed in as root
+	// By default we traverse the entire list, unless stopshort >0
+	// And by default we do NOT warn about unfound elements
+	private static Element findElementByPath( Element inStartElem,
+		List inPathBits, boolean inCreateOK, Element inRootElem
+		)
+	{
+		return findElementByPath( inStartElem,
+			inPathBits, inCreateOK, inRootElem,
+			false, 0, false
+			);
+	}
+	private static Element findElementByPath( Element inStartElem,
+		List inPathBits, boolean inCreateOK, Element inRootElem,
+		boolean inDoNavigationWarnings, int inStopShortCount,
+		boolean inAutoCalculateDocumentRoot
+		)
+	{
+		// if(debug) System.err.println( "Debug: JDOMHelper.path:" );
+
+		if( inStartElem == null || inPathBits == null )
+		{
+			System.err.println( "ERROR: JDOMHelper:findElmentByPath(new1):"
+				+ " Null arguments passed in."
+				+ " inStartElem=" + inStartElem
+				+ " inPathBits=" + inPathBits
+				);
+			return null;
+		}
+
+		// Are we "out of path" ?
+		if( inPathBits.size() < 1 ||
+				( inStopShortCount > 0 && inStopShortCount > inPathBits.size() )
+			)
+		{
+			if( inDoNavigationWarnings )
+				System.err.println( "Warning: JDOMHelper:findElmentByPath(new1):"
+					+ " Out of path."
+					+ " Number of elements passed in: " + inPathBits.size()
+					+ " and stop-short count: " + inStopShortCount
+					+ " Returning null."
+					);
+			// return inStartElem;
+			return null;
+		}
+
+		// Handle the special "/" case
+		boolean isRooted = false;
+		String firstBit = (String)inPathBits.get(0);
+		Element currElem = inStartElem;
+		if( firstBit.equals("/") )
+		{
+			// Note that we're rooted and update the path bits list
+			isRooted = true;
+			inPathBits.remove( 0 );
+
+			// Figure out what to use for root
+			// Did they specifically tell us what to use?
+			// If they told us, then just use it
+			if( inRootElem != null )
+			{
+				currElem = inRootElem;
+			}
+			// Else we'll figure it out for ourselves
+			else
+			{
+
+				// If we've NOt been asked to auto-calculate root
+				// then just use the element that was passed in as root
+				// this is like how we did it before
+				if( inAutoCalculateDocumentRoot )
+				{
+					currElem = inStartElem;
+				}
+				// Else we ARE supposed to auto-calculate,
+				// based on document root
+				else
+				{
+					// If start element is already a root, use it!
+					if( inStartElem.isRootElement() )
+					{
+						currElem = inStartElem;
+					}
+					// Else find the main doc, and then take it's root element
+					else
+					{
+						// Get the doc and check it
+						Document parentDoc = inStartElem.getDocument();
+						if( parentDoc != null )
+						{
+							Element rootElem = parentDoc.getRootElement();
+							if( rootElem != null )
+							{
+								currElem = rootElem;
+							}
+							// Else the root element of the doc was null
+							else
+							{
+								if( inDoNavigationWarnings )
+									System.err.println(
+										"Waring: JDOMHelper:findElmentByPath(new1):"
+										+ " Unable to get main doc's root element for root directive."
+										+ " You may want to pass in a root element."
+										+ " Will use start element as root element."
+										+ " inStartElem=" + inStartElem
+										+ " inPathBits=" + inPathBits
+										+ " Returning null."
+										);
+//								currElem = inStartElem;
+								return null;
+							}
+						}
+						// Else the main doc we found was null
+						else
+						{
+							if( inDoNavigationWarnings )
+								System.err.println(
+									"Waring: JDOMHelper:findElmentByPath(new1):"
+									+ " Unable to get main doc for root directive."
+									+ " You may want to pass in a root element."
+									+ " Will use start element as root element."
+									+ " inStartElem=" + inStartElem
+									+ " inPathBits=" + inPathBits
+									+ " Returning null."
+									);
+//							currElem = inStartElem;
+							return null;
+						}
+					}  // End Else find the main doc, and then take it's root element
+
+				}   // End else we've been asked to calculate auto root
+
+			}   // End else we were not given root will figure out where root is
+		}   // End if first element is root
+
+		// We may have cleaned out the path bits list, check again
+		// And, if true, there's no need for a warning
+		if( inPathBits.size() < 1 ||
+				( inStopShortCount > 0 && inStopShortCount > inPathBits.size() )
+			)
+		{
+			return currElem;
+		}
+
+		// Keep walking the path until we're done or run out of path
+		for( int pathBitOffset = 0; pathBitOffset < inPathBits.size();
+			pathBitOffset++
+			)
+		{
+			// Bail if we've gone far enough
+			// Do we even need to check
+			if( inStopShortCount > 0 )
+			{
+				// OK, check it
+				if( pathBitOffset >= (inPathBits.size() - inStopShortCount) )
+				{
+					break;
+				}
+				// Note the >= vs >, to correct for one-based counts
+				// vs. zero-based offsets
+			}
+
+			// Extract the path bit
+			String pathBit = (String)inPathBits.get( pathBitOffset );
+
+			// This is probably extremely rare.
+			// The first / is taken care of.
+			// The path chopper should only create it at the start or end
+			// And most callers will have skimmed off any ending /
+			if( pathBit.equals("/") )
+			{
+//				if( it.hasNext() )
+				if( pathBitOffset < inPathBits.size()-1 )
+				{
+					System.err.println( "ERROR: JDOMHelper:findElmentByPath(new1):"
+						+ " A bare '/' can only be the first or last part of a path."
+						);
+					return null;
+				}
+				// Else it's OK, we're done
+				break;
+			}
+
+			// Get the next element in the chain
+			// If it doesn't like something it will complain and we'll
+			// just get back a null
+			// We won't bother to warn them if:
+			// a: they told us not to
+			//      or
+			// b: they asked us to, but also said it was OK to create things
+			//      as we go, so no warnings just because we didn't find
+			//      something already existing
+			// We'll need this if we try to create something
+			Element lastCurrElem = currElem;
+			// ******* This is it!!! ***************************
+			currElem = traverseOneLevelByName( currElem, pathBit,
+				isRooted, inDoNavigationWarnings && ! inCreateOK
+				);
+
+			// No matter what, turn off the is rooted variable
+			isRooted = false;
+
+			// If we didn't get something, we still might be OK
+			if( currElem == null )
+			{
+				// Is it OK to try and create it?
+				if( inCreateOK )
+				{
+					currElem = createOneLevelByName( lastCurrElem, pathBit );
+					// If this didn't work, then we have a real error
+					if( currElem == null )
+					{
+						System.err.println(
+							"ERROR: JDOMHelper:findElmentByPath(new1):"
+							+ " Unable to create a child node"
+							+ " while traversing path in createOK mode."
+							+ " Attempted child path \"" + pathBit + "\""
+							+ " Returning null."
+							);
+						return null;
+					}
+				}
+				// Else not OK to create
+				else
+				{
+					if( inDoNavigationWarnings )
+					{
+						System.err.println(
+							"ERROR: JDOMHelper:findElmentByPath(new1):"
+							+ " Unable to create a child node"
+							+ " while traversing path in createOK mode."
+							+ " Attempted child path \"" + pathBit + "\""
+							+ " Returning null."
+							);
+					}
+					return null;
+				}
+			}
+			// Else continue going through the segments
+		}   // End for each element in path
+
+		// One final check
+		// Since I don't see how this could happen, we'll call it an
+		// error vs a warning
+		if( currElem == null )
+		{
+			System.err.println(
+				"ERROR: JDOMHelper:findElmentByPath(new1):"
+				+ " Wound up with null return node at end of method."
+				+ " Returning null."
+				);
+		}
+
+		// Return the answer
+		return currElem;
+
+	}
+
+
+	// Follow a path one level
+	// We do NOT handle / or . or .. of any kind
+	// ???? changing this...
+	// AND we do NOT check for such nonsense
+	// This is usually called by a method that's already checking that
+//	private static Element findChildByPathBit( Element inStartElem,
+//		String inPathBit, boolean inCreateOK
+	private static Element traverseOneLevelByName( Element inStartElem,
+		String inPathBit, boolean inIsRooted, boolean inDoNavigationWarnings
+		)
+	{
+		// final boolean debug = false;
+
+		String pathBit = NIEUtil.trimmedStringOrNull( inPathBit );
+		if( inStartElem == null || pathBit == null )
+		{
+			System.err.println( "ERROR: JDOMHelper:traverseOneLevel:"
+				+ " NULL or empty input(s)."
+				+ " Returning NULL."
+				+ " start element=" + inStartElem
+				+ " path=" + inPathBit
+				+ " Returning null."
+				);
+			return null;
+		}
+
+		// Todo: support this later on
+		if( pathBit.equals("..") )
+		{
+			System.err.println( "ERROR: JDOMHelper:traverseOneLevel:"
+				+ " Dot-dot syntax not yet supported."
+				+ " Returning null."
+				);
+			return null;
+		}
+
+		if( pathBit.equals(".") )
+		{
+			return inStartElem;
+		}
+
+
+		// If we're rooted, then the current node should match
+		// this element
+		if( inIsRooted )
+		{
+			String elemName = inStartElem.getName();
+			// If they are the same, then we're fine, we'll stay on this element
+			if( pathBit.equals(elemName) )
+			{
+				return inStartElem;
+			}
+			// Else it does NOT match, this is bad
+			{
+				System.err.println( "ERROR: JDOMHelper:traverseOneLevel:"
+					+ " A root path of the form /name did not match the name of the root element."
+					+ ", / name=" + pathBit
+					+ ", root/current elment name = " + elemName
+					+ " Depending on what you're trying to do, you may just want to drop the leading /;"
+					+ " we would then look for the name in the CHILDREN of the root node."
+					+ " You can also use /./name to refer to a CHILD of the ROOT."
+					+ " '/' by itself returns the designated root."
+					);
+				return null;
+			}
+		}
+
+		// Get the components of the path bit
+		String childName = extractChildNameFromPathBit( inPathBit );
+		int rawOrdinal = extractRawOffsetFromPathBit( inPathBit );
+
+		// This will be our answer
+		Element outElem = null;
+
+		// Sanity check
+		if( childName == null && rawOrdinal == 0 )
+		{
+			System.err.println( "ERROR: JDOMHelper:traverseOneLevel:"
+				+ " Input path segment has no name and no/zero offset."
+				+ " Returning NULL."
+				+ " path='" + inPathBit + "'"
+				);
+			return null;
+		}
+
+		// If no index, just use the getChild method
+		if( rawOrdinal == 0 )
+		{
+
+			if(debug)
+			{
+				System.err.println( "Find child name: \"" + childName + "\"");
+
+				System.err.println( "Node name: \"" + inStartElem.getName() + "\"");
+				List tmpChildren = inStartElem.getChildren();
+				if( tmpChildren != null )
+				{
+					System.err.println( "" + tmpChildren.size() + " children" );
+					System.err.print( "\tNamed:" );
+					for( Iterator tmpIt = tmpChildren.iterator(); tmpIt.hasNext() ; )
+					{
+						Element tmpElem = (Element) tmpIt.next();
+						String tmpName = tmpElem.getName();
+						System.err.print( " \"" + tmpName + "\"" );
+						if( tmpName.equals( childName ) )
+							System.err.print( "*" );
+					}
+					System.err.println();
+				}
+				else
+					System.err.println( "NULL CHILDREN" );
+			}
+
+			outElem = inStartElem.getChild( childName );
+
+			if(debug)
+			{
+				String tmpMsg = (outElem==null) ? "NULL" : "not null" ;
+				System.err.println( "outElem is " + tmpMsg );
+			}
+
+			// If we didn't find anything and we're told it's OK to
+			// create, then go ahead and create it
+
+			if( outElem == null )
+			{
+				if( inDoNavigationWarnings )
+				{
+					System.err.println( "Warning: JDOMHelper:traverseOneLevel:"
+						+ " Unable to find named child."
+						+ " attempted element='" + childName + "'"
+						+ " child path='" + inPathBit + "'"
+						+ " Returning NULL."
+						);
+				}
+				return null;
+			}
+			// Else it wasn't null, and it's already set to the correct output
+		}
+		// Else we have an index, get the entire list and
+		// do the math
+		else
+		{
+			List children = null;
+			// Get the full list
+			if( childName == null )
+			{
+				children = inStartElem.getChildren();
+			}
+			// Or just the children with that name
+			else
+			{
+				children = inStartElem.getChildren( childName );
+			}
+
+			// Sanity check on list
+			if( children == null || children.size() < 1 )
+			{
+				if( inDoNavigationWarnings )
+				{
+					System.err.println( "Warning: JDOMHelper:traverseOneLevel:"
+						+ " No children found while walking path name/index path."
+						+ " Children with \"" + childName + "\" name (null is OK)."
+						+ " Returning null."
+						);
+				}
+				return null;
+			}
+
+			int childCount = children.size();
+
+			// If it's a positive index
+			if( rawOrdinal > 0 )
+			{
+				// Bounds sanity check
+				if( rawOrdinal > childCount )
+				{
+					if( inDoNavigationWarnings )
+					{
+						System.err.print( "Warning: JDOMHelper:traverseOneLevel:"
+							+ " Positive Index out of range."
+							+ " requested index='" + rawOrdinal
+							+ " Number of matching children='" + childCount
+							+ " Child name='" + childName + "' (null is OK)"
+							+ " Returning NULL."
+							);
+					}
+					return null;
+				}
+				// Else it's a valid ordinal
+
+				// grab the element, convert from one based to
+				// zero based
+				outElem = (Element)children.get( rawOrdinal - 1 );
+
+			}
+			// Else it's negative, count from the end
+			// Bounds sanity check
+			else
+			{
+				// Check that it's not too large in absolute value terms
+				if( childCount + rawOrdinal < 0 )
+				{
+					if( inDoNavigationWarnings )
+					{
+						System.err.print( "Warning: JDOMHelper:traverseOneLevel:"
+							+ " Negative Index out of range."
+							+ " requested index='" + rawOrdinal
+							+ " Number of matching children='" + childCount
+							+ " Max negative offset must not be greater than number children (abs)."
+							+ " Most negative allowable offset would be"
+							+ ( -1 * childCount )
+							+ " Child name='" + childName + "' (null is OK)"
+							+ " Returning NULL."
+							);
+					}
+					return null;
+				}
+
+				// Grab the child from the end of the list
+				// Since the offset is negative, we ADD it to the
+				// # of children to get the index.
+				// As a coincidence, this also converts from
+				// one based to zero based for us.
+				// Example:
+				//		3 node list
+				//		index of -1, meaning the last/3rd element, offset=2
+				//		3 + -1 = 2
+				//		index of -3, meaning first element, offset=0
+				//		3 + -3 = 0
+				outElem = (Element)children.get(
+					childCount + rawOrdinal
+					);
+			}   // End else it's a negative index/offset
+
+		}		// end else we do have an index
+
+		return outElem;
+	}
+
+	private static Element createOneLevelByName( Element inStartElem,
+		String inPathBit
+		)
+	{
+		if( inStartElem == null || inPathBit == null )
+		{
+			System.err.println( "ERROR: JDOMHelper:createOneLevelByName:"
+				+ " NULL input(s)."
+				+ " Returning NULL."
+				+ " start element=" + inStartElem
+				+ " path=" + inPathBit
+				);
+			return null;
+		}
+
+		String childName = extractChildNameFromPathBit( inPathBit );
+		int rawOrdinal = extractRawOffsetFromPathBit( inPathBit );
+
+		Element outElem = null;
+
+		// Sanity check, must have a name
+		// Todo: revisit some type of auto-naming, maybe based on existing
+		// nodes, or let them pass in something, or have a system default
+		if( childName == null )
+		{
+			System.err.println( "ERROR: JDOMHelper:createOneLevelByName:"
+				+ " Can't create a child node with no name?"
+				+ " path='" + inPathBit + "'"
+				+ " Returning NULL."
+				);
+			return null;
+		}
+		// Sanity check, must NOT have an index offset
+		// Todo: revisit the logic of allowing them to specifiy an offset
+		if( rawOrdinal != 0 && rawOrdinal != -1 )
+		{
+			System.err.println( "ERROR: JDOMHelper:createOneLevelByName:"
+				+ " Can't create a child node with an index (not yet implemented)."
+				+ " path='" + inPathBit + "'"
+				+ " Returning NULL."
+				);
+			return null;
+		}
+
+		Element tmpElem = new Element( childName );
+		// If we were able to create it, go ahead and attach it
+		if( tmpElem != null )
+		{
+			tmpElem.detach();
+			inStartElem.addContent( tmpElem );
+			outElem = tmpElem;
+		}
+		else
+		{
+			System.err.println( "ERROR: JDOMHelper:createOneLevelByName:"
+				+ " Unable to create requested named child node."
+				+ " attempted element='" + childName + "'"
+				+ " Returning NULL."
+				);
+			return null;
+		}
+
+		return outElem;
+	}
+
+
+
+	// Will return NULL if empty string
+	// Given a pathlette like foo[5], give back foo
+	private static String extractChildNameFromPathBit( String inPathBit )
+	{
+		String lPathBit = NIEUtil.trimmedStringOrNull( inPathBit );
+		if( lPathBit == null )
+		{
+			System.err.println( "ERROR: JDOMHelper:extractChildNameFromPathBit:"
+				+ " NULL or empty path passed in, returning null."
+				);
+			return null;
+		}
+		String outPathBit = lPathBit;
+		int leftBracketAt = outPathBit.indexOf( '[' );
+		if( leftBracketAt >= 0 )
+		{
+			if( leftBracketAt == 0 )
+				outPathBit = "";
+			else
+				outPathBit = outPathBit.substring( 0, leftBracketAt );
+		}
+		outPathBit = outPathBit.trim();
+		if( outPathBit.equals("") )
+			outPathBit = null;
+		return outPathBit;
+	}
+	// Given a pathlette like foo[5], give back 5
+	private static int extractRawOffsetFromPathBit( String inPathBit )
+	{
+		inPathBit = NIEUtil.trimmedStringOrNull( inPathBit );
+		if( inPathBit == null )
+		{
+			System.err.println( "ERROR: JDOMHelper:extractRawOffsetFromPathBit:"
+				+ " NULL path passed in, returning zero."
+				);
+			return 0;
+		}
+		// Look for offset stuff
+		// Offsets are ONE based, not zero based, to comply with xpath
+		int outIndex = 0;
+		int openBracketAt = inPathBit.indexOf( '[' );
+
+		// If we found an opening bracket
+		if( openBracketAt >= 0 )
+		{
+			// Look for ending bracket
+			int closeBracketAt = inPathBit.indexOf( ']',
+				openBracketAt
+				);
+			// Open bracket with no close is bad
+			if( closeBracketAt < 0 )
+			{
+				System.err.println( "ERROR: JDOMHelper:extractRawOffsetFromPathBit:"
+					+ " Unbalanced square brackets, returning zero."
+					+ " string='" + inPathBit + "'"
+					);
+				return 0;
+			}
+
+			// If there's no characters between the
+			// brackets that's bad as well
+			if( closeBracketAt == openBracketAt-1 )
+			{
+				System.err.println( "ERROR: JDOMHelper:extractRawOffsetFromPathBit:"
+					+ " Nothing in between square brackets, returning zero."
+					+ " string='" + inPathBit + "'"
+					);
+				return 0;
+			}
+
+			String indexString = inPathBit.substring(
+				openBracketAt+1, closeBracketAt
+				);
+			indexString = indexString.trim();
+
+			// Sanity check, can't have []
+			if( indexString.equals("") )
+			{
+				System.err.println( "ERROR: JDOMHelper:extractRawOffsetFromPathBit:"
+					+ " Only whitespace in between square brackets, returning zero."
+					+ " string='" + inPathBit + "'"
+					);
+				return 0;
+			}
+
+			// Convert the index to an integer
+			try
+			{
+				outIndex = Integer.parseInt( indexString );
+			}
+			catch( Exception e )
+			{
+				// Bail on bad integers
+				System.err.println( "ERROR: JDOMHelper:extractRawOffsetFromPathBit:"
+					+ " Error parsing integer in square brackets, returning zero."
+					+ " int string='" + indexString + "'"
+					+ " path segment it was in='" + inPathBit + "'"
+					);
+				return 0;
+			}
+
+		}   // End if there was a left bracket
+
+		return outIndex;
+	}
+
+
+
+//	some false starts at path navigation, will rework the older routines above
+//	instead
+//	public static Element newFindElement( Element inSourceElem, String inPath,
+//		boolean inDoCreate, boolean inDoNavigationWarnings,
+//		int inStopShortCount
+//		)
+//	{
+//
+//		List choppedPath = fullPathChopper( inPath );
+//		int pathLen = choppedPath.size();
+//
+//		if( pathLen < 1 )
+//		{
+//			System.err.println( "Error: JDOMHelper:findElement:"
+//				+ " Path too short; must have at least one element."
+//				+ ", inPath=" + inPath
+//				+ " Returning null."
+//				);
+//			return null;
+//		}
+//	}
+//	private static Element newTraverseOneLevel()
+//	{
+//	}
+//	private static Element newCreateOneLevel()
+//	{
+//	}
+
+
+
+
+
+	// routines setting and getting data
+	private void __sep__XPath_Data_Get_And_Set_ () {}
+
+
+
+	// Given a path, return text
+	// We will return a NULL if we don't find the element
+	// you asked for.
+	// We do not trim it for you
+	public String getTextByPath( String path )
+	{
+		return getTextByPath( getJdomElement(), path );
+	}
+	public static String getTextByPath( Element startElem,
+		String path
+		)
+	{
+		Element tmpElem = findElementByPath( startElem, path );
+		if( tmpElem == null )
+			return null;
+		return tmpElem.getText();
+	}
+
+	public String getTextByPathTrimOrNull( String path )
+	{
+		return getTextByPathTrimOrNull( getJdomElement(), path );
+	}
+	public static String getTextByPathTrimOrNull( Element startElem,
+		String path
+		)
+	{
+		Element tmpElem = findElementByPath( startElem, path );
+		if( tmpElem == null )
+			return null;
+		String tmpStr = tmpElem.getText();
+		tmpStr = NIEUtil.trimmedStringOrNull( tmpStr );
+		return tmpStr;
+	}
+
+	// These also call Element's "normalize" to clean up
+	// bounded white space within the string, changing that to a single space
+	public String getTextByPathSuperTrimOrNull( String path )
+	{
+		return getTextByPathSuperTrimOrNull( getJdomElement(), path );
+	}
+	public static String getTextByPathSuperTrimOrNull( Element startElem,
+		String path
+		)
+	{
+		Element tmpElem = findElementByPath( startElem, path );
+		if( tmpElem == null )
+			return null;
+		String tmpStr = tmpElem.getTextNormalize();
+		tmpStr = NIEUtil.trimmedStringOrNull( tmpStr );
+		return tmpStr;
+	}
+
+
+
+
+	// Convenience function
+	// Find all the elements that match a path, grab the text of
+	// those elements and shove it into a vector
+	// WILL ALWAYES RETURN A LIST, but maybe with 0 strings
+	// If we get back a NULL element we will not include that element
+	// However, if the element's getText returns null we WILL put in a ""
+	// string, so all filled slots will have strings from nodes that were
+	// actually found.
+	// We do NOT trim the strings, so if you care, you should do it
+	// or use the other method
+	public List getTextListByPath( String inPath )
+	{
+		return getTextListByPath( getJdomElement(), inPath );
+	}
+	public static List getTextListByPath(
+		Element inStartingElem, String inPath
+		)
+	{
+		// Prime the return value
+		List retList = new Vector();
+
+		// Find the matching children
+		List elements = findElementsByPath( inStartingElem, inPath );
+		// Sanity check, should never happen
+		if( elements == null )
+			return retList;
+
+		// Loop through all the matches
+		Iterator it = elements.iterator();
+		// For each field in the record
+		while( it.hasNext() )
+		{
+			// pull the next element
+			Element tmpElem = (Element)it.next();
+			if( tmpElem == null )
+				continue;       // This will likely never happen
+			String tmpContent = tmpElem.getText();
+			if( tmpContent == null )
+				tmpContent = "";       // This should never happen
+			retList.add( tmpContent );
+		}
+
+		return retList;
+	}
+
+	// Similar to above, but will DO trim and do NOT include null or empty
+	// items
+	public List getTextListByPathNotNullTrim( String inPath )
+	{
+		return getTextListByPathNotNullTrim( getJdomElement(), inPath );
+	}
+	// ALWAYS RETURN A LIST, even if zero elements
+	public static List getTextListByPathNotNullTrim(
+		Element inStartingElem, String inPath
+		)
+	{
+		// Prime the return value
+		List retList = new Vector();
+
+		// Find the matching children
+		List elements = findElementsByPath( inStartingElem, inPath );
+		// Sanity check, should never happen
+		if( elements == null )
+			return retList;
+
+		// Loop through all the matches
+		Iterator it = elements.iterator();
+		// For each field in the record
+		while( it.hasNext() )
+		{
+			// pull the next element
+			Element tmpElem = (Element)it.next();
+			if( tmpElem == null )
+				continue;       // This will likely never happen
+			String tmpContent = tmpElem.getText();
+			if( tmpContent == null )
+				continue;       // This should never happen
+			// Trim and skip if null
+			tmpContent = tmpContent.trim();
+			if( tmpContent.equals("") )
+				continue;
+			retList.add( tmpContent );
+		}
+
+		return retList;
+	}
+
+	// Similar to above, but we also normalize internal spaces
+	public List getTextListByPathNotNullSuperTrim( String inPath )
+	{
+		return getTextListByPathNotNullSuperTrim( getJdomElement(), inPath );
+	}
+	// ALWAYS RETURN A LIST, even if zero elements
+	public static List getTextListByPathNotNullSuperTrim(
+		Element inStartingElem, String inPath
+		)
+	{
+		// Prime the return value
+		List retList = new Vector();
+
+		// Find the matching children
+		List elements = findElementsByPath( inStartingElem, inPath );
+		// Sanity check, should never happen
+		if( elements == null )
+			return retList;
+
+		// Loop through all the matches
+		Iterator it = elements.iterator();
+		// For each field in the record
+		while( it.hasNext() )
+		{
+			// pull the next element
+			Element tmpElem = (Element)it.next();
+			if( tmpElem == null )
+				continue;       // This will likely never happen
+			String tmpContent = tmpElem.getTextNormalize();
+			if( tmpContent == null )
+				continue;       // This should never happen
+			// Trim and skip if null
+			tmpContent = tmpContent.trim();
+			if( tmpContent.equals("") )
+				continue;
+			retList.add( tmpContent );
+		}
+
+		return retList;
+	}
+
+	// Similar to above but will return text of an attribute AND
+	// of matching elements
+	public List getTextListByPathAndSingleAttrNotNullTrim( String inPath )
+	{
+		return getTextListByPathAndSingleAttrNotNullTrim( getJdomElement(), inPath );
+	}
+	// ALWAYS RETURN A LIST, even if zero elements
+	public static List getTextListByPathAndSingleAttrNotNullTrim(
+		Element inStartingElem, String inPath
+		)
+	{
+		// Get the list of matching elements
+		List outList = getTextListByPathNotNullTrim( inStartingElem, inPath );
+		// And also any attributes
+		String lAttrValue = getStringFromAttributeTrimOrNull(
+			inStartingElem, inPath
+			);
+		// If there was an attribute
+		if( lAttrValue != null )
+			outList.add( 0, lAttrValue );
+
+		// Return the results
+		return outList;
+	}
+
+
+
+	// Complex Query
+	// Variant 1: Given a starting path, an element name,
+	// an attribute name and value, and a direction to search,
+	// find the matching node
+	// If the starting path is null that's OK, we will scan
+	// from the initial element
+	// If the elementName is null that's OK, we will scan
+	// all the children at that point.
+	// Todo: make element value be optional
+	// Todo: options for trimming and normalizing attr values
+	public Element mixedQuery( String startPath,
+		String optionalElementName, String attributeName,
+		String attributeValue, boolean searchBackwardsFlag
+		)
+	{
+		return mixedQuery( getJdomElement(), startPath,
+			optionalElementName, attributeName, attributeValue,
+			searchBackwardsFlag
+			);
+	}
+
+	public Element mixedQuery( String startPath,
+		String optionalElementName, String attributeName,
+		String attributeValue
+		)
+	{
+		return mixedQuery( getJdomElement(), startPath,
+			optionalElementName, attributeName, attributeValue,
+			false
+			);
+	}
+
+	public static Element mixedQuery( Element sourceElem,
+		String startPath, String optionalElementName,
+		String attributeName, String attributeValue
+		)
+	{
+		return mixedQuery( sourceElem, startPath,
+			optionalElementName, attributeName, attributeValue,
+			false
+			);
+	}
+
+	public static Element mixedQuery( Element sourceElem, String startPath,
+		String optionalElementName, String attributeName, String attributeValue,
+		boolean searchBackwardsFlag
+		)
+	{
+
+		// First find the parent
+		Element parent = null;
+		if( startPath != null )
+		{
+			parent = findElementByPath( sourceElem, startPath );
+			if( parent == null )
+				return null;
+		}
+		else
+			parent = sourceElem;
+
+		// Now get the matching children
+		List children = null;
+
+		if( optionalElementName != null )
+		{
+			// Get named children
+			children = parent.getChildren( optionalElementName );
+		}
+		else
+		{
+			// Get all children
+			children = parent.getChildren();
+		}
+
+		// The eventual answer
+		Element returnElem = null;
+
+		// If we're searching forward
+		if( ! searchBackwardsFlag )
+		{
+			for( int i=0; i<children.size(); i++ )
+			{
+				Element tmpElem = (Element)children.get(i);
+				String tmpAttrValue = tmpElem.getAttributeValue( attributeName );
+				if( tmpAttrValue == null )
+					continue;
+
+				if( tmpAttrValue.equals(attributeValue) )
+				{
+					returnElem = tmpElem;
+					break;
+				}
+			}
+		}
+		else		// Yes we are searching backwards
+		{
+			for( int i = children.size()-1; i >= 0; i-- )
+			{
+				Element tmpElem = (Element)children.get(i);
+				String tmpAttrValue = tmpElem.getAttributeValue( attributeName );
+				if( tmpAttrValue == null )
+					continue;
+				if( tmpAttrValue.equals(attributeValue) )
+				{
+					returnElem = tmpElem;
+					break;
+				}
+			}
+		}
+
+		// We've either found it we haven't
+		return returnElem;
+
+	}
+
+
+
+	// Complex Query
+	// Variant 2: Given a starting path, an element name,
+	// an attribute name and value, and a direction to search,
+	// find ALL matching Elements.
+	// If the elementName is null that's OK, we will scan
+	// all the children at that point.
+	// Todo: make element value be optional
+	// Todo: options for trimming and normalizing attr values
+	public List mixedListQuery( String startPath,
+		String optionalElementName, String attributeName, String attributeValue,
+		boolean searchBackwardsFlag
+		)
+	{
+		return mixedListQuery( getJdomElement(), startPath,
+			optionalElementName, attributeName, attributeValue,
+			searchBackwardsFlag
+			);
+	}
+
+	public static List mixedListQuery( Element sourceElem, String startPath,
+		String optionalElementName, String attributeName, String attributeValue,
+		boolean searchBackwardsFlag
+		)
+	{
+		List retList = new Vector();
+
+		// First find the parent
+		Element parent = findElementByPath( sourceElem, startPath );
+		if( parent == null )
+			return retList;
+
+		// Now get the matching children
+		List children = null;
+
+		if( optionalElementName != null )
+			// Get named children
+			children = parent.getChildren( optionalElementName );
+		else
+			// Get all children
+			children = parent.getChildren();
+
+		// If we're searching forward
+		if( ! searchBackwardsFlag )
+		{
+			for( int i=0; i<children.size(); i++ )
+			{
+				Element tmpElem = (Element)children.get(i);
+				String tmpAttrValue = tmpElem.getAttributeValue( attributeName );
+				if( tmpAttrValue == null )
+					continue;
+				if( tmpAttrValue.equals(attributeValue) )
+					retList.add( tmpElem );
+			}
+		}
+		else		// Yes we are searching backwards
+		{
+			for( int i = children.size()-1; i >= 0; i-- )
+			{
+				Element tmpElem = (Element)children.get(i);
+				String tmpAttrValue = tmpElem.getAttributeValue( attributeName );
+				if( tmpAttrValue == null )
+					continue;
+
+				if( tmpAttrValue.equals(attributeValue) )
+					retList.add( tmpElem );
+			}
+		}
+
+		// we always return a valid list, maybe with 0 elements
+		return retList;
+
+	}
+
+
+	// Similar to getAttributeValue and getString functions, will
+	// return the text of a named attribute given a path and
+	// an attribute name.
+	// Returns NULL if there is no such attribute
+	public String getTextFromSinglePathAttr( String inPath, String inAttrName )
+	{
+		return getTextFromSinglePathAttr( getJdomElement(), inPath, inAttrName );
+	}
+	public static String getTextFromSinglePathAttr( Element inStartElem, String inPath,
+		String inAttrName
+		)
+	{
+		if( inStartElem == null || inAttrName == null ||
+			inAttrName.trim().equals("")
+			)
+			return null;
+			// Todo: complain loudly?
+
+		// First find the parent
+		Element theElem = findElementByPath( inStartElem, inPath );
+		if( theElem == null )
+			return null;
+
+		// Have jdom do the rest
+		return theElem.getAttributeValue( inAttrName );
+	}
+
+	// Set the text of an attribute
+	// By default we will create it
+	// Todo: revisit default creation vs. warning flags
+	// 4 entry points, static vs instance x simple vs extra parameters
+	public Element setTextOfSinglePathAttr(
+		String inPath, String inAttrName, String inAttrValue
+		)
+	{
+		return setTextOfSinglePathAttr(
+			getJdomElement(), inPath,
+			inAttrName, inAttrValue
+			);
+	}
+	public static Element setTextOfSinglePathAttr(
+		Element inStartElem, String inPath,
+		String inAttrName, String inAttrValue
+		)
+	{
+		return setTextOfSinglePathAttr(
+			inStartElem, inPath,
+			inAttrName, inAttrValue,
+			true, false
+			);
+	}
+	public Element setTextOfSinglePathAttr(
+		String inPath,
+		String inAttrName, String inAttrValue,
+		boolean inDoCreate, boolean inDoNavigationWarnings
+		)
+	{
+		return setTextOfSinglePathAttr(
+			getJdomElement(), inPath,
+			inAttrName, inAttrValue,
+			inDoCreate, inDoNavigationWarnings
+			);
+	}
+	public static Element setTextOfSinglePathAttr(
+		Element inStartElem, String inPath,
+		String inAttrName, String inAttrValue,
+		boolean inDoCreate, boolean inDoNavigationWarnings
+		)
+	{
+
+		inPath = NIEUtil.trimmedStringOrNull( inPath );
+		inAttrName = NIEUtil.trimmedStringOrNull( inAttrName );
+		inAttrValue = NIEUtil.trimmedStringOrNull( inAttrValue );
+
+		if( inStartElem == null || inPath == null ||
+			inAttrName == null || inAttrValue == null
+			)
+		{
+			System.err.println( "Error: JDOMHelper:setTextOfSinglePathAttr:"
+				+ " Null or empty input parameter(s)."
+				+ ", inStartElem=" + inStartElem
+				+ ", inPath=" + inPath
+				+ ", inAttrName=" + inAttrName
+				+ ", inAttrValue=" + inAttrValue
+				);
+			return null;
+		}
+
+		// Find or create the element
+		Element currElem = findOrCreateElementByPath(
+			inStartElem, inPath, inDoNavigationWarnings
+			);
+
+		if( currElem == null )
+		{
+			System.err.println( "Error: JDOMHelper:setTextOfSinglePathAttr:"
+				+ " Unable to find or create target tag."
+				+ " (findOrCreateElementByPath returned null)"
+				+ ", inStartElem=" + inStartElem
+				+ ", inPath=" + inPath
+				+ ", inAttrName=" + inAttrName
+				+ ", inAttrValue=" + inAttrValue
+				+ " Returning null."
+				);
+			return null;
+		}
+
+		boolean success = setAttributeString( currElem, inAttrName, inAttrValue );
+		if( success )
+			return currElem;
+		else
+		{
+			System.err.println( "Error: JDOMHelper:setTextOfSinglePathAttr:"
+				+ " Unable to set attributte."
+				+ " (setAttributeString returned false)"
+				+ ", inStartElem=" + inStartElem
+				+ ", inPath=" + inPath
+				+ ", inAttrName=" + inAttrName
+				+ ", inAttrValue=" + inAttrValue
+				+ " Returning null."
+				);
+			return null;
+		}
+
+	}
+
+
+	// Get an int, default of zero
+	public int getIntFromPathText(
+		String inPath
+		)
+	{
+		return getIntFromPathText(
+			getJdomElement(), inPath, 0
+			);
+	}
+	public static int getIntFromPathText(
+		Element inStartElem, String inPath
+		)
+	{
+		return getIntFromPathText(
+			inStartElem, inPath, 0
+			);
+	}
+	// Return a default value if not found
+	public int getIntFromPathText(
+		String inPath, int defaultValue
+		)
+	{
+		return getIntFromPathText(
+			getJdomElement(), inPath, defaultValue
+			);
+	}
+	public static int getIntFromPathText(
+		Element inStartElem, String inPath,
+		int defaultValue
+		)
+	{
+		// First find the parent
+		String pathText = getTextByPath( inStartElem, inPath );
+		if( pathText == null || pathText.trim().equals("") )
+			return defaultValue;
+		pathText = pathText.trim();
+
+		int theValue = defaultValue;
+		try
+		{
+			theValue = Integer.parseInt( pathText );
+		}
+		catch(Exception e)
+		{
+			System.err.println( "Jdh: error parsing Int string '" +
+				pathText + "', returning default value '" + defaultValue + "'"
+				);
+			theValue = defaultValue;
+		}
+
+		return theValue;
+	}
+
+	// Get a long, default of zero
+	public long getLongFromPathText(
+		String inPath
+		)
+	{
+		return getLongFromPathText(
+			getJdomElement(), inPath, 0L
+			);
+	}
+	public static long getLongFromPathText(
+		Element inStartElem, String inPath
+		)
+	{
+		return getLongFromPathText(
+			inStartElem, inPath, 0L
+			);
+	}
+	// Return a default value if not found
+	public long getIntFromPathText(
+		String inPath, long defaultValue
+		)
+	{
+		return getLongFromPathText(
+			getJdomElement(), inPath, defaultValue
+			);
+	}
+	public static long getLongFromPathText(
+		Element inStartElem, String inPath,
+		long defaultValue
+		)
+	{
+		// First find the parent
+		String pathText = getTextByPath( inStartElem, inPath );
+		if( pathText == null || pathText.trim().equals("") )
+			return defaultValue;
+		pathText = pathText.trim();
+
+		long theValue = defaultValue;
+		try
+		{
+			theValue = Long.parseLong( pathText );
+		}
+		catch(Exception e)
+		{
+			System.err.println( "Jdh: error parsing Long int string '" +
+				pathText + "', returning default value '" + defaultValue + "'"
+				);
+			theValue = defaultValue;
+		}
+
+		return theValue;
+	}
+
+
+
+	// Get a Boolean, default of false
+	public boolean getBooleanFromPathText(
+		String inPath
+		)
+	{
+		return getBooleanFromPathText(
+			getJdomElement(), inPath, false
+			);
+	}
+	public static boolean getBooleanFromPathText(
+		Element inStartElem, String inPath
+		)
+	{
+		return getBooleanFromPathText(
+			inStartElem, inPath, false
+			);
+	}
+	// Return a default value if not found
+	public boolean getBooleanFromPathText(
+		String inPath, boolean defaultValue
+		)
+	{
+		return getBooleanFromPathText(
+			getJdomElement(), inPath, defaultValue
+			);
+	}
+	public static boolean getBooleanFromPathText(
+		Element inStartElem, String inPath,
+		boolean defaultValue
+		)
+	{
+		// First find the parent
+		String pathText = getTextByPath( inStartElem, inPath );
+
+		// Have jdom helper do the rest
+		return decodeBooleanString( pathText, defaultValue );
+	}
+
+	// Similar to getBooleanFromAttribute, except that
+	// this accpepts a path
+
+	// Return false if not found
+	public boolean getBooleanFromSinglePathAttr(
+		String inPath, String inAttrName
+		)
+	{
+		return getBooleanFromSinglePathAttr(
+			getJdomElement(), inPath, inAttrName, false
+			);
+	}
+	public static boolean getBooleanFromSinglePathAttr(
+		Element inStartElem, String inPath, String inAttrName
+		)
+	{
+		return getBooleanFromSinglePathAttr(
+			inStartElem, inPath, inAttrName, false
+			);
+	}
+	// Return a default value if not found
+	public boolean getBooleanFromSinglePathAttr(
+		String inPath, String inAttrName, boolean defaultValue
+		)
+	{
+		return getBooleanFromSinglePathAttr(
+			getJdomElement(), inPath, inAttrName, defaultValue
+			);
+	}
+	public static boolean getBooleanFromSinglePathAttr(
+		Element inStartElem, String inPath,
+		String inAttrName, boolean defaultValue
+		)
+	{
+		// First find the parent
+		Element theElem = findElementByPath( inStartElem, inPath );
+		if( theElem == null )
+			return defaultValue;
+
+		// Have jdom helper do the rest
+		return getBooleanFromAttribute( theElem, inAttrName, defaultValue );
+	}
+
+	// Return a default value if not found
+	public int getIntFromSinglePathAttr(
+		String inPath, String inAttrName, int defaultValue
+		)
+	{
+		return getIntFromSinglePathAttr(
+			getJdomElement(), inPath, inAttrName, defaultValue
+			);
+	}
+	public static int getIntFromSinglePathAttr(
+		Element inStartElem, String inPath,
+		String inAttrName, int defaultValue
+		)
+	{
+		// First find the parent
+		Element theElem = findElementByPath( inStartElem, inPath );
+		if( theElem == null )
+			return defaultValue;
+
+		// Have jdom helper do the rest
+		return getIntFromAttribute( theElem, inAttrName, defaultValue );
+	}
+
+
+	// Given a path and the name of an attribute, return the attribute's
+	// contents as a list (white space separated lists are stored in attrs)
+	// If you're doing this on the TOP level element
+	// just use getListFromAttribute
+	// Currently no plural form
+	// Currently no form that sweeps for all elements
+	public List getAttrValuesListFromSingularPath( String path,
+		String listAttrName
+		)
+	{
+		Element attrElem = findElementByPath( path );
+		// Bail if we didn't find anything
+		if( attrElem == null )
+			return new Vector();
+		return getListFromAttribute( attrElem, listAttrName );
+	}
+
+	// The static version, works on any element
+	public static List getAttrValuesListFromSingularPath( Element startingElem,
+		String path, String listAttrName
+		)
+	{
+		if( startingElem == null )
+			return new Vector();
+		Element attrElem = findElementByPath( startingElem, path );
+		// Bail if we didn't find anything
+		if( attrElem == null )
+			return new Vector();
+		return getListFromAttribute( attrElem, listAttrName );
+	}
+
+
+	// Similar to getListFromAttribute
+	// Given a jdom path and an attribute name, give back
+	// a list of strings, from the content of that attribute
+	// Will always return a list, even if no elements found,
+	// so just need to check .size()
+	// In this version we do NOT normalize to lower case and
+	// we DO allow duplicates (vs. our getListFromAttrribute method)
+	public List getListFromSinglePathAttr( String inPath, String inAttrName )
+	{
+		return getListFromSinglePathAttr( getJdomElement(), inPath, inAttrName );
+	}
+	public static List getListFromSinglePathAttr( Element inStartElem, String inPath,
+		String inAttrName
+		)
+	{
+
+		// The return list, we always return something
+		List retList = new Vector();
+
+		// Get the text, given the path and attribute name
+		String attrStr = getTextFromSinglePathAttr( inStartElem,
+			inPath, inAttrName
+			);
+		// Bail if failed or null string
+		if( attrStr == null || attrStr.trim().equals("") )
+			return retList;
+
+		// Now prepare to loop through the string
+		StringTokenizer st = new StringTokenizer( attrStr );
+		while( st.hasMoreTokens() )
+		{
+			String item = st.nextToken();
+			// Trim and make sure there's something really there
+			item = item.trim();     // no .toLowerCase()
+			if( ! item.equals("") )
+			{
+				// if( ! retList.contains(item) )
+				retList.add(item);
+			}
+		}
+
+		return retList;
+
+	}
+
+	// For this version we will look UP the tree for default values
+	// Starting out with very few signatures for this one
+	public String getTextFromPathOrInheritTrimOrNull(
+		String inPath,
+		String optAttrName,
+		String optDefaultsBranchPath,
+		int optMaxLevels
+		)
+	{
+		return getTextFromPathOrInheritTrimOrNull(
+			getJdomElement(),
+			inPath, optAttrName, optDefaultsBranchPath,
+			optMaxLevels
+			);
+	}
+	public static String getTextFromPathOrInheritTrimOrNull(
+		Element inStartElem,
+		String inPath,
+		String optAttrName,
+		String optDefaultsBranchPath,
+		int optMaxLevels
+		)
+	{
+		if( inStartElem == null )
+		{
+			System.err.println(
+				"Error:JDOMHelper.getTextFromPathOrInheritTrimOrNull:"
+				+ " Null starting element, returning NULL string."
+				);
+			return null;
+		}
+
+		// Normalize all the items
+		inPath = NIEUtil.trimmedStringOrNull( inPath );
+		optAttrName = NIEUtil.trimmedStringOrNull( optAttrName );
+		optDefaultsBranchPath = NIEUtil.trimmedStringOrNull( optDefaultsBranchPath );
+		// a debug variable
+		String startNodeName = inStartElem.getName();
+
+		// Must have a path or attr name
+		if( inPath == null && optAttrName == null )
+		{
+			System.err.println(
+				"Error:JDOMHelper.getTextFromPathOrInheritTrimOrNull:"
+				+ " Both inputs inPath and optAttrName are null."
+				+ " Must supply at least one of them."
+				+ " Returning NULL string."
+				);
+			return null;
+		}
+
+		// Setup some state variables
+		int traversedLevels = -1;   // The first time is incremented to ZERO
+		Element currBaseElem = inStartElem;
+		String answer = null;
+		boolean isAtPrimaryLevel = true;
+
+		// Do until done
+		// Basically we go until
+		// 1: We found an answer, or
+		// 2: We've gone up the entire tree
+		// 2: We've gone past the max limit, if any set
+		while( true )
+		{
+
+			// There is sometimes a difference between the base element
+			// and the content element
+			Element contentElement = currBaseElem;
+
+			// Debug variable
+			String baseElemName = currBaseElem.getName();
+			String contentElemName = contentElement.getName();
+
+			// Calculate any incremental path, if any
+			String incrementalPath = null;
+			// If we have either path
+			if( inPath != null || optDefaultsBranchPath != null )
+			{
+				// If we have an input path
+				if( inPath != null )
+				{
+					// If we ALSO have a defaults path
+					if( optDefaultsBranchPath != null )
+					{
+						// If the first time through, we want the main path
+						if( isAtPrimaryLevel )
+							incrementalPath = inPath;
+						// Else not the first time though, we want to secondary
+						else
+							incrementalPath = optDefaultsBranchPath;
+					}
+					// Else no optional path, so always the main path
+					else
+					{
+						incrementalPath = inPath;
+					}
+				}
+				// Else inPath is null, so always use the default path
+				else
+				{
+					// If it's the first time through, let them check
+					// the current node so leave it null
+					// If it's not the first time though, then look for incr
+					if( ! isAtPrimaryLevel )
+						incrementalPath = optDefaultsBranchPath;
+				}
+			}   // End if we have either path
+			// Else if neither path it remains null
+
+			// If inc != null, traverse
+			if( incrementalPath != null )
+			{
+				// Traverse one level
+				contentElement = traverseOneLevelByName(
+					currBaseElem, incrementalPath,
+					false, false
+					);
+				// update debug variable
+				if( contentElement != null )
+					contentElemName = contentElement.getName();
+				// If that's null, we USUALLY done
+				// but can try one more time if this was the first
+				if( contentElement == null && isAtPrimaryLevel )
+				{
+					// Note that this is no longer the first time
+					isAtPrimaryLevel = false;
+					// And try again
+					continue;
+				}
+			}
+
+			// Now get the value
+			String tmpValue = null;
+			if( contentElement != null )
+			{
+				// If there's an attribute name, use that
+				if( optAttrName != null )
+					tmpValue = contentElement.getAttributeValue( optAttrName );
+				// Else use the text of the node itself
+				else
+					tmpValue = contentElement.getText();
+				// And normalize anything we may have gotten back
+				tmpValue = NIEUtil.trimmedStringOrNull( tmpValue );
+			}
+
+			// If we have a value, we're done!
+			if( tmpValue != null )
+			{
+				answer = tmpValue;
+				break;
+			}
+
+			// Prepare for next try
+
+			// First update the counter
+			// Notes:
+			// We increment here vs, above so that
+			// two stabs at the root doesn't accidently count.
+			// Also the counter starts at -1 so that the root
+			// counts as zero
+			traversedLevels++;
+			// IF we HAVE a limit, and we're at it, then break
+			if( optMaxLevels > 0 )
+				if( traversedLevels >= optMaxLevels )
+					break;
+
+			// The moving up and down is based on the "current" node,
+			// not the "content" node
+			// If it's not the root, then move up!
+			if( ! currBaseElem.isRootElement() )
+			{
+				currBaseElem = currBaseElem.getParent();
+				// A sanity check
+				if( currBaseElem == null )
+				{
+					System.err.println(
+						"Error:JDOMHelper.getTextFromPathOrInheritTrimOrNull:"
+						+ " Unable to get parent of non-root Element?"
+						+ " Returning NULL string."
+						);
+					return null;
+				}
+			}
+			// Else we're at the root, can't go any further
+			else
+			{
+				break;
+			}
+
+			// Remember that we ARE now past the primary level
+			isAtPrimaryLevel = false;
+
+		}   // End do until done
+
+		// All done, return whatever we got
+		return answer;
+	}
+
+
+	// Add an element as the new last child of a node
+	// Return the child that was added, or null if it failed
+	public Element addElementToPath( String target, Element newChild )
+	{
+			return addElementToPath( getJdomElement(), target, newChild );
+	}
+	public static Element addElementToPath( Element sourceElem,
+		String target, Element newChild
+		)
+	{
+		// If the path is null, just add it to the starting node
+		// Not useful as a direct call here, but helps support the
+		// addXMLTextToPath which in turn calls this method
+		Element parent = null;
+		if( target == null || target.trim().equals("") )
+			parent = sourceElem;
+		else
+		{
+			// Find the node we're to remove
+			parent = findElementByPath( sourceElem, target );
+			if( parent == null )
+				return null;
+		}
+
+		// To be safe, try and remove the child from any possible
+		// old parent
+		newChild.detach();
+
+		// Tell the parent to add the child
+		try
+		{
+			parent.addContent( newChild );
+		}
+		catch (Exception e)
+		{
+			System.err.println( "Error: JDH:addElementToPath: parent.addContent()" +
+				" threw an exception: " + e
+				);
+			return null;
+		}
+
+		return newChild;
+	}
+	public Element addElementToPath( String target, JDOMHelper newChild )
+	{
+			return addElementToPath( getJdomElement(), target, newChild );
+	}
+	public static Element addElementToPath( Element sourceElem,
+		String target, JDOMHelper newChild
+		)
+	{
+		// If the path is null, just add it to the starting node
+		// Not useful as a direct call here, but helps support the
+		// addXMLTextToPath which in turn calls this method
+		Element parent = null;
+		if( target == null || target.trim().equals("") )
+			parent = sourceElem;
+		else
+		{
+			// Find the node we're to remove
+			parent = findElementByPath( sourceElem, target );
+			if( parent == null )
+				return null;
+		}
+
+		// To be safe, try and remove the child from any possible
+		// old parent
+		Element lNewChild = newChild.getJdomElement();
+		lNewChild.detach();
+
+		// Tell the parent to add the child
+		try
+		{
+			parent.addContent( lNewChild );
+		}
+		catch (Exception e)
+		{
+			System.err.println( "Error: JDH:addElementToPath: parent.addContent()" +
+				" threw an exception: " + e
+				);
+			return null;
+		}
+
+		return lNewChild;
+	}
+
+	public Element addXMLTextToPath( String path, String xmlText )
+	{
+		return addXMLTextToPath( getJdomElement(), path, xmlText );
+	}
+	public static Element addXMLTextToPath( Element sourceElem,
+		String path, String xmlText
+		)
+	{
+
+		// Turn the XML Text into an element
+		JDOMHelper newJH = null;
+		try
+		{
+			newJH = new JDOMHelper( xmlText, null );
+		}
+		catch (Exception e)
+		{
+			return null;
+		}
+
+		// Grab the top element from it
+		Element newElem = newJH.getJdomElement();
+
+		// Now just call the normal, static add element method
+		return addElementToPath( sourceElem, path, newElem );
+
+	}
+
+	// This will always return a list
+	// nulls/empty are OK
+	public static List fullPathChopper( String inPath )
+	{
+
+		List outList = new Vector();
+		if( inPath == null || inPath.trim().equals("") )
+		{
+			if( inPath == null )
+				System.err.println( "ERROR:JDOMHelper:fullPathChopper:"
+					+ " Was passed in a NULL path."
+					);
+			return outList;
+		}
+
+		inPath = inPath.trim();
+
+		// Whine about // query directive, unsupported
+		if( inPath.length()>=2 && inPath.startsWith( "//" ) )
+		{
+			System.err.println( "ERROR:JDOMHelper:fullPathChopper:"
+				+ " Path starts with '//' query directive"
+				+ " which is not supported at this time."
+				+ " path='" + inPath + "'"
+				);
+			return outList;
+		}
+
+		// Handle "root" directive
+		if( inPath.startsWith( "/" ) )
+		{
+			outList.add( "/" );
+			if( inPath.length() > 1 )
+				inPath = inPath.substring( 1 );
+			else
+				inPath = "";
+		}
+
+		if( inPath.equals("") )
+			return outList;
+
+		StringTokenizer st = new StringTokenizer( inPath, "/" );
+		while( st.hasMoreTokens() )
+		{
+			String item = st.nextToken();
+			item = item.trim();
+			// If we got a valid sub path, add it!
+			if( ! item.equals("") )
+				outList.add( item );
+			// Else it was null
+			else
+			{
+				// Paths are allowed to have a trailing slash
+				// If so, add it
+				if( ! st.hasMoreTokens() )
+					outList.add( "/" );
+				// Otherwise this is clearly invalid
+				else
+				{
+					System.err.println( "ERROR:JDOMHelper:fullPathChopper:"
+						+ " Path has null subpath."
+						+ " path='" + inPath + "'"
+						);
+					// Null out the list
+					outList = new Vector();
+					break;
+				}
+			}
+		}
+
+		return outList;
+	}
+
+	// See if we have a normal looking, plane old path element
+	// So it's not null and does NOT have [], / @ or spaces in it
+	public static boolean getIsPathBitAPlainElementName( String pathBit )
+	{
+		if( pathBit == null )
+			return false;
+		pathBit = pathBit.trim();
+		if( pathBit.equals("") )
+			return false;
+		if(
+				pathBit.indexOf('[') >= 0
+				|| pathBit.indexOf(']') >= 0
+				|| pathBit.indexOf('/') >= 0
+				|| pathBit.indexOf('@') >= 0
+				|| pathBit.indexOf('.') >= 0
+				|| pathBit.indexOf(' ') >= 0
+				|| pathBit.indexOf('\t') >= 0
+				|| pathBit.indexOf(',') >= 0
+			)
+		{
+			return false;
+		}
+
+		return true;
+	}
+
+	// Given a path, create a NEW element with that path and add the
+	// text as content
+	public Element addSimpleTextToNewPath( String path, String simpleText )
+	{
+		return addSimpleTextToNewPath( getJdomElement(), path, simpleText );
+	}
+	public static Element addSimpleTextToNewPath( Element inSourceElem,
+		String inPath, String inNewText
+		)
+	{
+
+		if( inSourceElem == null || inPath==null || inNewText==null )
+		{
+			System.err.println( "Error: JDOMHelper:addSimpleTextToNewPath:"
+				+ " null value(s) passed in"
+				+ ", inSourceElem=" + inSourceElem
+				+ ", inPath=" + inPath
+				+ ", inNewText=" + inNewText
+				);
+			return null;
+		}
+
+		int textLen = inNewText.length();
+
+		List choppedPath = fullPathChopper( inPath );
+		int pathLen = choppedPath.size();
+
+		if( pathLen < 1 )
+		{
+			System.err.println( "Error: JDOMHelper:addSimpleTextToNewPath:"
+				+ " Path too short; must have at least one element."
+				+ ", inPath=" + inPath
+				);
+			return null;
+		}
+
+		// The last part of the path is the element we will create
+		String lastPathBit = (String)choppedPath.get( pathLen - 1 );
+		// And the rest is where we'll go
+		choppedPath.remove( pathLen - 1 );
+
+		// Some checking
+		if( lastPathBit.equals("/") )
+		{
+			System.err.println( "Error: JDOMHelper:addSimpleTextToNewPath:"
+				+ " Path must not end in '/'; not supported in this method."
+				+ ", inPath=" + inPath
+				);
+			return null;
+		}
+		if( ! getIsPathBitAPlainElementName( lastPathBit ) )
+		{
+			System.err.println( "Error: JDOMHelper:addSimpleTextToNewPath:"
+				+ " Last element in path must be simple element name."
+				+ ", inPath=" + inPath
+				+ ", lastPathBit=" + lastPathBit
+				);
+			return null;
+		}
+
+		// Lookup direct parent with list based lookup
+		// Creating is OK
+		// Currently we're not passing in an alternative root
+		Element directParent = findElementByPath( inSourceElem,
+			choppedPath, true, null
+			);
+
+		// If null, complain, because we said creating was OK
+		if( directParent == null )
+		{
+			System.err.println( "ERROR: JDOMHelper:addSimpleTextToNewPath:"
+				+ " Unable to create intermediate path."
+				+ ", inPath=" + inPath
+				);
+			return null;
+		}
+
+		// Create the element itself
+		Element newChild = new Element( lastPathBit );
+		newChild.detach();
+
+		// add the content
+
+		//newChild.addContent( inNewText );
+		// ^^^ need to handle long strings as cdata
+
+		// WARNING: We're setting this here
+		// Todo: make this an input option
+		// Later we'll make it an argument you pass in
+		// Todo: turn into a parameter
+		int inAutoCDataThreshold = 1000;
+
+		// Safely add the textual content
+		setPotentialCDataTextOfElement(
+			newChild, inNewText, inAutoCDataThreshold
+			);
+
+		// Add it to it's parent
+
+		// Now attach it to it's parent
+		directParent.addContent( newChild );
+
+//		System.err.println( "JDOMHelper:addSimpleTextToNewPath:"
+//			+ " inSourceElem=" + inSourceElem.getName()
+//			+ " inPath=" + inPath
+//			+ " inNewText=" + inNewText
+//			+ " newChild=" + newChild.getName()
+//			+ " direct parent=" + directParent.getName()
+//			);
+		// Return what we created
+		return newChild;
+
+	}
+
+	// Given a path, find or create an element with that path and
+	// replace (or add if new) with this text
+	public Element updateSimpleTextToExistingOrNewPath(
+		String path, String simpleText
+		)
+	{
+		return updateSimpleTextToExistingOrNewPath( getJdomElement(), path, simpleText );
+	}
+	// Find an element by it's path, and set a text attribute
+	// This method CREATES a path to the node if it's not present
+	// Todo: revisit, maybe add auto-create flag
+	// Todo: remember to update call with inAutoCDataThreshold
+	// when that's implemented as a passable variable
+	// and in call to addSimpleTextToNewPath
+	public static Element updateSimpleTextToExistingOrNewPath(
+		Element inSourceElem, String inPath, String inNewText
+		)
+	{
+
+		if( inSourceElem == null || inPath==null || inNewText==null )
+		{
+			System.err.println( "Error: JDOMHelper:updateSimpleTextToExistingOrNewPath:"
+				+ " null value(s) passed in"
+				+ ", inSourceElem=" + inSourceElem
+				+ ", inPath=" + inPath
+				+ ", inNewText=" + inNewText
+				);
+			return null;
+		}
+
+		// This will be the element we add/replace content with
+		Element targetElement = null;
+
+		// Find the element if we already have it
+		targetElement = findOrCreateElementByPath( inSourceElem, inPath, false );
+
+		// If we didn't find it, go ahead and create it by just calling
+		// the create method
+		if( targetElement == null )
+		{
+			return addSimpleTextToNewPath( inSourceElem, inPath, inNewText );
+			// Todo: remember to update call with inAutoCDataThreshold
+			// when that's implemented as a passable variable
+		}
+
+		// Clear out text that was already there
+		// Todo: make this an option
+		killText( targetElement );
+
+		// Todo: make this an input option
+		int inAutoCDataThreshold = 1000;
+
+		// Safely add the textual content
+		setPotentialCDataTextOfElement(
+			targetElement, inNewText, inAutoCDataThreshold
+			);
+
+		// Return the results
+		return targetElement;
+
+	}
+
+	// Remove any existing text or cdata from a node
+	public void killText()
+	{
+		killText( getJdomElement() );
+	}
+	public static void killText( Element inElem )
+	{
+		// final boolean debug = false;
+
+		if( inElem == null )
+		{
+			System.err.println( "Error: JDOMHelper:killText:"
+				+ " Null node passed in, nothing to do."
+				);
+			return;
+		}
+
+		// To be safe, we'll do this in 2 passes
+		List children = inElem.getContent();
+		if(debug) System.err.println( "Debug: JDOMHelper:killText:"
+				+ " Will look for text nodes to kill."
+				+ " Will examine " + children.size() + " nodes."
+				);
+
+		int initCount = children.size();
+		// Scan the list, go BACKWARDS since we're removing elements as we go
+		for( int i = initCount-1; i>=0; i-- )
+		{
+			Object obj = children.get(i);
+			if(debug) System.err.println( "Object offset " + i
+					+ " is type \"" + obj.getClass().getName() + "\""
+					);
+
+			// Check the type
+			if( obj instanceof CDATA || obj instanceof Text ||
+				obj instanceof java.lang.String )
+			{
+				// do a nice debug message
+				if( debug )
+				{
+					String tmpValue = null;
+					if( obj instanceof CDATA )
+					{
+						tmpValue = ((CDATA)obj).getText();
+					}
+					else if( obj instanceof Text )
+					{
+						tmpValue = ((Text)obj).getValue();
+					}
+					else if( obj instanceof java.lang.String )
+					{
+						tmpValue = (String)obj;
+					}
+
+					System.err.println( "Debug: removing obj offset " + i
+						+ ", value was \"" + tmpValue + "\""
+						);
+				}
+				// Actually remove it
+				children.remove( i );
+			}
+			else
+			{
+				if(debug) System.err.println( "NOT removing object offset " + i );
+			}
+		}
+
+		if(debug) System.err.println( "Debug: JDOMHelper:killText:"
+				+ " At end, node now has "
+				+ inElem.getContent().size()
+				+ " content nodes."
+				);
+
+	}
+
+//	public static void killText( Element inElem )
+//	{
+//		final boolean debug = true;
+//
+//		if( inElem == null )
+//		{
+//			System.err.println( "Error: JDOMHelper:killText:"
+//				+ " Null node passed in, nothing to do."
+//				);
+//			return;
+//		}
+//		// To be safe, we'll do this in 2 passes
+//		List killList = new Vector();
+//		List children = inElem.getContent();
+//		if(debug) System.err.println( "Debug: JDOMHelper:killText:"
+//				+ " Will look for text nodes to kill."
+//				+ " Will examine " + children.size() + " nodes."
+//				);
+//
+//		// Scan the node for Text and CDATA nodes
+//		for( Iterator it = children.iterator(); it.hasNext(); )
+//		{
+//			Object o = it.next();
+//			if(debug) System.err.println( "Object type is "
+//					+ "\"" + o.getClass().getName() + "\""
+//					);
+//
+//			if( o instanceof CDATA || o instanceof Text ||
+//				o instanceof java.lang.String )
+//			{
+//				killList.add( o );
+//				if(debug) System.err.println( "found a text or cdata node" );
+//			}
+//			else
+//			{
+//				if(debug) System.err.println( "not text or cdata" );
+//			}
+//		}
+//		// Remove the Text and CDATA nodes
+//		// start from the end, because I feel paranoid
+//		if(debug) System.err.println( "Debug: JDOMHelper:killText:"
+//				+ " Will now remove nominated text nodes to kill."
+//				+ " Will process " + killList.size() + " nodes."
+//				);
+//
+//		for( int i = killList.size()-1; i >= 0; i-- )
+//		{
+//			Object o2 = killList.get(i);
+//
+//			if( o2 instanceof CDATA )
+//			{
+//				CDATA tmpObj = (CDATA)o2;
+//				if(debug) System.err.println( "removing cdata node "
+//					+ "\"" + tmpObj.getText() + "\""
+//					);
+//				inElem.removeContent( tmpObj );
+//			}
+//			else if( o2 instanceof Text )
+//			{
+//				// Todo: Update JDom library, as it does show
+//				// these remove and detach methods
+//				// inElem.removeContent( (Text)o2 );  // won't compile
+//				Text ot = (Text)o2;
+//				if(debug) System.err.println( "removing text node "
+//					+ "\"" + ot.getValue() + "\""
+//					);
+//				// ot.detach(); // won't compile
+//				// ot.setValue( "" ); // doesn't work
+//				children.remove( o2 );
+//			}
+//			else if( o2 instanceof java.lang.String )
+//			{
+//				String tmpStr = (String)o2;
+//				if(debug) System.err.println( "removing string node "
+//					+ "\"" + tmpStr + "\""
+//					);
+//				// inElem.removeContent( tmpStr );
+//				inElem.removeContent( o2 );
+//			}
+//			else
+//				System.err.println( "Error: JDOMHelper:killText:"
+//					+ " Trying to remove node that is neither CDATA nor Text."
+//					+ " Will continue trying to remove any subsequent nodes."
+//					);
+//		}
+//
+//
+//		if(debug) System.err.println( "Debug: JDOMHelper:killText:"
+//				+ " At end, node now has "
+//				+ inElem.getContent().size()
+//				+ " content nodes."
+//				);
+//
+//	}
+
+	// Long strings really should be stored as CDATA
+	// I believe one problem I found was performance when reading
+	// back in XML if long strings aren't CDATA, the parser wastes time
+	// obsession about it
+	private static void	setPotentialCDataTextOfElement(
+			Element inElem, String inNewText, int inAutoCDataThreshold
+			)
+	{
+
+		//newChild.addContent( inNewText );
+		// ^^^ need to handle long strings as cdata
+
+		// If no cdata limit was set, or it's set and we're below
+		// it, go ahead and add as regular content
+		if( inAutoCDataThreshold < 0 ||
+			(inNewText.length() < inAutoCDataThreshold )
+			)
+		{
+			inElem.addContent( inNewText );
+		}
+		// Otherwise we do need to use CDATA
+		else
+		{
+			inElem.addContent( new CDATA(inNewText) );
+		}
+
+	}
+
+
+	// Delete an element
+	// Return the deleted element on success,
+	// null on failure
+
+	public Element removeElementByPath( String target )
+	{
+		return removeElementByPath( getJdomElement(), target );
+	}
+
+	public static Element removeElementByPath( Element sourceElem,
+		String target
+		)
+	{
+		// Find the node we're to remove
+		Element endChild = findElementByPath( sourceElem, target );
+		if( endChild == null )
+			return null;
+
+		// Find it's parent
+		Element directParent = endChild.getParent();
+		if( directParent == null )
+			return null;
+
+		// Tell the parent to delete this child, by reference
+		boolean success = directParent.removeContent( endChild );
+
+		if( success )
+			return endChild;
+		else
+			return null;
+	}
+
+
+	/***************************************************
+	 *
+	 *      XSLT and Transforms
+	 *
+	 ****************************************************/
+	private void __separator__XSLT_and_Transforms_ () {}
+
+//	public static String getStyleSheetPath( String inSheetPath )
+//	{
+//		return "";
+//	}
+
+	// Giving us JUST a base file name, find it in the system
+	// directory hierarchy
+	// Typically: proj/classes/nie/core/system/style_sheets/foo.xslt
+	public static InputStream getSystemStyleSheetStream(
+		String inSheetName, boolean inDoWarnings
+		)
+	{
+		inSheetName = NIEUtil.trimmedStringOrNull( inSheetName );
+		if( inSheetName == null )
+		{
+			if( inDoWarnings )
+				System.err.println(
+					"Error: JDOMHelper:getSystemStyleSheetStream:"
+					+ " Was passed in a null/empty style sheet name."
+					+ " Nothing to open; returning a null stream."
+					);
+			return null;
+		}
+
+		// Now calculate the full file name
+		// Start with the base name
+		String lFullFileName = inSheetName;
+		// Add an extension if it doesn't have one already
+		if( lFullFileName.indexOf( '.' ) < 0 )
+			lFullFileName = lFullFileName + "." + SYSTEM_STYLE_SHEET_EXTENSION;
+		// Now prepend the directory name
+		// and here we're just using /'s, as they seem to work all around
+		lFullFileName = SYSTEM_STYLE_SHEET_PATH + "/" + lFullFileName;
+
+		// Now we need to create a bogus instance of a jdomelement so
+		// we can call the .getClass() method
+		JDOMHelper tmpJd = null;
+		try
+		{
+			tmpJd = new JDOMHelper();
+		}
+		catch (Exception e)
+		{
+			System.err.println(
+				"Error: JDOMHelper:getSystemStyleSheetStream:"
+				+ " Unable to create tmp JDOMHelper node."
+				+ " Exception was \"" + e + "\""
+				+ " This prevents access to system resources for this class"
+				+ " so returning a null stream."
+				);
+			return null;
+		}
+
+		// Try to open it
+		InputStream input = tmpJd.getClass().getResourceAsStream(
+			lFullFileName
+			);
+
+		// Sanity check
+		if( input == null && inDoWarnings )
+			System.err.println(
+				"Error: JDOMHelper:getSystemStyleSheetStream:"
+				+ " Unable to open requested system style sheet."
+				+ " Requested name = \"" + inSheetName + "\""
+				+ ", full system path attempted = \"" + lFullFileName + "\""
+				+ ", which is usually relative to proj/classes/nie/core"
+				+ " Returning a null stream."
+				);
+
+		// Now return whatever we were left with
+		return input;
+
+	}
+
+
+	// Given an ELEMENT and style sheet, return a document
+
+	// Todo: Revisit the many signatures
+	// Gosh I wish Java had optional, named arguments
+
+	// Given a jdom helper node and a style sheet, transform it
+	// into a new document
+	// This is just a wrapper
+	// The non-static versions
+	public Document xsltElementToDoc( String inStyleSheetName )
+		throws JDOMHelperException
+	{
+		return xsltElementToDoc( inStyleSheetName, null );
+	}
+	public Document xsltElementToDoc( String inStyleSheetName,
+		Hashtable inParamsHash
+		)
+		throws JDOMHelperException
+	{
+		return xsltElementToDoc( inStyleSheetName,
+			inParamsHash, false
+			);
+	}
+	public Document xsltElementToDoc( String inStyleSheetName,
+		Hashtable inParamsHash, boolean inIsSystemStyleSheet
+		)
+		throws JDOMHelperException
+	{
+		Element lElem = getJdomElement();
+		return xsltElementToDoc( lElem, inStyleSheetName,
+			inParamsHash, inIsSystemStyleSheet
+			);
+	}
+
+	// Given a jdom element and a style sheet, transform it
+	// into a new document
+
+	// These just convert jdom helper to a true jdom element
+	public static Document xsltElementToDoc( JDOMHelper inElem,
+			String inStyleSheetName
+		)
+		throws JDOMHelperException
+	{
+		Element lElem = inElem.getJdomElement();
+		return xsltElementToDoc( lElem, inStyleSheetName );
+	}
+
+	public static Document xsltElementToDoc( Element inElem,
+			String inStyleSheetName
+		)
+		throws JDOMHelperException
+	{
+		return xsltElementToDoc( inElem, inStyleSheetName, null );
+	}
+
+	// Given a jdom element and a style sheet, transform it
+	// Pass in the parameters if any are set
+	// into a new document
+
+	public static Document xsltElementToDoc( Element inElem,
+			String inStyleSheetName,
+			Hashtable inParamsHash
+		)
+		throws JDOMHelperException
+	{
+		return xsltElementToDoc(
+			inElem, inStyleSheetName,
+			inParamsHash, false
+			);
+	}
+	public static Document xsltElementToDoc( Element inElem,
+			String inStyleSheetName,
+			Hashtable inParamsHash,
+			boolean inIsSystemStyleSheet
+		)
+		throws JDOMHelperException
+	{
+		Document srcDoc = null;
+		if( inElem.isRootElement() )
+			srcDoc = inElem.getDocument();
+		else
+		{
+			Element newElem = (Element)inElem.clone();
+			newElem.detach();
+			srcDoc = new Document( newElem );
+		}
+
+		return xsltDocToDoc( srcDoc, inStyleSheetName,
+			inParamsHash, inIsSystemStyleSheet
+			);
+	}
+
+
+	// Given a DOCUMENT and style sheet, return a document
+
+
+	// The static versions
+	// Defaults:
+	// - Assume a file name, vs a named system style sheet
+	// - Assume we are NOT passing in a hash of parameters
+	public static Document xsltDocToDoc(Document inDoc, String inStyleSheet)
+		throws JDOMHelperException
+	{
+		return xsltDocToDoc( inDoc, inStyleSheet, null );
+	}
+	// Here we default to assuming the style sheet is a file name
+	public static Document xsltDocToDoc(Document inDoc,
+			String inStyleSheet,
+			Hashtable inParamsHash
+		)
+		throws JDOMHelperException
+	{
+		return xsltDocToDoc(
+			inDoc,
+			inStyleSheet,
+			inParamsHash,
+			false
+			);
+	}
+	// The main method
+	public static Document xsltDocToDoc(Document inDoc,
+			String inStyleSheet,
+			Hashtable inParamsHash,
+			boolean inIsASystemStyleSheet
+		)
+		throws JDOMHelperException
+	{
+		try
+		{
+
+			// The transformer engine we will use
+			Transformer transformer = null;
+			// The stream we may have open
+			InputStream lStyleStream = null;
+
+			// If it's NOT a named system sheet, then it's a plain file name
+			if( ! inIsASystemStyleSheet )
+			{
+				File lStyleFile = NIEUtil.findInputFile( inStyleSheet );
+				// Create the transformer with the File object
+				transformer = TransformerFactory.newInstance()
+					.newTransformer(new StreamSource(lStyleFile));
+			}
+			// Else it IS a named system style sheet
+			else
+			{
+				// Locate and open a stream for this system resource
+				// And ask it to give us warnings if it fails
+				lStyleStream = getSystemStyleSheetStream(
+					inStyleSheet, true
+					);
+				// Create the transformer with the input stream
+				transformer = TransformerFactory.newInstance()
+					.newTransformer(new StreamSource(lStyleStream));
+			}
+
+			// Now start the work
+			JDOMResult lOutResult = new JDOMResult();
+
+			// Add the parameters, if we were given any
+			if( inParamsHash != null )
+			{
+				Set keys = inParamsHash.keySet();
+				for( Iterator it = keys.iterator() ; it.hasNext() ; )
+				{
+					String key = (String) it.next();
+					String value = (String) inParamsHash.get( key );
+					transformer.setParameter( key, value );
+				}
+			}
+
+			// Do the actual work and return the answer
+			transformer.transform(new JDOMSource(inDoc), lOutResult);
+
+			// Close the stream if we opened it
+			if( lStyleStream != null )
+			{
+				try { lStyleStream.close(); }
+					catch (Exception eClose) { }
+			}
+
+			// Return the results
+			return lOutResult.getDocument();
+		}
+		catch (TransformerException e)
+		{
+			throw new JDOMHelperException("XSLT Transformation failed: " + e);
+		}
+		catch (Exception e2)
+		{
+			throw new JDOMHelperException("XSLT Transformation, setup problem"
+				+ e2
+				);
+		}
+	}
+
+
+
+	/***************************************************
+	 *
+	 *      Printing and Debugging
+	 *
+	 ****************************************************/
+	private void __separator__Printing_and_Debugging_ () {}
+
+	public void printAttributeList( String target )
+	{
+		List attrs = getListFromAttribute( target );
+		System.err.println( getElementName() +
+			" attr list '" + target + "':"
+			);
+		Iterator it = attrs.iterator();
+		while( it.hasNext() )
+		{
+			System.err.println( "\t'" + (String)it.next() + "'" );
+		}
+	}
+
+	public void listKids( )
+	{
+		listKids( getJdomElement() );
+	}
+
+	public static void listKids( Element elem )
+	{
+		List kids = elem.getChildren();
+		System.err.println( "Listing " + kids.size() + " children." );
+		for( int i=0; i<kids.size(); i++ )
+		{
+			System.err.println( "\t" + (i+1) + ": " +
+				((Element)kids.get(i)).getName()
+				);
+		}
+	}
+
+	public void print()
+	{
+		print( myElement );
+	}
+	public static void print( Element elem )
+	{
+		// Get compact outputter
+		XMLOutputter xo = new XMLOutputter( "    ", true );
+
+		//xo.setTrimText(true);
+		xo.setTextNormalize(true);
+
+		try
+		{
+			xo.output( elem, System.err );
+		}
+		catch (Exception e)
+		{
+			System.err.println( "Error outputting jdom element. ");
+		}
+	}
+
+	public String JDOMToString()
+	{
+		return JDOMToString( this.getJdomElement(), false );
+	}
+	public String JDOMToString( boolean inPrettyFormat )
+	{
+		return JDOMToString( this.getJdomElement(), inPrettyFormat );
+	}
+	public static String JDOMToString( Document inDoc )
+	{
+		return JDOMToString( inDoc.getRootElement(), false );
+	}
+	public static String JDOMToString( Document inDoc, boolean inPrettyFormat )
+	{
+		return JDOMToString( inDoc.getRootElement(), inPrettyFormat );
+	}
+	public static String JDOMToString( Element elem )
+	{
+		return JDOMToString( elem, false );
+	}
+	public static String JDOMToString( Element elem, boolean inPrettyFormat )
+	{
+		if( elem == null )
+		{
+			System.err.println( "ERROR: JDOMHelper:JDOMToString:"
+				+ " Was passed a NULL element."
+				);
+			return "<null/>";
+		}
+
+		XMLOutputter xo = null;
+		if( ! inPrettyFormat )
+		{
+			// Get compact outputter
+			xo = new XMLOutputter();
+			//xo.setTrimText(true);
+			xo.setTextNormalize(true);
+		}
+		else
+		{
+			// Get indented outputter
+			xo = new XMLOutputter( "  ", true );
+		}
+
+		// Get a stream to string buffer
+		StringWriter sw = new StringWriter();
+
+		// Run the output
+		try
+		{
+			xo.output( elem, sw );
+			sw.close();
+		}
+		catch (Exception e)
+		{
+			return "<error_converting_to_string/>";
+		}
+
+		// Return the string
+		return sw.toString();
+
+	}
+
+	public boolean writeToFile( String fileName )
+	{
+		return writeToFile( getJdomElement(), fileName );
+	}
+	public static boolean writeToFile( Element inElem, String inFileName )
+	{
+
+		if( inElem == null || inFileName == null )
+		{
+			System.err.println( "ERROR: JDOMHelper:writeToFile:"
+				+ " At least one of the required inputs was null."
+				+ " inElem=\"" + inElem + "\""
+				+ " inFileName=\"" + inFileName + "\""
+				+ " Unable to write file."
+				);
+			return false;
+		}
+
+		OutputStream outStream = null;
+		File theFile = null;
+		try
+		{
+			theFile = new File(
+				System.getProperty( "user.dir" ), inFileName
+				);
+			outStream = new FileOutputStream( theFile );
+		}
+		catch (Exception e)
+		{
+			theFile = new File( inFileName );
+			try
+			{
+				outStream = new FileOutputStream( theFile );
+			}
+			catch (Exception e2)
+			{
+				System.err.println( "ERROR: JDOMHelper:writeToFile:"
+					+ " Error creating output stream to write xml to file."
+					+ " Exception=\"" + e2 + "\""
+					+ " inFileName=\"" + inFileName + "\""
+					+ " Unable to write file."
+					);
+				return false;
+			}
+		}
+
+		// OutputStream tmpOut = new BufferedOutputStream( outStream );
+		// Writer writer = new OutputStreamWriter( tmpOut );
+
+		// Get compact outputter
+		XMLOutputter xo = new XMLOutputter( "    ", true );
+		//XMLOutputter xo = new XMLOutputter( "    ", true, "ISO-8859-1" );
+
+		//xo.setTrimText(true);
+		xo.setTextNormalize(true);
+
+		try
+		{
+			//xo.output( inElem, writer );
+			xo.output( inElem, outStream );
+		}
+		catch (Exception e)
+		{
+			System.err.println( "ERROR: JDOMHelper:writeToFile:"
+				+ " Error outputting jdom element."
+				+ " Exception=\"" + e + "\""
+				+ " inFileName=\"" + inFileName + "\""
+				+ " Unable to write file."
+				);
+			return false;
+		}
+
+		//try { writer.close(); } catch (Exception e) { }
+		//try { tmpOut.close(); } catch (Exception e) { }
+		try { outStream.close(); }
+		catch (Exception e)
+		{
+			System.err.println( "ERROR: JDOMHelper:writeToFile:"
+				+ " Error closing output file."
+				+ " Exception=\"" + e + "\""
+				+ " inFileName=\"" + inFileName + "\""
+				+ " Not sure that file was properly saved."
+				);
+			return false;
+		}
+		// Guess we're OK
+		return true;
+	}
+
+
+
+	/***************************************************
+	 *
+	 *		Main
+	 *
+	 ***************************************************/
+	private void __separator__main_ () {}
+
+	public static void main(String[] args)
+	{
+		System.err.println( "testing cloneable" );
+
+		/***
+		if( args.length < 1 )
+		{
+			System.err.println( "Error: syntax:\nclass query1 query2 ..." );
+			System.exit(1);
+		}
+		***/
+
+		String sampleDoc =
+			"<food>" +
+			"	<healthy>" +
+			"		<fruit>apple</fruit>" +
+			"		<fruit>orange</fruit>" +
+			"		<fruit>bannana</fruit>" +
+			"		<fruit>pear</fruit>" +
+			"		<fruit>blueberry</fruit>" +
+			"		<fruit>rasberry</fruit>" +
+			"	</healthy>" +
+			"	<healthy>" +
+			"		<fruit>kiwi</fruit>" +
+			"		<fruit>mango</fruit>" +
+			"		<fruit>pineapple</fruit>" +
+			"	</healthy>" +
+			"</food>";
+
+		JDOMHelper jh = null;
+		try
+		{
+			jh = new JDOMHelper( sampleDoc, null );
+		}
+		catch (Exception e)
+		{
+			System.err.println( "Error creating test document: " + e );
+			System.exit(1);
+		}
+
+		System.err.println( "Have original" );
+
+		JDOMHelper jh2 = (JDOMHelper)jh.clone();
+
+		System.err.println( "Have clone" );
+
+		//System.err.println( "======== Sample Doc ===========" );
+		//jh.print();
+
+		/***
+		for( int i = 0; i<args.length; i++ )
+		{
+			String query = args[i];
+			System.err.println( "==============================" );
+			System.err.println( "Trying '" + query + "'" );
+			Element elem = jh.findElementByPath( query );
+			if( elem == null )
+				System.err.println( "NONE FOUND" );
+			else
+				System.err.println( JDOMHelper.JDOMToString( elem ) );
+		}
+		***/
+	}
+
+	private void __separator__CONSTANTS_ () {}
+	////////////////////////////////////////////////////////
+
+	// Where to look for XSLT style sheets
+	// This is relative to the directory where the .CLASS file
+	// for JDOMHelper is located
+	private static final String SYSTEM_STYLE_SHEET_PATH =
+		"system/style_sheets";
+	private static final String SYSTEM_STYLE_SHEET_EXTENSION = "xslt";
+
+
+}

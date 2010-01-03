@@ -1,0 +1,29 @@
+	<!-- Lucene Search -->
+	<!-- ============= -->
+	<section
+		title="Lucene (Optional - Beta)"
+		_help="find_map_basic_info.html"
+	>
+		<!--
+		<field type="vertical_spacer" />
+		-->
+		<field
+			type="vertical_spacer"
+		>
+			(Optional) Activate Lucene Searches
+		</field>
+		<field type="vertical_spacer" />
+
+		<field
+			name="luc_index_path"
+			label="Full Path to Existing Index"
+			xpath="/nie_config/lucene_search/index_directory"
+		/>
+		<field
+			name="luc_content_field"
+			label="Primary/Default Search Field"
+			xpath="/nie_config/lucene_search/content_field"
+			default="content"
+		/>
+
+	</section>

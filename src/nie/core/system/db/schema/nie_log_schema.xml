@@ -1,0 +1,211 @@
+<table name="nie_log">
+
+<field name="site_id"
+	type="int"
+	cgi_field_name="nie_site_id"
+	is_not_null="TRUE"
+	is_indexed="TRUE"
+	description="For tracking more than one site logging to the same system"
+/>
+<field name="search_transaction_number"
+	type="long"
+	cgi_field_name="nie_trans_id"
+	description="we'll need this to match up click-throughs with searches"
+/>
+<field name="referring_transaction_number"
+	type="long"
+	_cgi_field_name="nie_ref_num"
+	cgi_field_name="nie_ref_trans_id"
+	description="if we're running a search as a result of a previous search names link"
+/>
+<field name="transaction_type"
+	type="int"
+	_cgi_field_name="nie_event_type"
+	cgi_field_name="nie_trans_type"
+	is_indexed="TRUE"
+	description="A search event, a log event, a docview event, a user feedback event, '1=search, 2=docview, 3=visitor docview feedback, etc."
+/>
+<field name="form_name"
+	type="text"
+	size="32"
+	cgi_field_name="nie_form_name"
+/>
+<field name="client_host"
+	type="text"
+	size="128"
+	is_indexed="TRUE"
+/>
+<field name="user_name"
+	type="text"
+	size="32"
+	description="if we're on a system that knows about users"
+/>
+<field name="user_domain"
+	type="text"
+	size="32"
+	description="workgroup or company, IF we are on a system that has it"
+/>
+<field name="referer"
+	type="text"
+	size="3072"
+	description="http header, only one 'r' in the middle, per http spec"
+/>
+<field name="user_agent"
+	type="text"
+	size="200"
+	description="what browser / robot this was"
+	is_implemented="FALSE"
+/>
+<field name="num_results"
+	type="int"
+	cgi_field_name="nie_num_found"
+/>
+<field name="num_searched"
+	type="int"
+	cgi_field_name="nie_num_searched"
+	is_indexed="TRUE"
+/>
+<field name="start_time"
+	type="timestamp"
+	is_indexed="TRUE"
+/>
+<field name="end_time"
+	type="timestamp"
+	is_indexed="TRUE"
+/>
+<field name="original_query"
+	type="text"
+	size="3072"
+/>
+<field name="normalized_query"
+	type="text"
+	size="3072"
+	is_indexed="TRUE"
+/>
+<field name="extra_search_parameters"
+	type="text"
+	size="3072"
+/>
+<field name="was_search_names_term"
+	type="boolean"
+	is_indexed="TRUE"
+	description="was this a search names term when query was run"
+/>
+<field name="was_search_names_action_taken"
+	type="boolean"
+/>
+<field name="search_names_action_code"
+	type="int"
+	cgi_field_name="nie_action_code"
+	description="predefined high level actions, for ease of reporting"
+/>
+<field name="search_names_action_count"
+	type="int"
+	_cgi_field_name="nie_action_count / sn_item_count?"
+	description="sometimes we can take more than one action"
+/>
+<field name="search_names_action_details"
+	type="text"
+	cgi_field_name="nie_status_msg"
+	is_implemented="FALSE"
+/>
+<field name="search_names_problem_flag"
+	type="boolean"
+	cgi_field_name="nie_status_code"
+	description="was there any type of problem"
+/>
+<field name="search_names_problem_code"
+	type="int"
+	cgi_field_name="nie_status_code"
+	description="predefined high level problems, for ease of reporting"
+/>
+<field name="search_names_problem_message"
+	type="text"
+	cgi_field_name="nie_status_msg"
+	is_implemented="FALSE"
+	description="search names error / warning message"
+/>
+<field name="type_of_document_click"
+	type="int"
+	description="1=search list clickthrough, 2=webmaster suggests, etc."
+/>
+<field name="rank_in_results_list"
+	type="int"
+	description="where it was in the results"
+/>
+<field name="rank_in_results_on_this_page"
+	type="int"
+	description="if they click from page 2"
+/>
+<field name="results_list_page_number"
+	type="int"
+	is_implemented="FALSE"
+	description="NOT IN AOPA schema"
+/>
+<field name="user_feedback"
+	type="int"
+	description="negative and positive impression of page view"
+/>
+<field name="advertisement_graphic_url"
+	type="text"
+	cgi_field_name="nie_ad_graphic_url"
+	size="128"
+/>
+<field name="advertisement_href"
+	type="text"
+	cgi_field_name="nie_ad_href"
+	size="128"
+/>
+<field name="advertisement_code_sent"
+	type="text"
+	cgi_field_name="nie_ad_code"
+	size="128"
+	is_indexed="TRUE"
+/>
+<field name="count_of_occurrences"
+	type="int"
+	is_implemented="FALSE"
+	description="??? Not in code"
+/>
+<field name="hour_of_day"
+	type="int"
+	is_implemented="FALSE"
+/>
+<field name="hour_of_week"
+	type="int"
+	is_implemented="FALSE"
+/>
+<field name="hour_of_year"
+	type="int"
+	is_implemented="FALSE"
+/>
+<field name="day_of_week"
+	type="int"
+	is_implemented="FALSE"
+/>
+<field name="day_of_month"
+	type="int"
+	is_implemented="FALSE"
+/>
+<field name="day_of_year"
+	type="int"
+	is_implemented="FALSE"
+/>
+<field name="week_of_year"
+	type="int"
+	is_implemented="FALSE"
+/>
+<field name="month_of_year"
+	type="int"
+	is_implemented="FALSE"
+/>
+<field name="quarter_of_year"
+	type="int"
+	is_implemented="FALSE"
+	description="NOT IN AOPA table code!"
+/>
+<field name="year"
+	type="int"
+	is_implemented="FALSE"
+/>
+</table>

@@ -1,0 +1,75 @@
+April 2008
+
+NIESearch2 10.0.4.8
+
+Default port for tcp/ip: 3306
+
+firewall hole = Yes
+? Enable Strict Mode = Yes
+? Changing Character set to UTF8
+
+range of integers, long = BIGINT
+dates, range, precision, epoch?
+
+roll dates expression
+	sr2.util.rolldates, .getUpdateSql()
+
+
+Todo for adding MySQL
+
+Add to UI
+
+XML reports
+	src/nie/sr2/xml_reports
+	outer joins in Oracle vs. others
+	!!! number_of_searches_ndays
+		TRUNCATED DATES
+
+DBTableDef
+	instantiateTAbleInDatabase
+	dropTableFromDatabase
+
+BaseReport
+	??? _getAllSystemHashesV1
+		datetime stuff, Oracle???
+		TO_DATE
+
+ActityTrend.java
+	sr2/java_reports
+	'oracle' hard coded, Twice
+	dynamic field "the position" ?
+	runReportV1
+	calculateMainContent
+
+
+DBConfig
+
+Reports
+
+applyDbVendorFilter
+
+instantiateTableInDatabase
+	CREATE_TABLE_XSLT_SHEET
+dropTableFromDatabase
+	DROP_TABLE_XSLT_SHEET
+
+DEFALT_URI_XSLT_PREFIX
+gen_sql_create_table.xslt
+get_sql_drop_table.xslt
+
+getVendorAliasString
+	Oracle = " AS "
+getVendorSysdateString
+	Oracle = SYSDATE
+	else = CURRENT_TIMESTAMP
+calculateDateTimeString
+getVendorDoesNormalOuterJoin
+	false = Oracle and MS Sql
+	true = everybody else
+getVendorNullValueMethodName
+	Oracle = NVL
+	else = COALESCE
+getVendorEpochCorrectionInMS
+	MS SQL is special
+	else = 0
+	? and timezone and DST

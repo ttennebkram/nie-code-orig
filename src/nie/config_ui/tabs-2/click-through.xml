@@ -1,0 +1,134 @@
+	<!-- Patterns -->
+	<!-- ======== -->
+	<section
+		title="Results Click-Through (Beta)"
+		level="2"
+		help="find_map_or_create.html"
+	>
+
+		<!--
+		<field type="vertical_spacer" />
+		-->
+		<field
+			type="vertical_spacer"
+		>
+			(_pending) Tracking Click-Throughs
+		</field>
+
+		<field type="vertical_spacer" />
+
+		<field
+			type="vertical_spacer"
+			font_size_increment="0"
+		>
+			_ Track what's clicked on in the search results (Beta)
+		</field>
+		<field
+			name="results_has_links"
+			label="_ Track document Click-Throughs"
+			type="checkbox"
+			default="TRUE"
+			xpath="/nie_config/search_tuning/search_engine_info/results/doc_links/@enabled"
+		/>
+
+		<field
+			name="results_doc_links_cgi_field_1"
+			label="Document link CGI field (if applicable)"
+			xpath="/nie_config/search_tuning/search_engine_info/results/doc_links/cgi_field"
+		/>
+		<field
+			name="results_doc_links_cgi_field_2"
+			label="Second-level CGI field (very advanced)"
+			xpath="/nie_config/search_tuning/search_engine_info/results/doc_links/cgi_field"
+		/>
+
+		<field
+			name="results_doc_links_javascript_policy"
+			label="JavaScript onClick vs. standard href"
+			type="select"
+			default="_ Remove onClick (if present)"
+			xpath="/nie_config/search_tuning/search_engine_info/results/doc_links/js_policy"
+		>
+			<option value="1">_ No JavaScript in doc links</option>
+			<option value="2">_ Remove onClick (if present)</option>
+			<option value="2">_ Keep onClick and try to patch</option>
+			<option value="3">_ Leave onClick as-is (breaks click-through)</option>
+		</field>
+
+		<field type="vertical_spacer" />
+		<field
+			type="vertical_spacer"
+		>
+			Click-Through Patterns
+		</field>
+		<field type="vertical_spacer" />
+
+		<field
+			type="vertical_spacer"
+			font_size_increment="0"
+		>
+			_ Which links in the search results list are tracked
+		</field>
+		<field
+			name="results_doc_links_policy"
+			label="Track document Click-Throughs"
+			type="select"
+			default="none"
+			xpath="/nie_config/search_tuning/search_engine_info/results/doc_links/tweak_policy"
+		>
+			<!-- These need to in sync with
+				values at bottom of SearchEngineConfig
+				config_ui/tabs.../search-engine.xml and click-through.xml
+			-->
+			<option value="none">Disabled: do not modify doc links</option>
+			<option value="log_only">Enable reports, but no markup (or API mode)</option>
+			<option value="search_url">That are using the same search URL</option>
+			<option value="all">Any link found in the results</option>
+			<option value="specific_url">Only links starting with a specific URL</option>
+			<option value="exclude_url">Except links starting with a specific URL</option>
+			<option value="after_marker">Only After a literal marker</option>
+			<option value="before_marker">Only Before a literal marker</option>
+			<option value="between_markers">Only Between literal markers</option>
+			
+			<!--
+			<option value="13">Only OUTSIDE of literal markers</option>
+			<option value="5">_ That match a URL pattern (regex)</option>
+			<option value="6">_ Only specifically named links (the name attr)</option>
+			<option value="7">_ Except specifically named links</option>
+			<option value="8">Only specifically numbered links (pos. on page)</option>
+			<option value="9">Except specifically numbered links</option>
+			<option value="10">Only specific CSS class links</option>
+			<option value="11">Except specific CSS class links</option>
+			-->
+		</field>
+
+		<field type="vertical_spacer" />
+
+		<field
+			type="vertical_spacer"
+			font_size_increment="0"
+		>
+			(ADVANCED and Optional) Patterns or Markers to use with Click-Through choices above
+		</field>
+
+		<field
+			name="results_doc_links_to_tweak_1"
+			label="Optional pattern, names, numbers, etc."
+			xpath="/nie_config/search_tuning/search_engine_info/results/doc_links/tweak_arg_1"
+		/>
+		<field
+			name="results_doc_links_to_tweak_2"
+			label="Optional end pattern, etc."
+			xpath="/nie_config/search_tuning/search_engine_info/results/doc_links/tweak_arg_2"
+		/>
+
+		<field type="vertical_spacer" />
+		<field
+			type="vertical_spacer"
+			font_size_increment="0"
+		>
+			Confused?  Try NIE Tech Support - support@ideaeng.com
+		</field>
+
+
+	</section>

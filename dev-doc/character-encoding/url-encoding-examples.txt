@@ -1,0 +1,72 @@
+On NIE site, mouse and HTML
+Mouse over
+http://www.ideaeng.com/LinkClick.aspx?link=56&tabid=99
+HTML source
+                href="/LinkClick.aspx?link=56&amp;tabid=99"
+Google translate
+Via Google translation, mouse and HTML
+Mouse over
+            ?hl=es&sl=en&u=http://www.ideaeng.com/LinkClick.aspx%3Flink%3D56%26tabid%3D99&prev=/
+HTML source
+<a href="...?hl=es&amp;sl=en&amp;
+u=http://www.ideaeng.com/LinkClick.aspx%3Flink%3D56%26tabid%3D99
+&amp;prev=/
+
+http://www.asciitable.com/
+
+HTML  URL   Description
+----  ---   ----------------------
+&#32; %20=  space
+&#33; %21=! exclamation point bang
+&#34; %22=" quote aka double quote
+&#35; %23=# pound sign hash sign
+&#37; %25=% percent
+&#38; %26=& ampersand
+&#39; %27=' apostrophe aka single quote
+&#40; %28=( left parenthesis open paren
+&#41; %29=) right parenthesis close paran
+&#42; %2A=* asterisk star
+&#43; %2B=+ plus
+&#45; %2D=- minus hyphen
+&#46; %2E=. period
+&#47; %2F=/ forward slash (backslash = %5C)
+&#48;-&#57; %30-%39 = digits 0 - 9 zero through nine
+&#58; %3A=: colon,,, &#59; %3B=; semicolon
+&#60; %3C=< less than,,, &#62; %3E=> greater than
+&#61; %3D== equals
+&#63; %3F=? question mark
+&#64; %40=@ at sign
+&#65;-&#90; %41-%5A = upper case letters A - Z
+&#91;, &#93; %5B=[, %5D=] square brackets
+&#92; %5C=\ backslash (forward slash = %2F)
+&#94; %5E=^ carrot,,,,, %5F=_ underscore under score
+&#97;-&#122; %61-%7A = lower case letters a - z
+&#123; %7B={, &#125; %7D=} curley braces curly brackets
+&#124; %7C=| vertical bar
+&#126; %7E=~ tilde tidle
+
+main Search Overview
+http://www.ideaeng.com/Research/tabid/99/Default.aspx
+http://www.ideaeng.com/SearchOverview/tabid/99/Default.aspx
+
+first area of text
+The Industry Trends area of the site covers individual hot topics that are on readers' minds.
+link around Industry Trends
+link to
+http://www.ideaeng.com/LinkClick.aspx?link=56&tabid=99
+<a href="/LinkClick.aspx?link=56&amp;tabid=99">Industry Trends</a>
+
+
+Translate to Spanish
+Page:
+http://translate.google.es/translate?hl=es&sl=en&u=http://www.ideaeng.com/Research/tabid/99/Default.aspx&ei=zjv2Sd2QHKG6sgPvtqHVAQ&sa=X&oi=translate&resnum=1&ct=result&prev=/search%3Fq%3Dsite:ideaeng.com%2BIndustry%2BTrends%2Barea%2Bof%2Bthe%2Bsite%2Bcovers%2Bindividual%2Bhot%2Btopics%2Bthat%2Bare%2Bon%2Breaders%2527%2Bminds%26hl%3Des%26sa%3DG
+Frame:
+http://74.125.19.132/translate_c?hl=es&sl=en&u=http://www.ideaeng.com/Research/tabid/99/Default.aspx&prev=/search%3Fq%3Dsite:ideaeng.com%2BIndustry%2BTrends%2Barea%2Bof%2Bthe%2Bsite%2Bcovers%2Bindividual%2Bhot%2Btopics%2Bthat%2Bare%2Bon%2Breaders%2527%2Bminds%26hl%3Des%26sa%3DG&usg=ALkJrhhfL_CBRXr7NJBBrs8ybeEFVZQuMg
+
+La Tendencias de la Industria dela pa'gine se refiere a lost temas que los...
+Tendencias de la Industria
+Mouse over
+http://74.125.19.132/translate_c?hl=es&sl=en&u=http://www.ideaeng.com/LinkClick.aspx%3Flink%3D56%26tabid%3D99&prev=/search%3Fq%3Dsite:ideaeng.com%2BIndustry%2BTrends%2Barea%2Bof%2Bthe%2Bsite%2Bcovers%2Bindividual%2Bhot%2Btopics%2Bthat%2Bare%2Bon%2Breaders%2527%2Bminds%26hl%3Des%26sa%3DG&usg=ALkJrhg4CdiBBsYfMQcAWRZ-i5EHtTHiYw
+View Source:
+<a href="http://74.125.19.132/translate_c?hl=es&amp;sl=en&amp;u=http://www.ideaeng.com/LinkClick.aspx%3Flink%3D56%26tabid%3D99&amp;prev=/search%3Fq%3Dsite:ideaeng.com%2BIndustry%2BTrends%2Barea%2Bof%2Bthe%2Bsite%2Bcovers%2Bindividual%2Bhot%2Btopics%2Bthat%2Bare%2Bon%2Breaders%2527%2Bminds%26hl%3Des%26sa%3DG&amp;usg=ALkJrhg4CdiBBsYfMQcAWRZ-i5EHtTHiYw">
+                                Tendencias de la industria</a>

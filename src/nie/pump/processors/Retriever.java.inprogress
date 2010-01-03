@@ -1,0 +1,785 @@
+/*
+ *  Copyright 2001, 2002 New Idea Engineering, Inc.
+ *  Written by Kevin-Neil Klop and Mark L. Bennett
+ *
+ *  $Id: HTTPRetrieverV3.java,v 2.0 2001/09/24 19:37:00 mbennett Exp mbennett $
+ *
+ *  $Log: HTTPRetriever.java,v $
+ *
+ *  Rev 4, now RENAMED to just Retriever
+ *  2002/1/8 mbennett
+ *  Todo:
+ *  - support queued work or read from static file names in XPump script
+ *  - Read from web site or file
+ *  - Allow relative parent path for both
+ *  - Support ascii, HTML and PDF
+ *  - Modes for "binary", "raw stream", "tree" and "filtered stream"
+ *
+ *
+ *  Rev 3.0(1) 2001/11/2 mbennett
+ *  Added support for username/password attrs for Basic Authentication
+ *  I think it's a "global" setting...
+ *  Todo: revisit
+ *
+ *  Revision 3.0 2001/10/10 mbennett
+ *  Rearrange the structure of the program, check variables
+ *
+ *  Revision 2.0  2001/09/24 mbennett
+ *  Change how fields are retrieved and stored using work unit methods
+ *  Make default field names
+ *
+ *  Revision 1.7  2001/08/31 16:29:50  kevin
+ *  Implemented new WorkUnits stuff into these processors.
+ *
+ *  Revision 1.6  2001/08/27 22:15:09  kevin
+ *  Altered to match new constructor for processors.
+ *
+ *  Revision 1.5  2001/08/24 17:04:10  kevin
+ *  Added constructor parameter to take the String inID and pass it on
+ *  to the Processor class.
+ *
+ *  Revision 1.4  2001/08/21 03:56:59  kevin
+ *  re-indented to match current NIE, Inc. style giude.
+ *  No code changes.
+ *
+ *  Revision 1.3  2001/08/15 20:17:57  kevin
+ *  Minor changes in preparation for the Major language/specification.
+ *
+ *  Revision 1.2  2001/08/07 01:16:21  kevin
+ *  Slimmed down the system, added a d few new processors.
+ *  Alse made the processors a bit more generic since they were very spider-centric.
+ *
+ *  Revision 1.1  2001/07/31 21:46:35  kevin
+ *  Initial revision
+ *
+ *
+ */
+
+//package nie.processors;
+package nie.pump.processors;
+
+import nie.core.*;
+import nie.pump.base.*;
+
+import java.net.*;
+import java.io.*;
+import java.util.*;
+
+import org.jdom.Element;
+import org.jdom.Attribute;
+
+/////////////////////////////////////////////////////
+//
+// This takes up to three output queues...
+//
+//	Queue 1: Content Queue - feeds out those URLs that were successfully
+//		 retrieved, along with their content.
+//	Queue 2: Error queue (optional) - feeds out those URLs that caused
+//		 an error during retrieve for any reason.
+//
+////////////////////////////////////////////////////
+
+public class Retriever extends Processor
+{
+
+	private static final boolean debug = false;
+
+
+	////////////////////////////////////////////
+	//
+	// Constructor for a Retriever - it should look exactly like
+	// the constructor for a Processor.  No more arguments, no less.  No
+	// different parameter types either.  We're strict about this!
+	//
+	////////////////////////////////////////////
+
+	public Retriever( Application inApplication,
+			  Queue[] inReadFromQueue,
+			  Queue[] inWriteToQueue,
+			  Queue[] inUsesQueue,
+			  Element inParameters,
+			  String inID )
+	{
+		super( inApplication, inReadFromQueue, inWriteToQueue, inUsesQueue, inParameters, inID );
+
+		// Store the read queue, if one was passed in
+		if( (inReadFromQueue != null) &&
+			(inReadFromQueue.length > 0) &&
+			(inReadFromQueue[0] != null)
+			)
+		{
+			fReadQueue = inReadFromQueue[0];
+		}
+		else
+		{
+			System.err.println( "Retriever passed an invalid queue set." );
+			System.exit( -1 );
+		}
+
+		if( inWriteToQueue != null )
+		{
+			if( (inWriteToQueue.length > 0) &&
+			(inWriteToQueue[0] != null) )
+				fContentQueue = inWriteToQueue[0];
+			else
+				badQueueList();
+
+			if( inWriteToQueue.length > 1)
+				fErrorRetrievingQueue = inWriteToQueue[1];
+		}
+		else
+			badQueueList();
+
+		// If parameters were sent in, save them
+		if( inParameters != null )
+		{
+			try
+			{
+				fJdh = new JDOMHelper( inParameters );
+			}
+			catch (Exception e)
+			{
+				fJdh = null;
+				System.err.println(
+					"Error creating jdom helper for parameter\n" + e
+					);
+				System.exit(1);
+			}
+		}
+		else
+		{
+			System.err.println( "Error: inParameter == null." );
+			System.err.println( "see doc" );
+			System.exit(1);
+		}
+
+
+		// Make sure they get the valueus from the tag, vs the cache
+		fHaveDoneInit = false;
+
+		// Call the get methods so they will fill their cache
+		// they will do an exit if they are not happy
+		getURLFieldName();
+		getContentFieldName();
+		getParentURLFieldName();
+		getAttemptedURLFieldName();
+		getUsername();
+		getPassword();
+		getUserAgentField();
+
+		// switch over to using the cached values
+		fHaveDoneInit = true;
+
+		if( debug )
+		{
+			System.err.println( "Retriever: Start." );
+			System.err.println( "getURLFieldName()=" + getURLFieldName() );
+			System.err.println( "getContentFieldName()="
+				+ getContentFieldName()
+				);
+			System.err.println( "getParentURLFieldName()="
+				+ getParentURLFieldName()
+				);
+			System.err.println( "getAttemptedURLFieldName()="
+				+ getAttemptedURLFieldName()
+				);
+			System.err.println( "getUsername()=" + getUsername() );
+			System.err.println( "is set: getPassword()=" + (getPassword()!=null) );
+			System.err.println( "getUserAgentField()=" + getUserAgentField() );
+		}
+
+
+		// Setup basic authentication IF it was specified
+		//setupOptionalAuthentication();
+		if( getUsername() != null || getPassword() != null )
+			NIEUtil.setupGlobalHTTPAuthentication(
+				getUsername(), getPassword()
+				);
+	}
+
+	private void badQueueList()
+	{
+		System.err.println( "Bad output queue list given to Retriever." );
+		System.err.println( "The output queue list must have at least one item," );
+		System.err.println( "    queue to which to put retrieved URLs." );
+		System.err.println( "    A second queue may be specified to which we will" );
+		System.err.println( "    queue URLs that caused errors." );
+		System.exit( -1 );
+	}
+
+	/////////////////////////////////////////////
+	//
+	// And this is where the work gets done.
+	//
+	/////////////////////////////////////////////
+
+	public void run()
+	{
+
+		// Decide what to do
+		// If static locations:
+		//  Process all static locations
+		//      send to output queue
+		// If input queue
+		//  Process all inputs
+		//      send to output queue
+		// Done
+
+
+
+
+
+		/*
+		 * Read a URL String from the queues then retrieve it.
+		 * if the retrieve works well, send it to fNormalQueue
+		 * if the retrieve goes badly, send it to fErrorQueue
+		 */
+
+		//final boolean debug = false;
+
+		// Main Loop
+		while( true )
+		{
+			WorkUnit lWorkUnit = null;
+			boolean success = false;
+			String problemMsg = null;
+
+			// Try to dqueue and process a work unit
+			try
+			{
+				// Get a work unit
+				lWorkUnit = (WorkUnit)dequeue( fReadQueue );
+
+				if(debug) System.err.println( "HT3: dequeued work unit" );
+
+				success = processWorkUnit( lWorkUnit );
+
+				// Whoa!  a little too soon!
+				//lWorkUnit = null;
+
+				if(debug) System.err.println( "HT3: processed work unit"
+					+ ", success=" + success
+					);
+
+			}   // End of try to dqueue and process a work unit
+			// Normal interruption
+			catch( InterruptedException ie )
+			{
+				if(debug) System.err.println( "HT3:	caught normal interrupt" );
+				return;
+			}
+			catch( Exception lException )
+			{
+				System.err.println( "Retriever: got exception: " +
+					lException
+					);
+				success = false;
+				problemMsg = "Got exception: " + lException;
+				lException.printStackTrace( System.err );
+			}
+
+			if(debug) System.err.println( "HT3:	past exception catches" );
+
+			// Re-Queue the work unit, if we have a work unit
+			if( lWorkUnit != null )
+			{
+				if(debug) System.err.println( "HT3: work unit was not null" );
+				// If there was a problem, mark up the work unit
+				if( ! success )
+				{
+					if(debug) System.err.println( "HT3: success was FALSE"
+						+ ", marking work unit invalid"
+						+ ", message=" + problemMsg
+						);
+					// Mark it invalid
+					lWorkUnit.setIsValidRecord( false );
+					// Add an explanation, if we have any
+					if( problemMsg != null && ! problemMsg.trim().equals("") )
+						lWorkUnit.addNamedField( ERROR_MESSAGE_FIELD,
+							problemMsg.trim()
+							);
+				}
+				else
+					if(debug) System.err.println( "HT3: shows success" );
+
+				if(debug) System.out.println( "HT3: at bottom of loop" +
+					", fErrorRetrievingQueue=" + fErrorRetrievingQueue
+					);
+				// Add it to the correct queue
+				// If the work unit was alright, or there's nowhere
+				// else to send it
+				if( success || fErrorRetrievingQueue == null )
+				{
+					if(debug) System.out.println("HT3: Sending to regular output");
+					enqueue( fContentQueue, lWorkUnit );
+					lWorkUnit = null;
+				}
+				// Else we did have a problem and we do have an error queue
+				else
+				{
+					if(debug) System.out.println("HT3: Sending to error output");
+					enqueue( fErrorRetrievingQueue, lWorkUnit );
+					lWorkUnit = null;
+				}
+
+			}   // End if work unit not null
+			else
+				if(debug) System.err.println( "HT3:	work unit was null" );
+
+			// Triple check that we set it to null
+			lWorkUnit = null;
+
+			if(debug) System.err.println( "HT3:	bottom of main loop" );
+
+		}   // End of Main Loop
+
+	}
+
+
+	// Do the work
+	// Logic:
+	// Find the URL for us to download, get it, store it, store other info
+	// The boolean flag indicates whether or not we think we're OK
+	boolean processWorkUnit( WorkUnit inWU )
+		throws Exception
+	{
+
+		final boolean debug = false;
+
+		String lURLString = null;
+
+		// Get the URL we are to download from
+		String fetchURLStr = calculateSourceURL( inWU );
+
+		if(debug) System.err.println( "Retr: url=" + fetchURLStr );
+
+		// If we found a URL to download
+		if( fetchURLStr == null || fetchURLStr.trim().equals("") )
+		{
+			throw new Exception( "There was no URL field specified" );
+		}
+
+		// Store the URL we actually made the
+		// request on, if asked to do so
+		if( getAttemptedURLFieldName() != null )
+		{
+			inWU.addNamedField(
+				getAttemptedURLFieldName(),
+				fetchURLStr
+				);
+		}
+
+		// Now actually download the content
+		// This may thrown an exception, which we'll pass up the food chain
+		String theContent;
+		try
+		{
+			theContent = fetchContent( fetchURLStr );
+			if(debug) System.err.println( "HT3: finished getting content" );
+		}
+		catch(Exception e)
+		{
+			inWU.addNamedField( ERROR_MESSAGE_FIELD,
+				"Fetch error: " + e
+				);
+			inWU.setIsValidRecord( false );
+			return false;
+		}
+
+		if( theContent != null )
+		{
+
+			if(debug) System.out.println(
+				"Content field to store: '" + getContentFieldName() + "'"
+				);
+
+			// Store the content
+			inWU.addNamedField(
+				getContentFieldName(),
+				theContent
+				);
+
+			return true;
+		}
+		else
+			return false;
+
+	}
+
+
+	/// NIEUtil.AuxIOInfo
+
+
+//	// Download the actual content, return it as a string
+//	String fetchContent( String inFetchURLStr )
+//		throws Exception
+//	{
+//
+//		final boolean debug = false;
+//
+//		URL lURL = null;
+//		URLConnection lURLConnection = null;
+//		try
+//		{
+//			lURL = new URL( inFetchURLStr );
+//			lURLConnection = lURL.openConnection();
+//		}
+//		catch(MalformedException me)
+//		{
+//			throw new Exception( "Bad URL '" +
+//				inFetchURLStr + "', error was '" + me + "'"
+//				);
+//		}
+//		catch(IOException ioe)
+//		{
+//			throw new Exception( "Error opening URL '" +
+//				inFetchURLStr + "', error was '" + ioe + "'"
+//				);
+//		}
+//
+//		// Setup the user agent field
+//		String userAgentField = getUserAgentField();
+//		if( userAgentField != null )
+//			lURLConnection.setRequestProperty( HTTP_USER_AGENT_FIELD_SPELLING,
+//				userAgentField
+//			);
+//
+//		boolean lMoreHeaders = true;
+//		int lHeaderNumber = 0;
+//		boolean saw200Header = false;
+//
+//		// Read until no more headers
+//		while( lMoreHeaders )
+//		{
+//			String lHeader = lURLConnection.getHeaderField( lHeaderNumber++ );
+//			if( debug )
+//				System.err.println( "fetchURL: header: '" + lHeader + "'" );
+//			if( lHeader != null )
+//				lHeader = lHeader.trim().toUpperCase();
+//
+//			// If header not null and starts with http/
+//			if( lHeader != null && lHeader.startsWith( "HTTP/" ) )
+//			{
+//				lMoreHeaders = false;
+//				lHeader = lHeader.substring( lHeader.indexOf(' ') ).trim();
+//				if( lHeader.startsWith("200") )
+//					saw200Header = true;
+//				else
+//					throw new Exception( "Got non-200 HTTP header:" +
+//						lHeader +
+//						" URL='" + inFetchURLStr + "'"
+//						);
+//			}
+//			if( lHeader == null )
+//				lMoreHeaders = false;
+//		}
+//
+//		//InputStream lStream = lURL.openStream();
+//		InputStream lStream = lURLConnection.getInputStream();
+//		StringBuffer strBuff = new StringBuffer();
+//
+//		int c;
+//		while( (c=lStream.read()) != -1 )
+//		{
+//			strBuff.append( (char)c );
+//		}
+//
+//		lStream.close();
+//		lStream = null;
+//		lURLConnection = null;
+//
+//		return new String( strBuff );
+//
+//
+//
+//	}
+
+
+	/*************************************************
+	*
+	*	Simple Get/Set Logic
+	*
+	*************************************************/
+	private void __sep__Simple_Get_and_Set__() {};
+	////////////////////////////////////////////////////////////
+
+	// you can set any number of static locations to fetch from
+	// in your XPump script
+	// It can be spec'd as an attribute or, if you're listing more than one,
+	// as nested tags
+	private List getStaticLocations()
+	{
+		return fJdh.getTextListByPathAndSingleAttrNotNullTrim(
+			STATIC_LOCATION_ATTR_OR_TAG
+			);
+	}
+
+
+
+	String getLocationFieldName()
+	{
+		if( fHaveDoneInit )
+			return fLocationFieldName;
+		else
+		{
+			String tmpString = fJdh.getStringFromAttribute(
+				LOCATION_FIELD_ATTR_NAME
+				);
+			if( tmpString == null || tmpString.trim().equals("") )
+			{
+				fURLFieldName = DEFAULT_LOCATION_FIELD_NAME;
+			}
+			else
+			{
+				fLocationFieldName = tmpString.trim();
+			}
+		}
+		return fURLFieldName;
+	}
+
+	String getParentLocationFieldName()
+	{
+		if( fHaveDoneInit )
+			return fParentLocationFieldName;
+		else
+		{
+			String tmpString = fJdh.getStringFromAttribute(
+				PARENT_LOCATION_FIELD_ATTR_NAME
+				);
+			if( tmpString == null || tmpString.trim().equals("") )
+			{
+				fParentLocationFieldName = null;
+			}
+			else
+			{
+				fParentLocationFieldName = tmpString.trim();
+			}
+		}
+		return fParentLocationFieldName;
+	}
+
+	String getAttemptedLocationFieldName()
+	{
+		if( fHaveDoneInit )
+			return fAttemptedLocationFieldName;
+		else
+		{
+			String tmpString = fJdh.getStringFromAttribute(
+				ATTEMPTED_LOCATION_FIELD_ATTR_NAME
+				);
+			if( tmpString == null || tmpString.trim().equals("") )
+			{
+				fAttemptedLocationFieldName = null;
+			}
+			else
+			{
+				fAttemptedLocationFieldName = tmpString.trim();
+			}
+		}
+		return fAttemptedLocationFieldName;
+	}
+
+	String getContentFieldName()
+	{
+		if( fHaveDoneInit )
+			return fContentFieldName;
+		else
+		{
+			String tmpString = fJdh.getStringFromAttribute(
+				CONTENT_FIELD_ATTR_NAME
+				);
+			if( tmpString == null || tmpString.trim().equals("") )
+			{
+				fContentFieldName = DEFAULT_CONTENT_FIELD_NAME;
+			}
+			else
+			{
+				fContentFieldName = tmpString.trim();
+			}
+		}
+		return fContentFieldName;
+	}
+
+	// We will return null if none
+	// We do NOT trim the answer, and we WILL return "" if that's what
+	// was set, since passwords can be null (I think?)
+	String getUsername()
+	{
+		// Todo: support pulling it from a field
+		if( fHaveDoneInit )
+			return fUsername;
+		else
+		{
+			String tmpString = fJdh.getStringFromAttribute(
+				USERNAME_ATTR_NAME
+				);
+			if( tmpString == null )
+			{
+				return null;
+			}
+			fUsername = tmpString;
+		}
+		return fUsername;
+	}
+
+	// We will return null if none
+	// We do NOT trim the answer, and we WILL return "" if that's what
+	// was set, since passwords can be null (I think?)
+	String getPassword()
+	{
+		// Todo: support pulling it from a field
+		if( fHaveDoneInit )
+			return fPassword;
+		else
+		{
+			String tmpString = fJdh.getStringFromAttribute(
+				PASSWORD_ATTR_NAME
+				);
+			if( tmpString == null )
+			{
+				return null;
+			}
+			fPassword = tmpString;
+		}
+		return fContentFieldName;
+	}
+
+	// Return the header field to use
+	// Note that if you don't want it, use user_agent=""
+	String getUserAgentField()
+	{
+		if( fHaveDoneInit )
+			return fUserAgentField;
+		else
+		{
+			String tmpString = fJdh.getStringFromAttribute(
+				USER_AGENT_ATTR_NAME
+				);
+			if( tmpString == null )
+			{
+				tmpString = fJdh.getStringFromAttribute(
+					USER_AGENT_ATTR_SHORT_NAME
+					);
+			}
+			// A little convoluted
+			// If they really didn't set either attr, use the default
+			if( tmpString == null )
+			{
+				tmpString = DEFAULT_USER_AGENT_FIELD;
+			}
+			// If they DID set the attr, but it's an empty string, then
+			// they are trying to turn OFF this feature, so we should
+			// specifically null it out.
+			else if( tmpString.trim().equals("") )
+			{
+				tmpString = null;
+			}
+			// Store it
+			fUserAgentField = tmpString;
+		}
+		return fUserAgentField;
+
+	}
+
+
+
+
+
+
+
+	private void __sep__Supporting_Logic__() {};
+	////////////////////////////////////////////////////////////
+
+
+//	// Get the URL from the work unit
+//	// And if there's a parent link, do the relative calculation
+//	String calculateSourceURL( WorkUnit wu )
+//	{
+//		String childURLField = getURLFieldName();
+//		String childURL = wu.getUserFieldText( childURLField );
+//		if( childURL == null || childURL.trim().equals("") )
+//			return null;
+//		if( getParentURLFieldName() == null )
+//			return childURL;
+//		String parentURL = wu.getUserFieldText( getParentURLFieldName() );
+//		if( parentURL == null || parentURL.trim().equals("") )
+//			return childURL;
+//
+//		// return joinURL( parentURL, childURL );
+//		return NIEUtil.combineParentAndChildURLs( parentURL, childURL );
+//	}
+
+
+
+	private void __sep__Fields_and_Constants__() {};
+	////////////////////////////////////////////////////////////
+
+	//private static final String DEFAULT_URL_FIELD_NAME = "url";
+	// What we will look for in a work unit
+	private static final String DEFAULT_LOCATION_FIELD_NAME = "location";
+	private static final String DEFAULT_CONTENT_FIELD_NAME = "_content";
+
+	// Static location from the XPump file, in XPump file
+	// Typically you'd use this OR DEFAULT_LOCATION_FIELD_NAME
+	private static final String STATIC_LOCATION_ATTR_OR_TAG = "location";
+
+	// What URL to fetch
+	private static final String URL_FIELD_ATTR_NAME =
+		"location_field";
+	//	"url_field";
+	// Where to put the content when you get it back
+	private static final String CONTENT_FIELD_ATTR_NAME =
+		"content_field";
+	// Optional parent field that URL is relative to
+	private static final String PARENT_URL_FIELD_ATTR_NAME =
+		"parent_location_field";
+	//	"parent_url_field";
+	// Optional: the URL that we actually tried to retrieved
+	private static final String ATTEMPTED_URL_FIELD_ATTR_NAME =
+		"attempted_location_field";
+	// Optional: the username and password fields for basic authentication
+	private static final String USERNAME_ATTR_NAME =
+		"username";
+	private static final String PASSWORD_ATTR_NAME =
+		"password";
+
+	// Control over the user agent field
+	private static final String USER_AGENT_ATTR_NAME =
+		"http_user_agent_field";
+	private static final String USER_AGENT_ATTR_SHORT_NAME =
+		"user_agent";
+
+	private static final String ERROR_MESSAGE_FIELD =
+		"_retriever_error_msg";
+
+//	private static final int FORMAT_PDF
+//	private static final int FORMAT_PDF
+
+	// vvv Moved to NIEUtil?
+	// The stupid default field to send to stupid sites so that their stupid
+	// scripts will give the correct content  <sign>
+	// See other gunk at:
+	// http://support.microsoft.com/support/kb/articles/Q272/4/13.ASP
+	// Todo: not sure, this may be a "global" setting
+//	private static final String DEFAULT_USER_AGENT_FIELD =
+//		"Mozilla/4.0 (compatible; MSIE 5.01; Windows NT 5.0; NetCaptor 6.5.0)";
+//	private static final String HTTP_USER_AGENT_FIELD_SPELLING =
+//		"User-Agent";
+
+	// The main parameters tree
+	JDOMHelper fJdh;
+
+	// Caching variables
+	private boolean fHaveDoneInit;
+	private String fLocationFieldName;
+	private String fParentLocationFieldName;
+	private String fAttemptedLocationFieldName;
+	private String fContentFieldName;
+	private String fUsername;
+	private String fPassword;
+	private String fUserAgentField;
+	// The main queues
+	Queue fErrorRetrievingQueue = null;
+	Queue fContentQueue = null;
+	Queue fReadQueue = null;
+}

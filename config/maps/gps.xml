@@ -1,0 +1,20 @@
+<map>
+	<term>gps</term>
+	<term>global positioning</term>
+	<term>global positioning system</term>
+	<term>global positioning systems</term>
+	<term>buy gps</term>
+	<term>buying gps</term>
+
+	<!-- Advertisements -->
+	<user_data_markup_items class="text_ad">
+		<include location="../ads/garmin.xml" />
+		<include location="../ads/ups.xml" />
+		<include location="../ads/bk.xml" />
+		<include location="../ads/sportys.xml" />
+		<include location="../ads/king_schools.xml" />
+	</user_data_markup_items>
+
+	<!-- Currently no suggestions for this map -->
+
+</map>

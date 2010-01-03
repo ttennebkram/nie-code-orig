@@ -1,0 +1,92 @@
+Lines are either:
+1: Header line: declares IP address(es)
+2: Term line and counts
+3: # Comment Line
+4: blank line, and RESETS header
+
+
+A "batch" is a header line, followed by a set of term lines.
+
+
+Header Line
+-----------
+Set an IP address(es) and name(s) that this batch of queries will come from.
+
+An IP address has a number-version (1.1.1.1) and a name client5.foobar.com
+* First column controls the NAME and "randomize mode"
+* Second column controls the numerical IP address
+
+
+First column has 3 forms:
+
+NO! Single Fixed Address
+NO! myname.foobar.com
+NO! 	All searches in this section will be from that client
+
+A single random name and address for ALL searches from this batch
+*.foobar.com
+	Make up a SINGLE IP address and Name for ALL searches
+	in this section
+
+A different random name and address for every search in this batch
++.foobar.com
+	Make up a bunch of IP addresses
+	a DIFFERENT one for each search
+
+
+Second Column
+
+(technicall optional)
+set the base IP address
+	The LEFTMOST number in a v4 IP address
+	A number from 1 to 254
+
+If you leave it blank, we make one up.  But might not be consistent
+with other times you use the same name.
+
+
+Examples
+
+*.acme.com	100
+Pretend that Acme owns all addresses from 100.0.0.0 to 100.255.255.255
+And pick a radom address like 100.1.2.3 for each BATCH
+
++.acme.com	100
+Pretend that Acme owns all addresses from 100.0.0.0 to 100.255.255.255
+And pick a radom address like 100.1.2.3 for EVERY LOGGED search
+
+*.acme.com	(no number, not recommended)
+Pick a number from 1 to 254 for Acme, for example 17.
+Then pretend that Acme owns all addresses from 17.0.0.0 to 17.255.255.255
+
+*.acme.com	(second time, no number)
+Pick ANOTHER number from 1 to 254 for Acme, for example 44.
+Then pretend that Acme owns all addresses from 44.0.0.0 to 44.255.255.255
+
+NOW some Acme queries will start with 17 and some will start with 44.
+This might be noticed and considered odd.
+
+Term Line
+---------
+
+First column: MUST BE BLANK.
+Second column: term (required)
+Third column: number of searches
+	? If left blank... can make up # of times ...
+Fouth column: number of matches (optional, I can backfill from Google)
+	Can put 0 sometimes, for no matches.
+Fifth column: total documents searched (rarely used)
+	Only Verity K2 gave this info.
+
+Blank Line
+----------
+Random ENDS with a blank line
+Clears IP and IP prefix and name suffix
+
+Comment Line
+------------
+Starts with # (pound sign)
+Unlike a blank like, comment line does NOT reset the batch.
+So you can comment out entries in a batch without breaking it in half.
+
+Blank lines BREAK batches, comment lines do not.

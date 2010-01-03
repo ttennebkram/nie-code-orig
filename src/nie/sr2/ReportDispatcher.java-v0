@@ -1,0 +1,1034 @@
+package nie.sr2;
+
+import java.util.*;
+import java.io.*;
+import org.jdom.Element;
+import org.jdom.Comment;
+import nie.core.*;
+
+public class ReportDispatcher
+{
+	private static final String kClassName = "ReportDispatcher";
+	// We need this when referencing our class by name
+	private final static String kFullClassName = "nie.sr2." + kClassName;
+
+	public ReportDispatcher(
+		Element inConfigElem,
+		nie.sn.SearchTuningApp inMainApp
+		)
+			throws ReportConfigException
+	{
+		final String kFName = "constructor";
+		final String kExTag = kClassName + '.' + kFName + ": ";
+
+		// This will throw an exception if anything is
+		// wrong, it also checks fMainApp for null
+		fReportsConfig = new SearchReportingConfig(
+			inConfigElem, inMainApp
+			);
+
+		// Looking good
+
+		// Save this
+		fMainApp = inMainApp;
+
+		// Init some hashes
+		fCachedXMLReports = new Hashtable();
+		fSearchedForXMLReports = new Hashtable();
+
+	}
+
+	public String dispatch(
+		AuxIOInfo inRequestInfo,
+		AuxIOInfo inResponseInfo
+		)
+			throws ReportException
+	{
+		final String kFName = "dispatch";
+		final String kExTag = kClassName + '.' + kFName + ": ";
+
+		if( null == inRequestInfo
+			|| null == inResponseInfo
+			)
+		{
+			throw new ReportException( kExTag
+				+ "Null request/reponse object."
+				);
+		}
+
+		// Our eventual response, barring any exceptions
+		Element outElem = null;
+
+		String reportName = inRequestInfo.getScalarCGIField(
+			REPORT_NAME_CGI_FIELD
+			);
+		reportName = NIEUtil.trimmedStringOrNull( reportName );
+
+		// An overall display template
+		String reportTemplate = getReportTemplate();
+
+		// If no report, give the menu
+		if( null == reportName )
+		{
+			// Todo: Give list of reports
+			// throw new ReportException( kExTag
+			//	+ "No report name given."
+			//	);
+
+			outElem = generateMainMenu(
+				inRequestInfo,
+				inResponseInfo,
+				( null != reportTemplate )
+				);
+
+
+		}
+		// Else a specific report was requested
+		else
+		{
+
+			// Track down the report
+			XMLDefinedReport xReport = null;
+			try
+			{
+				xReport = locateXMLReport(
+					reportName,
+					true	// inShowNotFoundErrors
+					);
+			}
+			catch( Exception e )
+			{
+				throw new ReportException( kExTag
+					+ "Unable to locate/load/configure report \""
+					+ reportName + "\". Error: " + e
+					);
+			}
+			if( null == xReport )
+				throw new ReportException( kExTag
+					+ "Unable to locate/load/configure report \""
+					+ reportName + "\". Error - got back a null report."
+					);
+
+			// Now run it!
+			// It may throw plain old report run time exceptions
+			outElem = xReport.runReport(
+				inRequestInfo,
+				inResponseInfo,
+				( null != reportTemplate )
+				);
+	
+			// Sanity check
+			if( null==outElem )
+				throw new ReportException( kExTag
+					+ "Got back null XHTML report element."
+					);
+		}
+		
+		// By now we have a jdom tree that is either
+		// a menu of reports, or the results of a specific report
+
+		// Convert it to a String (XHTML)
+		String outDoc = null;
+
+		// If there's NO template
+		if( null == reportTemplate )
+		{
+		 	outDoc = JDOMHelper.JDOMToString( outElem, true );
+		}
+		// Else they ARE using a template
+		else
+		{
+
+			// Format what we got back as a string to
+			// substitute into the final page
+		 	String snippet = JDOMHelper.JDOMToString( outElem, true );
+
+			// get the marker text and options
+			List patterns = getReportingConfig().getMarkerLiteralText();
+			if( null == patterns || patterns.size() < 1 )
+			{
+				errorMsg( kFName,
+					"No patterns defined to mark substitution, returning null."
+					);
+				return null;
+			}
+	
+			// Get some other flags from the Search Engine config
+			boolean goesAfter =
+				getReportingConfig().getIsMarkerNewTextInsertAfter();
+			// statusMsg( kFName, "goesAfter=" + goesAfter );
+			boolean doesReplace =
+				getReportingConfig().getIsMarkerReplaced();
+			boolean isCasen =
+				getReportingConfig().getIsMarkerCaseSensitive();
+	
+	
+			/****
+			debugMsg( kFName,
+				"Will process input doc with " + inSourceDoc.length() + " chars"
+				+ ", Snippet with " + inSnippet.length() + " chars"
+				+ ", and " + patterns.size() + " pattern(s)."
+				+ " Options:"
+				+ " goesAfter=" + goesAfter
+				+ " doesReplace=" + doesReplace
+				+ " isCasen=" + isCasen
+				);
+			*******/
+	
+			// call the substituion routine
+			// Do the markup
+			outDoc = NIEUtil.markupStringWtihString(
+				reportTemplate, snippet, patterns,
+				goesAfter, doesReplace, isCasen
+				);
+	
+			// A final escape hatch to at least give them something
+			if( null == outDoc )
+			{
+				errorMsg( kFName,
+					"Did not find target pattern in report template."
+					+ " Will return unformatted report."
+					);
+				// Just slap some HTML tags onto the snippet
+				outDoc = "<html>" + snippet + "</html>";
+			}
+
+		}	// End if there was a template
+
+		// Sanity check
+		if( null==outDoc )
+			throw new ReportException( kExTag
+				+ "Got back null string from XHTML-to-String conversion."
+				);
+
+		// OK, we're done, return it!
+		return outDoc;
+	}
+
+
+	Element generateMainMenu(
+		AuxIOInfo inRequestInfo,
+		AuxIOInfo inResponseInfo,
+		boolean inIsUsingReportTemplate
+		)
+			throws ReportException
+	{
+		final String kFName = "generateMainMenu";
+
+		final String kTitle = "Search Reporting Main Menu";
+
+		final int kCellPadding = 5; // 10
+		final int kVerticalIndentPixels = 10; // 10
+		// ^^^ there is also cell padding
+
+		Element outElem = null;
+		Element contentHanger = null;
+
+		// If NOT using a template
+		if( ! inIsUsingReportTemplate )
+		{
+
+			// The eventual answer
+			outElem = new Element( "html" );
+			// Build up the heading
+			Element headElem = new Element( "head" );
+			// Add the CSS text, if any
+			String css = getCssStyleText();
+			if( null!=css )
+			{
+				// Add newlines to it for source readability
+				css = NIEUtil.NL + css + NIEUtil.NL;
+				// Todo: this should go inside HTML comments as well
+				// Create the style element and add the content
+				Element styleElem = new Element( "style" );
+				styleElem.setAttribute( "type", "text/css" );
+				Comment lComment = new Comment( css );
+				// styleElem.addContent( css );
+				styleElem.addContent( lComment );
+				headElem.addContent( styleElem );
+			}
+			Element titleElem = new Element( "title" );
+			titleElem.addContent( kTitle );
+			headElem.addContent( titleElem );
+			outElem.addContent( headElem );
+	
+			// Start building the body tag
+			Element bodyElem = new Element( "body" );
+			outElem.addContent( bodyElem );
+
+			// Center the whole thing
+			Element centerElem = new Element( "center" );
+			bodyElem.addContent( centerElem );
+
+			contentHanger = centerElem;
+
+		}
+		// Else they ARE using a template, so output much simpler tree
+		else
+		{
+			// Center the whole thing
+			outElem = new Element( "center" );
+			contentHanger = outElem;
+		}
+
+
+		// Add the title
+		Element titleElem2 = new Element( "h1" );
+		titleElem2.setAttribute( "class", "nie_report_title" );
+		titleElem2.addContent( kTitle );
+		// bodyElem.addContent( titleElem2 );
+		contentHanger.addContent( titleElem2 );
+
+
+		// The list of reports
+		// Todo: change this later
+		Element mainTable = new Element( "table" );
+
+		// for debug
+		// mainTable.setAttribute( "border", "3" );
+
+		// mainTable.setAttribute( "width", "100%" );
+		// ^^^ No, spreads out menu too far to left and right
+		mainTable.setAttribute( "cellpadding", "" + kCellPadding );
+		mainTable.setAttribute( "valign", "top" );
+		// bodyElem.addContent( mainTable );
+		contentHanger.addContent( mainTable );
+		// Element liReport = null;
+
+		// We will have a left and right column
+		Element leftTable = JDOMHelper.findOrCreateElementByPath(
+			mainTable,	// Starting at
+			"tr/td/@valign=top/table"	// path
+			// "tr/td/@valign=top/table/@border=1"	// path
+			,
+			true	// Yes, tell us about errors
+			);
+		Element rightTable = JDOMHelper.findOrCreateElementByPath(
+			mainTable,	// Starting at
+			"tr/td[2]/@valign=top/table",	// path
+			true	// Yes, tell us about errors
+			);
+
+
+		// Start adding individual reports
+		////////////////////////////////////////////////////
+
+		// The LEFT HAND Column / Table
+		////////////////////////////////////////////////
+
+
+		leftTable.addContent(
+			(new Element("tr")).addContent(
+				(new Element("td")).addContent(
+					generateReportListingElement(
+						inRequestInfo, inResponseInfo,
+						"popular_searches_ndays", null, null, null
+						)
+					)
+				)
+			);		
+
+
+		// Add a vertical spacer cell
+		JDOMHelper.findOrCreateElementByPath(
+			leftTable,
+			// "tr[2]/td/img/@width=0/@height=" + kVerticalIndentPixels
+			"tr[2]/td/@height=" + kVerticalIndentPixels
+			, true
+			);
+
+
+		leftTable.addContent(
+			(new Element("tr")).addContent(
+				(new Element("td")).addContent(
+					generateReportListingElement(
+						inRequestInfo, inResponseInfo,
+						"no_hits_ndays", null, null, null
+						)
+					)
+				)
+			);		
+
+
+		// Add a vertical spacer cell
+		JDOMHelper.findOrCreateElementByPath(
+			leftTable,
+			// "tr[4]/td/img/@width=0/@height=" + kVerticalIndentPixels
+			"tr[4]/td/@height=" + kVerticalIndentPixels
+			, true
+			);
+
+
+		leftTable.addContent(
+			(new Element("tr")).addContent(
+				(new Element("td")).addContent(
+					generateReportListingElement(
+						inRequestInfo, inResponseInfo,
+						"number_of_searches_ndays", null, null, null
+						)
+					)
+				)
+			);		
+
+
+
+
+
+
+
+		/***
+		leftTable.addContent(
+			(new Element("tr")).addContent(
+				(new Element("td")).addContent(
+					generateReportListingElement(
+						inRequestInfo, inResponseInfo,
+						"raw_log_ndays", " for yesterday and today", "days", "1"
+						)
+					)
+				)
+			);		
+
+		leftTable.addContent(
+			(new Element("tr")).addContent(
+				(new Element("td")).addContent(
+					generateReportListingElement(
+						inRequestInfo, inResponseInfo,
+						"raw_log_ndays", " for the past week", "days", "7"
+						)
+					)
+				)
+			);		
+
+		leftTable.addContent(
+			(new Element("tr")).addContent(
+				(new Element("td")).addContent(
+					generateReportListingElement(
+						inRequestInfo, inResponseInfo,
+						"raw_log_ndays", " for the past 30 days", "days", "30"
+						)
+					)
+				)
+			);		
+		****/
+
+
+		// The RIGHT HAND Column / Table
+		////////////////////////////////////////////////
+
+
+
+		rightTable.addContent(
+			(new Element("tr")).addContent(
+				(new Element("td")).addContent(
+					generateReportListingElement(
+						inRequestInfo, inResponseInfo,
+						"advertiser_summary_ndays", null, null, null
+						)
+					)
+				)
+			);		
+
+		// Add a vertical spacer cell
+		JDOMHelper.findOrCreateElementByPath(
+			rightTable,
+			// "tr[2]/td/img/@width=0/@height=" + kVerticalIndentPixels
+			"tr[2]/td/@height=" + kVerticalIndentPixels
+			, true
+			);
+
+
+
+		rightTable.addContent(
+			(new Element("tr")).addContent(
+				(new Element("td")).addContent(
+					generateReportListingElement(
+						inRequestInfo, inResponseInfo,
+						"frequent_visitors_ndays", null, null, null
+						)
+					)
+				)
+			);		
+
+
+
+
+		// Add a vertical spacer cell
+		JDOMHelper.findOrCreateElementByPath(
+			rightTable,
+			// "tr[4]/td/img/@width=0/@height=" + kVerticalIndentPixels
+			"tr[4]/td/@height=" + kVerticalIndentPixels
+			, true
+			);
+
+
+		rightTable.addContent(
+			(new Element("tr")).addContent(
+				(new Element("td")).addContent(
+					generateReportListingElement(
+						inRequestInfo, inResponseInfo,
+						"raw_log_ndays", " so far today", "days", "0"
+						)
+					)
+				)
+			);		
+
+
+		/***
+		rightTable.addContent(
+			(new Element("tr")).addContent(
+				(new Element("td")).addContent(
+					generateReportListingElement(
+						inRequestInfo, inResponseInfo,
+						"raw_log1", null, null, null
+						)
+					)
+				)
+			);		
+		rightTable.addContent(
+			(new Element("tr")).addContent(
+				(new Element("td")).addContent(
+					generateReportListingElement(
+						inRequestInfo, inResponseInfo,
+						"exposures", null, null, null
+						)
+					)
+				)
+			);
+		***/		
+
+
+
+		// Others
+
+
+
+
+		// Done
+		return outElem;
+
+
+	}
+
+
+
+	Element generateReportListingElement(
+		AuxIOInfo inRequestInfo,
+		AuxIOInfo inResponseInfo,
+		String inReportName,
+		String optExtraText,
+		String optParmName,
+		String optParmValue
+		)
+			throws ReportException
+	{
+		final String kFName = "generateReportListElement";
+		final String kExTag = kClassName + '.' + kFName + ": ";
+
+		if( null == inRequestInfo
+			|| null == inResponseInfo
+			)
+		{
+			throw new ReportException( kExTag
+				+ "Null request/reponse object."
+				);
+		}
+
+
+		inReportName = NIEUtil.trimmedStringOrNull( inReportName );
+
+		// If no report, give the menu
+		if( null == inReportName )
+		{
+			throw new ReportException( kExTag
+				+ "No report name given."
+				);
+		}
+
+		// Our eventual response, barring any exceptions
+		// Element outElem = new Element( "li" );
+		// Element outElem = new Element( "div" );
+
+
+		// Track down the report
+		XMLDefinedReport xReport = null;
+		try
+		{
+			xReport = locateXMLReport(
+				inReportName,
+				true	// inShowNotFoundErrors
+				);
+		}
+		catch( Exception e )
+		{
+			throw new ReportException( kExTag
+				+ "Unable to locate/load/configure report \""
+				+ inReportName + "\". Error: " + e
+				);
+		}
+		if( null == xReport )
+			throw new ReportException( kExTag
+				+ "Unable to locate/load/configure report \""
+				+ inReportName + "\". Error - report was null."
+				);
+
+
+		Element outElem = xReport.generateFancyLinksToThisReport(
+			inRequestInfo
+			);
+
+		return outElem;
+
+		/*******
+		// Get the title
+		String lTitle = xReport.getTitle( null );
+		if( null != optExtraText )
+			lTitle += " " + optExtraText;
+
+		// Get the link
+		////////////////////////////////////////////
+
+		// We use AuxIOInfo to build a link
+		AuxIOInfo newLinkInfo = new AuxIOInfo();
+		// Prime it with the basic URL we want
+		newLinkInfo.setBasicURL( getMainAppURL() );
+
+		// Copy over existing CGI values
+		// We have to say which fields we DON'T want
+		List excludeFields = new Vector();
+		excludeFields.add( REPORT_NAME_CGI_FIELD );
+		excludeFields.add( XMLDefinedReport.START_ROW_CGI_FIELD_NAME );
+		excludeFields.add( XMLDefinedReport.DESIRED_ROW_COUNT_CGI_FIELD_NAME );
+		excludeFields.add( XMLDefinedReport.SORT_SPEC_CGI_FIELD_NAME );
+		excludeFields.add( XMLDefinedReport.FILTER_SPEC_CGI_FIELD_NAME );
+		excludeFields.add( XMLDefinedReport.FILTER_PARAM_CGI_FIELD_NAME );
+		// Now do the copy
+		newLinkInfo.copyInCGIFields( inRequestInfo, excludeFields );
+		// And set the report name
+		newLinkInfo.addCGIField(
+			REPORT_NAME_CGI_FIELD, inReportName
+			);
+
+		// Add the parameter, if any
+		if( null != optParmName && null != optParmValue )
+		{
+			newLinkInfo.setOrOverwriteCGIField(
+				optParmName , optParmValue
+				);
+		}
+
+		// Now get the full href back
+		String href = newLinkInfo.getFullCGIEncodedURL();
+
+		if( null==href )
+			throw new ReportException( kExTag
+				+ "Got back null href, this link will not be created."
+				);
+
+
+		// Now create the final XHTML element
+		// we use <div> if not an active link
+		Element newTag = null;
+		newTag = new Element( "a" );
+		newTag.setAttribute( "href", href );
+		newTag.setAttribute( "class", NIE_REPORT_LINK_CSS_CLASS );
+
+		// And add the display text
+		newTag.addContent( lTitle );
+
+		// Add this to the top <li> tag
+		outElem.addContent( newTag );
+
+		// Return the tag!
+		return outElem;
+		***/
+
+	}
+
+	String getCssStyleSheetURI()
+	{
+		return XMLDefinedReport.DEFAULT_CSS_URI;
+	}
+
+	// Not getting a style sheet should not be a fatal error
+	// though we will log error messages
+	// Todo: let them load their own from elsewhere
+	String getCssStyleText()
+	{
+		final String kFName = "getCssStyleText";
+
+		String uri = getCssStyleSheetURI();
+		if( null==uri )
+		{
+			infoMsg( kFName,
+				"No CSS URI defined, returning null."
+				);
+			return null;
+		}
+
+		AuxIOInfo tmpAuxInfo = new AuxIOInfo();
+		tmpAuxInfo.setSystemRelativeBaseClassName(
+			kFullClassName
+			);
+		String answer = null;
+		try
+		{
+			answer = NIEUtil.fetchURIContentsChar(
+				uri,
+				getMainApp().getConfigFileURI(),
+				null, null,	// optUsername, optPassword,
+				tmpAuxInfo
+				);
+		}
+		catch( Exception e )
+		{
+			errorMsg( kFName,
+				"Error opening CSS URI \"" + uri + "\"."
+				+ " Returning null."
+				+ " Error: " + e
+				);
+			return null;
+		}
+		// Normalize and check
+		answer = NIEUtil.trimmedStringOrNull( answer );
+		if( null==answer )
+			errorMsg( kFName,
+				"Null/empty default CSS style sheet contents read"
+				+ " from URI \"" + uri + "\", returning null."
+				);
+
+		return answer;
+
+
+		// Good resource on tables and CSS, from Nick Sayer
+		// http://www.w3.org/TR/REC-CSS2/tables.html
+		// And overall CSS info
+		// http://www.w3.org/TR/REC-CSS2/cover.html#minitoc
+		// Selectors / pattern matching
+		// http://www.w3.org/TR/REC-CSS2/selector.html
+
+//		Inside HTML:
+//		<head>
+//			...
+//			<STYLE type="text/css">
+//				H1 { color: blue }
+//			</STYLE>
+//		</head>
+
+	}
+
+
+
+
+
+	String getMainAppURL()
+	{
+		return getMainApp().getSearchNamesURL();
+	}
+	public SearchReportingConfig getReportingConfig()
+	{
+		return fReportsConfig;
+	}
+
+
+	// This will return a null if not found, and maybe an error
+	// If a report IS found, but has a PROBLEM, you will get an exception
+	// I know it seems odd to have two failure modes, but one is
+	// sometimes expected, whereras the other is ALWAYS a serious error
+	// and we need to know the difference
+	XMLDefinedReport locateXMLReport(
+		String inReportName,
+		boolean inShowNotFoundErrors
+		)
+			throws ReportConfigException
+	{
+		final String kFName = "locateXMLReport";
+		final String kExTag = kClassName + '.' + kFName + ": ";
+
+		// fCachedXMLReports
+		// fSearchedForXMLReports
+
+		// Sanity check
+		inReportName = NIEUtil.trimmedStringOrNull( inReportName );
+		if( null == inReportName )
+		{
+			throw new ReportConfigException( kExTag
+				+ "Null/empty report name passed in."
+				);
+		}
+
+		debugMsg( kFName, "Looking for report " + inReportName );
+
+		// If it's in the cache, return it!
+		if( fCachedXMLReports.containsKey( inReportName ) )
+		{
+			debugMsg( kFName, "Returning previously cached report." );
+			return (XMLDefinedReport)fCachedXMLReports.get(
+				inReportName
+				);
+		}
+
+		// If we've tried before, don't bother again
+		// If it's in this hash, and not in the other, then
+		// we have tried before and failed
+		if( fSearchedForXMLReports.containsKey( inReportName ) )
+		{
+			debugMsg( kFName, "We have tried to load this report before." );
+			if( inShowNotFoundErrors )
+				throw new ReportConfigException( kExTag
+					+ "Previously failed to load XML Report \""
+					+ inReportName + "\"."
+					);
+			// Else just quietly return null
+			return null;
+		}
+		// Remember that at least we've tried before
+		fSearchedForXMLReports.put( inReportName, new Object() );
+
+		XMLDefinedReport newReport = null;
+		try
+		{
+			String reportURI = generateDefaultXMLReportURI(
+				inReportName
+				);
+			debugMsg( kFName, "Report URI is \"" + reportURI + "\"." );
+
+
+			AuxIOInfo tmpAuxInfo = new AuxIOInfo();
+			tmpAuxInfo.setSystemRelativeBaseClassName(
+				kFullClassName
+				);
+
+			InputStream stream = NIEUtil.openURIReadBin(
+				reportURI,
+				getMainApp().getConfigFileURI(), // optRelativeRoot
+				null, // String optUsername,
+				null, // String optPassword,
+				tmpAuxInfo  // AuxIOInfo inoutAuxIOInfo
+				);
+			// Close it and reopen with recursive open
+			stream.close();
+
+			debugMsg( kFName, "Found it, will now try JDOM constructor" );
+
+			// JDOMHelper elem = new JDOMHelper( reportURI, null, 0 );
+			JDOMHelper elem = new JDOMHelper(
+				reportURI,
+				// getMainApp().getSearchTuningConfig().getConfigFileURI(),
+				getMainApp().getConfigFileURI(), // optRelativeRoot
+				0,
+				tmpAuxInfo
+				);
+
+			debugMsg( kFName,
+				"Have created JDOM config tree, will instantiate report object."
+				);
+
+
+			// OK so far, so create the report
+			newReport = new XMLDefinedReport(
+				elem, fMainApp, inReportName
+				);
+
+			debugMsg( kFName,
+				"Have created report object, storing in cache."
+				);
+
+			// Save report in the cache
+			fCachedXMLReports.put( inReportName, newReport );
+
+
+		}
+		// OK, so we just couldn't locate it
+		catch( IOException ioe )
+		{
+			if( inShowNotFoundErrors )
+				errorMsg( kFName,
+					"Error locating XML Report \"" + inReportName + "\"."
+					+ " Returning null."
+					+ " Error was: " + ioe
+					);
+			return null;
+		}
+		// This is always an error
+		catch( JDOMHelperException jde )
+		{
+			throw new ReportConfigException( kExTag
+				+ "Error parsing XML in Report \"" + inReportName + "\"."
+				+ " Returning null."
+				+ " Error was: " + jde
+				);
+		}
+		// catch( ReportConfigException e )
+		// We let this bubble up the food chain
+
+		return newReport;
+
+	}
+
+	private static String generateDefaultXMLReportURI(
+		String inReportName
+		)
+			throws ReportConfigException
+	{
+		final String kFName = "generateDefaultXXMLReportURI";
+		final String kExTag = kClassName + '.' + kFName + ": ";
+
+		// somewhat redundant sanity checks
+		// inTableName = NIEUtil.trimmedStringOrNull( inTableName );
+		inReportName = NIEUtil.trimmedStringOrNull( inReportName );
+		if( inReportName == null )
+			throw new ReportConfigException( kExTag
+				+ "Null report name passed in."
+				);
+
+		// Form the name and return it
+		return DEFAULT_XML_REPORT_PREFIX
+			+ inReportName
+			+ DEFAULT_XML_REPORT_SUFFIX
+			;
+
+	}
+
+
+
+	nie.sn.SearchTuningApp getMainApp()
+	{
+		return fMainApp;
+	}
+
+	DBConfig getDBConfig()
+	{
+		return getMainApp().getDBConfig();
+	}
+
+
+	String getReportTemplate()
+	{
+		if( null != getReportingConfig() )
+			return getReportingConfig().getAndSetupOptionalReportTemplate();
+		else
+			return null;
+	}
+
+	// private Element fConfigElem;
+	private nie.sn.SearchTuningApp fMainApp;
+
+	// Search reporting configuration
+	SearchReportingConfig fReportsConfig;
+
+
+
+
+
+	// Holds JDOMHelper trees of reports we have located,
+	private Hashtable fCachedXMLReports;
+	// Keeps track of whether we've checked for a particular
+	// report or not, holds type Boolean
+	private Hashtable fSearchedForXMLReports;
+
+
+
+	// This gets us to the logging object
+	private static RunLogInterface getRunLogObject()
+	{
+		return RunLogBasicImpl.getRunLogObject();
+	}
+	private static boolean statusMsg( String inFromRoutine, String inMessage )
+	{
+		return getRunLogObject().statusMsg( kClassName, inFromRoutine,
+			inMessage
+			);
+	}
+	private static boolean transactionStatusMsg( String inFromRoutine, String inMessage )
+	{
+		return getRunLogObject().transactionStatusMsg( kClassName, inFromRoutine,
+			inMessage
+			);
+	}
+	private static boolean shouldDoTransactionStatusMsg( String inFromRoutine )
+	{
+		return getRunLogObject().shouldDoTransactionStatusMsg( kClassName, inFromRoutine );
+	}
+	private static boolean infoMsg( String inFromRoutine, String inMessage )
+	{
+		return getRunLogObject().infoMsg( kClassName, inFromRoutine,
+			inMessage
+			);
+	}
+	private static boolean debugMsg( String inFromRoutine, String inMessage )
+	{
+		return getRunLogObject().debugMsg( kClassName, inFromRoutine,
+			inMessage
+			);
+	}
+	private static boolean traceMsg( String inFromRoutine, String inMessage )
+	{
+		return getRunLogObject().traceMsg( kClassName, inFromRoutine,
+			inMessage
+			);
+	}
+	private static boolean shouldDoTraceMsg( String inFromRoutine )
+	{
+		return getRunLogObject().shouldDoTraceMsg( kClassName, inFromRoutine );
+	}
+	private static boolean warningMsg( String inFromRoutine, String inMessage )
+	{
+		return getRunLogObject().warningMsg( kClassName, inFromRoutine,
+			inMessage
+			);
+	}
+	private static boolean errorMsg( String inFromRoutine, String inMessage )
+	{
+		return getRunLogObject().errorMsg( kClassName, inFromRoutine,
+			inMessage
+			);
+	}
+	private static boolean fatalErrorMsg( String inFromRoutine, String inMessage )
+	{
+		return getRunLogObject().fatalErrorMsg( kClassName, inFromRoutine,
+			inMessage
+			);
+	}
+
+
+	public static final String REPORT_NAME_CGI_FIELD = "report";
+
+	private final static String DEFAULT_XML_REPORT_PREFIX =
+		AuxIOInfo.SYSTEM_RESOURCE_PREFIX
+		+ "xml_reports/"
+		;
+	private final static String DEFAULT_XML_REPORT_SUFFIX = ".xml";
+	public final static String NIE_REPORT_LINK_CSS_CLASS =
+		"nie_report_link";
+	public final static String NIE_INACTIVE_REPORT_LINK_CSS_CLASS =
+		"nie_inactive_report_link";
+
+
+
+		// The name of the system XSLT template we will call
+		// String templateName = "admin_showall";
+		// The resulting document
+		// Document formattedDoc = null;
+		// Try to format it
+//		try
+//		{
+//			formattedDoc = JDOMHelper.xsltDocToDoc(
+//				mainDoc,
+//				templateName,
+//				null, true
+//				);
+//		}
+//		catch (JDOMHelperException e)
+//		{
+//
+//			String msg = "SnRequestHandler:adminShowCompleteConfig:"
+//				+ " Got exception while formatting XML into HTML."
+//				+ " Exception=\"" + e + "\""
+//				;
+//			errorMsg( kFName, msg );
+//			setupTextErrorResponse( msg );
+//			return;
+//		}
+//		String response = JDOMHelper.JDOMToString( formattedDoc, true );
+
+}

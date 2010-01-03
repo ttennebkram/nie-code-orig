@@ -1,0 +1,979 @@
+SearchTrack
+
+Wells / Miles Kehoe / Oct '09
+1.       https  (required sooner than later)
+	http://java.sun.com/security/
+	JSSE SSL TLS JCA JCE JAAS PKI
+	in 1.4 com.sun.net.ssl Are Now in javax.net.ssl
+	com.sun.net.ssl.HttpsURLConnection.
+2.       multi-site (sooner than later)
+3.       maybe a front end app to log into multiple people/accounts
+	into the right site(s). (wish)
+
+
+TASB Encoding
+
+Bug: Unix: 29c Miles reported issue with DB script?
+
+Create map form (others?) cols/rows attrs break in the xhtml
+
+Doc new utils in nie.sr2.util
+	populator
+	fast importer
+	suggestion importer
+
+nie.core.HtmlTagIterator
+	new way to markup docs efficiently
+	circa 29xc
+
+Create map, fails to fetch URL duing map input page
+	I think it's a redirect to httpS
+	FAILED
+		www.wellsfargo.com
+		http://www.wellsfargo.com
+		http://banking.wellsfargo.com
+	Worked
+		httpS://www.wellsfargo.com
+
+Raritan MySQL bug
+They were running 4.1, we should spec 5.1
+??? Version of MySQL ?  Looks like we want 5.1
+BLOB/TEXT column 'colname' used in key specification without a key length
+Examples:
+	nie_log normalized_query
+	nie_log advertisement_code_sent
+	nie_log_meta_data field_value
+	nie_log_meta_data field_name
+
+1.       Cosmetic bug: When you start configurator with none-existent  configuration file, it prompts whether it should create a file by that name. The dialog offers Yes, No, and Cancel. Yes and No work as expected, but Cancel gives a Java error in the command window from which configurator started.Cancel and No should work the same and exit w/o error.
+
+2.       Question in configurator: If I'm using an API to do the heavy lifting, many of the fields are not required. Sometimes I've seen it give errors if parts are blank; I need to check to see whether any of the fields handled by API logic cause the Validate to give an error. In an ideal world, I'd say have an option that lets me select API or proxy, but as long as it doesn't cause validation errors that's ok.
+
+Allow log directory, and give implicit file.
+	Thought I did that, but didn't work.
+	Check for dir.
+	Check if no slash nor dot.
+	Old task, thought done:
+		? assign "niesrv.out" to logs/ dir if it points
+			to a directory, not a file.
+		in nie.core.RunLogBasicImpl.setOutputURI()
+
+Cookies!
+
+Configurator: no "test this search" button
+
+LicGen, offer to update file?
+
+Configurator C2 refresh not working?
+	But does still work from web browser
+
+ERROR: 9/3/08 7:30:15 AM PDT BaseMapRecord(+).genericGetPropertyFromCacheOrNull:
+ Null cache passed in for property "text" For cache 'cAltSloganDefaultsCache' Re
+turning null.
+ERROR: 9/3/08 7:30:15 AM PDT BaseMapRecord(+).genericGetPropertyFromCacheOrNull:
+ Null cache passed in for property "color" For cache 'cAltSloganDefaultsCache' R
+eturning null.
+ERROR: 9/3/08 7:30:29 AM PDT BaseMapRecord(+).genericGetPropertyFromCacheOrNull:
+ Null cache passed in for property "text" For cache 'cAltSloganDefaultsCache' Re
+turning null.
+ERROR: 9/3/08 7:30:29 AM PDT BaseMapRecord(+).genericGetPropertyFromCacheOrNull:
+ Null cache passed in for property "color" For cache 'cAltSloganDefaultsCache' R
+eturning null.
+
+hard coded list of regexes to exclude from logging, action
+
+/ imamge links broken in admin report
+	http://localhost:9000/files/images/webui/help-button-small.gif
+	Had changed /files/ to /file/ in SnRequestHandler
+	needed to change it a bunch of other places
+	now a var
+		nie.sn.SnRequestHandler.FILE_CONTEXT_CGI_PATH_PREFIX
+	reports main area is in sr2.ReportConstants
+		nie.sr2.ReportConstants.IMAGE_URL_PREFIX
+
+nukedb not working?
+
+
+
+Fidelity hang on retirement planning
+
+Email server, license, etc
+
+ERROR: 6/30/08 3:22:18 PM PDT NIEUtil.markupStringWithVariables: Unable to resol
+ve "cgi.client_host". Removing variable from string.
+
+Miles' error:
+maybe use Saxon vs. built in XSLT
+http://67.121.68.98:9000/?report=PopSearchLinked&password=culver&command=report&nie_context=admin&days=1
+Then click week or month
+
+Markup mini form in results
+password as md5 hash, in URL, config
+Client Side Script mode
+
+. Back fill number of searches for query
+	nie.sr2.util.BackfillMatchCounts
+	nie.sn.SnRequestHandler.setupProxySearch() refactored
+	to allow us to call staticDoActualSearch()
+
+Data loader, roller
+	nuke report cache
+	auto backfill for missing data
+
+What would Google do (suggestion)
+
+Google One Box support
+
+When searching maps, use alt_term in search criteria along with term outer join
+
+allow for partial matches, word matches
+
+Adding special sentinals for term matching:
+	default (default)
+	all *
+	no results -
+	null search (null)
+	regular defined results
+
+number of days in Trend
+
+click through
+
+Config: ssga.com form detect
+ERROR: 6/13/07 3:07:45 PM PDT FormInfo.registerOptionValue: Null/empty option field name passed in.
+
+Config: Auto-detect will not overwrite existing values
+Status: 6/13/07 3:08:22 PM PDT Configurator.copyOverSearchConfigFields: search_url: Not overwriting existing value.
+
+? still? config mode fails and exits instead of entering passthrough
+
+raw_log_ndays, different "-" for num results vs adv code
+	<td class="nie_numeric_cell"> - </td>
+	vs
+	<td class="nie_data_cell"> - </td>
+	^^^ doesn't line up nicely
+	^^^ empty "N" cell also turns from numeric to generic data
+
+/ Allow for separate base URL in search engine config, see Fidelity
+	nie.sn.SnRequestHandler.markupWithBaseHref
+	nie.sn.SearchEngineConfig.NO_URL_MARKER
+	nie.sn.SearchEngineConfig.getBaseURL()
+	nie.config_ui.tabs-2.search-engine.xml
+	/nie_config/search_tuning/search_engine_info/base_url
+/ Use "%like%" in find maps, Done for term and url, NOT for alt_term
+	nie.webui.xml_screens.QueryMaps.xml
+	nie.webui.xml_screens.QueryMaps.java
+	nie.sr2.java_reports.ListMapsForTerms4
+	nie.sr2.ReportConstants.MAP_SELECTOR_REPORT_NAME
+/ Show admin URL in startup
+	nie.sn.SearchTuningApp.run()
+/ change password form to type "hidden", FF already does it
+	IE can't handle spaces in attrs, including type="password"
+	fixed in nie.webui.xml_screens.generate_form.xslt
+/ Don't make Lucene required
+/ snippet support AND logging
+
+	
+
+
+XPump:
+support desc tag
+automatic memory QUEUE to disk queue, with cleaning
+status exception catching for CDATA parameters in monitor
+can lower priority, but should not raise, self vs others vs q based
+high/external latency flag
+global error queue
+nested XPumps, name scoping
+
+with default configurator get empty Lucene, then on startup it is unhappy
+
+default config we ship should use our include hiarchry
+
+262 didn't have Lucene jar, needed for check even if not using
+
+init_db doesn't work if database config has <test_query /> in it
+
+problem rendering HTML form if no sub site fields are defined
+
+work unit messages not getting attached to work unit
+	work unit modifier for example
+
+trigger queue keeps bitching
+	exit processor calls queue, which then wants exit's thread, which
+	is not in its list
+
+move_under needs option to create first node
+
+change order of nodes, or at least of one node
+
+spanning line CSV
+
+C changing log level and refresh not the same as start new, still get timing
+C changing log level to default and refresh gives super detailed output
+
+bug in nuke db shell scripts
+
+roll dates, time truncation issue with Postgresql?, get all midnight?
+
+
+hello_db/DBConfig should allow for -import_directory . to be optional
+
+Configurator: too big for small screens, allow for scroll
+Configurator: repaint issues on buttons
+
+Add support for importing dates vi CSV, and maybe in some resonable formats
+
+
+This is a known limitation if no terms have been mapped.
+Fix: Define a map, then exit and restart.
+! Transaction: 5/19/04 12:03:24 PM PDT SnHTTPServer.run: In from 10.0.1.249
+ERROR: 5/19/04 12:03:25 PM PDT BaseMapRecord(+).genericGetPropertyFromCacheOrNul
+l: Null cache passed in for property "text" Returning null.
+ERROR: 5/19/04 12:03:25 PM PDT BaseMapRecord(+).genericGetPropertyFromCacheOrNul
+l: Null cache passed in for property "color" Returning null.
+With Create Map form, maybe because of Filter check boxes?
+	effects drop down lists
+
+product todo items from meetings (add to wish list, not for Aug release)
+
+            emailing to admin if error
+            "full circle" mockup for document click through
+            apply search filter to reports
+            unique terms / popular searches by unique visitor
+
+
+tests:
+verify grace period still logs but no suggestions
+register_service with bad key
+lic util to distribute to customers to show machine name
+
+
+/ article: top ten search results mistakes
+article: search iteration
+article: recycle diff between DB terms and search engine terms
+/ article: ask dr. search, use if <base> tag
+
+Assume <db_redirection_map /> if have DB and nothing else
+Assume reports if DB is specified, then warn about missing items
+
+! aopa: refresh required to see new ads
+! aopa: sort ads by most recent LAST
+aopa: show last mode date of maps/ads
+aopa: some type of login screen
+
+/ Tibco: do a on focus select all in text area forms
+
+home spider: look for hidden args in action URL
+
+/ retest with bad pattern, all 3 dbs
+. bogus null search
+/ form tool: get back corrected (post redir) URL from form info tool
+jdomhelper settext: in addition to length, also use <,>,&, etc for CDATA clues
+form tool: bogus errors, see form-errors, xmlns: and one other
+C ad reports: check font tags for consistency
+
+get SQL system time
+
+AOPA text ad field limits: Title:20 DescLines 1-4:26 URL:1024
+
+Miles: test searches somehow segregated from real data
+Mark: ability to test markups without having them be "public" yet
+
+
+config: default http:// for search engine and search names
+
+/ ! reduce to warning Miles' bogus empty test drive tags
+
+/ ! Tibco: seed term with y:y' in it on Solaris
+? ! Tibco: green check mark, bad error, after map is deleted
+/ ! slowdown with new screens
+
+/ cancel doesn't work on Query Maps form
+
+
+. Bogus Todo item in warning message:
+. WARNING: 3/26/04 4:55:19 PM PST SearchTuningConfig.readAndSetupMappingFromDataba
+se: No URLs, alternative terms or data items found in map # 6. Maybe you're plan
+ning to add some interactively? (Todo: Not yet implemented.) Will skip all the t
+erms in this mapped keyword set, but will continue to read in the remainder of t
+he redirect maps.
+
+clean up css
+remove vertical alignment from datetime
+handle no user classes better / links vs drop downs
+
+
+
+Misc:
+! If DB not reachable, server won't start and even just to redir
+! Runlog granular verbosity control in XML
+B DB: doesn't seem to understand to do count query if it auto generates a test query
+D spurious verbosity msg if run log has no verbosity
+C AOPA: XSLT DB script: Oracle create table (indicies) broken, XSLT counter, j14?
+
+UI Low:
+no validation of user class
+drop down defaults not initialized of zero records are in the system
+	due to no calls to sn.BaseMarkup contstructor because there were no records
+	maybe have anotehr constructor that just does that one thing???
+
+If Ad loads with unknown user type then it still shows up with green check mark
+
+Tibco log issue:
+? may have been caused by disconnect and then reconnect to vpn
+ERROR: 3/25/04 1:41:47 PM PST DBConfig.runQueryOrNull: Got an exception running
+the query "SELECT count(*) FROM nie_log WHERE transaction_type = 1 AND start_tim
+e >= '18-MAR-2004 13:41:47'". Exception: java.sql.SQLException: [Microsoft][SQLS
+erver 2000 Driver for JDBC]Connection reset Will return null.
+ERROR: 3/25/04 1:41:47 PM PST DBConfig.testQueryNumRows: Invalid results object
+array for test query; returning -1. parts=null
+
+
+Tibco on search failure:
+
+. Tibco	ERROR: 3/9/04 2:58:03 PM PST DBConfigException.constructor: Called with message "DBUpdateStmt.sendUpdate: Problem mapping value object to field type. field = "end_time", object type = "java.sql.Timestamp", configured field type code = 5 Error: java.sql.SQLException: [Microsoft][SQLServer 2000 Driver for JDBC]Invalid parameter binding(s)."
+
+
+
+/ sn: remove forced <br> at end of wms markup
+/ ERROR: 3/24/04 2:35:11 PM PST NIEUtil.stringToIntOrDefaultValue:
+	Was passed in null or empty string. Will return default value of -1.
+/ Bugs? ERROR: 2/18/04 11:04:04 AM PST DbMapRecord.getAlternateTerms(2): Null term # 1 Transaction: 2/18/04 11:04:11 AM PST SnHTTPServer.run: New connection establishe d from 10.0.1.249 WARNING: 2/18/04 11:04:11 AM PST DBTableDef.getCGIFieldName: Unimplemented field "search_names_problem_message" was referenced.
+/ bug? WARNING: 2/18/04 10:44:27 AM PST SearchLogger.initSqlFieldInfo:
+	Tables have already been initialized, returning.
+/	WARNING: 3/9/04 2:58:03 PM PST DBUpdateStmt.setValue: Unimplemented field "search_names_problem_message" had a value set. This value will not be sent to the database.
+/	WARNING: 3/9/04 2:58:03 PM PST DBUpdateStmt.createSQLStringWithPlaceholders: Skipping unimplemented field "search_names_problem_message".
+/	WARNING: 3/9/04 2:58:03 PM PST DBTableDef.getFieldType: Unimplemented field "search_names_problem_message" was referenced.
+x text ad: Enter on text field seems to do cancel, should do error
+/ C on pattern matching: maybe increase default, give better warning message
+/ QueryMap form
+	Spurious error: ERROR: 3/22/04 12:10:49 PM PST AuxIOInfo.getScalarCGIField:
+	Was passed in null/empty field name. Returning null.
+x C give list of existing ad codes
+/ activity report: no sorting on date on SQL server
+/ C spelling: look for presense, should be presence
+/ Tibco: no init_db.sh
+/ ?! register_service.bat: bad label if service register fails, also better doc exe
+/ dist: references to aopa in samples directory
+/ DB: old log table names in samples
+/ Tibco: force search order on reports
+/ ! Tibco: read-only popular searches, instead of 0 get -, for ones that don't match
+/ need valid help icon on create text ad page (2nd [?])
+/ AOPA: press return on search form causes error, should just do search
+/ edit text ad with only one ad should go right to the ad, instead get list
+/ ! Tibco: Trend Rerport: click on "Main Menu" link, very odd error
+/ ! Tibco: BUG: reports: drill down from page N broken due to page N cgi variable
+/ bug: Trend report, 30 vs 60 days in title
+/ wrong tool tip legend on not-mapped yellow triangle
+/ UI: edit text ad from list, OK, gives error
+	java.sql.SQLException: Invalid column name (?STACK)
+/ list maps: default to action to edit first user class
+/ ! text ad summaries not being saved / displayed?
+/ if (choose action) get nasty nessage
+
+
+
+June?
+
+/ top queires with LOTS of reesults
+
+top queries with no doc views
+top docs viewed
+Tibco: support multiple sites in same db
+Tibco: show total number of matched records in stats line
+Tibco: meta refresh every N minutes
+Tibco: menu of links when you login as admin and haven't given a command
+
+dev: get rid of dependance on kSqlFields in SearchLogger, pull from schema
+dev: fix SEARCH_NAMES_PROBLEM_MESSAGE, SN_PROBLEM_MSG_DB_FIELD in SearchLogger
+
+validation of maximum input length
+dist: Unix: support syntax check for init_db.sh, port nuke_db.bat
+
+Revised abbreviated bug list (/=done, .=in-progress)
+Legend:
+	(no prefix) = open bug or enhancement request
+	! = urgent
+	letters: presumed priority
+	. = ... = in progress or partially complete, perhaps awaiting testing
+	/ = check mark = completed
+	? = unsure / disagreement / ill-defined / pending dicussion / needed?
+	, = on hold or pending on something else
+
+
+August 2004 Release:
+-----------------------------------------------------------------------------
+Goals
+	A timing vectors (to help plan Oct release)
+	A some type of login screen / menu (on ping, or no cgi data/context)
+	A update moded search reports to have action links
+	A ? support CGI POST protocol to host search engine
+        . A add <!--results go here--> to pattern default (yes, this is Aug)
+        A adjust total % coverage in reports
+	(done) B Check URL and fetch meta data
+	(done) B auto-select textarea
+	B-C did they take any of our suggested actions?
+		logging reports, similar to ads
+	(done) C Alpha 1 of "configurator"
+	C Alpha 2 of Installer
+	C schema freeze for 6 months
+	C document click through and report
+        bug?: are we missing tool tips?
+	Bug: Oracle/jvm14 Index issue / workaround
+	Bug?: caching of AddMap XML form, drop down lists, system default
+	fix?? % in "no results"
+	fix?? % in "too many results"
+	D ? option to turn off popup
+
+
+Fri Aug  6: Ship (or before)
+Fri Jul 30: FCS candidate
+Fri Jul 23: 1st release candidate
+Fri Jul 16: Final feature code freeze
+Fri Jul  2: pri-A feature code freeze (goal)
+Fri Jun 11: Aug release feature set / priorities
+
+
+-----------------------------------------------------------------
+June:
+
+General plan:
+* 7-8 week release cycles
+* Each release will have ONE A-priority enhancement
+	and then a list of B and C wish-list items
+* Releases will have TWO feature-code-freeze dates
+	- Freeze for A-priority item
+	- later, if time permits, a freeze for B and C items
+* Testing on A item will happen once initial code freeze happens
+* Any issues with A priority will supercede B and C items
+* Once A priority item is nailed down a code snapshop will be taken
+	- an early release may be considered at that point
+* Milestone dates typically on Fridays, allows for weekend work if needed
+
+
+June 2004 Release:
+-----------------------------------------------------------------------------
+Schedule, working backwards:
+
+Fri June 4: Ship (or before)
+Fri May 28: FCS candidate
+Fri May 21: 1st release candidate
+Fri May 14: Final feature code freeze
+Fri Apr 30: pri-A feature code freeze (goal)
+Fri Apr 16: agreement on UI
+Fri Apr  9: June release feature set / priorities
+
+Current Goals:
+
+A Priority:
+
+	/ Feature: "moded" search, based on CGI field input
+	/ Bugfix: we should at least startup and do passthrough searches if DB is down
+
+B Priority:
+
+	/ bugfix: bogus null searches
+	/ time-bomb keys
+	/ menu redesign
+	^ B did they take any of our suggested actions?
+		and reports, similar to ads
+	^ mbk1: Automagically picking up title and summary when admin enters a URL
+	/ new report: searches with TOO MANY results
+	^ Tibco suggestion: admin menu on ping screen
+	B support CGI POST protocol to host search engine
+	Alpha 2 of Installer
+	. Alpha 1 of "configurator"
+	schema freeze for 6 months
+	B: effective dates for suggetions ads
+	/ Fix: debug verbosity settings in run log section of config file
+
+wishlist
+	search form mining for large list of URLs
+	check all links, make sure still valid
+	Tibco: meta refresh every N minutes
+	auto-scheduler
+	maintain support for Java 1.2
+	investigate AOPA XSLT database issue
+	total number of matches show in reports, or 1000+, etc.
+
+-----------------------------------------------------------------------------
+April Release:
+
+
+Goals:
+	A Edit Ads via the UI and track effectiveness of ads and suggestions
+		- UI for each type of promotion
+		- drop down action selection from report
+		- also track click-through of WMS and Alt Terms
+		- backward looking by term
+		- backward looking by specific ad, exposure and click-through
+	B: other Ad/reporting nice to have's
+		B: effective dates for suggetions ads
+		B: control order of ads
+		- detect click through of search-engine results document
+		- detect clicking through to 2nd page of results
+		(C) detect how they left page (via any click)
+
+	Other items, only after abvoe:
+
+	schema freeze for 6 months
+	cvs source code control
+	mbk1: Automagically picking up title and summary when a user enters a URL
+	B support CGI POST protocol to host search engine
+	C "orange" report (only yellow and red items, and too many hits)
+
+
+Schedule (working backwards):
+	Fri April 9: Release (or before)
+	Fri March 19: Final feature code freeze
+	Fri March 5 - Fri March 12: A-priority code freeze
+	Fri Feb 20: UI design for Ad edits finalized
+	Fri Feb 13: initial UI ideas submitted
+	Feb 20 - on: internal dev coding to make UI forms easier to proccess
+
+-----------------------------------------------------------------------------
+
+chaff /misc
+	mbk3: terms defined based on partial matches/subset language
+	    searchfield<contains>support
+	    searchfield<contains>(how<and>buy)
+	    searchfield<contains>(where<and>buy)
+	mbk5: supercategories
+	    to mapped terms 'liability' and 'lawsuit' can both be
+	    viewed in reports as 'insurance'
+	mbk6: license software based on date
+	mbk7: xml free configuration
+	idea: show us on 2nd page
+	idea: tweak search form
+	idea: document click through
+	/ Bug fix: refresh command (impacts installation / stability)
+	? B Edit redirects via the UI (AOPA uses a few redirects)
+		- Issue: a single redirect overrides ALL other markups
+
+-----------------------------------------------------------------------------
+June Release:
+
+Goals:
+	A support CGI POST protocol (if not delivered in April release
+		and then
+	B "moding" (behavior based on visitor selectable form parameters)
+	B form-specific behavior (similar code as "moding")
+	^^^ both of these require UI design / updates
+	mbk4: Real Windows installer
+	mbk2: customization per suggest object (image/icon/font size/color/background, alignment.....)
+	C reports to show various moded and form searches???
+	B AOPA bug: slashes in Advertiser reports
+
+Questions:
+	additional parms on same screen or different screen?
+	drop downs or fill ins
+	when new parm is added, are existing records qualified or unqualified?
+	include dates?
+	include site id?
+	logging of parms?
+	reports on parms?
+
+Sample "moded" forms:
+	http://www.aopa.org/search.shtml
+	http://www.xilinx.com/company/search.htm
+	http://www.appliedbiosystems.com
+	http://www.cypress.com/srch_adv_all.cfm
+
+
+Schedule (working backwards):
+	Fri June 11: Release
+	Fri May 21: Final feature code freeze
+	Fri Apr 30 - May 7: A-pri code freeze
+	Fri Apr 30: UI and report designs complete for B priority items
+	Mon Apr 12: dev design/planning starts
+
+
+-----------------------------------------------------------------------------
+Aug:
+
+
+Oct:
+
+
+Dec:
+
+
+
+S$ "moding" user search form parameter based query expansion / matching
+	Xilinx, Applera? (old PE, Mike B)
+
+#End User Experience / Search Tuning Features
+#############################################################
+Miles: merge results from multiple places
+	Ex: Db lookup of empoyee number and regular search
+Miles: spelling check
+Miles: partial matching, query contains, in order of words, wildcards
+	how % buy % fridge
+	how % buy % printer
+	where % buy % printer
+Miles: fut: help user to build extended query interactivly
+	Example "skies", ask for size
+M* C Miles: I *really* miss search-term specific images
+M* behavior based on which form -> isn't this just multiple sites???
+	what would UI look like?
+	what reports would need to be changed/added?
+better error screen
+partial matches (match one word of a phrase, etc)
+match on null search
+match on no hits
+match for EVERY query do this
+long term: dymanic stream markup with chunking (to seem faster)
+
+
+#Reporting Features
+#############################################################
+* Embed-able / guest reports
+better icons
+B Reports
+	"orange": no results + not mapped + too many
+	hyperlinked trend
+	apply filter to report: ex: searches that had TFR, or by older dates
+Miles: "don't bug me about this term any more" icon
+category based (all cars reported under "auto", etc.)
+document click through tracking / reporting
+tracking sessions / specific users
+D Miles: raw transactions should show IP address
+D generally make showing nulls an option
+D bug: For the past 7 day(s) - can't we make that days and
+	day report 'day'? get rid of the s? We know what report it is?
+? bug: search per day report should have drill dowm on num searches?
+? enh: for repeated IP on raw trans, can we consolidate the COUTN for each
+	and when u drill the term see the number?
+	maybe add link to visitors details
+Reports on Admin activity and Report viewing
+
+
+#Administration (not including reporting)
+#############################################################
+* Real logins / roles
+different users and passwords, different reports menus
+S$ * Multiple sites, sub-sites, forms
+	(need well defined UI, REPORTS, match rules, etc)
+Emailing reports
+	admin: errors, drop in search activity, etc.
+	notices: orange report, new top term, new top visitor?
+	regular: send me my favorite reports
+	good titles/subject lines
+	to NIE: admin, maybe others
+B separate admin port
+export CSV log data via UI
+no cleartext password
+auto fetch titles and summaries / actual validation
+Add/update more thorough listing to XSLT admin show all config page
+	also handle defaults
+"nightly" script / "nightly" thread as part of main process
+UI to configure system options
+check lengths of input fields
+AOPA: Edit/add advertisements
+AOPA: UI support for simple redirects
+? if blank out url on map form, consider it a delete request
+import / export utility: better handling of dates
+D update System "show all" report
+D when showing maps, bold matching text in terms or urls
+ip address or port for admin, allow/deny rules
+? C "show all" config report, is this now covered by admin?
+? bug: need 'Return to main report menu' link in create/edit..
+refresh: support command line
+restart: support command line
+?. check config option without running
+	/ syntax
+	send email if problem
+	check image link urls
+	check page urls
+	maybe fetch or warn about missing titles, summaries
+	maybe autofetch -> UI
+? refresh: should you be able to change port?
+? refresh: should you be able to change password?
+? refresh: should you be able to change the URI?
+? security issue with leaving password in config tree, maybe md5 it
+? rollback
+
+
+#Misc
+#############################################################
+* Licensing / expiration, etc.
+Miles: add time stamp so if license expires we only log data
+S$ support POST
+B developer support, reports, links, UI, menus
+load from url or then try file, load from url and cache locally
+	combined this would allow remote XML files to be posted and safely fetched
+confirm fails with 1.1
+works with JVM 1.2?
+works with Oracle JVM 1.3?
+works with JVM 1.4?
+works with JVM 1.5?
+works with BEA
+works with IBM
+works with open source?
+
+
+
+#Dev
+#############################################################
+dev: more flexibility in creating menus and links, xml based
+C Trend automatically cached at night with DNS
+auto periodic cleanup of any orphan data in DB
+dev: DB script, have -overwrite_data do delete * even if no csv
+field SEARCH_NAMES_PROBLEM_MESSAGE missing from nie_log
+D doc: config file search_engine.xml has search spelled sewarch near top
+D doc: need to remove all the 'used to be' and explanations in files
+? ins: did not work until nuke_db and init_db - readme didn't seem to
+	require on 212 release...
+somebody should review the 6 online help screens, have been spell ckd
+refresh: more atomic, have each SnHandler grab it's own SnConfig handle
+still can't reliably reclaim port
+. db inherited fields
+. caching of xslt
+. markup patterns
+	/ before or after
+ 	/ in place of
+	/ more than one
+	/ mod case
+	white space
+	Nth
+	true regex
+? clean up error messages w/ new lines of possible
+
+
+
+#Bugs
+#############################################################
+Bugs:
+/ odd drill down issue by IP address
+B AOPA: other aopa issues ( the "/" in advertisement reports )
+first edit/cancel on 2nd page of map list incorreclty returns to first page
+	but subsequent ok/cancel ops correctly return back to the 2nd page
+no hits report: bug (null search) does not show up in either report java or xml
+bug? refresh not working with search engine defaults???
+? bug: looks like refresh command does nto read the search engine url fields.
+	(have to try to dup)
+bug? extra db connection messages on TrendReport when using
+	Postgresql? isClosed isn't right?  harmless but weird
+. C cleanup extra URL variables
+D check out this warning
+	WARNING: ... CreateMapForm.augmentFormFromExistingData:
+	Didn't get any Webmaster Suggests urls.
+	Target term = "null", map ID = "1002".
+
+
+
+. (partially fixed) B (new) very slow Advertiser Details report at aopa
+? Spurious error in log file:
+	ERROR: 12/2/03 10:14:41 AM PST NIEUtil.stringToIntOrDefaultValue:
+	Was passed in null or empty string. Will return default value of -1.
+	Confirm? Only when redisplaying form with error???
+? Warning: SearchLogger.initSqlFieldInfo:
+	Tables have already been initialized, returning.
+? Did not get errors with duplicate maps
+?. Fix shutodown, mostly fixed
+
+
+#Past
+#############################################################
+
+Sean's Top Issues: (copied and included above)
+* Licensing / expiration, etc.
+* Real logins / roles
+* Embed-able / guest reports
+* Multiple sites, sub-sites, forms
+
+? whether to add buffer white space
+? shutdown command once login
+? shutdown/restart from web broser
+? Bug: don't always get suggested term for create link
+
+? C initial setup issue on new database?
+? B trend: 1st two terms i enterered are both there.. must have come 
+	before any reports run. Now I doi a new search, notrhing shows up.
+	Hoiw can we fox that for 'last day' trend? Maybe a "cache_days=false"
+	to force a refresh every time?
+? Prefixes can be combined.
+? ! question marks in XSLT formatted dump?
+?. Style tags for wm suggest and alt suggest
+? express link/code
+/ Workaround for lack of no icon option:
+	http://www.ideaeng.com/images/1pixel.gif
+/ Restart (refresh)
+/ UI
+/ more logging / debug outuput control
+/ 	level
+/ 	which classes
+x ? Did not work on "virgin" machine without clearenv
+x scripts NOT in TOOLS directory as documented
+/ ! XSLT not working in distribution
+/ date-time stamop activity in server
+/ error level reporting option in server
+/ allow option of "no icon"
+/ refresh yourself command
+/ shutdown command once login
+/ broken: xslt admin showall in distribution, crimson path?
+? some image links broken
+/ ! Move base tag to earlier in HTML header so cascading style sheets and
+	early java script work with new relative path
+/ doc notice about console window highlights
+/ doc notice about how to run report
+	http://north:9000/?nie_sn_context=admin&cmd=showall
+/ A trend: verify caching logic
+/ A trend: don't show nulls by default
+/ A trend: zero records, say "no data available"
+/ A trend: min N rows, fill with -'s
+/ A trend: respect max rows
+/ C trend: more care in day vs days
+/ dump util to CSV
+/ rename main map table to just nie_map, less confusing & more consistent
+	w/other tables
+/ (works) double check that ad-click-details works
+x lead in Main screen
+/ xslt to delete and view
+/ CreateMap to delete and view
+/ add delete and view to map selector
+/ EXPORT a setup to CSV
+
+/ alt term cosmetics settable per map, on form
+	dropdown in xslt ("Did you mean?", "See also:" etc.), and color
+/ help links
+	, text for help (times 3)
+	/ popup window JS link
+	/ graphic (just wire up in XSLT, pass in image root, help root)
+
+
+/ spurious </nobr> tags
+/ fix title of form
+	now says "Create Directed Results" or "Edit Directed Results"
+/ cancel on form is not properly handled
+/ (2) linked reports: get correct exists/not status
+/ error display in red
+/ required terms in bold/* ?
+? fix menus if no UI???
+/ B initial screen: drop initial screen in favor of "always there" screen 
+/ B initial screen: remove trend report from main menu 
+/ B initial screen: Add Most pop searches last day as default report first page 
+/ A menu: drop raw transactions
+/ B menu: rearrange to horizontal
+/ B Allow deleting maps, etc
+x B bug: when u click on trend for diff period you get trend in middle of
+	a screen.. htink I'd liek it on the SAME main screen but with diff
+	selections?
+/ C bug: font issues in reports
+	he likes Most Pop Searches, all fields
+		search term: nie_even_row nie_data_cell nie_report_link
+			font-family:sans-serif
+		count: nie_even_row nie_numeric_cell
+		percent: nie_even_row nie_percentage_cell
+			numeric and percent currently: font-family:sans-serif
+				WAS MONOspaced way back
+		Conclusion: Miles likes sans-serif
+	differences on Search Details drill down
+		2 font groups:
+		Group 1: pages found, mapped, visitor address
+			visitor address: nie_data_cell nie_report_link
+				report_link is font-family:sans-serif
+			found, mapped: nie_numeric_cell
+				numeric is font-family:sans-serif;
+		Prefers group 2: search terms, domain name, date and time
+			search term: nie_data_cell
+				data_cell is browser default (serif)
+			domain name: nie_data_cell
+			date and time: nie_datetime
+				datetime is font-family: monospace; font-size:-1;
+		Conclusion: Miles likes serif fonts, or mono-spaced smaller fonts,
+			over sans-serif???
+	review of report formatting, CSS consistency, etc.
+	Fonts should be same
+	most pop search report. look at font for terms
+	drill down on term (miles/st)
+	terms are in different font (looks better.. fix first page)
+		(also font on IP addr & pages found/map looks diff 
+		than font on term and domain and date/time
+	drill down on visitor IP - back to original font for 'Search' 
+		trans type
+	font issue on searches per day
+	I like the font on the Search Detail
+	raw transaction: (also same font issues as above)
+x C bug: raw trans report shows Adv Code and Adv URL
+	/ A . converting data (new hooks in place, so in progess)
+	/ A multiple URLs (support at all, allow edit)
+	/ A testing with Oracle 8i (this *could* unleash some bugs)
+	/ B+ Trend report in menu
+	/ B trend report caching to disk and memory
+	/ B indicating the default choice in drop downs
+	/ terms in multiple maps (allow edit)
+	/ fetch aopa ads from DB
+	/ different look and feel per map (support at all, allow edit)
+	/ format of advertisements in database?, xslt, etc. (left in xslt)
+	/ A most freq visitor, click on ip for details, in Postgres
+	/ B click through on null search brings back all queries
+	/ A (new) double check map to url associations for urls that are no longer associated
+	/ A test drive link, still showing nie stuff, no extra parms
+	/ B postgres: many reports still broken
+	/ A (new) "show results" test-drive feature broken
+	/ B less severe error if no urls for map when editing
+	/ B change hard failure to warning if editing map with no url
+	/ B drop Ad related reports from main reports menu if not using Ads/markup
+	/ C wms, border=1, no color, gives border around all of them
+	x C db_init, first time run, gave errors, then no errors (can't repro)
+	? D document suffix workaround for wms
+	/ D document test drive search engine URL
+	/ Oracle "max cursors" error  (woopie!!!!!)
+	/ IE zero byte socket errors
+	/ mangled HTML in blank forms
+	/ mangled Webmaster Suggests box on NIE site
+/ D remove * indicates required field if no required fields on form
+/ search by url in map selector
+/ C wrong reports if UI not enabled
+/ C wrong menu items if UI not enabled
+/ Edit should be Edit >> in report
+/ D AOPA: respect blank lines in ads for aopa
+
+/ D show maps, bold URL titles
+/ More testing on editing and commits, make sure the data structures are still consistent
+/ Bug: some spurious errors in output log
+/ Bug: some inconsistencies when using the "find maps" form and report
+/ Bug: "create new map" from "map lookup form" runs a report query
+	instead of bringing up a new record, or is it redirecting?
+/ Bug: should cleanup wildcard character in create link
+/ Bug: inconsistency on subtitle on find map form
+/ Item: replace use of % with * in code and in online doc, per Sean
+/ trend issues
+/ A AOPA data import
+/ A AOPA data export
+. B font issues
+/ B menu bar at top and bottom
+/ B edit maps
+	D change % to *
+	D drop %/* on crate-new link
+	D help links
+/ A bug: slow refresh
+
+/ error level reporting option in server
+/ allow option of "no icon"
+/ refresh yourself command
+
+Post 2.2 stuff:
+/ add http:// to new URL field
+/ fix return URL if I specifically go to the manage maps report
+/ simple validation of URL (does it at least look like a URL)
+/ no support for just alt terms
+/ don't convert redir to wms if editing a URL, and don't req title
+/ don't show "* indicates required field" if none shown
+
+
+/ date-time stamop activity in server
+/ settable Alt messages and colors
+	except for doc listings, links
+/ xml inherited fields
+/ ? warn about duplicate entries (i think this is in place)
+/ ? Is there a bug where you get a redirect after getting results?
+	I think this was an artifact of the POST bug, I believe fixed now
+/ command line arg for config file
+/ time stamp in connection
+
+/ Google responds to our fetch with a redirect
+	the only difference I can see is that we (Java?) send a cookie:
+	Cookie: PREF=ID=1afa84df4748eeeb:FF=4:TB=1:TM=1001056767:LM=1017939562:S=_U0psSvk4pM
+

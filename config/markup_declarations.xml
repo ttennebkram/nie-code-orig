@@ -1,0 +1,70 @@
+<!-- Declare what types of Ads you will be displaying -->
+
+<markup_data_classes>
+
+	<!-- Declare each type of Ad you will use,
+		and what that type of Ad is called
+	-->
+	<markup
+		class="text_ad"
+		java_class="AdLoggingMarkup"
+		sub_class="right_column_text_ad"
+		short_description="Right Column Text Ad"
+		ui_edit_screen="CreateTextAdForm"
+
+		log_exposures="TRUE"
+		log_clicks="TRUE"
+
+	>
+
+		<!-- Where to place the Ad in the results list -->
+
+
+		<!-- AOPA
+		<marker_text replace="TRUE">
+		<![CDATA[
+</tr>
+                    
+                    <tr>
+                      <td align="center" valign="top" class="bgFooter">
+		]]>
+		</marker_text>
+		-->
+
+		<!-- NIE Test -->
+		<marker_text>
+		<![CDATA[
+			<div class=search-results>
+		]]>
+		</marker_text>
+
+		<!-- AOPA old?
+		<marker_text>
+		<![CDATA[
+</CENTER>
+</FONT>
+
+
+	</TD>
+		]]>
+		</marker_text>
+		-->
+
+		<!-- What the Ad should look like -->
+		<xslt_formatting location="style_sheets/text_ad.xslt" />
+		<!--
+		<xslt_formatting
+			location="D:\data\Customer\AOPA\fix_ad_url/text_ad.xslt"
+		/>
+		-->
+		<!-- Or use inline literal CDATA text -->
+
+	</markup>
+	<!-- declare other types of ads
+	<markup class="banner_ad" ....>
+		<pattern.... top of page>
+		<xslt = banner_ad.xslt>
+	</markup>
+	-->
+
+</markup_data_classes>

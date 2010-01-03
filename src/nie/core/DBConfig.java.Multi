@@ -1,0 +1,2087 @@
+package nie.core;
+
+import java.util.*;
+import nie.core.*;
+import org.jdom.Element;
+
+import java.sql.*;
+
+public class DBConfig
+{
+
+	// Notes about ADDING NEW DRIVERS
+	//
+	// Get the appropriate driver files, and check dist rights
+	//
+	// Change this file, LOOK FOR:
+	//  "Add Driver Marker"
+	// That's typeically where you need to add stuff.
+	// Hint: Start at the bottom of the file and define the contstants
+
+	// Todo: given all the if vendor == this else if vendor == that it would
+	// seem this is a good candidate for subclassing,
+	// this code will offend purists
+
+	private final static String kClassName = "DBConfig";
+
+	//////////////////////////////////////////////////////////////////////
+	private static void ___sep__Construction_and_Initialization__() {}
+	///////////////////////////////////////////////////////////////////////
+
+	// This constructor is usually used for testing
+	// can accept a URI
+	public DBConfig( String inURI )
+		throws DBConfigException
+	{
+		final String kFName = "constructor(1)";
+		final String kExTag = kClassName + ':' + kFName + ": ";
+
+		// create jdom element and store info
+		// Sanity checks
+		if( inURI == null )
+			throw new DBConfigException( kExTag,
+				"Constructor was passed in a NULL URI (file name, url, etc)."
+				);
+
+		// Instantiate and store the main JDOMHelper a
+		fConfigTree = null;
+		try
+		{
+			fConfigTree = new JDOMHelper( inURI );
+		}
+		catch (JDOMHelperException e)
+		{
+			throw new DBConfigException( kExTag,
+				"Got JDOMHelper Exception: "
+				+ e );
+		}
+
+		// Do comoon init stuff, it will throw an exception if it
+		// isn't happy
+		finishInit();
+
+	}
+
+	// construct from an element, perhaps part of a larger tree
+	public DBConfig( Element inElement )
+		throws DBConfigException
+	{
+		final String kFName = "constructor(2)";
+		final String kExTag = kClassName + ':' + kFName + ": ";
+
+		// create jdom element and store info
+		// Sanity checks
+		if( inElement == null )
+			throw new DBConfigException( kExTag,
+				"Constructor was passed in a NULL element."
+				);
+
+		// Instantiate and store the main JDOMHelper a
+		fConfigTree = null;
+		try
+		{
+			fConfigTree = new JDOMHelper( inElement );
+		}
+		catch (JDOMHelperException e)
+		{
+			throw new DBConfigException( kExTag,
+				"Got JDOMHelper Exception: "
+				+ e );
+		}
+
+		// Do comoon init stuff, it will throw an exception if it
+		// isn't happy
+		finishInit();
+	}
+
+	// Second half of constructors
+	private void finishInit()
+		throws DBConfigException
+	{
+		final String kFName = "finishInit";
+		final String kExTag = kClassName + ':' + kFName + ": ";
+
+		if( fConfigTree == null )
+			throw new DBConfigException( kExTag,
+				"Got back a NULL xml tree when trying to create"
+				+ " a Database Configuration object."
+				);
+
+		// Force us to read all get methods once, and store results
+		reinitFieldCache();
+
+		// Check that a couple critical items exist
+		String tmpStr;
+		int tmpInt;
+
+		// Must always have vendor tag
+		tmpStr = getConfiguredVendorTag();
+		if( tmpStr == null )
+			throw new DBConfigException( kExTag,
+				"Must specifiy the vendor tag"
+				+ " (ex: " + VENDOR_TAG_ORACLE + ") in config."
+				+ " This is true even if specifying a native connect string."
+				);
+
+		// Check DB settings
+		// Will throw exception if it is VERY unhappy
+		// Also can give some warnings
+		// Think of this as elaborate "syntax" checking
+		quickCheckDBSettings();
+
+		// Check actual DB connection (if not in test mode)
+		// Will also throw exception if it is unhappy
+		// Think of this as the actual test drive
+		connectionDBCheck();
+
+	}
+
+	// Mostly "syntax" checking
+	// This routine obsesses about things that they SPECIFICALLY set
+	private void quickCheckDBSettings()
+		throws DBConfigException
+	{
+		final String kFName = "quickCheckDBSettings";
+		final String kExTag = kClassName + ':' + kFName + ": ";
+
+		// A quick warning about username and password
+		if( getUsername() == null || getPassword() == null )
+			warningMsg( kFName,
+				"No Database username and/or password specified in config file."
+				+ " If you have trouble connecting you might want to check that."
+				+ " Will continue with database connection setup."
+				);
+
+		// This should always give us a value
+		String type = getDBType();
+		if( type == null || ( !type.equals(TYPE_JDBC) && !type.equals(TYPE_ODBC) ) )
+			throw new DBConfigException( kExTag,
+				"Invalid type \"" + type + "\"."
+				+ " Valid types: "
+				+ TYPE_JDBC
+				+ ", " + TYPE_ODBC
+				+ " The attribute is " + DB_TYPE_ATTR
+				);
+
+		// A couple status flags
+		boolean isJDBC = getDBType().equals(TYPE_JDBC);
+		boolean isODBC = getDBType().equals(TYPE_ODBC);
+
+		String vendor = getConfiguredVendorTag();
+
+		// We require a vendor
+		if( isJDBC && vendor == null )
+			throw new DBConfigException( kExTag,
+				"Must specifiy the database vendor tag."
+				+ " In some cases, such as with Microsoft, this is actually"
+				+ " the specific database product tag."
+				+ " The attribute is " + VENDOR_TAG_ATTR
+				);
+
+
+		// If it's JDBC, there are only particular vendors we can handle
+		if( isJDBC )
+		{
+			// Add Driver Marker
+			if( ! vendor.equals( VENDOR_TAG_ORACLE )
+				&& ! vendor.equals( VENDOR_TAG_POSTGRESQL )
+				&& ! vendor.equals( VENDOR_TAG_MS_SQL )
+				&& ! vendor.equals( VENDOR_TAG_MYSQL )
+				&& ! vendor.equals( BOGUS_JDBC_VENDOR_ODBC )
+				)
+			{
+				throw new DBConfigException( kExTag,
+					"Unsupported JDBC database vendor tag in config = \"" + vendor + "\"."
+					+ " The attribute is " + VENDOR_TAG_ATTR
+					+ " Currently our JDBC only supports: "
+					// Add Driver Marker
+					+ VENDOR_TAG_ORACLE
+					+ ", " + VENDOR_TAG_POSTGRESQL
+					+ ", " + VENDOR_TAG_MS_SQL
+					+ ", " + VENDOR_TAG_MYSQL
+					);
+			}
+			else if( type.equals( BOGUS_JDBC_VENDOR_ODBC ) )
+			{
+				throw new DBConfigException( kExTag,
+					"You have mistakenly set the vendor tag to ODBC."
+					+ " To use ODBC data sources, please set type=\"odbc\""
+					+ " and then set " + VENDOR_TAG_ATTR + " to the type of ODBC"
+					+ " source you want to access."
+					+ " With a type of ODBC and a vendor tag set, we will generate"
+					+ " the appropriate connection string of jdbc:odbc:vendor...etc..."
+					);
+			}
+		}   // End if type is JDBC
+		// Todo: put checks in for ODBC
+
+		// Get a bunch of flags set right up front to make logic
+		// easier to follow, etc.
+		boolean hasVendor = getConfiguredVendorTag() != null;
+		boolean hasType = getConfiguredDBType() != null;
+		boolean hasDBName = getDBName() != null;
+		boolean hasServer = getConfiguredServerName() != null;
+		boolean hasPort = getConfiguredPort() > 0;
+		// boolean hasParms = getExtraParameters() != null;
+
+		// Did they use the short form
+		boolean hasNativeURL = getConfiguredConnectionString() != null;
+
+		// For the most part, if they specified this, then we're about done
+		// checking, and it's their funeral if they got it wrong
+		if( hasNativeURL )
+		{
+			statusMsg( kFName,
+				"Found and will use optional native connection string"
+				+ " \"" + getConfiguredConnectionString() + "\""
+				+ " set with attribute " + NATIVE_CONNECT_STRING_ATTR
+				+ " FYI: Use of this advanced attribute bypasses"
+				+ " some of the other long-form"
+				+ " attributes, and also bypasses some syntax error checking."
+				);
+
+
+			// a meta field for long form attributes
+			boolean hasLongFormAttrs = hasType || hasServer || hasPort
+				|| hasDBName ; // || hasParms;
+
+			if( hasLongFormAttrs )
+			{
+				errorMsg( kFName,
+					"A native connection string is configured, but some other"
+					+ " attributes have also been specified.  When a native connection"
+					+ " stirng is set, many of the long form attributes are IGNORED."
+					+ " The database configuration will continue despite this error message."
+					+ " At least one of these values has been set and will be ignored:"
+					+ " " + DB_TYPE_ATTR + "=\"" + getConfiguredDBType() + "\""
+					+ ", " + DB_NAME_ATTR + "=\"" + getDBName() + "\""
+					+ ", " + SERVER_NAME_ATTR + "=\"" + getConfiguredServerName() + "\""
+					+ ", " + SERVER_PORT_ATTR + "=\"" + getConfiguredPort() + "\""
+					// + ", " + EXTRA_PARAMETERS_ATTR + "=\"" + getExtraParameters() + "\""
+					);
+			}
+			// We're done, we don't check any other syntax when native connect is set
+			return;
+		}
+
+
+		// For most JDBC connections we do require a server
+		if( isJDBC && ! hasServer && ! vendor.equals(VENDOR_TAG_POSTGRESQL) )
+			throw new DBConfigException( kExTag,
+				"Must specifiy the database server name or IP address"
+				+ " for JDBC vendor " + vendor
+				);
+
+		// For most JDBC connections we need a database name
+		if( isJDBC && ! hasDBName && ! vendor.equals(VENDOR_TAG_MS_SQL) )
+			throw new DBConfigException( kExTag,
+				"Must specifiy the database name"
+				+ " for JDBC vendor " + vendor
+				);
+
+		// For all ODBC connections we need a database name
+		if( isODBC && ! hasDBName )
+			throw new DBConfigException( kExTag,
+				"Must specifiy the database or DSN name"
+				+ " for ODBC connections."
+				+ " Please set attribute " + DB_NAME_ATTR
+				);
+
+		// Check the port, this includes default values for quite a
+		// few of the JDBC databases
+		int port = getPort();
+		if( isJDBC && port < 1 )
+			throw new DBConfigException( kExTag,
+				"Must specifiy the database port for the host machine for JDBC."
+				+ " And it must be a positive integer."
+				);
+
+		// And the rest is handled by methods
+		debugMsg( kFName, "Long form Syntax check finished." );
+
+	}
+
+
+	// Setup an actual connection, take it for a test drive
+	private void connectionDBCheck()
+		throws DBConfigException
+	{
+		final String kFName = "connectionDBCheck";
+		final String kExTag = kClassName + ':' + kFName + ": ";
+
+		// We only peform the rest of the tests if the connection is active
+		// which it normally is
+		if( isActive() )
+		{
+			// Test the connection
+			try
+			{
+				debugMsg( kFName, "About to do test connection." );
+				Connection tmpConn = getConnection();
+				debugMsg( kFName, "Back from test connection." );
+			}
+			catch (SQLException e)
+			{
+				throw new DBConfigException( kExTag,
+					"Got an exception connecting to the database: " + e
+					+ " Unable to construct a valid DB Config."
+					);
+			}
+
+			String testQry = getTestQuery();
+	//		statusMsg( kFName,
+	//			"Found test query \"" + testQry + "\"."
+	//			);
+			if( testQry != null )
+			{
+				statusMsg( kFName,
+					"Running configured test query \"" + testQry + "\"."
+					);
+				int numRows = testQueryNumRows( testQry );
+				// Negative number means an error
+				if( numRows < 0 )
+					throw new DBConfigException( kExTag,
+						"Test Query Failed."
+						+ " Query = \"" + testQry + "\"."
+						+ " If you'd rather not run a test query, then please"
+						+ " comment it out or remove it from your configuration."
+						);
+				// We should at least warn if there were zero
+				if( numRows == 0 )
+				{
+					warningMsg( kFName,
+						"The Test Query returned zero rows."
+						+ " Query = \"" + testQry + "\"."
+						+ " This may be normal for some applications."
+						+ " If the query had an error, or the table didn't exist,"
+						+ " you would be seeing a different, more serious message."
+						+ " You are likely connected to the databse."
+						+ " Query = \"" + testQry + "\"."
+						+ " If you'd rather not run a test query, then please"
+						+ " comment it out or remove it from your configuration."
+						);
+				}
+				else    // Else there was at least one row
+				{
+					statusMsg( kFName,
+						"Test query returned " + numRows + " row(s)."
+						);
+				}
+
+			}
+			else
+			{
+				debugMsg( kFName, "No test query was configured." );
+			}
+		}
+		else    // Not active
+		{
+			debugMsg( kFName,
+				"Database has been deactivated, so no connection or query tests will be run."
+				);
+		}
+
+
+	}
+
+	// Force us to read all get methods once, and store results
+	private void reinitFieldCache()
+	{
+		// Get everything in to the cache
+		// First, specifically turn caching off (should be false anyway via Java init)
+		mUseCache = false;
+		// Now call each getter once, populates cached values
+		isActive();
+		getDBType();    // Will also call getConfigureedDBType()
+		getServerString();  // Will also call getConfiguredServerName()
+		getPort();  // Will also call getConfiguredPort()
+		getConfiguredDriverClassString();
+		// getNetworkProtocal();
+		getConfiguredVendorTag();
+		getVendorString();
+		getDBName();
+		getMainTable();
+		getUsername();
+		getPassword();
+		// getExtraParameters();
+		getDriverClassName();
+		getTestQuery();
+		getConfiguredConnectionString();
+		calculateConnectionString();
+		// Now turn caching on
+		mUseCache = true;
+	}
+
+	////////////////////////////////////////////////////////////////////
+	private static void ___sep__Higher_Level_Logic__() {}
+
+	public Connection getConnection()
+		throws SQLException
+	{
+		final String kFName = "getConnection";
+		final String kExTag = kClassName + ':' + kFName + ": ";
+
+		if( isActive() )
+		{
+			if( mDBConnection == null )
+			{
+				String connectionStr = calculateConnectionString();
+				statusMsg( kFName,
+					"Connecting to database with connection string \""
+					+ connectionStr + "\""
+					+ " as user \"" + getUsername() + "\"."
+					);
+
+				// OLD: This caused compile problems and was inflexible
+				//	DriverManager.registerDriver(
+				//		new oracle.jdbc.OracleDriver()
+				//		);
+
+				// Get the name of the driver and check it
+				// This will pick the default for this vendor, or allow for
+				// an optional supplied driver in the config file
+				String myClassName = getDriverClassName();
+				if( myClassName == null )
+				{
+					throw new SQLException( kExTag
+						 + "Unknown driver for unknown vendor \"" + getConfiguredVendorTag() + "\""
+						);
+				}
+
+				// Now get the class and driver instance
+				try
+				{
+					Class myDriverClass = Class.forName( myClassName );
+					Driver myDriverInstance = (Driver)myDriverClass.newInstance();
+					// MS shows this as one step
+					// Driver d = (Driver)Class.forName("com.microsoft.jdbc.sqlserver.SQLServerDriver")
+					// (cont)  .newInstance();
+					// And now register the driver
+					DriverManager.registerDriver( myDriverInstance );
+				}
+				// There are 3 types of exceptions that the enclosed block
+				// could have thrown
+				catch(Exception eload)
+				{
+					throw new SQLException( kExTag
+						+ "Problem loading database driver;"
+						+ " perhaps check config file and class path."
+						+ " Vendor = \"" + getConfiguredVendorTag() + "\""
+						+ ", Driver Class = \"" + myClassName + "\""
+						+ ", Error/Exception = \"" + eload + "\""
+						);
+				}
+
+				// And get the connection
+				mDBConnection = DriverManager.getConnection(
+					connectionStr,
+					getUsername(), getPassword()
+				);
+			}
+			return mDBConnection;
+		}
+		else    // Else database is NOT active
+		{
+			String connectionStr = calculateConnectionString();
+			String tmpMsg = "Database was DEACTIVATED in the configuration file."
+				+ " Can not connect if database is not configured to be active."
+				+ " Would have connected to the database with connection string \""
+				+ connectionStr + "\""
+				+ " as user \"" + getUsername() + "\"."
+				;
+			throw new SQLException( kExTag + tmpMsg );
+		}
+	}
+	public Connection getConnectionOrNull()
+	{
+		final String kFName = "getConnectionOrNull";
+
+		Connection answer = null;
+		try
+		{
+			answer = getConnection();
+		}
+		catch (SQLException e)
+		{
+			errorMsg( kFName,
+				"Got an exception connecting to the database: " + e
+				+ " Will return null."
+				);
+			return null;
+		}
+		return answer;
+	}
+
+	public Statement createStatement()
+		throws SQLException /*, DBConfigException */
+	{
+		Connection myConnection = getConnection();
+		Statement myStatement = myConnection.createStatement();
+		return myStatement;
+	}
+	public Statement createStatementOrNull()
+	{
+		final String kFName = "createStatementOrNull";
+
+		Statement answer = null;
+		try
+		{
+			answer = createStatement();
+		}
+		catch (SQLException e)
+		{
+			errorMsg( kFName,
+				"Got an exception creating a new statement: \"" + e + "\""
+				+ " Will return null."
+				);
+			return null;
+		}
+		return answer;
+	}
+
+	public PreparedStatement prepareStatement( String inSQL )
+		throws SQLException
+	{
+		Connection myConnection = getConnection();
+		PreparedStatement myStatement = myConnection.prepareStatement( inSQL );
+		return myStatement;
+	}
+	public PreparedStatement prepareStatementOrNull( String inSQL )
+	{
+		final String kFName = "prepareStatementOrNull";
+
+		PreparedStatement answer = null;
+		try
+		{
+			answer = prepareStatement( inSQL );
+		}
+		catch (SQLException e)
+		{
+			errorMsg( kFName,
+				"Got an exception creating a new prepared statement: \"" + e + "\""
+				+ " Will return null."
+				);
+			return null;
+		}
+		return answer;
+	}
+
+
+	public ResultSet runQuery( String inQuery )
+		throws SQLException /*, DBConfigException */
+	{
+		final String kFName = "runQuery";
+		final String kExTag = kClassName + ':' + kFName + ": ";
+
+		// create jdom element and store info
+		// Sanity checks
+		if( inQuery == null )
+			throw new SQLException( kExTag,
+				"Was passed in a NULL Query."
+				);
+//			throw new DBConfigException( kExTag,
+//				"Was passed in a NULL Query."
+//				);
+
+		// Connection myConnection = getConnection();
+		// Statement myStatement = myConnection.createStatement();
+		// Use our built in method
+		Statement myStatement = createStatement();
+
+		ResultSet myResultSet = myStatement.executeQuery( inQuery );
+		return myResultSet;
+	}
+	// Does not throw an exception
+	public ResultSet runQueryOrNull( String inQuery )
+	{
+		final String kFName = "runQueryOrNull";
+
+		ResultSet answer = null;
+		try
+		{
+			answer = runQuery( inQuery );
+		}
+		catch (Exception e)
+		{
+			errorMsg( kFName,
+				"Got an exception running the query \""
+				+ inQuery + "\"."
+				+ " Exception: " + e
+				+ " Will return null."
+				);
+			return null;
+		}
+		return answer;
+	}
+
+
+	public int testQueryNumRows( String inQuery )
+	{
+		final String kFName = "testQueryNumRows";
+
+		ResultSet oracleResultSet = runQueryOrNull( inQuery );
+
+		if( oracleResultSet == null )
+		{
+			errorMsg( kFName,
+				"Got back a null Result Set, returning -1."
+				);
+			return -1;
+		}
+
+		int lRowCount = 0;
+		try
+		{
+			// while( ! oracleResultSet.isAfterLast() )
+			while( oracleResultSet.next() )
+			{
+				lRowCount++;
+//				String field = oracleResultSet.getString( 1 );
+//				statusMsg( kFName,
+//					"Field was \"" + field + "\""
+//					);
+			};
+		}
+		catch (SQLException e)
+		{
+			errorMsg( kFName,
+				"Error while reading through records: " + e
+				+ " Returning -1."
+				);
+			return -1;
+		}
+
+		debugMsg( kFName,
+			"We fetched " + lRowCount + " rows."
+			);
+
+		return lRowCount;
+//		System.out.println( "SQL executed was:" );
+//		System.out.println( kSQLStatement );
+//		if( null != oracleConnection )
+//			System.out.println( "Success... " + oracleConnection );
+//		else
+//			System.out.println( "Failed." );
+
+
+	}
+
+
+
+
+
+
+
+
+
+	///// Higher Level Logic ////////////////////////////////////////////
+	// Still uses caching
+	public String calculateConnectionString()
+	{
+		final String kFName = "calculateConnectionString";
+
+		if( ! mUseCache )
+		{
+			// Did they give us a native one?
+			cFinalConnectionString = getConfiguredConnectionString();
+			// If not, calculate it with the components
+			if( cFinalConnectionString == null )
+			{
+				// We want something that looks like:
+				// jdbc:oracle:thin:@mchine:nnnn:dbname
+				// default port for Oracle is 1521
+				//
+				// For PostgreSQL
+				// jdbc:postgresql://host:port/db
+				// jdbc:postgresql://host/db (uses host:5432)
+				// jdbc:postgresql:db (uses localhost:5432)
+				// jdbc:postgresql:SearchTrack
+				// default port for Postgres is 5432
+				//
+				// For SQL server, I've also seen connect strings like:
+				// jdbc:microsoft:sqlserver://localhost:8080;DataBaseName ='MyDataBase;User=sa;passowrd= (empty)
+				// jdbc:microsoft:sqlserver://server_name:port
+				// jdbc:microsoft:sqlserver://server_name:port;Databasename
+				// default port for MS is 1433
+				//
+				// jdbc:mysql://9999.9.9.99:3306/mydb
+				// jdbc:mysql://localhost/dbname
+				//
+				// For ODBC, see ODBC section
+
+				// final String lType = getDBType();
+				final String lVendor = getConfiguredVendorTag();
+				// The answer we will create
+				StringBuffer buff = new StringBuffer();
+
+				// Some markers we will use
+				final boolean isJDBC = isJDBCDriver( lVendor );
+				final boolean isODBC = isODBCDriver( lVendor );
+				// And the DEFAULT class name
+				String defaultDriverClassName = null;
+
+				// Note on meaning of "driver class"
+				// "driver class" for JDBC means a real java class name
+				// "driver class" for ODBC means gunk we put in the string;
+				// for ODBC, we always use the same JDBC-ODBC gateway
+
+				// WARNING: This assumes default type is JDBC
+				// If you change that, change the order here
+				if( isJDBC )
+				{
+					defaultDriverClassName =
+						getJDBCDriverNameForVendor( lVendor )
+						;
+				}
+				else if( isODBC )
+				{
+					defaultDriverClassName =
+						expandOdbcVendorTagToDriverName( lVendor )
+						;
+				}
+				// At this point lVendor and defaultDriverClassName
+				// should be set
+
+				// Defaults are handled by these
+				int port = getPort();
+				String server = getServerString();
+
+				String dbName = getDBName();
+
+				// Is it JDBC?
+				if( isJDBC )
+				{
+					// This shouldn't happen, but checking beats
+					// a null pointer exception later
+					if( lVendor == null )
+					{
+						errorMsg( kFName,
+							"No vendor for JDBC, returning null."
+							);
+						return null;
+					}
+					// Get the thing that goes right after the
+					// jdbc: in the URL, which is *usually* the same
+					// as the vendor string
+					String proto = getJDBCProtocolForVendor( lVendor );
+
+					// They all start with jdbc:proto:
+					buff.append( "jdbc:" );
+					buff.append( proto );
+					buff.append( ':' );
+
+					// Add Driver Marker
+
+					// Is it Oracle?  Special syntax for Oracle
+					if( lVendor!=null && lVendor.equals(VENDOR_TAG_ORACLE) )
+					{
+						debugMsg( kFName, "JDBC Oracle start" );
+						// jdbc:oracle:thin:@mchine:nnnn:dbname
+						buff.append( "thin:@" );
+					}
+					// Else everybody else uses the same URL syntax
+					// If they don't, put another special case above
+					else
+					{
+						debugMsg( kFName, "JDBC general start" );
+						// jdbc:postgresql://host:port/db
+						// jdbc:postgresql://host/db (uses host:5432)
+						// jdbc:postgresql:db (uses localhost:5432)
+						buff.append( "//" );
+					}
+
+					// Server info
+					buff.append( server );
+					if( port > 0 )
+					{
+						buff.append( ':' );
+						buff.append( port );
+					}
+
+					// Add DB Name
+					// Is it SQL Server?
+					if( lVendor!=null && lVendor.equals(VENDOR_TAG_MS_SQL) )
+					{
+						debugMsg( kFName, "SQL Server DB Name" );
+						// jdbc:microsoft:sqlserver://server_name:port;Databasename
+						// Database name is optional
+						if( dbName != null )
+						{
+							buff.append( ';' );     // Semicolon
+							buff.append( dbName );
+						}
+						else
+						{
+							statusMsg( kFName,
+								"No database name was given."
+								+ " This is not required for SQL Server"
+								+ " but if things don't correctly you might want"
+								+ " to check that."
+								);
+						}
+					}
+					else    // Else not SQL Server
+					{
+						debugMsg( kFName, "generic DB Name" );
+						// just add :db
+						if( dbName != null )
+						{
+							buff.append( ':' );     // colon
+							buff.append( dbName );
+						}
+						else
+						{
+							errorMsg( kFName,
+								"No database name was given."
+								+ " Returning null."
+								);
+							return null;
+						}
+					}
+
+				}
+				// Is it ODBC?
+				else if( isODBC )
+				{
+					// For ODBC
+					//
+					// Note:
+					// Remote server not currently supported via ODBC
+					// Maybe works by file system drive mapping
+					// Maybe works with UNC file path, but maybe not
+					// See doc below for RMI-JDBC-ODBC
+					//
+					// jdbc:odbc://source_name
+					// "jdbc:odbc:Driver={MicroSoft Access Driver (*.mdb)};DBQ=D:test.mdb"
+					// jdbc:odbc:Driver={Microsoft Access Driver (*.mdb)};DBQ=C:\saint.mdb
+					// "jdbc:odbc:DRIVER={SQL Server};DATABASE=iweb;UID=" +userid+ ";PWD=" +passwd+ ";";
+					// OR they claim:
+					// "jdbc:odbc:DRIVER={SQL Server};SERVER=123.456.789.123:1433;DATABASE=iweb";
+					// Connection con = DriverManager.getConnection(conString, userid, passwd);
+					// Maybe:
+					// jdbc:odbc://whitehouse.gov:5000/CATS;PWD=Hillary
+					// jdbc:odbc:Driver={SQL Server};Server=whitehouse.gov;Database=CATS
+
+					// jdbc:odbc:Driver={Microsoft Excel Driver (*.xls)};DBQ=c:/excel/mySheet.xls;DriverID=22;READONLY=false
+					// jdbc:odbc:Excel Files;DBQ=C:\\java\\data.xls
+
+					// Maybe not
+					// jdbc:odbc:Driver=MicroSoft Text Driver (*.txt; *.csv);Database=MyDatabase", "", ""
+
+					// We INSIST on a DB Name at this point
+					if( dbName == null )
+					{
+						errorMsg( kFName,
+							"No Database Name for ODBC source"
+							+ ", where db name is either a proper database name"
+							+ ", or a DSN, or a data file name."
+							+ " Returning null."
+							);
+						return null;
+					}
+
+					// We always start off with this
+					buff.append( "jdbc:odbc:" );
+
+					// Now it gets interesting
+					if( defaultDriverClassName != null )
+					{
+						buff.append( "Driver=" );
+						buff.append( defaultDriverClassName );
+						buff.append( ";DBQ=" );
+						buff.append( dbName );
+					}
+					else    // Null driver class, assume DSN URL
+					{
+						buff.append( "//" );
+						buff.append( dbName );
+					}
+
+					if( server!=null || port > 0 )
+					{
+						errorMsg( kFName,
+							"Server name and port are currently ignored"
+							+ " in ODBC connections."
+							+ " Will continue."
+							+ " server=\"" + server + "\", port=\"" + port + "\""
+							);
+					}
+
+				}
+				// Else it's NOT jdbc NOR odbc
+				else
+				{
+					errorMsg( kFName,
+						"Unknown or missing connection type " // + lType
+						+ " Valid choices are: "
+						+ "\"" + TYPE_JDBC + "\""
+						+ ", \"" + TYPE_ODBC
+						+ ", default is \"" + DEFAULT_TYPE + "\"."
+						+ " Will return null connection string."
+						);
+				}   // End else not Jdbc NOR Odbc
+
+
+				// Save the results, if any
+				if( buff.length() > 0 )
+					cFinalConnectionString = new String( buff );
+				// And just to double check
+				else
+					cFinalConnectionString = null;
+					// We've already complained
+
+			}   // End if getConfiguredConnectionString() was null
+
+			// Else we already have it cached
+
+		}   // End if not using cached value
+
+		// Return cache, which we may have just calculated
+		return cFinalConnectionString;
+
+	}
+
+
+
+	//// Gets and Simple Logic ///////////////////////////////////////////////
+	private static void ___sep__Gets_and_Simple_Logic__() {}
+
+
+	public boolean isActive()
+	{
+		final String kFName = "isActive";
+		if( ! mUseCache )
+		{
+			cIsActive = fConfigTree.getBooleanFromAttribute( ACTIVE_ATTR, true );
+			if( ! cIsActive )
+			{
+				warningMsg( kFName,
+					"Database access has been DEACTIVATED in the config file."
+					+ " This is typically done for testing other parts of the system"
+					+ " when a real database connection is not available."
+					+ " No real database will be active"
+					+ " and getConnection() will ALWAYS RETURN NULL."
+					+ " You must still supply valid looking database config settings;"
+					+ " that's often part of the test."
+					);
+			}
+		}
+		return cIsActive;
+	}
+
+	private String getConfiguredDBType()
+	{
+		return fConfigTree.getStringFromAttributeTrimOrNull( DB_TYPE_ATTR );
+	}
+	// This is a wrapper with quite a bit of logic when it needs
+	// to figure out the type because it was not specifically stated
+	public String getDBType()
+	{
+		if( ! mUseCache )
+		{
+			final String kFName = "getType";
+			String reason = null;
+
+			cType = getConfiguredDBType();
+			String lVendor = null;
+			if( cType == null )
+			{
+				reason = "no specific type set";
+				// We have some checking for various vendor tags
+				lVendor = getConfiguredVendorTag();
+				lVendor = normalizeVendorTag( lVendor );
+				// If it's null, take the default
+				// others will complain, if needed, about there being no vendor
+				if( lVendor == null )
+				{
+					cType = DEFAULT_TYPE;
+					reason += ", null vendor, default type";
+				}
+				// If the vendor has braces, then it's ODBC
+				else if( lVendor.indexOf('{')>=0 || lVendor.indexOf('}')>=0 )
+				{
+					cType = TYPE_ODBC;
+					reason += ", found braces, indicates ODBC driver";
+				}
+				// If the vendor is MS SQL we have "special" rules for that
+				else if( lVendor.equals(VENDOR_TAG_MS_SQL) )
+				{
+					reason += ", sql server indicated";
+					// If we prefer JDBC
+					if( DEFAULT_TYPE.equals(TYPE_JDBC) )
+					{
+						reason += ", desired default is JDBC";
+						// and if we have the JDBC driver
+						if( hasMSSqlJDBCDriver() )
+						{
+							cType = TYPE_JDBC;
+							reason += ", and DOES have MS JDBC driver";
+						}
+						else    // Else don't have the jdbc driver
+						{
+							cType = TYPE_ODBC;
+							reason += ", but does NOT have MS JDBC driver";
+						}
+					}
+					// Else they prefer ODBC driver anyway
+					else    // Default to ODBC
+					{
+						cType = DEFAULT_TYPE;
+						reason += ", desired default is not JDBC, it's "
+							+ DEFAULT_TYPE
+							;
+					}
+				}
+				else    // Else vendor is NOT Microsoft SQL
+				{
+
+					// Add Driver Marker
+					// Change the order in which we check if you change
+					// the default type
+
+					// check for known JDBC vendors
+					if( isJDBCDriver(lVendor) )
+					{
+						cType = TYPE_JDBC;
+						reason = ", known JDBC vendor";
+					}
+					// Check for known ODBC vendors
+					else if( isODBCDriver( lVendor ) )
+					{
+						cType = TYPE_ODBC;
+						reason = ", known ODBC vendor";
+					}
+					else    // Else it's neither
+					{
+						// Give them the default
+						cType = DEFAULT_TYPE;
+						reason += ", default for misc vendor tag " + lVendor
+							+ " is " + DEFAULT_TYPE
+							;
+					}
+				}   // End else vendor was NOT microsoft SQL
+			}
+			else // Else a specific type was set
+			{
+				// cType is already set above
+				reason = "specifically set to " + cType;
+			}
+			// Should not be null at this point
+			if( cType != null )
+			{
+				// Normalize
+				cType = cType.toLowerCase();
+				// Let the know what's going on
+				infoMsg( kFName,
+					"Type is \"" + cType + "\" for vendor \"" + lVendor + "\""
+					+ ", because " + reason + "."
+					);
+			}
+			else    // Else it is still null !?
+			{
+				errorMsg( kFName,
+					"Unable to determin type value.  Will return null!"
+					);
+			}
+		}   // End if not cached
+		return cType;
+	}
+
+	// OK to call with null, it will return null and not complain
+	private String normalizeVendorTag( String inVendor )
+	{
+		final String kFName = "normalizeVendorTag";
+		// Lose the spaces
+		String lVendor = NIEUtil.trimmedStringOrNull( inVendor );
+		// If it's null, we're done
+		if( lVendor == null )
+		{
+			debugMsg( kFName, "Null/empty vendor tag passed in, returning null." );
+			return null;
+		}
+		// If it's got braces, leave it alone!
+		if( lVendor.indexOf('{')>=0 || lVendor.indexOf('}')>=0 )
+		{
+			debugMsg( kFName, "Found braces, returning as-is (trimmed)." );
+			return lVendor;
+		}
+		// Else lower case it and return it
+		debugMsg( kFName, "Returning trimmed and to lower case." );
+		return lVendor.toLowerCase();
+	}
+	// OK to call with null, will return null and not complain
+	private String expandOdbcVendorTagToDriverName( String inVendor )
+	{
+		final String kFName = "expandOdbcVendorTagToDriverName";
+		// Lose the spaces
+		String lVendor = NIEUtil.trimmedStringOrNull( inVendor );
+		// If it's null, we're done
+		if( lVendor == null )
+		{
+			debugMsg( kFName, "Null/empty vendor tag passed in, returning null." );
+			return null;
+		}
+
+		// If it's got braces, leave it alone!
+		if( lVendor.indexOf('{')>=0 || lVendor.indexOf('}')>=0 )
+		{
+			debugMsg( kFName, "Found braces, returning as-is (trimmed)." );
+			return lVendor;
+		}
+
+		//  normalize for checking
+		String compareVendor = lVendor.toLowerCase();
+
+		if( compareVendor.equals( ODBC_VENDOR_DSN ) )
+		{
+			debugMsg( kFName,
+				"It's just DSN, which has no driver string, returning null."
+				);
+			return null;
+		}
+
+		// OK, now go ahead and look it up
+		// This will kick up warning if it's not found
+		String outClassName = getODBCDriverNameForVendor( lVendor );
+
+		// Return whatever it found
+		return outClassName;
+	}
+
+
+	// Get what they actually entered
+	private String getConfiguredServerName()
+	{
+		return fConfigTree.getStringFromAttributeTrimOrNull( SERVER_NAME_ATTR );
+	}
+
+	// Get what we wound up with, including appropriate defaults
+	public String getServerString()
+	{
+
+		if( ! mUseCache )
+		{
+			final String kFName = "getServerString";
+
+			String lServerName = getConfiguredServerName();
+
+			// Some drivers have a default host name
+			if( lServerName == null )
+			{
+				final String lVendor = getConfiguredVendorTag();
+				lServerName = getDefaultServerForJDBCVendor( lVendor );
+				// ^^^ for now it just returns localhost
+			}   // End if it's null
+
+			// Cache the results
+			cServerName = lServerName;
+		}
+		return cServerName;
+	}
+
+	private int getConfiguredPort()
+	{
+		return fConfigTree.getIntFromAttribute( SERVER_PORT_ATTR, -1 );
+	}
+
+	private String getDefaultServerForJDBCVendor( String inVendor )
+	{
+		return DEFAULT_SERVER_NAME;
+	}
+
+	private int getDefaultPortForJDBCVendor( String inVendor, boolean inDoWarn )
+	{
+		final String kFName = "getDefaultPortForODBCVendor";
+		// This shouldn't be possible since we use static init
+		if( fJDBCDefaultPorts == null )
+		{
+			errorMsg( kFName,
+				"Map not initialized, returning -1."
+				);
+			return -1;
+		}
+		String lVendorTag = NIEUtil.trimmedLowerStringOrNull( inVendor );
+		if( lVendorTag == null )
+		{
+			if( inDoWarn )
+				errorMsg( kFName,
+					"Passed in null/empty vendor tag, returning -1."
+					);
+			return -1;
+		}
+		// Grab the object and return the integer
+		Integer obj = (Integer) fJDBCDefaultPorts.get( lVendorTag );
+		return obj.intValue();
+	}
+
+
+
+	private String getJDBCProtocolForVendor( String inVendor )
+	{
+		final String kFName = "getJDBCProtocolForVendor";
+		// This shouldn't be possible since we use static init
+		if( fJDBCProtocolNameOverrides == null )
+		{
+			errorMsg( kFName,
+				"Map not initialized, returning null."
+				);
+			return null;
+		}
+		String lVendorTag = NIEUtil.trimmedLowerStringOrNull( inVendor );
+		if( lVendorTag == null )
+		{
+			errorMsg( kFName,
+				"Passed in null/empty vendor tag, returning null."
+				);
+			return null;
+		}
+
+		// It's perfectly OK if there is no override
+		if( fJDBCProtocolNameOverrides.containsKey( lVendorTag ) )
+			return (String) fJDBCProtocolNameOverrides.get( lVendorTag );
+		else
+			return lVendorTag;
+	}
+
+
+	public int getPort()
+	{
+		final String kFName = "getPort";
+
+		// If not using cache (during init), do the full calculation
+		if( ! mUseCache )
+		{
+			int lPort = getConfiguredPort();
+
+			// We'd like to have a default port
+			// Some vendors do have that
+			// Whether or not a port is needed AT ALL is decided in the
+			// calculateConnect string method.
+
+			// final String lType = getTypeString();
+			final String lVendor = getConfiguredVendorTag();
+
+			if( lPort <= 0 && isJDBCDriver( lVendor ) )
+			{
+
+				lPort = getDefaultPortForJDBCVendor( lVendor, false );
+
+				// We don't warn here about the lack of a port, that's up to
+				// the caller.
+				// But as a courtesy, we DO give a status message when we
+				// default to SOME vendors' default ports
+				if( lPort > 0 )
+					statusMsg( kFName,
+						"Assuming default port \"" + lPort + "\""
+						+ " for vendor \"" + lVendor + "\"."
+						+ " This will be used if doing a remote or tcp/ip connection."
+						);
+
+			}   // End if port was <= 0
+
+			// Cache the results
+			cPort = lPort;
+
+		}   // End if not caching
+
+		// Return the answer
+		return cPort;
+	}
+
+
+
+
+	private String getConfiguredConnectionString()
+	{
+		if( ! mUseCache )
+			cNativeConnectionString = fConfigTree.getStringFromAttributeTrimOrNull(
+				NATIVE_CONNECT_STRING_ATTR
+				);
+		return cNativeConnectionString;
+	}
+
+	private String getConfiguredDriverClassString()
+	{
+		if( ! mUseCache )
+			cDriverClassString = fConfigTree.getStringFromAttributeTrimOrNull( DRIVER_ATTR );
+		return cDriverClassString;
+	}
+//	public String getNetworkProtocal()
+//	{
+//		if( ! mUseCache )
+//			cNetworkProtocol = fConfigTree.getStringFromAttributeTrimOrNull( NET_PROTO_ATTR );
+//		return cNetworkProtocol;
+//	}
+	public String getDBName()
+	{
+		if( ! mUseCache )
+			cDBName = fConfigTree.getStringFromAttributeTrimOrNull( DB_NAME_ATTR );
+		return cDBName;
+	}
+	public String getMainTable()
+	{
+		if( ! mUseCache )
+			cMainTable = fConfigTree.getStringFromAttributeTrimOrNull( MAIN_TABLE_ATTR );
+		return cMainTable;
+	}
+	public String getUsername()
+	{
+		if( ! mUseCache )
+			cUsername = fConfigTree.getStringFromAttributeTrimOrNull( USERNAME_ATTR );
+		return cUsername;
+	}
+	public String getPassword()
+	{
+		if( ! mUseCache )
+			cPassword = fConfigTree.getStringFromAttributeTrimOrNull( PASSWORD_ATTR );
+		return cPassword;
+	}
+//	public String getExtraParameters()
+//	{
+//		if( ! mUseCache )
+//			cExtraParameters= fConfigTree.getStringFromAttributeTrimOrNull( EXTRA_PARAMETERS_ATTR );
+//		return cExtraParameters;
+//	}
+	// The Vendor, short version
+	public String getConfiguredVendorTag()
+	{
+		if( ! mUseCache )
+		{
+			final String kFName = "getVendorTag";
+
+			cVendorTag = fConfigTree.getStringFromAttributeTrimOrNull( VENDOR_TAG_ATTR );
+
+			// If not null, do some normalization
+			if( cVendorTag != null )
+			{
+				cVendorTag = cVendorTag.toLowerCase();
+
+				// Do some normalizing on PostgreSQL
+				if( cVendorTag.equals("postgres") || cVendorTag.equals("postgress") )
+				{
+					infoMsg( kFName,
+						"Correcting spelling of vendor tag PostgreSQL"
+						+ " from \"" + cVendorTag + "\""
+						+ " to \"" + VENDOR_TAG_POSTGRESQL + "\"."
+						);
+					cVendorTag = VENDOR_TAG_POSTGRESQL;
+				}
+
+				// Some normalizing for Microsoft
+				// Currently VENDOR_TAG_MS_SQL = "sqlserver"
+				// Yes, I realize it's a bit much, but it's very popular and if
+				// it saves even 5 support calls it's worth it!
+				else if(
+						(
+							cVendorTag.startsWith("s")
+							|| cVendorTag.startsWith("m")
+						) && (
+							cVendorTag.equals("sql")
+							|| cVendorTag.equals("mssql")
+							|| cVendorTag.equals("msql")
+							|| cVendorTag.equals("ms sql")
+							|| cVendorTag.equals("ms-sql")
+							|| cVendorTag.equals("microsoft sql")
+							|| cVendorTag.equals("microsoft-sql")
+							|| cVendorTag.equals("sql server")
+							|| cVendorTag.equals("sql-server")
+							|| cVendorTag.equals("ms sqlserver")
+							|| cVendorTag.equals("ms sql server")
+							|| cVendorTag.equals("ms sql-server")
+							|| cVendorTag.equals("microsoft sqlserver")
+							|| cVendorTag.equals("microsoft sql server")
+							|| cVendorTag.equals("microsoft sql-server")
+						)
+					)
+				{
+					infoMsg( kFName,
+						"Correcting spelling of vendor tag for Microsoft SQL Server"
+						+ " from \"" + cVendorTag + "\""
+						+ " to \"" + VENDOR_TAG_MS_SQL + "\"."
+						);
+					cVendorTag = VENDOR_TAG_MS_SQL;
+				}
+
+
+				// Todo: could normalize some of the lesser known ones
+
+			}   // End if was not null
+
+		}   // End if not using cache
+
+		return cVendorTag;
+	}
+
+	// Longer version for display
+	public String getVendorString()
+	{
+		if( ! mUseCache )
+			cVendorString = fConfigTree.getStringFromAttributeTrimOrNull( VENDOR_STRING_ATTR );
+		return cVendorString;
+	}
+
+	private String getDriverClassName()
+	{
+		if( ! mUseCache )
+		{
+			final String kFName = "getDriverClassName";
+
+			// Did they set one specifically?
+			// Most often NOT
+			cDriverClassString = fConfigTree.getStringFromAttributeTrimOrNull(
+				DRIVER_ATTR
+				);
+
+			// Most of the time we have to figure this out for ourselves
+			// based on the vendor tag
+			if( cDriverClassString == null )
+			{
+				String vTag = getConfiguredVendorTag();
+
+				// Add Driver Marker
+
+				// Figure out the correct driver string
+				if( vTag != null && vTag.equals(VENDOR_TAG_ORACLE) )
+				{
+					cDriverClassString = ORACLE_CLASS_NAME;
+				}
+				else if( vTag != null && vTag.equals(VENDOR_TAG_POSTGRESQL) )
+				{
+					cDriverClassString = POSTGRESQL_CLASS_NAME;
+				}
+				else if( vTag != null && vTag.equals(VENDOR_TAG_MS_SQL) )
+				{
+					cDriverClassString = MS_SQL_CLASS_NAME;
+				}
+				// else if other vendors..., etc.
+				else
+				{
+					errorMsg( kFName,
+						"Can not determine database driver class name"
+						+ " for vendor \"" + vTag + "\"."
+						+ " Returning null."
+						);
+				}
+			}
+			else    // Else they DID set a specific driver class
+			{
+				statusMsg( kFName,
+					"Will use User specified database driver class"
+					+ " = \"" + cDriverClassString + "\""
+					);
+			}
+		}   // End if not using cache
+		return cDriverClassString;
+	}
+
+
+	// A query to run once we've connected
+	public String getTestQuery()
+	{
+		if( ! mUseCache )
+			cTestQuery = fConfigTree.getTextByPathTrimOrNull( TEST_QUERY_PATH );
+		return cTestQuery;
+	}
+
+	// Check for Microsoft's funky driver
+	// We really only want to do this check once
+	// and we're using it's own caching mechanism
+	private boolean hasMSSqlJDBCDriver()
+	{
+		return hasMSSqlJDBCDriver( false );
+	}
+	private boolean hasMSSqlJDBCDriver( boolean inWarnIfNotThere )
+	{
+		final String kFName = "hasMSSqlJDBCDriver(2)";
+		boolean outAnswer = false;
+		if( fHasCheckedForMSSqlDriver )
+		{
+			outAnswer = cHasMSSqlDriver;
+		}
+		else    // Else we have not checked before
+		{
+			// Do the actual check
+			outAnswer = false;
+			try
+			{
+				Class tmpClass = Class.forName( MS_SQL_CLASS_NAME );
+				outAnswer = true;
+			}
+			catch(Exception exc)
+			{
+				// We will complain below
+				debugMsg( kFName, "Class loader exeption: " + exc );
+				// Redundant but clear:
+				outAnswer = false;
+			}
+
+			// We should let them know at least once that we did not find
+			// this driver.
+			if( ! outAnswer )
+			{
+				String tmpMsg = "Microsoft SQL Server JDBC Driver not found."
+					+ " This can be downloaded for FREE from Microsoft"
+					+ " or you might consider using the ODBC driver."
+					+ " The system will automatically fall back to that by default"
+					+ " unless you specifically tell it otherwise."
+					+ " If you want to download and use the JDBC driver"
+					+ " *** PLEASE READ *** the file "
+					+ MS_TROUBLESHOTTING_INSTRUCTIONS_FILE
+					;
+				// Complain loudly or softly
+				if( inWarnIfNotThere )
+					warningMsg( kFName, tmpMsg );
+				else
+					infoMsg( kFName, tmpMsg );
+			}
+			// Save the answer
+			cHasMSSqlDriver = outAnswer;
+			// And note that we HAVE NOW CHECKED
+			fHasCheckedForMSSqlDriver = true;
+		}
+
+		// And we're done
+		return outAnswer;
+	}
+
+
+	private static boolean isJDBCDriver( String inVendorTag )
+	{
+		final String kFName = "isJDBCDriver";
+		// This shouldn't be possible since we use static init
+		if( fJDBCDriverNameHash == null )
+		{
+			errorMsg( kFName,
+				"Map not initialized, returning false."
+				);
+			return false;
+		}
+		String lVendorTag = NIEUtil.trimmedLowerStringOrNull( inVendorTag );
+		if( lVendorTag == null )
+		{
+			errorMsg( kFName,
+				"Passed in null/empty vendor tag, returning false."
+				);
+			return false;
+		}
+		return fJDBCDriverNameHash.containsKey( lVendorTag );
+	}
+	private static String getJDBCDriverNameForVendor( String inVendorTag )
+	{
+		final String kFName = "getJDBCDriverNameForVendor";
+		boolean hasIt = isJDBCDriver( inVendorTag );
+		if( hasIt )
+		{
+			String lVendorTag = NIEUtil.trimmedLowerStringOrNull( inVendorTag );
+			return (String) fJDBCDriverNameHash.get( lVendorTag );
+		}
+		else
+		{
+			errorMsg( kFName,
+				"No JDBC driver found for vendor \"" + inVendorTag + "\""
+				+ ", returning null."
+				);
+			return null;
+		}
+	}
+
+	private static boolean isODBCDriver( String inVendorTag )
+	{
+		final String kFName = "isODBCDriver";
+		// This shouldn't be possible since we use static init
+		if( fODBCDriverNameHash == null )
+		{
+			errorMsg( kFName,
+				"Map not initialized, returning false."
+				);
+			return false;
+		}
+		String lVendorTag = NIEUtil.trimmedLowerStringOrNull( inVendorTag );
+		if( lVendorTag == null )
+		{
+			errorMsg( kFName,
+				"Passed in null/empty vendor tag, returning false."
+				);
+			return false;
+		}
+		return fODBCDriverNameHash.containsKey( lVendorTag );
+	}
+	private static String getODBCDriverNameForVendor( String inVendorTag )
+	{
+		final String kFName = "getODBCDriverNameForVendor";
+		boolean hasIt = isODBCDriver( inVendorTag );
+		if( hasIt )
+		{
+			String lVendorTag = NIEUtil.trimmedLowerStringOrNull( inVendorTag );
+			return (String) fODBCDriverNameHash.get( lVendorTag );
+		}
+		else
+		{
+			errorMsg( kFName,
+				"No ODBC driver found for vendor \"" + inVendorTag + "\""
+				+ ", returning null."
+				);
+			return null;
+		}
+	}
+
+
+
+	///// Run Logging ///////////////////////////////////////
+	private static void __sep__Run_Logging__() {}
+	//////////////////////////////////////////////////////
+
+
+	// This gets us to the logging object
+	private static RunLogInterface getRunLogObject()
+	{
+		return RunLogBasicImpl.getRunLogObject();
+	}
+	private static boolean statusMsg( String inFromRoutine, String inMessage )
+	{
+		return getRunLogObject().statusMsg( kClassName, inFromRoutine,
+			inMessage
+			);
+	}
+	private static boolean transactionStatusMsg( String inFromRoutine, String inMessage )
+	{
+		return getRunLogObject().transactionStatusMsg( kClassName, inFromRoutine,
+			inMessage
+			);
+	}
+	private static boolean shouldDoTransactionStatusMsg( String inFromRoutine )
+	{
+		return getRunLogObject().shouldDoTransactionStatusMsg( kClassName, inFromRoutine );
+	}
+	private static boolean infoMsg( String inFromRoutine, String inMessage )
+	{
+		return getRunLogObject().infoMsg( kClassName, inFromRoutine,
+			inMessage
+			);
+	}
+	private static boolean debugMsg( String inFromRoutine, String inMessage )
+	{
+		return getRunLogObject().debugMsg( kClassName, inFromRoutine,
+			inMessage
+			);
+	}
+	private static boolean traceMsg( String inFromRoutine, String inMessage )
+	{
+		return getRunLogObject().traceMsg( kClassName, inFromRoutine,
+			inMessage
+			);
+	}
+	private static boolean shouldDoTraceMsg( String inFromRoutine )
+	{
+		return getRunLogObject().shouldDoTraceMsg( kClassName, inFromRoutine );
+	}
+	private static boolean warningMsg( String inFromRoutine, String inMessage )
+	{
+		return getRunLogObject().warningMsg( kClassName, inFromRoutine,
+			inMessage
+			);
+	}
+	private static boolean errorMsg( String inFromRoutine, String inMessage )
+	{
+		return getRunLogObject().errorMsg( kClassName, inFromRoutine,
+			inMessage
+			);
+	}
+	private static boolean fatalErrorMsg( String inFromRoutine, String inMessage )
+	{
+		return getRunLogObject().fatalErrorMsg( kClassName, inFromRoutine,
+			inMessage
+			);
+	}
+
+
+	////// Main ////////////////////////////////////////////////////
+
+	public static void main(String[] args)
+	{
+		final String kFName = "main";
+
+		// statusMsg( kFName, "Starting" );
+
+		if( args.length < 1 )
+		{
+			errorMsg( kFName,
+				"Syntax error, missing arg1 (config file name)."
+				+ " Syntax is: java " + kClassName + " db_config_uri.xml"
+				+ " [sql_test_statement]"
+				+ " Exiting program (error code 1)."
+				);
+			System.exit( 1 );
+		}
+		String configFile = args[0];
+
+		statusMsg( kFName,
+			"Will read config URI \"" + configFile + "\""
+			);
+
+		DBConfig myDB = null;
+		try
+		{
+			myDB = new DBConfig( configFile );
+		}
+		catch (DBConfigException e)
+		{
+			errorMsg( kFName,
+				"Unable to construct DB Config object"
+				+ " Exception = " + e
+				+ " Exiting program (error code 2)."
+				);
+			System.exit( 2 );
+		}
+
+		statusMsg( kFName,
+			"Was able to read config."
+			);
+
+		// Todo: try running query
+
+	}
+
+
+	private static final void ___sep__Member_Fields_and_CONSTANTS__(){}
+	//////////////////////////////////////////////////////////////////////
+
+	// The main JDOM configuration tree
+	private JDOMHelper fConfigTree;
+
+	// The main JDBC connection
+	private Connection mDBConnection;
+
+	// A table of short ODBC driver names to proper driver names
+	// This is initialized in the static section BELOW
+	private static Hashtable fJDBCDriverNameHash;
+	private static Hashtable fJDBCDefaultPorts;
+	private static Hashtable fJDBCProtocolNameOverrides;
+	private static Hashtable fODBCDriverNameHash;
+
+	// Cached variables
+	// =====================================================
+	// Off by default
+	private boolean mUseCache;
+	// Don't forget to call the routines that cache these values
+	private boolean cIsActive;
+	private String cServerName;
+	private int cPort;
+	private String cType;
+	private String cDriverClassString;
+	private String cNetworkProtocol;
+	private String cDBName;
+	private String cMainTable;
+	private String cUsername;
+	private String cPassword;
+	private String cExtraParameters;
+	private String cVendorTag;
+	private String cVendorString;
+	private String cTestQuery;
+	private String cNativeConnectionString;
+	private String cFinalConnectionString;
+
+	// All about "type", JDBC vs ODBC
+	// =====================================
+	private static final String DB_TYPE_ATTR =
+		"type";
+	// If you add to these, you better sweep thorugh the code
+	private static final String TYPE_JDBC = "jdbc";
+	private static final String TYPE_ODBC = "odbc";
+	// We default to JDBC for now
+	private static final String DEFAULT_TYPE = TYPE_JDBC;
+	// ^^^ WARNING!!!!
+	// If you change this, you'll need to update the bottom of getDBType
+	// Also better check other places DEFAULT is used, difficult to code
+	// for all combinations, sorry
+
+
+	// Attribute Names
+	// ======================================================
+	private static final String ACTIVE_ATTR =
+		"active";
+	private static final String SERVER_NAME_ATTR =
+		"server_name";
+	private static final String SERVER_PORT_ATTR =
+		"port";
+	private static final String DRIVER_ATTR =
+		"driver_java_class";
+	private static final String NET_PROTO_ATTR =
+		"network_protocol";
+	private static final String DB_NAME_ATTR =
+		"database_name";
+	private static final String MAIN_TABLE_ATTR =
+		"main_table";
+	private static final String USERNAME_ATTR =
+		"username";
+	private static final String PASSWORD_ATTR =
+		"password";
+	private static final String EXTRA_PARAMETERS_ATTR =
+		"extra_parameters";
+	private static final String VENDOR_TAG_ATTR =
+		"vendor_tag";
+	private static final String VENDOR_STRING_ATTR =
+		"vendor_description";
+
+	private static final String NATIVE_CONNECT_STRING_ATTR =
+		"native_connection_string";
+
+	private static final String TEST_QUERY_PATH =
+		"test_query";
+
+
+	// The default host name
+	private static final String DEFAULT_SERVER_NAME = "localhost";
+
+	// Add Driver Marker
+
+	// Oracle
+	private static final String VENDOR_TAG_ORACLE = "oracle";
+	// This is the DEFAULT driver for Oracle
+	// private static final String ORACLE_CLASS_NAME = "oracle.jdbc.OracleDriver";
+	// This should work with 8i
+	private static final String ORACLE_CLASS_NAME =
+		"oracle.jdbc.driver.OracleDriver";
+	private static final int ORACLE_DEFAULT_PORT = 1521;
+
+	private static final String VENDOR_TAG_POSTGRESQL = "postgresql";
+	private static final String POSTGRESQL_CLASS_NAME =
+		"org.postgresql.Driver";
+	private static final int POSTGRESQL_DEFAULT_PORT = 5432;
+	private static final String POSTGRESQL_DEFAULT_SERVER = "localhost";
+	public static final String POSTGRESQL_TROUBLESHOTTING_INSTRUCTIONS_FILE =
+		"(nie-install-dir)/doc/postgresql-jdbc-troubleshooting.txt";
+
+	private static final String VENDOR_TAG_MS_SQL = "sqlserver";
+	private static final String MS_SQL_CLASS_NAME =
+		"com.microsoft.jdbc.sqlserver.SQLServerDriver";
+	// ^^^ For this driver I have seen paths like:
+	// D:\Sql200JDBCDriver\lib\msbase.jar;D:\Sql200JDBCDriver\lib\msutil.jar
+	// (cont) ;D:\Sql200JDBCDriver\lib\mssqlserver.jar
+	private static final int MS_SQL_DEFAULT_PORT = 1433;
+	// Some pain in the ass Microsoft requirements
+	public static final String MS_DOWNLOAD_URL =
+		"http://msdn.microsoft.com/downloads/default.asp?URL=/downloads/sample.asp?url=/MSDN-FILES/027/001/779/msdncompositedoc.xml"
+		;
+	public static final String MS_TROUBLESHOTTING_INSTRUCTIONS_FILE =
+		"(nie-install-dir)/doc/microsoft-jdbc-troubleshooting.txt";
+
+	// And yet more BS that we need to accommodate them
+	// Whether or not we have checked for the driver
+	private boolean fHasCheckedForMSSqlDriver;
+	// The cached answer we get when we do check
+	private boolean cHasMSSqlDriver;
+
+
+	private static final String VENDOR_TAG_MYSQL = "mysql";
+	private static final String MYSQL_CLASS_NAME =
+		"com.mysql.jdbc.Driver";
+		// OLD name: "org.gjt.mm.mysql.Driver";
+		// Caucho driver: Also com.caucho.jdbc.mysql.Driver
+		// For jdbc:mysql-caucho://localhost:3306/menagerie
+	private static final int MYSQL_DEFAULT_PORT = 3306;
+
+
+
+	// A place holder for something the user might accidently enter
+	private static final String BOGUS_JDBC_VENDOR_ODBC = TYPE_ODBC;
+	// When folks think they want dsn
+	private static final String ODBC_VENDOR_DSN = "dsn";
+
+	// private static final String BOGUS_VENDOR_TAG_ODBC = "odbc";
+	private static final String ODBC_CLASS_NAME =
+		"sun.jdbc.odbc.JdbcOdbcDriver";
+
+
+	private static final void ___sep__Static_Init__(){}
+	//////////////////////////////////////////////////////////////////////
+
+	// Add Driver Marker
+
+	// Lists of JDBC and ODBC Drivers
+	static
+	{
+		// JDBC
+		//////////////////////
+
+		// The names of the Java driver
+		fJDBCDriverNameHash = new Hashtable();
+
+		// Oracle (also has ODBC)
+		fJDBCDriverNameHash.put( VENDOR_TAG_ORACLE, ORACLE_CLASS_NAME );
+		// PostgreSQL (also has ODBC)
+		fJDBCDriverNameHash.put( VENDOR_TAG_POSTGRESQL, POSTGRESQL_CLASS_NAME );
+		// Microsoft SQL (also has ODBC)
+		fJDBCDriverNameHash.put( VENDOR_TAG_MS_SQL, MS_SQL_CLASS_NAME );
+		// MySQL
+		fJDBCDriverNameHash.put( VENDOR_TAG_MYSQL, MYSQL_CLASS_NAME );
+
+
+		// Any default ports we allow
+		/////////////////////////////////////
+		fJDBCDefaultPorts = new Hashtable();
+		// Oracle
+		fJDBCDefaultPorts.put( VENDOR_TAG_ORACLE,
+			new Integer(ORACLE_DEFAULT_PORT)
+			);
+		// PostgreSQL
+		fJDBCDefaultPorts.put( VENDOR_TAG_POSTGRESQL,
+			new Integer(POSTGRESQL_DEFAULT_PORT)
+			);
+		// Microsoft SQL
+		fJDBCDefaultPorts.put( VENDOR_TAG_MS_SQL,
+			new Integer(MS_SQL_DEFAULT_PORT)
+			);
+		// MySQL
+		fJDBCDefaultPorts.put( VENDOR_TAG_MYSQL,
+			new Integer(MYSQL_DEFAULT_PORT)
+			);
+
+		// Any OVERIDES to when the short name in the jdbc URL does not
+		// match the tag we use
+		///////////////////////////////////////////////////////////////
+		fJDBCProtocolNameOverrides = new Hashtable();
+		// Currently there are NO overrides needed
+		// all the names match
+
+
+
+		// ODBC
+		/////////////////////
+
+		// We have a number of shortcuts for ODBC Driver Names
+		fODBCDriverNameHash = new Hashtable();
+
+		// The _ODBC_ driver for SQL Server
+		fODBCDriverNameHash.put( VENDOR_TAG_MS_SQL, "{SQL Server}" );
+
+		// MS Access
+		fODBCDriverNameHash.put( "access", "{MicroSoft Access Driver (*.mdb)}" );
+
+		// Excel
+		fODBCDriverNameHash.put( "excel", "{Microsoft Excel Driver (*.xls)}" );
+
+		// dbase
+		fODBCDriverNameHash.put( "dbase", "{Microsoft dBase Driver (*.dbf)}" );
+		fODBCDriverNameHash.put( "dbase-word", "{Microsoft dBase VFP Driver (*.dbf)}" );
+
+		// Foxpro
+		fODBCDriverNameHash.put( "foxpro", "{Microsoft Visual FoxPro Driver (*.dbf)}" );
+		fODBCDriverNameHash.put( "foxpro-word", "{Microsoft FoxPro VFP Driver (*.dbf)}" );
+
+		// CSV
+		fODBCDriverNameHash.put( "csv-text", "{Microsoft Text Driver (*.txt; *.csv)}" );
+
+		// Oracle drivers
+		fODBCDriverNameHash.put( VENDOR_TAG_ORACLE, "{Microsoft ODBC for Oracle}" );
+		fODBCDriverNameHash.put( "oracle9", "{Oracle in OraHome92}" );
+
+		// Postgres
+		fODBCDriverNameHash.put( VENDOR_TAG_POSTGRESQL, "{PostgreSQL}" );
+
+		// Paradox
+		// First is with a space, as shown
+		fODBCDriverNameHash.put( "paradox", "{Microsoft Paradox Driver (*.db )}" );
+		// They show it with a space, above, try again with no space
+		fODBCDriverNameHash.put( "paradox2", "{Microsoft Paradox Driver (*.db)}" );
+
+		// An entry for generic DSN, just so it shows up
+		// This takes SPECIAL HANDLING
+		fODBCDriverNameHash.put( ODBC_VENDOR_DSN, "Generic Windows ODBC DSN (User or System)" );
+
+
+					// jdbc:odbc://source_name
+					// "jdbc:odbc:Driver={MicroSoft Access Driver (*.mdb)};DBQ=D:test.mdb"
+					// jdbc:odbc:Driver={Microsoft Access Driver (*.mdb)};DBQ=C:\saint.mdb
+					// "jdbc:odbc:DRIVER={SQL Server};DATABASE=iweb;UID=" +userid+ ";PWD=" +passwd+ ";";
+					// OR they claim:
+					// "jdbc:odbc:DRIVER={SQL Server};SERVER=123.456.789.123:1433;DATABASE=iweb";
+					// Connection con = DriverManager.getConnection(conString, userid, passwd);
+					// Maybe:
+					// jdbc:odbc://whitehouse.gov:5000/CATS;PWD=Hillary
+					// jdbc:odbc:Driver={SQL Server};Server=whitehouse.gov;Database=CATS
+
+					// jdbc:odbc:Driver={Microsoft Excel Driver (*.xls)};DBQ=c:/excel/mySheet.xls;DriverID=22;READONLY=false
+					// jdbc:odbc:Excel Files;DBQ=C:\\java\\data.xls
+
+					// Maybe not
+					// jdbc:odbc:Driver=MicroSoft Text Driver (*.txt; *.csv);Database=MyDatabase", "", ""
+
+
+	}
+
+
+
+	// Some Doc links
+	private static final void ___sep__Misc_DOC__(){}
+	//////////////////////////////////////////////////////////////////////
+
+	// Add Driver Marker
+
+
+
+	// http://java.sun.com/docs/books/tutorial/jdbc/basics/index.html
+	// http://java.sun.com/products/jdbc/faq.html
+
+	// Postgres / PostgreSQL
+	// They would like you to build it:
+	//  http://jdbc.postgresql.org/doc.html
+	// Compiled downloads
+	//  http://jdbc.postgresql.org/download.html
+	// We use 7.2 stable:  (7.3 was in beta as of 10/17/02)
+	//      "The JDBC2 driver is intended for JDK 1.2 and JDK 1.3 environments
+	//       but will run under later JDKs (1.4).
+	//       It will not run under JDK 1.1. "
+
+	// MySQL
+	// http://www.mysql.com/downloads/index.html
+	// http://www.mysql.com/downloads/api-jdbc.html
+	// ^^^ See connector J2, was MM.MySQL or mmmsql
+	// we are NOT currently using caucho
+	// http://mmmysql.sourceforge.net/
+	// http://www.mysql.com/downloads/download.php?file=Downloads/Connector-J/mysql-connector-java-2.0.14.tar.gz
+	// http://www.mysql.com/documentation/index.html
+	// TWO JDBC drivers
+	// http://www.mysql.com/doc/en/Java.html
+
+	// Microsoft
+	// Tech Overview
+	//  http://support.microsoft.com/default.aspx?scid=KB;EN-US;Q313100&
+	// Downloading
+	//  http://msdn.microsoft.com/downloads/default.asp?URL=/downloads/sample.asp?url=/MSDN-FILES/027/001/779/msdncompositedoc.xml
+	//  http://download.microsoft.com/download/SQLSVR2000/Install/2.2.0022/NT5XP/EN-US/setup.exe
+	//  http://download.microsoft.com/download/SQLSVR2000/Install/2.2.0022/UNIX/EN-US/mssqlserver.tar
+	//  http://msdn.microsoft.com/MSDN-FILES/027/001/779/redistguide.htm
+
+	// Misc ODBC Doc
+	// Debug Info: java.sql.DriverManager.setLogStream(java.lang.System.out);
+	// Gives output like:
+	//trying driver[className=sun.jdbc.odbc.JdbcOdbcDriver,context=null,sun.jdbc.odbc.JdbcOdbcDriver@201cb63]<BR>
+	//*Driver.connect (jdbc:odbc:WizKidJ)<BR>
+	//JDBC to ODBC Bridge: Checking security<BR>
+	//No SecurityManager present, assuming trusted application/applet<BR>
+	//JDBC to ODBC Bridge 1.1001<BR>
+	//Current Date/Time: Fri Feb 11 21:39:44 EST 2000<BR>
+	//Loading JdbcOdbc library<BR>
+	//Allocating Environment handle (SQLAllocEnv)<BR>
+	//hEnv=551687240<BR>
+	//Allocating Connection handle (SQLAllocConnect)<BR>
+	//hDbc=551687408<BR>
+	//Connecting (SQLDriverConnect), hDbc=551687408, szConnStrIn=DSN=WizKidJ;UID=;PWD=
+	// String temps="jdbc:odbc:Excel Files;DBQ="+ClassLoader.getResource(pathToFileInJar).toString();
+	// Network access via ODBC
+	//You should look at the FAQ for JDBC. This answers your question.
+	//Try installing MySQL it works fine and you can connect to it
+	//remotely without the RMI-JDBC-ODBC.
+	//5. How can I use the JDBC API to access a desktop database like Microsoft Access over the network?
+	//Most desktop databases currently require a JDBC solution that uses ODBC underneath. This is because the vendors of these database products haven't implemented all-Java JDBC drivers.
+	//The best approach is to use a commercial JDBC driver that supports ODBC and the database you want to use. See the JDBC drivers page for a list of available JDBC drivers.
+	//The JDBC-ODBC bridge from Sun's Java Software does not provide network access to desktop databases by itself. The JDBC-ODBC bridge loads ODBC as a local DLL, and typical ODBC drivers for desktop databases like Access aren't networked. The JDBC-ODBC bridge can be used together with the RMI-JDBC bridge, however, to access a desktop database like Access over the net. This RMI-JDBC-ODBC solution is free.
+	// http://forum.java.sun.com/thread.jsp?forum=48&thread=211735&start=2
+	// http://forum.java.sun.com/thread.jsp?forum=48&thread=255167
+	// Free driver for SQL JDBC!
+	// https://sourceforge.net/projects/jtds/
+	// http://www.ddtek.com
+
+
+}

@@ -1,0 +1,81 @@
+CREATE TABLE domainnames (
+	client_host char(23),
+	dns_name varchar(128),
+	lookup_date timestamp with timezone,
+	resolved number );
+
+
+CONSTRAINTS: no field is allowed to be null.
+
+------------------------------------------
+
+CREATE TABLE log (
+	site_id number,
+	search_transaction_number number,
+	referring_transaction_number number,
+	transaction_type number,
+	form_name varchar(32),
+	client_host varchar(128),
+	user_name varchar(32),
+	user_domain varchar(32),
+	referer varchar(3072),
+	num_results number,
+	num_searched number,
+	start_time timestamp with timezone,
+	end_time timestamp with timezone,
+	original_query varchar(3072),
+	normalized_query varchar(3072),
+	extra_search_parameters varchar(3072),
+	was_search_names_term number,
+	was_search_names_action_taken number,
+	search_names_action_code number,
+	search_names_action_count number,
+	search_names_problem_flag number,
+	search_names_problem_code number,
+	search_names_problem_message number,
+	type_of_document_click number,
+	rank_in_results_list number,
+	rank_in_results_on_this_page number,
+	user_feedback number,
+	advertisement_graphic_url varchar(128),
+	advertisement_href varchar(128),
+	advertisement_code_sent varchar(128),
+	hour_of_day number,
+	day_of_week number,
+	day_of_month number,
+	day_of_year number,
+	week_of_year number,
+	month_of_year number,
+	year number );
+
+CONSTRAINTS: site_id not allowed to be null
+			was_search_names_term allowed values = 0 or 1
+			was_search_names_action_taken allowed values = 0 or 1
+			search_names_problem_flag allowed values = 0 or 1
+			
+INDICES should be created on the following fields (individually - i.e. 6 indexes):
+			original_query
+			normalized_query
+			start_time
+			end_time
+			was_search_names_term
+			normalized_query + site_id
+
+----------------------------------------------------
+
+CREATE TABLE userinfo (
+	user_id number,
+	user_name varchar(16),
+	password varchar(24),
+	full_name varchar(128),
+	email varchar(128),
+	phone_1 varchar(10),
+	phone_2 varchar(10),
+	phone_3 varchar(10),
+	security_level number );
+
+CONSTRAINTS:
+	user_id not null, auto-increment
+	user_name not null
+	password not null
+	security_level default to -1

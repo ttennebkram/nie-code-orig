@@ -1,0 +1,16 @@
+<map>
+
+	<term>financing</term>
+	<term>airplane financing</term>
+
+	<term>loans</term>
+	<term>airplane loans</term>
+
+	<!-- Advertisements -->
+	<user_data_markup_items class="text_ad">
+		<include location="../ads/mbna.xml" />
+	</user_data_markup_items>
+
+	<!-- Currently no suggestions for this map -->
+
+</map>

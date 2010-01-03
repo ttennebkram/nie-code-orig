@@ -1,0 +1,48 @@
+<table name="nie_log_meta_data">
+
+<field name="search_transaction_number"
+	type="long"
+	description="(FK) The original search this was attached to."
+/>
+
+<field name="owner"
+	type="text"
+	size="64"
+	is_indexed="TRUE"
+	description="
+		The table or object name this data belongs to, or system
+		For example: moded_field_match (from DbMapRecord.META_DATA_FIELD_MODE_OWNER_NAME)
+		"
+/>
+<field name="logged_order"
+	type="int"
+	is_indexed="TRUE"
+	description="The order it was logged in."
+/>
+
+<field name="field_name"
+	type="text"
+	size="64"
+	is_indexed="TRUE"
+	is_not_null="TRUE"
+	description="what this item is referred to as"
+/>
+<field name="field_description"
+	type="text"
+	size="64"
+	is_indexed="TRUE"
+/>
+
+<field name="field_value"
+	type="text"
+	size="1024"
+	is_indexed="TRUE"
+	is_not_null="TRUE"
+/>
+<field name="value_description"
+	type="text"
+	size="64"
+	is_indexed="TRUE"
+/>
+
+</table>

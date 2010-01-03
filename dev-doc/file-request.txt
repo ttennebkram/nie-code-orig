@@ -1,0 +1,11 @@
+http://searchtrackserver:9000/file/dir1/foo.html
+
+nie.sn.FileDispatcher
+
+DEFAULT_LOCAL_FILE_URI_PREFIX = "system:static_files/";
+
+SnRequestHandler
+FILE_CONTEXT_CGI_PATH_PREFIX
+public static final String FILE_CONTEXT_CGI_PATH_PREFIX = "/file/";
+		WAS "/files/";
+public static final String SN_CONTEXT_FILE = "file";

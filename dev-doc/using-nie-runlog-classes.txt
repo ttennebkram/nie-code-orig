@@ -1,0 +1,541 @@
+Use of NIE Run Logging Facility:
+
+Outline
+--------
+Introduction
+Interface and v1 Implementation Class
+Run Log and Your Classes
+Logging a Message: 3 ways (quick vs. optimized)
+Setting Log Levels from the Command Line
+Details of Verbosity Levels
+What's NOT There Yet
+
+
+
+Introduction
+-------------
+
+Record program activity and warning/error messges.
+This is referred to as "run logging", vs. SearchTrack "data logging".
+
+Goals:
+Have an easy way to log various types of events.
+Easy for coder.
+Easy for customer.
+Adjustable, both at startup and at runtime.
+Balance fancy Java code with performance issues.
+EXTENSIBLE.
+Nice to have: different log levels for different classes
+
+
+In your code you can say things like:
+
+statusMsg( kFName, "Starting big process." );
+or
+warningMsg( kFName, "I don't think you should do this." );
+or
+errorMsg( kFName, "We're really hosed, returning NULL." );
+
+The current implementation has you copy over some standard
+code into your class, tweak a few settings, and you're good
+to go.  If you're creating a new application, there is some
+additional wiring.
+
+The code from SearchNames 092 is used as a template project.
+
+Since it is important to maintain the ordering of generated
+messages, of both errors and non error messages, all output
+is currently sent to System.err by default.  This is an initial
+implemenation - other methods are certainly possible.
+Some other options are even partially implemented now.
+
+
+Interface and v1 Implemenation Classes
+--------------------------------------
+
+The main interface is:
+	nie.core.RunLogInterface
+	This interface also defines some constants.
+
+The first implementation is:
+	nie.core.RunLogBasicImpl
+	First pass that gets the job done!
+
+The normal usage model is to have a single
+instance of a basic impl object.
+
+
+Run Log and Your Classes
+------------------------
+
+Your class does NOT inherit, NOR implement, the logger class.
+Instead, it uses more of the "has a" object model.
+
+To "wire up" one of your classes:
+
+Summary:
+1: Copy and Paste a handful of static methods into your class.
+   I usually put them at the bottom.
+2: Define a private string kClassName with the name of your class.
+3: For each method that will log, define a final String kFName
+   with the name of the method.
+4: Sweep your code, replacing print and println calls with
+   calls to the appropriate message logger.
+
+* 5: For your "main" class, you need to make some additional changes.
+     You will also need to coordindate this with your other classes.
+
+
+Details:
+
+
+1: Copy and Paste a handful of static methods:
+
+Look at a sample class, for example:
+	nie.core.JDOMHelper
+
+Scroll to the bottom.
+
+Copy and paste:
+	From: private static RunLogInterface getRunLogObject()
+	Though: private static boolean fatalErrorMsg( ...
+
+For most methods, you'll see a pair of them, such as
+debugMsg() and shouldDoDebugMsg(); a few of them do not have
+the shouldXXX method.  This has to do with optimization, which
+is explained later.  In theory, every method would have the
+shouldXXX method companion - in practice, only the more chatty
+message loggers have needed them.  I add them as I need them.
+
+
+2: Defining a Private String for the Class Name:
+
+Looking at the TOP of JDOMHelper, you'll see:
+
+	private final static String kClassName = "JDOMHelper";
+  
+You should make a similar entry in your class.
+Yes, there's a fancier way to derive this, I just haven't
+bothered yet.  I put this at the top so nobody forgets.
+
+Since we use this ALL the time, it's defined as a constant
+member field, vs. a method.
+
+
+3: Defining a Final String for Each Method:
+
+Logging is done by both class name and method name.
+So, for any method that will log, we need pass a string.
+
+Example from JDOMHelper:
+
+	public void printAttributeList( String target )
+	{
+		final String kFName = "printAttributeList";
+	...
+
+If there's a fancy way to derive this, I don't know what it is.
+Again, since we use this ALL THE TIME, it needs to be fast.
+
+
+
+4: Sweeping Your Code:
+
+The goal is to have no print or println statements in the NIE code,
+except in the logging code itself and perhaps in a few other special
+cases.
+
+This is explained in detail in the next section.
+
+
+5: Special Provisions for your "main" class:
+
+In a later section there are instructions for sharing command line
+arguments / options between your application and the logger class.
+This will likely affect the code in your "main" class.
+
+
+ALSO, you may need an additional method in your mainclass:
+
+All of the classes will have:
+	private static RunLogInterface getRunLogObject()
+	This was part of the copy and paste.
+
+But your main class may ALSO need:
+
+	// Return the same thing casted to allow access to impl extensions
+	private static RunLogBasicImpl getRunLogImplObject()
+
+
+
+getRunLogImplObject()
+
+
+
+
+
+
+
+Logging a Message: 3 ways (quick vs. optimized)
+------------------------------------------------
+
+First some examples:
+
+
+If you have code:
+
+	System.err.println( "Error, bad syntax, returning 0." );
+
+You'd replace that with:
+
+	errorMsg( kFName, "Error, bad syntax, returning 0." );
+
+
+Or for debugging, you might have:
+
+	if(debug) System.out.println( "Opening the file now..." );
+
+You can simply use:
+
+	debugMsg( kFName, "Opening the file now..." );
+
+Note that you do not normally have to use the if(debug) syntax -
+debugMsg takes care of that via other means.
+
+By default, as you call these logger routines, you are always
+generating a message; higher level logic then selective discards
+these messages, based on the verbosity setting.
+
+Normally, this is a small overhead, so should not be of concern;
+the idea is to make things easy for the coder, so they will use
+the methods on a regular basis.
+
+However, for tight loops or computationally complex messages,
+there are two levels of optimation to avoid generating needless
+messages.  These OPTIONAL techniques are discussed below.
+
+
+There are a total of eight message logger routines, all with
+the same signature, which encapsulate different levels of
+verbosity.
+
+Yes, a single routine with a "level flag" could have been used.
+But having the 8 routines is more convenient to code.
+In fact, internally, each routine is just a thin wrapper around
+some general routines.
+
+All 8 routines take two Strings as an argument:
+	the name of the method they are being called from
+	the actual message
+
+If you define kFName at the top of your methods, you can just
+pass that as the first argument.  I STRONLGY advise against
+hard coding literal strings for arg1; using kFName is so much nicer.
+
+The full list of Logger routines (which you should have copied
+over to your class) is:
+
+statusMsg(...)
+transactionStatusMsg(...)
+infoMsg(...)
+debugMsg(...)
+traceMsg(...)
+waringMsg(...)
+errorMsg(...)
+fatalErrorMsg(...)
+
+The names roughly imply the proper usage, however the levels ARE
+DETAILED in the last section.
+
+And, you can EASILY CHANGE YOUR MIND by just changing which method
+you call, so don't obsess if you don't know which one to use.
+
+I tend to use status, warning and error the most.
+
+
+Optimizations:
+
+By default, if you say debugMsg( kFName, "Some message." ), you are
+generating a run log message event.  If the current verbosity does
+not call for displaying debug messages, your message is thrown away.
+
+This is normally OK, but a slight waste of effort on Java's part.
+
+But if the debug message was going to include a very detailed description
+of an event or item of data, you might go through some non-trivial
+code to generate a longer message.  For example, your debug message
+might loop through an entire list of entries and produce a debug message
+that includes all of them.  This is a lot of work for the JVM to do
+if it's not ever going to be used.
+
+
+Optimization 1: Use the shouldXXX methods
+
+
+For more complex logging you can replace:
+
+	String complexMessage = .....
+		... lengthy code to construct
+			a long message ....
+	debugMsg( kFName, complexMessage );
+
+With:
+
+	if( shouldDoDebugMsg(kFName) )
+	{
+		String complexMessage = .....
+			... lengthy code to construct
+				a long message ....
+		debugMsg( kFName, "Some long message." );
+	}
+
+This saves a little processing time because we skip your
+entire code if debug logging is not active.
+
+Internally, debugMsg() calls the exact same routine to
+make it's decision, so you're just calling it ahead of time.
+You will get the same log output as if you did not call it.
+
+The shouldXXX methods take the same kFName argument as
+the actual message loggers.  This gives the implementation
+an opportunity to make decisions based on class name
+and/or method name.  This first Basic Impl DOES take advantage
+of this hook.
+
+
+Optimziation 2: Caching the Answer from shouldXXX Methods
+
+Some messages may be VERY frequent, perhaps part of a tight
+inner loop.  Even calling shouldXXX() for each iteration
+would be quite wasteful.
+
+An example is the traceMsg() method.  This HIGH debug method
+may be called 1,000 times even in one method, for example if
+it were being used to debug streams.
+
+The answer from the shouldDoTraceMsg() method can easily
+be cached at the top of a routine.
+
+
+	String myStreamReader( ... )
+	{
+		final String kFName = "myStreamReader";
+
+		// Cache the answer into a quick, local variable
+		final boolean trace = shouldDoTraceMsg( kFName );
+
+		// ... setup ...
+
+		while( ! EOF )
+		{
+			// read a character
+			c = readByte();
+
+			// Debug: tell us what the character was
+			// bug ONLY if we REALLY want to know
+
+			if(trace) traceMsg( kFName, "Read " + c );
+
+			// rest of loop
+
+		}
+
+
+		// etc....
+	}
+
+Please note that the caching happens at the start of each
+method invocation.  If you have a long lived method, you probably
+should not cache the answer, as it would no longer update.
+
+There is very little need for shouldDoErrorMsg() or
+shouldDoWarningMsg() calls or caching.  Presumably
+these events are more infrequent, and, BY DEFAULT,
+these message classes WOULD be output anyway.
+
+
+In summary, it's always save to just call debugMsg(), etc.,
+but if you're concerned with performance, there is a way to
+short cicuit some of the overhead.
+
+
+
+Setting Log Levels from the Command Line
+----------------------------------------
+
+It's often nice to let users set the verbosity from the
+command line.  But each application has it's own command
+line option.
+
+Note:
+Currently the only user accessible way to set levels is
+from the command line.  The framework would certainly
+support other more dynamic options in the future.
+XML config files will likely be in a future version!
+And developers can change levels at will.
+
+
+In this initial implemenation there is a "pass through"
+mode for command line arguments, that lets the host
+application cooperate and share the command line with
+the Run Logger.
+
+The general mechanism is this:
+
+The host application starts and loops over the command
+line arguments.
+
+For each argument, it first calls the logger and lets it
+look at the argument.  If the logger recognizes it, it
+records the action, and informs the host application.
+
+If the logger does not recognize the arguement, then the
+host applcation can see if it's one of its arguments.
+
+Since the logger would normally complain about unrecongized
+verbosity options, the host application must specifically
+tell the logger to NOT warn about unrecognized options.
+This is done by calling an overloaded method.
+
+This passthrough cooperative logic is already implemented
+in SearchNames.
+
+Please see:
+	File: nie.sn.SearchNamesApp
+	Method: void parseCommandLine( String inArgs[] )
+And look at the main loop in this routine for sample code.
+
+
+ALSO, to share the command line, you will need:
+
+	private static RunLogBasicImpl getRunLogImplObject()
+
+Parsing command line arguments is a function of the IMPLEMENTATION,
+NOT the INTERFACE.  This was done because it seemed very
+implemenation dependant.
+
+Therefore, this one main class will need to have casted access to the
+actual implemenation object, vs. seeing it through the interface type.
+I hope this is not too confusing - I wanted to isolate the "nonstandard"
+stuff to as small an area as possible.
+
+
+
+Details of Verbosity Levels
+---------------------------
+Generally you can set a simple option to control the global output
+level when you startup the program.
+
+You can also specify output levels for specific classes and methods;
+this is detailed later on.
+
+
+Overall verbosity levels:
+
+Each level in the list gives more and more output.
+The default verbosity is -transaction, which will give an overall picture
+of the prorgrams operation, and also briefly announce each transaction.
+
+Option		Shorthand	Comment
+------		---------	-------
+
+		(least output here with -fatal_only)
+
+-fatal_only	(none)		Suppress ALL messages except FATAL Errors -
+				use at your own risk!
+-quiet		-q		Suppress most messages except warnings and
+				errors.
+-status		-s		Overall progress of program; major functions
+				starting and stopping, etc.
+
+-transaction	(none)		This is the DEFAULT OUTPUT LEVEL
+  or				More detailed status progress of program
+-transactions			including individual requests and transactions.
+
+-info		-i		More detailed descriptions of the actions taken
+
+-debug		-d		Includes internal logic of program.
+
+-trace		(none)		Much more verbose debug mode;
+  or				may create HUGE log files
+-debug_trace			and slow down the program.
+
+		(most output here with -trace)
+
+WARNING about -debug and -trace:
+
+These options turn on a LOT of output.  They should be used only briefly.
+
+
+Setting Verbosity Levels for Specific Classes and Methods:
+
+This needs more documentation, I provide only rought notes here.
+It's certainly worth reading if you ever need to debug a specific
+class.
+
+This is some text from an email I sent, will pretty up later:
+vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
+Email from mbennett on 9/7/02:
+....
+You can specify verbosity on the command line.
+The levels of verbosity (from low to high) is something like:
+	-super_quiet, -quiet, -status, -transaction*, -info, -debug, -trace
+
+* Where -transaction is the default, which is short status about the running of the system AND short status about individual connections.
+
+And I also support some abbreviations like -d = -debug and -q = -quiet.
+
+Kevin, -info would be similar to your old -verbose; maybe slightly less chatty.
+
+But wait, there's MORE!  (with the framework in place this part was actually was < 30 minutes of coding to add)
+
+I can say -info
+
+Or I can say -info:ClassName
+
+So I want to turn up the verbosity just for one class, vs the entire system.
+
+Or even -debug:ClassName	# To debug that one class.
+
+I can even specify a single method:
+
+-debug:ClassName.ProblemMethod
+
+And these rules are all additive.
+
+I can say:
+
+-quiet -debug:StartupClass -trace:AnotherClass.CrashingMethod
+
+And how would I know what the classes and methods are?
+
+The best way is to look at the code.  Probably not for casual customers.  :)
+
+But another way is to look at the log output.  I always give class.method in the output, so if something interests you, it's easy to cut and paste the exact name.
+
+We could document some of the more useful class names.
+...
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+
+
+
+What's NOT There Yet
+--------------------
+* Support for file names (partially implemented, not tested, not wired up)
+* Support for auto-naming log files based on dates, templates
+* Support for rolling log files
+* User config control over formatting
+* Need further splitting of errors and warnings, more delineation
+* XML Config Options
+* Real-time verbosity changes via a web or socket interface
+
+
+
+
+
+
+
+
+
+

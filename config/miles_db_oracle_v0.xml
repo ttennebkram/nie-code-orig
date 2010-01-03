@@ -1,0 +1,7 @@
+<database
+	vendor_tag="oracle"
+	server_name="67.170.224.95"
+	database_name="strack"
+	username="scott"
+	password="tiger"
+/>

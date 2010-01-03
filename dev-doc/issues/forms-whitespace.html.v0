@@ -1,0 +1,407 @@
+<html>
+  <head>
+    <style type="text/css">
+      <!--
+.nie_report_title {
+	color:#000080;
+	font-size:150%;
+}
+.nie_form_title {color:#000080;}
+.nie_report_subtitle {
+	color:#000080;
+	font-size:120%;
+}
+.nie_form_subtitle {color:#000080;}
+
+/* body { margin: 0px; } */
+
+/* also .nie_cmenu_row1 */
+/* N/12 E/3 S/6 W/9 */
+.nie_cmenu_r1_cell {
+	padding: 1px 7px 1px 7px;
+	/* background-color:#c7c7c7; */
+}
+.nie_cmenu_r2_cell {
+	padding: 0px 4px 1px 4px;
+	/* background-color:#e5e5e5; */
+}
+
+.nie_stat_number {color:#000080;}
+.nie_stats_qualifier {font-size:smaller;}
+
+.nie_container_cell { padding:0px; spacing:0px }
+.nie_hr_cell { padding:0px; spacing:0px }
+
+
+/* Help Text */
+.nie_helptext_body { background-color: #ffffd0; } /* ffffc2 #ffffcc; #FFCC00-dark-gold */
+.nie_helptext_heading, .nie_product_name, .nie_vocabulary_term { color: #000080; } /* #003399; */
+
+/* Trend */
+.nie_trend_table { background-color: #bfd2e3; } /* confirmed??? */
+
+/* UI Stuff */
+.nie_form_header_row {
+	background-color:#dddddd;
+	vertical-align:bottom;
+}
+.nie_form_header_cell {
+	font-weight:bold;
+	font-size=120%;
+	color:black;
+}
+
+.nie_form_label_cell {
+	align: right;
+	vertical-align: top;
+	font-weight: bold;
+}
+
+.nie_spacer_cell {
+	width: 8px;
+	height:9px;
+}
+.nie_form_input_cell {
+	align: left;
+	vertical-align: top;
+}
+
+.nie_datetime, .nie_datetime_cell
+{
+	font-family: sans-serif; /* was monospace */
+	/* was font-size -1 */
+	vertical-align: text-bottom;
+}
+.nie_percentage_cell,
+.nie_percentage /* legacy css class */
+{
+	font-family: sans-serif;
+	text-align: right;
+	vertical-align: text-bottom;
+	padding: 0px 4px 1px 4px;
+}
+.nie_numeric_cell
+{
+	font-family:sans-serif;
+	text-align: right;
+	vertical-align: text-bottom;
+	/* padding is clockwise starting at North */
+	padding: 0px 4px 1px 4px;
+}
+
+.nie_report_link,
+.nie_inactive_report_link
+{
+	font-family:sans-serif;
+	vertical-align: text-bottom;
+}
+
+.nie_menu_link,
+.nie_inactive_menu_link
+{
+	font-family:sans-serif;
+	font-size:smaller;
+	vertical-align: text-bottom;
+}
+
+.nie_inactive_paging_link
+{
+	font-family:sans-serif;
+	font-size:smaller;
+	color:gray;
+}
+.nie_active_paging_link
+{
+	font-family:sans-serif;
+	font-size:smaller;
+}
+
+.nie_header_row
+{
+	text-align: left;
+	vertical-align: bottom;
+	font-weight: bold;
+	color:white;
+	background-color:#000080;
+	border: 2px solid black 
+}
+
+.nie_even_row {background-color:#dddddd; }
+
+
+/* table and row settings do not seem to inherrit */
+.nie_header_cell { padding:3px; }
+.nie_data_cell
+{
+	font-family:sans-serif;  /* for consistency */
+	padding:2px;
+}
+
+.nie_special_term, .nie_special_data_cell
+{
+	font-style:italic;
+}
+-->
+    </style>
+    <title>Most Popular Searches</title>
+  </head>
+  <body>
+    <center>
+      <table class="nie_cmenu_row1" border="1" cellpadding="1" cellspacing="0" valign="center">
+        <tr class="nie_cmenu_row1">
+          <th colspan="3" align="center" class="nie_cmenu_r1_cell">Popular</th>
+          <th colspan="3" align="center" class="nie_cmenu_r1_cell">No Hits</th>
+          <th colspan="3" align="center" class="nie_cmenu_r1_cell">Trend</th>
+          <th colspan="3" align="center" class="nie_cmenu_r1_cell">Visitors</th>
+          <th colspan="3" align="center" class="nie_cmenu_r1_cell">Activity</th>
+          <th colspan="3" align="center" class="nie_cmenu_r1_cell">Advertisements</th>
+          <th align="center" class="nie_cmenu_r1_cell">Admin</th>
+        </tr>
+        <tr class="nie_cmenu_row2">
+          <td class="nie_cmenu_r2_cell">
+            <a class="nie_menu_link" href="http://north:9001?report=PopSearchLinked&amp;password=test&amp;command=report&amp;nie_context=admin&amp;days=1">day</a>
+          </td>
+          <td class="nie_cmenu_r2_cell">
+            <a class="nie_menu_link" href="http://north:9001?report=PopSearchLinked&amp;password=test&amp;command=report&amp;nie_context=admin&amp;days=7">week</a>
+          </td>
+          <td class="nie_cmenu_r2_cell">
+            <a class="nie_menu_link" href="http://north:9001?report=PopSearchLinked&amp;password=test&amp;command=report&amp;nie_context=admin&amp;days=30">month</a>
+          </td>
+          <td class="nie_cmenu_r2_cell">
+            <a class="nie_menu_link" href="http://north:9001?report=NoHitsLinked&amp;password=test&amp;command=report&amp;nie_context=admin&amp;days=1">day</a>
+          </td>
+          <td class="nie_cmenu_r2_cell">
+            <a class="nie_menu_link" href="http://north:9001?report=NoHitsLinked&amp;password=test&amp;command=report&amp;nie_context=admin&amp;days=7">week</a>
+          </td>
+          <td class="nie_cmenu_r2_cell">
+            <a class="nie_menu_link" href="http://north:9001?report=NoHitsLinked&amp;password=test&amp;command=report&amp;nie_context=admin&amp;days=30">month</a>
+          </td>
+          <td class="nie_cmenu_r2_cell">
+            <a class="nie_menu_link" href="http://north:9001?report=ActivityTrend&amp;password=test&amp;command=report&amp;nie_context=admin&amp;days=1">day</a>
+          </td>
+          <td class="nie_cmenu_r2_cell">
+            <a class="nie_menu_link" href="http://north:9001?report=ActivityTrend&amp;password=test&amp;command=report&amp;nie_context=admin&amp;days=7">week</a>
+          </td>
+          <td class="nie_cmenu_r2_cell">
+            <a class="nie_menu_link" href="http://north:9001?report=ActivityTrend&amp;password=test&amp;command=report&amp;nie_context=admin&amp;days=30">month</a>
+          </td>
+          <td align="center" class="nie_cmenu_r2_cell">
+            <a class="nie_menu_link" href="http://north:9001?report=frequent_visitors_ndays&amp;password=test&amp;command=report&amp;nie_context=admin&amp;days=1" title="day">day</a>
+          </td>
+          <td align="center" class="nie_cmenu_r2_cell">
+            <a class="nie_menu_link" href="http://north:9001?report=frequent_visitors_ndays&amp;password=test&amp;command=report&amp;nie_context=admin&amp;days=7" title="week">week</a>
+          </td>
+          <td align="center" class="nie_cmenu_r2_cell">
+            <a class="nie_menu_link" href="http://north:9001?report=frequent_visitors_ndays&amp;password=test&amp;command=report&amp;nie_context=admin&amp;days=30" title="month">month</a>
+          </td>
+          <td align="center" class="nie_cmenu_r2_cell">
+            <a class="nie_menu_link" href="http://north:9001?report=number_of_searches_ndays&amp;password=test&amp;command=report&amp;nie_context=admin&amp;days=7" title="week">week</a>
+          </td>
+          <td align="center" class="nie_cmenu_r2_cell">
+            <a class="nie_menu_link" href="http://north:9001?report=number_of_searches_ndays&amp;password=test&amp;command=report&amp;nie_context=admin&amp;days=30" title="month">month</a>
+          </td>
+          <td align="center" class="nie_cmenu_r2_cell">
+            <a class="nie_menu_link" href="http://north:9001?report=number_of_searches_ndays&amp;password=test&amp;command=report&amp;nie_context=admin&amp;days=365" title="year">year</a>
+          </td>
+          <td align="center" class="nie_cmenu_r2_cell">
+            <a class="nie_menu_link" href="http://north:9001?report=advertiser_summary_ndays&amp;password=test&amp;command=report&amp;nie_context=admin&amp;days=7" title="week">week</a>
+          </td>
+          <td align="center" class="nie_cmenu_r2_cell">
+            <a class="nie_menu_link" href="http://north:9001?report=advertiser_summary_ndays&amp;password=test&amp;command=report&amp;nie_context=admin&amp;days=30" title="month">month</a>
+          </td>
+          <td align="center" class="nie_cmenu_r2_cell">
+            <a class="nie_menu_link" href="http://north:9001?report=advertiser_summary_ndays&amp;password=test&amp;command=report&amp;nie_context=admin&amp;days=365" title="year">year</a>
+          </td>
+          <td align="center" class="nie_cmenu_r2_cell">
+            <a class="nie_menu_link" href="http://north:9001/ui/QueryMaps.cgi?operation=add&amp;password=test&amp;mode=formgen" title="Mappings">maps</a>
+          </td>
+        </tr>
+      </table>
+       
+      <br />
+      <b class="nie_report_title">Most Popular Searches</b>
+      <br />
+      <b class="nie_report_subtitle">For the past 7 day(s)</b>
+      <br />
+      <table class="nie_main_content_table">
+        <tr class="nie_stats_row">
+          <td>
+            <table width="100%">
+              <tr>
+                <td align="left" class="nie_stats_cell">
+                  Showing records 
+                  <b class="nie_stat_number">1</b>
+                   through 
+                  <b class="nie_stat_number">2</b>
+                  <i class="nie_stats_qualifier"> (all records shown)</i>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+        <tr>
+          <td align="center" class="nie_container_cell">
+            <table class="nie_results_table">
+              <tr class="nie_header_row">
+                <th class="nie_header_cell">Search Term(s)</th>
+                <th class="nie_header_cell">Count</th>
+                <th class="nie_header_cell">% of Total</th>
+                <th colspan="2" class="nie_header_cell">Pages Found</th>
+                <th class="nie_header_cell">Status</th>
+                <th class="nie_header_cell">Action</th>
+              </tr>
+              <tr class="nie_odd_row">
+                <td class="nie_special_data_cell">
+                  <a class="nie_report_link" href="http://north:9001?report=search_details_ndays&amp;password=test&amp;search=bar&amp;filter=search&amp;command=report&amp;nie_context=admin&amp;days=7">bar</a>
+                </td>
+                <td class="nie_numeric_cell">1</td>
+                <td class="nie_percentage_cell">50.00%</td>
+                <td class="nie_numeric_cell">0</td>
+                <td class="nie_data_cell">
+                  <a class="nie_report_link" href="http://north:9001?pageid=r&amp;password=test&amp;query=bar&amp;mode=ALL&amp;id=36902671" title="Run this search now (in a new window)" target="_blank">Show results &gt;&gt;</a>
+                </td>
+                <td align="center">
+                  <img alt="Term is Already Mapped" width="16" height="16" src="/files/images/sr2/green-checkmark-indicator.gif" />
+                </td>
+                <td class="nie_data_cell">
+                  <form>
+                    <font size="-1">
+                      <select name="screen">
+                        <option value="(null)">(choose action)</option>
+                        <option value="redirect">Immediate Redirect</option>
+                        <option value="wms">Suggest a URL</option>
+                        <option value="text_ad">Text Ad</option>
+                      </select>
+                    </font>
+                    <font size="-3">
+                      <input type="submit" value="Map &gt;&gt;" />
+                    </font>
+                  </form>
+                </td>
+              </tr>
+              <tr class="nie_even_row">
+                <td class="nie_special_data_cell">
+                  <a class="nie_report_link" href="http://north:9001?report=search_details_ndays&amp;password=test&amp;search=foo&amp;filter=search&amp;command=report&amp;nie_context=admin&amp;days=7">foo</a>
+                </td>
+                <td class="nie_numeric_cell">1</td>
+                <td class="nie_percentage_cell">50.00%</td>
+                <td class="nie_numeric_cell">0</td>
+                <td class="nie_data_cell">
+                  <a class="nie_report_link" href="http://north:9001?pageid=r&amp;password=test&amp;query=foo&amp;mode=ALL&amp;id=36902671" title="Run this search now (in a new window)" target="_blank">Show results &gt;&gt;</a>
+                </td>
+                <td align="center">
+                  <img alt="Term is Already Mapped" width="16" height="16" src="/files/images/sr2/green-checkmark-indicator.gif" />
+                </td>
+                <td class="nie_data_cell">
+                  <form>
+                    <font size="-1">
+                      <select name="screen">
+                        <option value="(null)">(choose action)</option>
+                        <option value="redirect">Immediate Redirect</option>
+                        <option value="wms">Suggest a URL</option>
+                        <option value="text_ad">Text Ad</option>
+                      </select>
+                    </font>
+                    <font size="-3">
+                      <input type="submit" value="Map &gt;&gt;" />
+                    </font>
+                  </form>
+                </td>
+              </tr>
+              <tr>
+                <td height="1" />
+              </tr>
+              <tr>
+                <td class="nie_hr_cell" valign="top" colspan="7" bgcolor="#555555" height="1" />
+              </tr>
+              <tr>
+                <th colspan="2" align="right">Search Coverage:</th>
+                <td class="nie_percentage_cell">100.00%</td>
+              </tr>
+              <tr>
+                <td height="1" />
+              </tr>
+              <tr>
+                <td class="nie_hr_cell" valign="top" colspan="7" bgcolor="#555555" height="1" />
+              </tr>
+            </table>
+          </td>
+        </tr>
+      </table>
+       
+      <p />
+       
+      <br />
+      <table class="nie_cmenu_row1" border="1" cellpadding="1" cellspacing="0" valign="center">
+        <tr class="nie_cmenu_row1">
+          <th colspan="3" align="center" class="nie_cmenu_r1_cell">Popular</th>
+          <th colspan="3" align="center" class="nie_cmenu_r1_cell">No Hits</th>
+          <th colspan="3" align="center" class="nie_cmenu_r1_cell">Trend</th>
+          <th colspan="3" align="center" class="nie_cmenu_r1_cell">Visitors</th>
+          <th colspan="3" align="center" class="nie_cmenu_r1_cell">Activity</th>
+          <th colspan="3" align="center" class="nie_cmenu_r1_cell">Advertisements</th>
+          <th align="center" class="nie_cmenu_r1_cell">Admin</th>
+        </tr>
+        <tr class="nie_cmenu_row2">
+          <td class="nie_cmenu_r2_cell">
+            <a class="nie_menu_link" href="http://north:9001?report=PopSearchLinked&amp;password=test&amp;command=report&amp;nie_context=admin&amp;days=1">day</a>
+          </td>
+          <td class="nie_cmenu_r2_cell">
+            <a class="nie_menu_link" href="http://north:9001?report=PopSearchLinked&amp;password=test&amp;command=report&amp;nie_context=admin&amp;days=7">week</a>
+          </td>
+          <td class="nie_cmenu_r2_cell">
+            <a class="nie_menu_link" href="http://north:9001?report=PopSearchLinked&amp;password=test&amp;command=report&amp;nie_context=admin&amp;days=30">month</a>
+          </td>
+          <td class="nie_cmenu_r2_cell">
+            <a class="nie_menu_link" href="http://north:9001?report=NoHitsLinked&amp;password=test&amp;command=report&amp;nie_context=admin&amp;days=1">day</a>
+          </td>
+          <td class="nie_cmenu_r2_cell">
+            <a class="nie_menu_link" href="http://north:9001?report=NoHitsLinked&amp;password=test&amp;command=report&amp;nie_context=admin&amp;days=7">week</a>
+          </td>
+          <td class="nie_cmenu_r2_cell">
+            <a class="nie_menu_link" href="http://north:9001?report=NoHitsLinked&amp;password=test&amp;command=report&amp;nie_context=admin&amp;days=30">month</a>
+          </td>
+          <td class="nie_cmenu_r2_cell">
+            <a class="nie_menu_link" href="http://north:9001?report=ActivityTrend&amp;password=test&amp;command=report&amp;nie_context=admin&amp;days=1">day</a>
+          </td>
+          <td class="nie_cmenu_r2_cell">
+            <a class="nie_menu_link" href="http://north:9001?report=ActivityTrend&amp;password=test&amp;command=report&amp;nie_context=admin&amp;days=7">week</a>
+          </td>
+          <td class="nie_cmenu_r2_cell">
+            <a class="nie_menu_link" href="http://north:9001?report=ActivityTrend&amp;password=test&amp;command=report&amp;nie_context=admin&amp;days=30">month</a>
+          </td>
+          <td align="center" class="nie_cmenu_r2_cell">
+            <a class="nie_menu_link" href="http://north:9001?report=frequent_visitors_ndays&amp;password=test&amp;command=report&amp;nie_context=admin&amp;days=1" title="day">day</a>
+          </td>
+          <td align="center" class="nie_cmenu_r2_cell">
+            <a class="nie_menu_link" href="http://north:9001?report=frequent_visitors_ndays&amp;password=test&amp;command=report&amp;nie_context=admin&amp;days=7" title="week">week</a>
+          </td>
+          <td align="center" class="nie_cmenu_r2_cell">
+            <a class="nie_menu_link" href="http://north:9001?report=frequent_visitors_ndays&amp;password=test&amp;command=report&amp;nie_context=admin&amp;days=30" title="month">month</a>
+          </td>
+          <td align="center" class="nie_cmenu_r2_cell">
+            <a class="nie_menu_link" href="http://north:9001?report=number_of_searches_ndays&amp;password=test&amp;command=report&amp;nie_context=admin&amp;days=7" title="week">week</a>
+          </td>
+          <td align="center" class="nie_cmenu_r2_cell">
+            <a class="nie_menu_link" href="http://north:9001?report=number_of_searches_ndays&amp;password=test&amp;command=report&amp;nie_context=admin&amp;days=30" title="month">month</a>
+          </td>
+          <td align="center" class="nie_cmenu_r2_cell">
+            <a class="nie_menu_link" href="http://north:9001?report=number_of_searches_ndays&amp;password=test&amp;command=report&amp;nie_context=admin&amp;days=365" title="year">year</a>
+          </td>
+          <td align="center" class="nie_cmenu_r2_cell">
+            <a class="nie_menu_link" href="http://north:9001?report=advertiser_summary_ndays&amp;password=test&amp;command=report&amp;nie_context=admin&amp;days=7" title="week">week</a>
+          </td>
+          <td align="center" class="nie_cmenu_r2_cell">
+            <a class="nie_menu_link" href="http://north:9001?report=advertiser_summary_ndays&amp;password=test&amp;command=report&amp;nie_context=admin&amp;days=30" title="month">month</a>
+          </td>
+          <td align="center" class="nie_cmenu_r2_cell">
+            <a class="nie_menu_link" href="http://north:9001?report=advertiser_summary_ndays&amp;password=test&amp;command=report&amp;nie_context=admin&amp;days=365" title="year">year</a>
+          </td>
+          <td align="center" class="nie_cmenu_r2_cell">
+            <a class="nie_menu_link" href="http://north:9001/ui/QueryMaps.cgi?operation=add&amp;password=test&amp;mode=formgen" title="Mappings">maps</a>
+          </td>
+        </tr>
+      </table>
+    </center>
+  </body>
+</html>

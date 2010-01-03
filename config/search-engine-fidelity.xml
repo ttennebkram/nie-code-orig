@@ -1,0 +1,63 @@
+<search_engine_info>
+  <search_url method="GET" use_careful_redirects="TRUE">http://search.fidelity.com/search/getSearchResults</search_url>
+  <base_url>http://personal.fidelity.com/</base_url>
+  <vendor>InQuira</vendor>
+  <search_term_field_name>question</search_term_field_name>
+  <search_url_test_drive_fields>
+    <field name="" value="" />
+    <field name="" value="" />
+    <field name="" value="" />
+    <field name="" value="" />
+    <field name="" value="" />
+    <field name="" value="" />
+    <field name="" value="" />
+    <field name="" value="" />
+    <field name="" value="" />
+    <field name="" value="" />
+  </search_url_test_drive_fields>
+  <search_form_option_fields>
+    <field skip_blank_name="TRUE" name="" label="">
+      <option value="" label="" />
+      <option value="" label="" />
+      <option value="" label="" />
+      <option value="" label="" />
+      <option value="" label="" />
+      <option value="" label="" />
+      <option value="" label="" />
+      <option value="" label="" />
+      <option value="" label="" />
+      <option value="" label="" />
+      <option value="" label="" />
+      <option value="" label="" />
+      <option value="" label="" />
+      <option value="" label="" />
+      <option value="" label="" />
+      <option value="" label="" />
+      <option value="" label="" />
+      <option value="" label="" />
+      <option value="" label="" />
+      <option value="" label="" />
+    </field>
+  </search_form_option_fields>
+  <results>
+    <forms enabled="TRUE">
+      <tweak_policy>Disabled: Do not send through SearchTrack</tweak_policy>
+      <to_tweak_a />
+      <to_tweak_b />
+    </forms>
+    <doc_links enabled="FALSE">
+      <cgi_field />
+      <js_policy>Remove onClick (if present)</js_policy>
+      <policy>Any link found in the results</policy>
+      <to_tweak_a />
+      <to_tweak_b />
+    </doc_links>
+  </results>
+  <suggestion_marker_text><![CDATA[Top&nbsp;Matches&nbsp;]]></suggestion_marker_text>
+  <suggestion_marker_text_modifiers after="FALSE" replace="FALSE" />
+  <markup_before />
+  <markup_after><![CDATA[<br/>]]></markup_after>
+  <no_action_indicator_field />
+  <no_action_indicator_field />
+  <no_action_indicator_field />
+</search_engine_info>

@@ -1,0 +1,95 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<!-- header.skel.php: begin -->
+<html>
+
+<head>
+
+<title>NSIS Archive</title>
+
+    
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" href="/media/template/nsis.css" type="text/css">
+
+</head>
+
+<body leftmargin="0" topmargin="0" marginwidth="0" marginheight="0">
+
+<table width="778" height="100%" class="maintable" cellspacing="0" cellpadding="0" align="center">
+
+<tr><td colspan="2" height="22">
+ <table width="778">
+   <tr>
+     <td class="auser"><strong>Logged in as:</strong> <i>not logged in</i> ( <a href="login.php?page=0">login</a> )</td>
+     <td class="alinks">
+ 	          [ <a href="picklist.php">Pick List</a> ] [ <a href="search.php">Search</a> ] [ <a href="../index.php">NSIS Site</a> ] [ <a href="http://nsis.sourceforge.net/archive/nsisweb.php">Home</a> ]
+     </td>
+   </tr>
+ </table>
+<tr></td>
+
+  <tr>
+    <td width="150" height="100" class="top"><a href="/index.php"><img src="/media/template/left.gif" width="150" height="100" border="0"></a></td>
+    <td width="628" height="100" class="top"><h1 class="header">NSIS Archive</td>
+  </tr>
+
+  <tr>
+    <td class="content" colspan="2">
+
+<!-- header.skel.php: end --><!-- user_page.skel.php: begin -->
+Parent Pages: <a href="viewpage.php?pageid=68">Tutorials</a> | <a href="viewpage.php?pageid=265">Text file manipulation</a></a>
+<hr class="aline">
+<table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr>
+    <td class="atitle">
+      Replacing Lines in a Text File    </td>
+    <td>
+      <a href="edit.php?pageid=17&instances=0"><img src="images/edit2.png" name="edit2" width="20" height="20" border="0" alt="Edit this page"></a> | <img src="images/cut.png" name="cut" width="20" height="20" border="0" alt="You are viewing this page without reference to a parent page and so it cannot be removed as a child of that parent"> | <a href="picklist.php?action=pick&instanceid=0"><img src="images/copy2.png" name="copy2" width="20" height="20" border="0" alt="Add this page to your pick list"></a> | <img src="images/up.png" name="up" width="20" height="20" border="0" alt="You are viewing this page without reference to a parent page and so you cannot move up to the parent">    </td>
+  </tr>
+</table>
+<hr class="aline">
+<table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr>
+    <td align="left" valign="top">
+      Written by <a href="profile.php?userid=2">KiCHiK</a> 2002-12-18 12:42:07    </td>
+    <td align="right" valign="top">
+      Last updated by <a href="profile.php?userid=2">KiCHiK</a> 2003-04-24 04:56:19    </td>
+  </tr>
+  <tr><td><br><br></td></tr>
+  <tr><td colspan="2" align="left" valign="top" class="apage">
+<!-- user_page.skel.php: source -->
+<p>This script will replace every occurrence of the line "line to replace" with the line "replacement of line" in the file called "file.txt".<br><br><a href="savescript.php?pageid=17&script=1" target="_blank"><img border="0" src="images/disk.gif" width="19" height="19" class="aicon">Save this script</a><br><pre class="afixfont"><span class="ahinstruction">ClearErrors</span>
+<span class="ahinstruction">FileOpen</span> <span class="ahvar">$0</span> <span class="ahstring">"file.txt"</span> <span class="ahstring">"r"</span>
+<span class="ahinstruction">GetTempFileName</span> <span class="ahvar">$R0</span>
+<span class="ahinstruction">FileOpen</span> <span class="ahvar">$1</span> <span class="ahvar">$R0</span> <span class="ahstring">"w"</span>
+<span class="ahlabel">loop:</span>
+   <span class="ahinstruction">FileRead</span> <span class="ahvar">$0</span> <span class="ahvar">$2</span>
+   <span class="ahinstruction">IfErrors</span> done
+   <span class="ahinstruction">StrCmp</span> <span class="ahvar">$2</span> <span class="ahstring">"line to replace<span class="ahvar">$\r</span><span class="ahvar">$\n</span>"</span> <span class="ahnumber">0</span> <span class="ahnumber">+</span><span class="ahnumber">3</span>
+      <span class="ahinstruction">FileWrite</span> <span class="ahvar">$1</span> <span class="ahstring">"replacement of line<span class="ahvar">$\r</span><span class="ahvar">$\n</span>"</span>
+      <span class="ahinstruction">Goto</span> loop
+   <span class="ahinstruction">StrCmp</span> <span class="ahvar">$2</span> <span class="ahstring">"line to replace"</span> <span class="ahnumber">0</span> <span class="ahnumber">+</span><span class="ahnumber">3</span>
+      <span class="ahinstruction">FileWrite</span> <span class="ahvar">$1</span> <span class="ahstring">"replacement of line"</span>
+      <span class="ahinstruction">Goto</span> loop
+   <span class="ahinstruction">FileWrite</span> <span class="ahvar">$1</span> <span class="ahvar">$2</span>
+   <span class="ahinstruction">Goto</span> loop
+
+<span class="ahlabel">done:</span>
+   <span class="ahinstruction">FileClose</span> <span class="ahvar">$0</span>
+   <span class="ahinstruction">FileClose</span> <span class="ahvar">$1</span>
+   <span class="ahinstruction">Delete</span> <span class="ahstring">"file.txt"</span>
+   <span class="ahinstruction">CopyFiles</span> <span class="ahparam">/SILENT</span> <span class="ahvar">$R0</span> <span class="ahstring">"file.txt"</span>
+   <span class="ahinstruction">Delete</span> <span class="ahvar">$R0</span></pre></p><!-- user_page.skel.php: end -->
+  </td></tr>
+</table>
+<!-- footer.skel.php: begin -->
+    </td>
+  </tr>
+  <tr>
+    <td colspan="2" height="40" class="alogo">
+      <a href="http://sourceforge.net"><img src="http://sourceforge.net/sflogo.php?group_id=22049&amp;type=1" alt="SourceForge Logo" border="0"></a>
+    </td>
+  </tr> 
+</table>
+</body> 
+</html>
+<!-- footer.skel.php: end -->

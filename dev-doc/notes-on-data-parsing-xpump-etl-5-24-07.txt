@@ -1,0 +1,146 @@
+Company:	* XPump ETL like tools
+
+Categories:	Website
+XPump, Dpump, content mining
+
+Data flow UI
+Visual Programming Languages with HUGE LIST
+http://en.wikipedia.org/wiki/Visual_programming_languages
+Dataflow languages
+http://en.wikipedia.org/wiki/Dataflow_language
+Flow-based Programming
+http://en.wikipedia.org/wiki/Flow-based_programming
+
+Python:
+Orange - www.ailab.si/orange
+OpenDX based on IBM Visualization Dat aExplorer
+http://www.opendx.org
+Weka, Java based
+www.cs.waikato.ac.nz/ml/weka
+
+FlowDesigner
+http://flowdesigner.sourceforge.net/wiki/index.php/Main_Page
+http://flowdesigner.sourceforge.net/wiki/index.php/FlowDesigner_Screenshots
+
+Commercial: SPSS Clementine
+
+Subtext / Subtextual, uses prototype text
+http://en.wikipedia.org/wiki/Subtext_programming_language\
+http://subtextual.org/
+
+Music/Multimedia:
+Max / MSP (/ Jitter ?)
+www.Cycling74.com/products/maxmsp
+Cantata for Khoros (chorus choros khorus)
+http://greta.cs.ioc.ee/~khoros2/k2tools/cantata/cantata.html
+Pure Data / Pd
+http://en.wikipedia.org/wiki/Pure_Data
+
+Smalltalk, www.squeak.org screenshots of connectors
+And Scratch, http://en.wikipedia.org/wiki/Scratch_%28programming_language%29
+
+Lava http://lavape.sourceforge.net/
+
+ETL, Extract Tranform Load
+Entity Extraction, Deep Web
+Parsing, scraping, screen scraping, web page scraping, web scraping
+
+From Miles 3/30/07
+miles_b_kehoe: hey have you heard of yahoo pipes??
+miles_b_kehoe:     * Pipes – No less a luminary than Tim O’Reilly called Pipes “A milestone in the history of the Internet”.  Pipes is a browser-based visual editor that allows you to take input from one source and pipe it (in UNIX parlance) to another source. Along the way, you can apply a series of filters and transformations to manipulate the data. The data sources start and end as common feeds (RSS, RDF, etc). What you do with the data between its input and output is constrained mostly by your imagination.
+    Yahoo! was certainly not first on the scene with this idea. Dapper and others have preceded them in this regard. What Pipes brings to the party that no one else does is a really cool visual environment that allows you to trace the path of the data through the transformations and filers, inte
+miles_b_kehoe: interactively debugging along the way based upon the value of the successive outputs. It also has this cool reuse flavor to it, where you can experiment with, tweak, learn from, and potentially improve or fork off new versions of other peoples pipes or just reuse them in a black box sense.
+After you’ve read Tim O’Reilly’s introduction, I encourage you to play around with Pipes. Although seeing is believing, you’ll learn best by actually doing.
+Mark: hm
+miles_b_kehoe: look at this page
+miles_b_kehoe: http://pipes.yahoo.com/pipes/
+
+From bek / Bruce, March 2007
+	Ruby state engine, "you gave me a PDF and you want pages"
+		back end process
+	Windows Workflow
+		http://www.bruceandmo.com/b/books/0672328488/
+	awk, also Windows CMD for loop has similar functions
+
+For UI, see GEF, JGraph and ImageApp in my other contact records
+
+Sean Crist writeup
+"Visual Pipes", no code, just a few crude drawings
+http://www.ling.upenn.edu/~kurisuto/visual_pipes.html
+Reference from Bioinformatics guy on ImageApp image processing GUI discussion board
+http://sourceforge.net/forum/forum.php?thread_id=885578&forum_id=96943
+Also suggested:
+Ant or (Jacson - http://jacson.sourceforge.net/principle.html).
+
+
+From Sean:
+Inxight
+FirstRain
+Links from Sean about IBM's stuff, UIMA
+http://irvingwb.typepad.com/blog/2005/08/turning_unstruc.html#more
+http://www.research.ibm.com/UIMA/
+http://www.alphaworks.ibm.com/tech/uima
+
+From Efrem:
+Prograph tool (Canada, Efrem worked on this?)
+ACE - an 8080 dataflow OS
+"Fabric"
+TTL - Tree Transform Language
+Stealla Graphics language
+
+BBN Ident Finder
+http://www.bbn.com/For_Commercial_Customers/Unstructured_Data/Identifinder.html
+
+Ideas from old to revisit:
+SQL (goal vs implemenation / for loop, etc)
+Unix pipe command
+JCL
+Xpath -> Xquery http://en.wikipedia.org/wiki/XQuery with FLWR / FLWOR AKA "Flower"
+Picture statements
+BNF / lexx / yacc / DFA / NFA
+Bayesian / SPSS / PCA / buckets / etc
+grep / sed / awk
+diff / patch
+ETL
+Assert
+screen scrapers
+transform engines like Mathamatica
+XSLT
+make / makefiles / Ant
+agents
+System calls to command line
+Graphics inspired: normalization and feature matching
+SOAP
+Template languages: JSP / ASP / HTS / Cold Fusion
+Python / LISP (iterations)
+Rexx OS/2
+
+from Peter Suib
+NQL: Content mining, data parsing language
+
+Other ones:
+
+ETL links on Wikipedia
+http://en.wikipedia.org/wiki/ETL
+Screen Scraping links on Wikipedia
+http://en.wikipedia.org/wiki/Screen_scraper
+See also Semantic Web project
+http://en.wikipedia.org/wiki/Semantic_Web
+And WSDL
+http://en.wikipedia.org/wiki/WSDL
+
+WatchFire
+
+DSL = "Domain Specific Language", AKA "little language"
+Vs "GPL" = General Purpose Lanuage (not GPL General Public License)
+http://en.wikipedia.org/wiki/Domain-specific_language
+Found article on "DSL" when looking up Efrem's TTL
+AST = Abstract Syntax Tree
+
+Word-of-the-Day: Microsoft X#
+January 21, 2003
+http://searchwebservices.techtarget.com/sDefinition/0,,sid26_gci875257,00.html
+X# is the name that has been given to a "data-centric" programming
+language that Microsoft is said to be developing in order to make it
+easier for a programmer to specify XML-defined data and how it should
+be handled by the program.

@@ -1,0 +1,29 @@
+<map>
+
+	<term>aircraft</term>
+	<term>airplane</term>
+	<term>airplanes</term>
+	<term>aircraft for sale</term>
+	<term>classified ads</term>
+	<term>aircraft companies</term>
+	<term>airplane companies</term>
+	<term>air plane companies</term>
+	<term>buy a plane</term>
+	<term>buying a plane</term>
+	<term>buying an airplane</term>
+	<term>buying an air plane</term>
+	<term>expo</term>
+	<term>aopa expo</term>
+
+	<!-- Advertisements -->
+	<user_data_markup_items class="text_ad">
+		<include location="../ads/cessna.xml" />
+		<include location="../ads/piper.xml" />
+		<include location="../ads/lancair.xml" />
+		<include location="../ads/cirrus.xml" />
+		<include location="../ads/diamond.xml" />
+	</user_data_markup_items>
+
+	<!-- Currently no suggestions for this map -->
+
+</map>

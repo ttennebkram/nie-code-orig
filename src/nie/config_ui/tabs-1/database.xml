@@ -1,0 +1,103 @@
+	<!-- Database -->
+	<!-- ======== -->
+	<section
+		title="Database Info"
+		help="find_map_or_create.html"
+	>
+
+		<field type="vertical_spacer" />
+		<field
+			type="vertical_spacer"
+		>
+			Database Server and Login
+		</field>
+		<field type="vertical_spacer" />
+
+
+		<field
+			name="db_vendor_tag"
+			label="Database Vendor"
+			type="select"
+			is_special="TRUE"
+			xpath="/nie_config/database/@vendor_tag"
+		>
+			<!--
+			<option value="(null)">(none)</option>
+			-->
+			<option value="oracle">Oracle</option>
+			<option value="mssql">Microsoft SQL Server</option>
+			<option value="mysql">MySQL (Beta)</option>
+			<option value="postgresql">PostgreSQL</option>
+		</field>
+
+		<field
+			name="db_server_name"
+			label="Database Server Machine Name"
+			xpath="/nie_config/database/@server_name"
+		/>
+
+		<field
+			name="db_port"
+			label="TCP/IP Port (blank=default)"
+			_default="(default)"
+			is_special="TRUE"
+			xpath="/nie_config/database/@port"
+		/>
+
+		<field
+			name="db_database"
+			label="Database Name"
+			default="SearchTrack"
+			xpath="/nie_config/database/@database_name"
+		/>
+		<field
+			name="db_username"
+			label="User Name"
+			default="scott"
+			xpath="/nie_config/database/@username"
+		/>
+		<field
+			name="db_password"
+			label="Password"
+			default="tiger"
+			xpath="/nie_config/database/@password"
+		/>
+
+		<field type="vertical_spacer" />
+		<field
+			type="vertical_spacer"
+		>
+			Confirm and Initialize
+		</field>
+		<field type="vertical_spacer" />
+
+		<field
+			type="inline_button"
+			label="Check settings"
+			click_event_class="VerifyDBConn"
+		>
+			Verify DB Connection
+		</field>
+
+		<field type="vertical_spacer" />
+
+		<field
+			type="inline_button"
+			label="SearchTrack system tables"
+			click_event_class="InitDB"
+		>
+			Verify / Create Tables
+		</field>
+
+		<field type="vertical_spacer" />
+
+		<field
+			type="inline_button"
+			label="Clear all search activity data"
+			click_event_class="ClearLogs"
+		>
+			Clear Search Logs ...
+		</field>
+
+
+	</section>

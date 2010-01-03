@@ -1,0 +1,44 @@
+Introduction and SearchTrack Reporting InstallationFrom: Kevin-Neil Klop [kklop@ideaeng.com]
+Sent: Monday, October 07, 2002 10:47 AM
+To: Jessica Garruto; Seth Golbey; Jim Gram
+Cc: Mark Bennett; Miles B. Kehoe
+Subject: Introduction and SearchTrack Reporting Installation
+Good morning,
+
+I am the person who will be arriving at AOPA on Thursday to install the reporting module for SearchTrack.  In order to make the best use of all our time, I’m hoping that some preliminary work can be completed before I arrive.  That will allows us to do the installation as fast as possible and then train whichever personnel is designated by AOPA for the maintenance, customization, and use of the reporting module.
+
+The main items necessary are the creation of the Oracle database and accounts to be used by the SearchTrack Reporting module.  I have included the Schemas (from our design documentation) necessary in the attachment.
+
+In addition, at least one account must be created in the “userinfo” table so that SearchTrack Reporting recognizes at least  one account that can access the SearchTrack Reporting administrator functions.  I have included the SQL for that – please feel free to change the user name and password.
+
+Other questions:
+    What JSP Server software are you using?  The system was developed using Tomcat.  If you’re
+        using something else, please have someone available to answer questions about the organization of files under your JSP server.  Here is the way the files are currently organized:
+
+    SearchTrackReporting/
+        *.jsp files
+        html/
+            template files (*.html files)
+        WEB-INF/
+            web.xml
+            classes/
+            lib/
+                crimson.jar
+                jdom.jar
+                nie.jar
+                xalan.jar
+                xerces.jar
+    /tmp/
+        sr_config.xml  (can be moved pretty much anywhere)
+
+The system was compiled under Java 1.4 – will that be a problem?  It is likely that we can compile it under Java 1.3 if necessary.
+
+Hope that you’re having a great day!
+
+    -- Kevin --
+
+-- 
+Kevin-Neil Klop
+VP New Idea Engineering
+http://www.ideaeng.com
+

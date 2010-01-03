@@ -1,0 +1,18 @@
+<database
+	vendor_tag="mysql"
+	__server_name="localhost"
+	server_name="polaris"
+	_server_name="www.gruuve.com"
+	port="3306"
+	database_name="gruuve_spmain"
+	username="daya"
+	password="iihshldi"
+	_password="kumar"
+	main_table="sntrack"
+>
+	<test_query />
+	<!--
+		is_count_query="TRUE"
+	/>
+	-->
+</database>

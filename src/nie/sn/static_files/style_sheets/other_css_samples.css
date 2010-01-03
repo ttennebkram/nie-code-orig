@@ -1,0 +1,29 @@
+/****** some other examples
+.nie_report_title {color:blue; font-family:Verdana,Helvetica, Arial;}
+.nie_report_subtitle {color:blue; font-weight: (itallics); font-family:Verdana,Helvetica, Arial;}
+.nie_even_row {background-color:#dddddd; }
+
+
+
+.nie_url {color:gray; font:italic; font-size:75%; }
+.nie_score {color:blue;}
+.nie_summary {font-size=85%;font-family:Verdana,Helvetica, Arial; }
+
+a:hover {color: insertcolor; font-weight: (bold, itallics)}
+
+pre  { color: #000053 }
+body  { color: #03124d; font-family: Arial }
+
+th { text-align: center; font-weight: bold }
+th { vertical-align: baseline }
+td { vertical-align: middle }
+
+; The next rules specify that the top row will be surrounded
+; by a 3px solid blue border and each of the other rows will
+; be surrounded by a 1px solid black border:
+
+table   { border-collapse: collapse }
+tr#specific-id { border-top: 3px solid blue }
+**********************/
+
+

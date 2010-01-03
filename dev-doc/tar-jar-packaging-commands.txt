@@ -1,0 +1,12 @@
+To make Distribution
+--------------------
+rename tempalte dir to new version
+update README
+then from main dir
+cd classes
+jar cf ..\niesrv262\system\jar_files\niesrv_262.jar nie
+
+Todo do code
+cd (main dir)
+cat src.lst | tar cf niesrv262-src.tar -
+OR look for new batch file

@@ -1,0 +1,10 @@
+<lucene_search>
+	<index_directory>
+		C:\data\Customer\gruuve\daya-lyrics\azlyrics\lyrics_lucidx
+		<!--
+		C:\data\Customer\gruuve\daya-lyrics\azlyrics\index
+		C:\data\proj\lucidx\index2
+		C:\data\proj\lucidx\index2-mod
+		-->
+	</index_directory>
+</lucene_search>

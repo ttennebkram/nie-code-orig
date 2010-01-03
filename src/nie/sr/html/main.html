@@ -1,0 +1,102 @@
+<html>
+	<head>
+		<title>SearchTrack Reporting Main Screen</title>
+	</head>
+	<body link="blue" vlink="blue" alink="blue">
+		<table width="100%">
+			<tr>
+				<td>
+					<img src="images/nie_logo.jpg">
+					<h1>SearchTrack Reporting Main Screen</h1>
+				</td>
+				<td align="right">
+					<a href="login.jsp">Logout</a>
+				</td>
+			</tr>
+		</table>
+		<p>
+			<table width="100%">
+				<tr>
+					<td valign="top">
+						<table border=1 bgcolor='#BFD2E3'>
+							<tr>
+								<td colspan='3'><trend_report></td>
+							</tr>
+							<tr>
+								<td align="left"><a href="main.jsp?functionCode=trend&reportCode=0">Daily</a></td>
+								<td align="center"><a href="main.jsp?functionCode=trend&reportCode=1">Weekly</a></td>
+								<td align="right"><a href="main.jsp?functionCode=trend&reportCode=2">Monthly</a></td>
+							</tr>
+						</table></p>
+					</td>
+					<td valign="top">
+						<table>
+							<tr>
+								<td>
+									Most popular searches in last:<br />
+										&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="main.jsp?reportCode=mps&filterCode=d1&direction=DESC">day</a><br />
+										&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="main.jsp?reportCode=mps&filterCode=d7&direction=DESC">week</a><br />
+										&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="main.jsp?reportCode=mps&filterCode=d30&direction=DESC">month</a><br />
+								</td>
+								<td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
+								<td>
+									Searches with <b>NO</b> results in last:<br />
+										&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="main.jsp?reportCode=sw0r&filterCode=d1&direction=ASC">day</a><br />
+										&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="main.jsp?reportCode=sw0r&filterCode=d7&direction=ASC">week</a><br />
+										&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="main.jsp?reportCode=sw0r&filterCode=d30&direction=ASC">month</a><br />
+								</td>
+							</tr>
+							<tr><td>&nbsp;</td></tr>
+							<tr>
+								<td>
+									Most frequent visitors in last:<br />
+										&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="main.jsp?reportCode=mfv&filterCode=d1&direction=DESC">day</a><br />
+										&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="main.jsp?reportCode=mfv&filterCode=d7&direction=DESC">week</a><br />
+										&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="main.jsp?reportCode=mfv&filterCode=d30&direction=DESC">month</a><br />
+								</td>
+								<td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
+								<td>
+									Searches sorted by result size in last:<br />
+									&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="main.jsp?reportCode=sbrs&filterCode=d1&direction=DESC">day</a><br />
+									&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="main.jsp?reportCode=sbrs&filterCode=d7&direction=DESC">week</a><br />
+									&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="main.jsp?reportCode=sbrs&filterCode=d30&direction=DESC">month</a><br />
+								</td>
+							</tr>
+							<tr><td>&nbsp;</td></tr>
+<!--							<tr>
+								<td colspan="3" align="center">
+									<table>
+										<tr>
+											<td>
+												Most popular documents in last:<br />
+												&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="main.jsp?reportCode=mpd&filterCode=d1&direction=DESC">day</a><br />
+												&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="main.jsp?reportCode=mpd&filterCode=d7&direction=DESC">week</a><br />
+												&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="main.jsp?reportCode=mpd&filterCode=d30&direction=DESC">month</a><br />
+											</td>
+										</tr>
+									</table>
+								</td>
+							</tr>
+-->
+							<tr>
+								<td>
+									Most popular SearchNames Searches in last:<br />
+									&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="main.jsp?reportCode=mpsns&filterCode=d1&direction=DESC">day</a><br />
+									&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="main.jsp?reportCode=mpsns&filterCode=d7&direction=DESC">week</a><br />
+									&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="main.jsp?reportCode=mpsns&filterCode=d30&direction=DESC">month</a><br />
+								</td>
+								<td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
+								<td>
+									Most Popular <b>NON</b> SearchNames Searches in last:<br />
+									&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="main.jsp?reportCode=mpnsns&filterCode=d1&direction=DESC">day</a><br />
+									&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="main.jsp?reportCode=mpnsns&filterCode=d7&direction=DESC">week</a><br />
+									&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="main.jsp?reportCode=mpnsns&filterCode=d30&direction=DESC">month</a><br />
+								</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+			</table>
+		</p>
+	</body>
+</html>

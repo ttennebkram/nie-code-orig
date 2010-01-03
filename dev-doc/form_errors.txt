@@ -1,0 +1,151 @@
+D:\data\proj\niecode>forms > forms.out
+ERROR: 4/1/04 1:53:50 AM PST DBConfigException.constructor: Called with message
+"FormInfo.fetchUrlAsDom: Caught exception: org.jdom.IllegalNameException: The na
+me "xmlns" is not legal for JDOM/XML attributes: An Attribute name may not be "x
+mlns"; use the Namespace class to manage namespaces."
+ERROR: 4/1/04 1:53:50 AM PST FormInfo.main: Error analyzing URL "http://www.Auto
+desk.com", error: nie.core.FormInfoException: FormInfo.fetchUrlAsDom: Caught exc
+eption: org.jdom.IllegalNameException: The name "xmlns" is not legal for JDOM/XM
+L attributes: An Attribute name may not be "xmlns"; use the Namespace class to m
+anage namespaces.
+ERROR: 4/1/04 1:54:07 AM PST DBConfigException.constructor: Called with message
+"FormInfo.fetchUrlAsDom: Caught exception: org.jdom.IllegalNameException: The na
+me "xml:lang" is not legal for JDOM/XML attributes: Attribute names cannot conta
+in colons."
+ERROR: 4/1/04 1:54:07 AM PST FormInfo.main: Error analyzing URL "http://www.acre
+o.se", error: nie.core.FormInfoException: FormInfo.fetchUrlAsDom: Caught excepti
+on: org.jdom.IllegalNameException: The name "xml:lang" is not legal for JDOM/XML
+ attributes: Attribute names cannot contain colons.
+ERROR: 4/1/04 1:54:20 AM PST DBConfigException.constructor: Called with message
+"FormInfo.fetchUrlAsDom: Caught exception: org.jdom.IllegalNameException: The na
+me "xmlns" is not legal for JDOM/XML attributes: An Attribute name may not be "x
+mlns"; use the Namespace class to manage namespaces."
+ERROR: 4/1/04 1:54:20 AM PST FormInfo.main: Error analyzing URL "http://www.apex
+desn.com", error: nie.core.FormInfoException: FormInfo.fetchUrlAsDom: Caught exc
+eption: org.jdom.IllegalNameException: The name "xmlns" is not legal for JDOM/XM
+L attributes: An Attribute name may not be "xmlns"; use the Namespace class to m
+anage namespaces.
+ERROR: 4/1/04 1:54:41 AM PST DBConfigException.constructor: Called with message
+"FormInfo.fetchUrlAsDom: Caught exception: org.jdom.IllegalNameException: The na
+me "xmlns:fo" is not legal for JDOM/XML attributes: Attribute names cannot conta
+in colons."
+ERROR: 4/1/04 1:54:41 AM PST FormInfo.main: Error analyzing URL "http://www.cade
+nce.com", error: nie.core.FormInfoException: FormInfo.fetchUrlAsDom: Caught exce
+ption: org.jdom.IllegalNameException: The name "xmlns:fo" is not legal for JDOM/
+XML attributes: Attribute names cannot contain colons.
+ERROR: 4/1/04 1:55:43 AM PST DBConfigException.constructor: Called with message
+"FormInfo.fetchUrlAsDom: Caught exception: org.jdom.IllegalNameException: The na
+me "xml:lang" is not legal for JDOM/XML attributes: Attribute names cannot conta
+in colons."
+ERROR: 4/1/04 1:55:43 AM PST FormInfo.main: Error analyzing URL "http://www.iced
+itors.com", error: nie.core.FormInfoException: FormInfo.fetchUrlAsDom: Caught ex
+ception: org.jdom.IllegalNameException: The name "xml:lang" is not legal for JDO
+M/XML attributes: Attribute names cannot contain colons.
+ERROR: 4/1/04 1:55:46 AM PST DBConfigException.constructor: Called with message
+"FormInfo.fetchUrlAsDom: Caught exception: org.jdom.IllegalNameException: The na
+me "xmlns:fo" is not legal for JDOM/XML attributes: Attribute names cannot conta
+in colons."
+ERROR: 4/1/04 1:55:46 AM PST FormInfo.main: Error analyzing URL "http://www.ieee
+.org", error: nie.core.FormInfoException: FormInfo.fetchUrlAsDom: Caught excepti
+on: org.jdom.IllegalNameException: The name "xmlns:fo" is not legal for JDOM/XML
+ attributes: Attribute names cannot contain colons.
+ERROR: 4/1/04 1:56:02 AM PST FormInfo.registerOption: Null/empty option field na
+me passed in.
+ERROR: 4/1/04 1:56:02 AM PST FormInfo.registerOption: Null/empty option field na
+me passed in.
+ERROR: 4/1/04 1:56:02 AM PST FormInfo.registerOption: Null/empty option field na
+me passed in.
+ERROR: 4/1/04 1:56:02 AM PST FormInfo.registerOption: Null/empty option field na
+me passed in.
+ERROR: 4/1/04 1:56:02 AM PST FormInfo.registerOption: Null/empty option field na
+me passed in.
+ERROR: 4/1/04 1:56:02 AM PST FormInfo.registerOption: Null/empty option field na
+me passed in.
+ERROR: 4/1/04 1:56:02 AM PST FormInfo.registerOption: Null/empty option field na
+me passed in.
+ERROR: 4/1/04 1:56:02 AM PST FormInfo.registerOption: Null/empty option field na
+me passed in.
+ERROR: 4/1/04 1:56:02 AM PST FormInfo.registerOption: Null/empty option field na
+me passed in.
+ERROR: 4/1/04 1:56:02 AM PST FormInfo.registerOption: Null/empty option field na
+me passed in.
+ERROR: 4/1/04 1:56:02 AM PST FormInfo.registerOption: Null/empty option field na
+me passed in.
+ERROR: 4/1/04 1:56:02 AM PST FormInfo.registerOption: Null/empty option field na
+me passed in.
+ERROR: 4/1/04 1:56:02 AM PST FormInfo.registerOption: Null/empty option field na
+me passed in.
+ERROR: 4/1/04 1:56:02 AM PST FormInfo.registerOption: Null/empty option field na
+me passed in.
+ERROR: 4/1/04 1:56:02 AM PST FormInfo.registerOption: Null/empty option field na
+me passed in.
+ERROR: 4/1/04 1:56:02 AM PST FormInfo.registerOption: Null/empty option field na
+me passed in.
+ERROR: 4/1/04 1:56:05 AM PST DBConfigException.constructor: Called with message
+"FormInfo.fetchUrlAsDom: Caught exception: org.jdom.IllegalNameException: The na
+me "xmlns" is not legal for JDOM/XML attributes: An Attribute name may not be "x
+mlns"; use the Namespace class to manage namespaces."
+ERROR: 4/1/04 1:56:05 AM PST FormInfo.main: Error analyzing URL "http://www.ment
+or.com", error: nie.core.FormInfoException: FormInfo.fetchUrlAsDom: Caught excep
+tion: org.jdom.IllegalNameException: The name "xmlns" is not legal for JDOM/XML
+attributes: An Attribute name may not be "xmlns"; use the Namespace class to man
+age namespaces.
+ERROR: 4/1/04 1:56:21 AM PST DBConfigException.constructor: Called with message
+"FormInfo.fetchUrlAsDom: Caught exception: org.jdom.IllegalNameException: The na
+me "xmlns" is not legal for JDOM/XML attributes: An Attribute name may not be "x
+mlns"; use the Namespace class to manage namespaces."
+ERROR: 4/1/04 1:56:21 AM PST FormInfo.main: Error analyzing URL "http://www.ocpi
+p.org", error: nie.core.FormInfoException: FormInfo.fetchUrlAsDom: Caught except
+ion: org.jdom.IllegalNameException: The name "xmlns" is not legal for JDOM/XML a
+ttributes: An Attribute name may not be "xmlns"; use the Namespace class to mana
+ge namespaces.
+ERROR: 4/1/04 1:56:26 AM PST DBConfigException.constructor: Called with message
+"FormInfo.fetchUrlAsDom: Caught exception: org.jdom.IllegalNameException: The na
+me "xmlns" is not legal for JDOM/XML attributes: An Attribute name may not be "x
+mlns"; use the Namespace class to manage namespaces."
+ERROR: 4/1/04 1:56:26 AM PST FormInfo.main: Error analyzing URL "http://www.phpt
+r.com", error: nie.core.FormInfoException: FormInfo.fetchUrlAsDom: Caught except
+ion: org.jdom.IllegalNameException: The name "xmlns" is not legal for JDOM/XML a
+ttributes: An Attribute name may not be "xmlns"; use the Namespace class to mana
+ge namespaces.
+ERROR: 4/1/04 1:56:52 AM PST DBConfigException.constructor: Called with message
+"FormInfo.fetchUrlAsDom: Caught exception: java.lang.NullPointerException"
+ERROR: 4/1/04 1:56:52 AM PST FormInfo.main: Error analyzing URL "http://www.pgc.
+com.tw", error: nie.core.FormInfoException: FormInfo.fetchUrlAsDom: Caught excep
+tion: java.lang.NullPointerException
+ERROR: 4/1/04 1:57:16 AM PST DBConfigException.constructor: Called with message
+"FormInfo.fetchUrlAsDom: Caught exception: java.lang.NullPointerException"
+ERROR: 4/1/04 1:57:16 AM PST FormInfo.main: Error analyzing URL "http://www.qdai
+.com", error: nie.core.FormInfoException: FormInfo.fetchUrlAsDom: Caught excepti
+on: java.lang.NullPointerException
+ERROR: 4/1/04 1:57:29 AM PST DBConfigException.constructor: Called with message
+"FormInfo.fetchUrlAsDom: Caught exception: org.jdom.IllegalDataException: The da
+ta "mailtoa;webd;aster@sigrity.com" is not legal for a JDOM attribute: 0x3 is
+not a legal XML character."
+ERROR: 4/1/04 1:57:29 AM PST FormInfo.main: Error analyzing URL "http://www.sigr
+ity.com", error: nie.core.FormInfoException: FormInfo.fetchUrlAsDom: Caught exce
+ption: org.jdom.IllegalDataException: The data "mailtoa;webd;aster@sigrity.com
+" is not legal for a JDOM attribute: 0x3 is not a legal XML character.
+ERROR: 4/1/04 1:57:35 AM PST DBConfigException.constructor: Called with message
+"FormInfo.fetchUrlAsDom: Caught exception: org.jdom.IllegalNameException: The na
+me "xmlns:fo" is not legal for JDOM/XML attributes: Attribute names cannot conta
+in colons."
+ERROR: 4/1/04 1:57:35 AM PST FormInfo.main: Error analyzing URL "http://www.cade
+nce.com", error: nie.core.FormInfoException: FormInfo.fetchUrlAsDom: Caught exce
+ption: org.jdom.IllegalNameException: The name "xmlns:fo" is not legal for JDOM/
+XML attributes: Attribute names cannot contain colons.
+ERROR: 4/1/04 1:57:36 AM PST DBConfigException.constructor: Called with message
+"FormInfo.fetchUrlAsDom: Caught exception: org.jdom.IllegalNameException: The na
+me "xmlns" is not legal for JDOM/XML attributes: An Attribute name may not be "x
+mlns"; use the Namespace class to manage namespaces."
+ERROR: 4/1/04 1:57:36 AM PST FormInfo.main: Error analyzing URL "http://www.sifr
+.com", error: nie.core.FormInfoException: FormInfo.fetchUrlAsDom: Caught excepti
+on: org.jdom.IllegalNameException: The name "xmlns" is not legal for JDOM/XML at
+tributes: An Attribute name may not be "xmlns"; use the Namespace class to manag
+e namespaces.
+ERROR: 4/1/04 1:58:03 AM PST DBConfigException.constructor: Called with message
+"FormInfo.fetchUrlAsDom: Caught exception: java.lang.NullPointerException"
+ERROR: 4/1/04 1:58:03 AM PST FormInfo.main: Error analyzing URL "http://www.Synt
+est.com", error: nie.core.FormInfoException: FormInfo.fetchUrlAsDom: Caught exce
+ption: java.lang.NullPointerException
+D:\data\proj\niecode>

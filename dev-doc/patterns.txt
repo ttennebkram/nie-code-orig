@@ -1,0 +1,30 @@
+Patterns for several things
+
+Where to put suggestions
+	Config UI: Results List and Suggestions / Placement Patterns
+		"Marker in HTML code:"
+	config xml:
+		file: config\search_engine.xml
+		tag: <suggestion_marker_text>
+		path: search_engine_info/suggestion_marker_text
+		
+		CDATA often helpful esp if pattern uses angle brackets 
+Number of matched docs
+
+	Config UI: Logging / Search Statistics Patterns
+		"Number of documents found:"
+	config xml:
+		file: config\search_tracking.xml
+		tag: <docs_found_pattern>
+		search_trackiung/data_logging/proxy_settings/docs_found_pattern
+
+Developer:
+"Patterns" tab in Configurator v2
+	Mapping UI to XML config structure
+	src\nie\config_ui\tabs-2
+
+	patterns-placement.xml
+	/nie_config/search_tuning/search_engine_info/suggestion_marker_text
+
+	patterns-logging.xml
+	/nie_config/search_tracking/data_logging/proxy_settings/docs_found_pattern

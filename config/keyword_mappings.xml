@@ -1,0 +1,32 @@
+<!-- Currently we load the map from this file.  -->
+
+<!-- A map associates one or more terms and phrases with
+     suggested urls, alternate terms, or perhaps sponsored links / ads
+-->
+
+<fixed_redirection_map>
+
+	<!-- learning to fly, getting a license, etc. (and nie test) -->
+	<include location="maps/learn_to_fly.xml" />
+
+	<!-- Boyer, Phil Boyer, etc. -->
+	<include location="maps/phil_boyer.xml" />
+
+	<!-- Terminal procedures, etc. -->
+	<include location="maps/terminal_procedures.xml" />
+
+	<!-- Joining AOPA, etc. -->
+	<include location="maps/joining_aopa.xml" />
+
+	<!-- Ads for cessna, piper, etc. -->
+	<include location="maps/aircraft.xml" />
+
+	<!-- Ads for Garmin, Sportys, etc. -->
+	<include location="maps/gps.xml" />
+
+	<!-- Misc demo Ads per David Speer -->
+	<include location="maps/charts.xml" />
+	<include location="maps/financing.xml" />
+	<include location="maps/insurance.xml" />
+
+</fixed_redirection_map>

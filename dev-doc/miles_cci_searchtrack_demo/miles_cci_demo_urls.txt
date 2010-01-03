@@ -1,0 +1,33 @@
+I'd invite you to search ...From: Miles Kehoe [mbk@ideaeng.com]
+Sent: Friday, February 11, 2005 10:44 AM
+To: New Idea Engineering
+Cc: 'Carl Grimm'
+Subject: I'd invite you to search ...
+
+We're setting up some demos for a few sites… if you could go so some searches on the test pages, that would be great. 
+
+Hint: remember to use the 'back' key to search only from our form.. searching a second time 
+from the native result list form will not work. 
+
+Feel free to look at reports, but don't add any results just yet. If you *do* find a good suggestion page for one of your searches and that good result is not on the results you get, make a note and we'll use it when we define results.
+
+
+
+Site: General Services Administration 
+Search for: government related things: taxes, IRS, faa, child care, health insurance, etc. 
+search at http://sv2.ideaeng.net/gsa 
+admin at http://sv2.ideaeng.net:9110/?password=gsaadmin&command=report&nie_context=admin&days=1 
+
+
+
+Site: Gruuve 
+Search for music artists… when searching for one name ('beatles')  doesn’t do as well as full names ('the beatles') let me know - they want some automatic redirection as well as suggestions. 
+
+Search at http://sv2.ideaeng.net/gruuve 
+admin at http://sv2.ideaeng.net:9105/?password=gruuveadmin&command=report&nie_context=admin&days=1 
+
+Site: Unocal 
+Search for oil/public company things - price, stock, environment, jobs, etc 
+Search at http://sv2.ideaeng.net/unocal 
+admin at http://sv2.ideaeng.net:9085/?password=unocaladmin&command=report&nie_context=admin&days=1 
+

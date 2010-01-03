@@ -1,0 +1,63 @@
+<search_engine_info>
+  <search_url method="GET">http://ulrichsweb.com/ulrichsweb/Search/ViewSearchResults.asp</search_url>
+  <vendor>generic .ASP</vendor>
+  <search_term_field_name>QueryText</search_term_field_name>
+  <search_url_test_drive_fields>
+    <field name="navPage" value="1" />
+    <field name="SortOrder" value="Asc" />
+    <field name="SortField" value="f_display_title" />
+    <field name="collection" value="SERIAL" />
+    <field name="QueryMode" value="simple" />
+    <field name="ScoreThreshold" value="0" />
+    <field name="ResultCount" value="25" />
+    <field name="ResultTemplate" value="quickSearchResults.hts" />
+    <field name="" value="" />
+    <field name="" value="" />
+  </search_url_test_drive_fields>
+  <search_form_option_fields>
+    <field skip_blank_name="TRUE" name="QuickCriteria" label="">
+      <option value="ISSN" label="ISSN" />
+      <option value="Keyword" label="Keyword" />
+      <option value="Subject" label="Subject" />
+      <option value="Title (Exact)" label="Title (Exact)" />
+      <option value="Title (Keyword)" label="Title (Keyword)" />
+      <option value="" label="" />
+      <option value="" label="" />
+      <option value="" label="" />
+      <option value="" label="" />
+      <option value="" label="" />
+      <option value="" label="" />
+      <option value="" label="" />
+      <option value="" label="" />
+      <option value="" label="" />
+      <option value="" label="" />
+      <option value="" label="" />
+      <option value="" label="" />
+      <option value="" label="" />
+      <option value="" label="" />
+      <option value="" label="" />
+    </field>
+  </search_form_option_fields>
+  <results>
+    <forms enabled="TRUE">
+      <tweak_policy>Disabled: Do not send through SearchTrack</tweak_policy>
+      <to_tweak_a />
+      <to_tweak_b />
+    </forms>
+    <doc_links enabled="TRUE">
+      <cgi_field />
+      <js_policy>Remove onClick (if present)</js_policy>
+      <policy>Any link found in the results</policy>
+      <to_tweak_a />
+      <to_tweak_b />
+    </doc_links>
+  </results>
+  <suggestion_marker_text><![CDATA[&nbsp;</font><br><br><a HREF="/ulrichsweb/Revise/revise_redirect.asp?revised=1&amp;">]]></suggestion_marker_text>
+  <suggestion_marker_text_modifiers after="FALSE" replace="TRUE" />
+  <markup_before><![CDATA[&nbsp;</font><br>]]></markup_before>
+  <markup_after><![CDATA[<br><a HREF="/ulrichsweb/Revise/revise_redirect.asp?revised=1&amp;">]]></markup_after>
+  <base_url />
+  <no_action_indicator_field />
+  <no_action_indicator_field />
+  <no_action_indicator_field />
+</search_engine_info>

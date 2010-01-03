@@ -1,0 +1,37 @@
+In XSLT use equiv of &nbsp; is &#160;
+
+on input comes in as 0xA0 \240
+
+when output normally is a space
+
+when we read back in on unix and then output we get
+
+y:y'
+
+y: = 0x00FF
+y' = 0x00FD
+
+y:y' = 0x00FF00FD or 0xFFFD
+
+
+On Windows 2000 Java 1.4
+Status: 3/26/04 5:15:28 PM PST NIEUtil.cgiDecodeVarsBuffer: pstdec key="seed_ter
+ms"
+Status: 3/26/04 5:15:28 PM PST NIEUtil.cgiDecodeVarsBuffer: predec val="%A0"
+Status: 3/26/04 5:15:28 PM PST NIEUtil.cgiDecodeVarsBuffer: pstdec val=" "
+
+On Solaris Java 1.2.2
+ms"tus: 3/26/04 6:09:02 PM PST NIEUtil.cgiDecodeVarsBuffer: pstdec key="seed_ter
+Status: 3/26/04 6:09:02 PM PST NIEUtil.cgiDecodeVarsBuffer: predec val="%A0"
+Status: 3/26/04 6:09:02 PM PST NIEUtil.cgiDecodeVarsBuffer: pstdec val="\040"
+
+
+Force Java 1.4
+Hoover csh
+set path=( /usr/java1.4/bin $path )
+rehash
+
+On their solaris box:
+
+A0 char is now '?' ASCII(65533)
+

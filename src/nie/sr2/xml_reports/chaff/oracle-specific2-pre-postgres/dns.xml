@@ -1,0 +1,45 @@
+<report>
+	<title>Raw DNS Translations</title>
+
+	<field
+		heading="Last Lookup"
+		css_class="nie_datetime"
+		format_as="datetime"
+	>
+		lookup_date
+	</field>
+
+	<field
+		heading="Raw Client IP"
+		null_value_display="(no client host)"
+
+		is_report_link="TRUE"
+		link_report_name="visitor_details_ndays"
+		do_link_if_null="TRUE"
+	>
+		client_host
+	</field>
+
+	<field
+		heading="Translated"
+		null_value_display="(no translation)"
+	>
+		dns_name
+	</field>
+
+	<field
+		heading="Resolved?"
+		format_as="boolean"
+	>
+		was_resolved
+	</field>
+
+	<raw_from>
+		nie_domain_names
+	</raw_from>
+
+	<raw_sort>
+		lookup_date desc
+	</raw_sort>
+
+</report>

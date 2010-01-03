@@ -1,0 +1,238 @@
+package nie.config_ui;
+
+import java.awt.*;
+import java.awt.event.*;
+import javax.swing.*;
+
+public class Configurator {
+
+
+public static void main(String[] args) {
+	new Configurator();
+}
+
+
+// Set Native look and feel
+static {
+	try {
+		UIManager.setLookAndFeel( UIManager.getSystemLookAndFeelClassName() );
+		// SwingUtilities.updateComponentTreeUI(mainFrame);
+		// mainFrame.pack();
+ 	}
+ 	catch (Exception exc) {
+ 		System.err.println( "Could not load native look and feel. Exception: " + exc );
+	}
+}
+
+
+JTextField firstname, lastname, address1, address2, city, zip;
+JComboBox state;
+
+public Configurator() {
+	JFrame mainframe = new JFrame();
+    mainframe.getContentPane().setLayout( new BorderLayout() );
+	mainframe.setDefaultCloseOperation( JFrame.EXIT_ON_CLOSE );
+	mainframe.setTitle( "The Configurator" );
+
+	JTabbedPane tframe = new JTabbedPane();
+	mainframe.getContentPane().add( tframe, BorderLayout.NORTH );
+
+
+	JPanel p1 = new JPanel();
+	p1.setLayout(new GridBagLayout() );
+	// tframe.add( p1 );
+	tframe.addTab( "Who", p1 );
+
+	JPanel p2 = new JPanel();
+	p2.setLayout(new GridBagLayout() );
+	// tframe.add( p2 );
+	tframe.addTab( "Where", p2 );
+
+
+    GridBagConstraints gbc = new GridBagConstraints();
+
+    JLabel jl = new JLabel("Fill me out, beyatch!");
+    jl.setHorizontalAlignment(SwingConstants.CENTER);
+	// jl.setHorizontalAlignment(SwingConstants.EAST);
+    gbc.gridwidth = 4;
+    gbc.gridx = 0;
+    gbc.gridy = 0;
+    gbc.weightx = 1;
+    gbc.fill = GridBagConstraints.HORIZONTAL;
+    // frame.getContentPane().add(jl, gbc);
+	p1.add(jl, gbc);
+
+	final int labelWidth = 100;
+	final int inputWidth = 150;
+
+    jl = new JLabel("Firs' name: ");
+	jl.setHorizontalAlignment( SwingConstants.RIGHT );
+	jl.setPreferredSize( new Dimension(labelWidth,20) );
+	// jl.setHorizontalAlignment(SwingConstants.EAST);
+	// jl.setAlignmentX( 25 );
+	gbc.gridwidth = 1;
+    gbc.gridy = 1;
+    gbc.fill = GridBagConstraints.NONE;
+    // frame.getContentPane().add(jl, gbc);
+	p1.add(jl, gbc);
+    this.firstname = new JTextField();
+	this.firstname.setPreferredSize( new Dimension(inputWidth,20) );
+    gbc.gridx = 1;
+	gbc.gridwidth = 2;
+    gbc.fill = GridBagConstraints.HORIZONTAL;
+    // frame.getContentPane().add(this.firstname, gbc);
+	p1.add(this.firstname, gbc);
+
+    jl = new JLabel("Yo mama name:");
+	jl.setHorizontalAlignment( SwingConstants.RIGHT );
+	jl.setPreferredSize( new Dimension(labelWidth,20) );
+    gbc.gridx = 0;
+	gbc.gridy = 2;
+	gbc.gridwidth = 1;
+    gbc.fill = GridBagConstraints.NONE;
+    // frame.getContentPane().add(jl, gbc);
+	p1.add(jl, gbc);
+    this.lastname = new JTextField();
+	this.lastname.setPreferredSize( new Dimension( 200, 20 ) );
+	gbc.gridx = 1;
+	gbc.gridwidth = 2;
+    gbc.fill = GridBagConstraints.HORIZONTAL;
+    // frame.getContentPane().add(this.lastname, gbc);
+	p1.add(this.lastname, gbc);
+
+
+
+    jl = new JLabel("Where ya crib:");
+	jl.setHorizontalAlignment( SwingConstants.RIGHT );
+	jl.setPreferredSize( new Dimension(labelWidth,20) );
+    gbc.gridx = 0;
+    gbc.gridy = 3;
+	gbc.gridwidth = 1;
+    gbc.fill = GridBagConstraints.NONE;
+    // frame.getContentPane().add(jl, gbc);
+	p2.add(jl, gbc);
+    this.address1 = new JTextField();
+	this.address1.setPreferredSize( new Dimension(inputWidth,20) );
+    gbc.gridx = 1;
+    gbc.gridwidth = 3;
+    gbc.fill = GridBagConstraints.HORIZONTAL;
+    // frame.getContentPane().add(this.address1, gbc);
+	p2.add(this.address1, gbc);
+
+
+    jl = new JLabel("Keep goin':");
+	jl.setHorizontalAlignment( SwingConstants.RIGHT );
+	jl.setPreferredSize( new Dimension(labelWidth,20) );
+    gbc.gridx = 0;
+    gbc.gridy = 4;
+    gbc.gridwidth = 1;
+    gbc.fill = GridBagConstraints.NONE;
+    // frame.getContentPane().add(jl, gbc);
+	p2.add(jl, gbc);
+    this.address2 = new JTextField();
+    gbc.gridx = 1;
+    gbc.gridwidth = 3;
+    gbc.fill = GridBagConstraints.HORIZONTAL;
+    // frame.getContentPane().add(this.address2, gbc);
+	p2.add(this.address2, gbc);
+
+
+    jl = new JLabel("Where dat at:");
+	jl.setHorizontalAlignment( SwingConstants.RIGHT );
+	jl.setPreferredSize( new Dimension(labelWidth,20) );
+    gbc.gridx = 0;
+    gbc.gridy = 5;
+    gbc.gridwidth = 1;
+    gbc.fill = GridBagConstraints.NONE;
+    // frame.getContentPane().add(jl, gbc);
+	p2.add(jl, gbc);
+    this.city = new JTextField();
+    gbc.gridx = 1;
+    gbc.fill = GridBagConstraints.HORIZONTAL;
+    // frame.getContentPane().add(this.city, gbc);
+	p2.add(this.city, gbc);
+
+
+	jl = new JLabel("State:");
+	jl.setHorizontalAlignment( SwingConstants.RIGHT );
+	jl.setPreferredSize( new Dimension(labelWidth,20) );
+	gbc.gridx = 0;
+	gbc.gridy = 6;
+	gbc.gridwidth = 1;
+	gbc.fill = GridBagConstraints.NONE;
+	// frame.getContentPane().add(jl, gbc);
+	p2.add(jl, gbc);
+    this.state = new JComboBox(new String[] {"Eas' Coas'", "Wes' Coas'"});
+	gbc.gridx = 1;
+	gbc.fill = GridBagConstraints.HORIZONTAL;
+	// gbc.gridy = 6;
+    // frame.getContentPane().add(this.state, gbc);
+	p2.add(this.state, gbc);
+
+
+	jl = new JLabel("Zip:");
+	// jl.setPreferredSize( new Dimension(200,20) );
+	jl.setHorizontalAlignment( SwingConstants.RIGHT );
+	jl.setPreferredSize( new Dimension(labelWidth,20) );
+	gbc.gridx = 0;
+	gbc.gridy = 7;
+	gbc.gridwidth = 1;
+	gbc.fill = GridBagConstraints.NONE;
+	// gbc.fill = GridBagConstraints.EAST;
+	// gbc.anchor = GridBagConstraints.EAST;
+	// gbc.anchor = GridBagConstraints.WEST;
+	// frame.getContentPane().add(jl, gbc);
+	p2.add(jl, gbc);
+	// this.state = new JComboBox(new String[] {"Eas' Coas'", "Wes' Coas'"});
+	// gbc.gridx = 1;
+	// gbc.gridy = 6;
+	// frame.getContentPane().add(this.state, gbc);
+    this.zip = new JTextField(); // should be JFormattedTextField with a validator, but I don't have time
+	gbc.gridx = 1;
+	// gbc.gridy = 7;
+    gbc.fill = GridBagConstraints.HORIZONTAL;
+    // frame.getContentPane().add(this.zip, gbc);
+	p2.add(this.zip, gbc);
+
+
+	// The main Submit button
+	JButton jb = new JButton("Save");
+	jb.setPreferredSize( new Dimension(100,20) );
+	jb.addActionListener(new ActionListener() { 
+		public void actionPerformed(ActionEvent e) {
+			Configurator.this.submit();
+		}
+	});
+	/***
+	gbc.gridx = 1;
+	gbc.gridy = 9;
+	gbc.weightx = 1;
+	gbc.gridwidth = 2;
+	gbc.anchor = GridBagConstraints.CENTER;
+	gbc.fill = GridBagConstraints.NONE;
+	frame.getContentPane().add(jb, gbc);
+	***/
+	mainframe.getContentPane().add( jb, BorderLayout.SOUTH );
+	// mainframe.add( jb );
+    
+	// frame.pack();
+	// frame.show();
+	// tframe.pack();
+	// tframe.show();
+
+	// p1.pack();
+	// tframe.show();
+	mainframe.pack();
+	mainframe.show();
+
+}
+
+
+void submit() {
+	System.out.println("First name: " + this.firstname.getText());
+    System.out.println("State: " + this.state.getSelectedItem().toString());
+    System.exit(0);
+}
+
+
+}

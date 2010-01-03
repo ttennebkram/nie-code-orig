@@ -1,0 +1,760 @@
+package nie.pump.processors;
+
+import java.net.*;
+import java.io.*;
+import java.util.*;
+
+import org.jdom.*;
+
+import nie.core.*;
+import nie.pump.base.*;
+
+/**
+ * Title:
+ * Description:
+ * Copyright:    Copyright (c) 2001
+ * Company:      New Idea Engineering
+ * @author Kevin-Neil Klop
+ * @version 1.0
+ */
+
+
+
+////////////
+
+//
+
+// Thread to poll the queues.
+
+// Only gives back XML format
+// BUT Monitor2 gives back formatted HTML / XHTML?
+
+//
+
+////////////
+
+
+
+class QueueMonitorTask implements Runnable
+{
+
+	public QueueMonitorTask( Monitor inMonitor )
+	{
+		fMonitor = inMonitor;
+	}
+
+	public void run()
+	{
+
+		Thread lMyThread = Thread.currentThread();
+		Object lWaitObject = new Object();
+		DPump lDPump = fMonitor.getDPump();
+
+		//setStateProcessing();
+		// Not derived from processor
+
+		try
+		{
+
+			while( !lMyThread.interrupted() )
+			{
+
+				// Create the top level element
+				JDOMHelper lStatsRoot = new JDOMHelper(
+					Monitor.STAT_ROOT_ELEMENT_XML_TEXT, null
+					);
+
+				// Add the processor info
+				lStatsRoot.addXMLTextToPath(
+					Monitor.STAT_ROOT_ELEMENT,
+					Monitor.STAT_PROCESSOR_ROOT_ELEMENT_XML_TEXT
+					);
+				Vector lProcessors = lDPump.getProcessorList();
+				for( int i = 0; i < lProcessors.size(); i++ )
+				{
+					Processor lProcessor =
+						((DPump.ProcessorEntry)lProcessors.elementAt( i )).getProcessor();
+					JDOMHelper lProcessorXML = lProcessor.getStatusXML();
+					lStatsRoot.addElementToPath(
+						Monitor.STAT_PROCESSOR_ROOT_ELEMENT,
+						lProcessorXML
+						);
+				}
+
+
+				// Add the queue info
+				lStatsRoot.addXMLTextToPath(
+					Monitor.STAT_ROOT_ELEMENT,
+					Monitor.STAT_QUEUES_ROOT_ELEMENT_XML_TEXT
+					);
+				for( Enumeration lIterator = lDPump.getQueues().elements();
+					 lIterator.hasMoreElements();
+					 )
+				{
+					Queue lQueue = (Queue)lIterator.nextElement();
+					JDOMHelper lQueueXML = lQueue.getStatusXML();
+					lStatsRoot.addElementToPath(
+						Monitor.STAT_QUEUES_ROOT_ELEMENT,
+						lQueueXML
+						);
+				}
+
+
+				// Save the results
+				fMonitor.setStats( lStatsRoot );
+
+				synchronized( lWaitObject )
+				{
+					lWaitObject.wait( fMonitor.getPollInterval() );
+				}
+			}
+
+		}
+		catch( InterruptedException ie )
+		{
+			//System.out.println( "Got an InterruptedException." );
+		}
+		catch( JDOMHelperException jhe )
+		{
+ 			// System.err.println( "QueueMonitorTask::JDOMHelper exception!" );
+			mWorkUnit.errorMsg( this, kFName, "QueueMonitorTask::JDOMHelper exception!" );
+			// System.err.println( jhe + "\n\n" );
+			mWorkUnit.errorMsg( this, kFName, jhe + "\n\n" );
+		}
+
+		catch( Exception e )
+		{
+			// Until further notice, ASSUME that this is being thrown
+			// by the JDOMHelper constructor.
+			// System.err.println( e );
+			mWorkUnit.errorMsg( this, kFName, e, null );
+		}
+	};
+
+	Monitor fMonitor = null;
+}
+
+
+
+////////////
+//
+// Thread to wait on the server port and instantiate handlers whenever a request comes in.
+//
+////////////
+
+class QueueMonitorServer implements Runnable
+{
+
+	public QueueMonitorServer( int inSocketNumber, Monitor inMonitor )
+	{
+		fSocketNumber = inSocketNumber;
+		fMonitor = inMonitor;
+	}
+
+	public void run()
+	{
+		final String kFName = "run"
+		ServerSocket lServerSocket = null;
+		Thread lMyThread = Thread.currentThread();
+
+		try
+		{
+			lServerSocket = new ServerSocket( fSocketNumber );
+
+			while( !lMyThread.interrupted() )
+			{
+				Socket lSocket = lServerSocket.accept();
+				if( !lMyThread.interrupted() )
+				{
+					QueueMonitorHandler lHandler =
+						new QueueMonitorHandler( lSocket, fMonitor );
+					Thread lHandlerThread = new Thread( lHandler );
+					if( lHandlerThread != null )
+						lHandlerThread.start();
+				}
+			}
+		}
+		catch( IOException ioe )
+		{
+ 			// System.err.println( "Could not set up Monitor Server on port 80." );
+			mWorkUnit.errorMsg( this, kFName, "Could not set up Monitor Server on port 80." );
+			// System.err.println( ioe );
+			mWorkUnit.errorMsg( this, kFName, ioe );
+			// System.err.println( ioe.getMessage() );
+			mWorkUnit.errorMsg( this, kFName, ioe.getMessage() );
+			// ioe.printStackTrace( System.err );
+			stackTrace( kFName, ioe, "System Error" );
+			System.exit( -1 );
+		}
+	}
+
+	int fSocketNumber = 80;
+	Monitor fMonitor = null;
+}
+
+
+
+////////////
+//
+// Thread to handle HTTP requests for information.
+//
+////////////
+
+class QueueMonitorHandler implements Runnable
+{
+	public QueueMonitorHandler( Socket inSocket, Monitor inMonitor )
+	{
+		fSocket = inSocket;
+		fMonitor = inMonitor;
+	}
+
+
+
+
+	private void __Answers_Web_Requests__() {};
+
+
+	public void run()
+	{
+
+		final boolean debug = true;
+
+		try
+		{
+			AuxIOInfo lRequestInfo = NIEUtil.readHTTPRequestFromSocket( fSocket, false, false );
+
+			String lOutputContent;
+			boolean isXML = true;
+
+			lOutputContent = fMonitor.getStatsFormatted( (Hashtable)lRequestInfo.getCgiVarsHash() );
+			if( lOutputContent != null )
+			{
+				if(debug)	// System.err.println( "Debug: Monitor: got formatted" );
+							debugMsg( kFName, "got formatted" );
+				isXML = false;
+			}
+			else
+			{
+				if(debug)	// System.err.println( "Debug: Monitor: no formatted" );
+							debugMsg( kFName, "no formatted" );
+				isXML = true;
+				JDOMHelper lStatsRoot = fMonitor.getStats();
+				OutputStream lOutputStream = fSocket.getOutputStream();
+				lOutputStream.write( PREAMBLE.getBytes() );
+
+				if( lStatsRoot != null )
+					lOutputContent = lStatsRoot.JDOMToString( true );
+					//lOutputContent = lStatsRoot.JDOMToString();
+			}
+			// Backup plan
+			if( lOutputContent == null )
+			{
+				lOutputContent = "<status>no status available</status>";
+				// System.err.println( "Monitor: no status available?" );
+				mWorkUnit.errorMsg( this, kFName, "no status available?" );
+			}
+
+			// Open up the output
+			OutputStream lOutputStream = fSocket.getOutputStream();
+			// Output the header stuff
+			if( isXML )
+				lOutputStream.write( PREAMBLE.getBytes() );
+			else
+				lOutputStream.write( PREAMBLE_HTML.getBytes() );
+
+			// The content length
+			lOutputStream.write( Integer.toString( lOutputContent.length() ).getBytes() );
+			// Finish the header
+			lOutputStream.write( "\n\n".getBytes() );
+			// And now the actual data
+			lOutputStream.write( lOutputContent.getBytes() );
+			// And then close it all down
+			lOutputStream.flush();
+			fSocket.shutdownOutput();
+			fSocket.shutdownInput();
+			fSocket.close();
+		}
+		catch( IOException ioe )
+		{
+
+			// System.err.println( "I/O Error from Monitor Handler.  Non-fatal." );
+			mWorkUnit.errorMsg( this, kFName, "I/O Error from Monitor Handler.  Non-fatal." );
+			// System.err.println( ioe );
+			mWorkUnit.errorMsg( this, kFName, ioe, null );
+			// System.err.println( ioe.getMessage() );
+			mWorkUnit.errorMsg( this, kFName, ioe.getMessage() );
+			// ioe.printStackTrace( System.err );
+			stackTrace( kFName, ioe, "System Error" );
+			// System.err.println( "I repeat, this was non-fatal." );
+			mWorkUnit.infoMsg( this, kFName, "I repeat, this was non-fatal." );
+		}
+		catch( SpuriousHTTPRequestException se )
+		{
+			// System.err.println( "Spurious request: " + se );
+			mWorkUnit.errorMsg( this, kFName, "Spurious request: " + se );
+		}
+	}
+
+
+
+
+	public void _run()
+	{
+
+		final boolean debug = true;
+
+		try
+		{
+			InputStream lInputStream = fSocket.getInputStream();
+			boolean isDoneReadingRequest = false;
+			boolean didFindEOL = false;
+
+			StringBuffer buffer = new StringBuffer();
+			List lines = new Vector();
+
+			while( !isDoneReadingRequest )
+			{
+
+				/////
+				//
+				// Wait for all the headers to come in so that
+				// browsers don't have a conniption.
+				//
+				/////
+
+				int lChar = lInputStream.read();
+
+				if( lChar != '\r' )
+				{
+					if( lChar == '\n' )
+					{
+						if( !didFindEOL )
+						{
+							didFindEOL = true;
+							if( buffer.length() > 0 )
+							{
+								lines.add( new String(buffer) );
+								buffer = new StringBuffer();
+							}
+						}
+						else
+							isDoneReadingRequest = true;
+					}
+					else
+					{
+						didFindEOL = false;
+						buffer.append( (char)lChar );
+					}
+				}   // End if not \r
+			}   // End while ! isDoneReadingRequest
+
+			if(debug)
+			{
+				// System.err.println( "Debug: Monitor:"
+				// 		+ " Got " + lines.size() + " header lines"
+				// 		);
+				debugMsg( kFName, "Got " + lines.size() + " header lines"
+						);
+				for( Iterator it = lines.iterator(); it.hasNext(); )
+				{
+					String line = (String) it.next();
+					// System.err.println( "\t" + line );
+					mWorkUnit.errorMsg( this, kFName, "\t" + line );
+				}
+			}
+
+			Hashtable cgiVars = null;
+			if( lines.size() > 0 )
+			{
+				String pathSection = NIEUtil.cgiParsePathSectionFromCGIHeader(
+					(String)lines.get(0)
+					);
+				if(debug)
+					// System.err.println( "Debug: Monitor:"
+					//		+ " Path section is '" + pathSection + "'"
+					//		);
+					debugMsg( kFName, "Path section is '" + pathSection + "'"
+						);
+
+				// cgiVars = NIEUtil.cgiParseGETVariablesFromCGIHeader(
+				//	(String)lines.get(0)
+				//	);
+			}
+
+			String lOutputContent;
+			boolean isXML = true;
+
+			lOutputContent = fMonitor.getStatsFormatted( cgiVars );
+			if( lOutputContent != null )
+			{
+				if(debug)
+					// System.err.println( "Debug: Monitor: got formatted" );
+					debugMsg( kFName, "got formatted" );
+						isXML = false;
+			}
+			else
+			{
+				if(debug)
+					// System.err.println( "Debug: Monitor: no formatted" );
+					debugMsg( kFName, "no formatted" );
+				isXML = true;
+				JDOMHelper lStatsRoot = fMonitor.getStats();
+				OutputStream lOutputStream = fSocket.getOutputStream();
+				lOutputStream.write( PREAMBLE.getBytes() );
+
+				if( lStatsRoot != null )
+					lOutputContent = lStatsRoot.JDOMToString( true );
+					//lOutputContent = lStatsRoot.JDOMToString();
+			}
+			// Backup plan
+			if( lOutputContent == null )
+			{
+				lOutputContent = "<status>no status available</status>";
+				// System.err.println( "Monitor: no status available?" );
+				mWorkUnit.errorMsg( this, kFName, "no status available?" );
+			}
+
+			// Open up the output
+			OutputStream lOutputStream = fSocket.getOutputStream();
+			// Output the header stuff
+			if( isXML )
+				lOutputStream.write( PREAMBLE.getBytes() );
+			else
+				lOutputStream.write( PREAMBLE_HTML.getBytes() );
+
+			// The content length
+			lOutputStream.write( Integer.toString( lOutputContent.length() ).getBytes() );
+			// Finish the header
+			lOutputStream.write( "\n\n".getBytes() );
+			// And now the actual data
+			lOutputStream.write( lOutputContent.getBytes() );
+			// And then close it all down
+			lOutputStream.flush();
+			fSocket.shutdownOutput();
+			fSocket.shutdownInput();
+			fSocket.close();
+		}
+		catch( IOException ioe )
+		{
+
+			// System.err.println( "I/O Error from Monitor Handler.  Non-fatal." );
+			mWorkUnit.errorMsg( this, kFName, "I/O Error from Monitor Handler.  Non-fatal." );
+			// System.err.println( ioe );
+			mWorkUnit.errorMsg( this, kFName, ioe, null );
+			// System.err.println( ioe.getMessage() );
+			mWorkUnit.errorMsg( this, kFName, ioe.getMessage() );
+			// ioe.printStackTrace( System.err );
+			stackTrace( kFName, ioe, "System Error" );
+			// System.err.println( "I repeat, this was non-fatal." );
+			mWorkUnit.errorMsg( this, kFName, "I repeat, this was non-fatal." );
+		}
+	}
+
+	Socket fSocket = null;
+	Monitor fMonitor = null;
+
+	static final String PREAMBLE =
+		"HTTP/1.0 200 OK\n"
+		+ "Server: DPump Monitor 1.0\n"
+		+ "Content-Type: text/xml\n"
+		+ "Content-Length: ";
+	static final String PREAMBLE_HTML =
+		"HTTP/1.0 200 OK\n"
+		+ "Server: DPump Monitor 1.0\n"
+		+ "Content-Type: text/html\n"
+		+ "Content-Length: ";
+
+}
+
+
+
+////////////
+//
+// Instantiable DPump processor class.
+//
+// This class instantiates two thread.  one thread polls the queues for their
+// current load.  The other thread handles the port.
+//
+// This class also serves as the repository for data collected by the queue poller
+// for dissemination by the port handler.
+//
+////////////
+
+public class Monitor extends Processor
+{
+
+	public Monitor( Application inApplication,
+					Queue[] inReadQueue,
+					Queue[] inWriteQueue,
+					Queue[] inUsesQueue,
+					Element inParameter,
+					String inID )
+	{
+
+		super( inApplication, inReadQueue, inWriteQueue, inUsesQueue, inParameter, inID );
+
+		final boolean debug = false;
+
+		if(debug)
+		{
+			// System.err.println( "Debug:Mon:constr:"
+			// 	+ " parameters=" + inParameter
+			//	);
+			debugMsg( kFName, "parameters=" + inParameter
+				);
+			if( inParameter != null )
+				// System.err.println( "Contents:"
+				//		+ JDOMHelper.JDOMToString( inParameter )
+				//		);
+				mWorkUnit.errorMsg( this, kFName, "Contents:"
+					+ JDOMHelper.JDOMToString( inParameter )
+					);
+		}
+
+		// Set the global flag that, YES, we will be doing monitoring
+		inApplication.setMonitoringOn();
+
+		fQueueInfo = null;
+		fQueueInfoFormatted = null;
+		fDPump = (DPump) inApplication;
+//		String lParameterString = JDOMHelper.getTextByPath( inParameter, INTERVAL_PATH );
+//		if( lParameterString != null )
+//			fPollInterval = Integer.parseInt( lParameterString );
+		fPollInterval = JDOMHelper.getIntFromPathText( inParameter,
+			INTERVAL_PATH, DEFAULT_INTERVAL
+			);
+		if(debug)
+			// System.err.println( "Debug:Mon:constr: fPollInterval='"
+			//		+ fPollInterval + "'"
+			//		);
+			debugMsg( kFName, "fPollInterval='"
+					+ fPollInterval + "'"
+					);
+
+//		lParameterString = JDOMHelper.getTextByPath( inParameter, PORT_PATH );
+//		if( lParameterString != null )
+//			fPort = Integer.parseInt( lParameterString );
+//		else
+//			fPort = 80;
+
+		fPort = JDOMHelper.getIntFromPathText( inParameter,
+			PORT_PATH, DEFAULT_PORT
+			);
+		if(debug)
+			// System.err.println( "Debug:Mon:constr: fPort='"
+			//		+ fPort + "'"
+			//		);
+			debugMsg( kFName, "fPort='"
+					+ fPort + "'"
+					);
+
+
+		fXsltPath = JDOMHelper.getTextByPath( inParameter, XSLT_PATH );
+		if(debug)
+					// System.err.println( "Debug:Mon:constr: xslt='" + fXsltPath + "'" );
+					debugMsg( kFName, "xslt='" + fXsltPath + "'" );
+		if( fXsltPath != null && fXsltPath.trim().equals("") )
+			fXsltPath = null;
+
+	}
+
+	public void run()
+	{
+
+		QueueMonitorTask lMonitorTask = new QueueMonitorTask( this );
+		Thread lThread = new Thread( lMonitorTask );
+		lThread.setDaemon( true );
+		lThread.start();
+
+
+		QueueMonitorServer lMonitorServer = new QueueMonitorServer( fPort, this );
+		lThread = new Thread( lMonitorServer );
+		lThread.setDaemon( true );
+		lThread.start();
+
+
+
+		/**@todo: implement this nie.core.Processor abstract method*/
+
+
+		setStateProcessing();
+
+	}
+
+	public boolean canExit()
+	{
+		return true;
+	}
+
+
+	public int getPollInterval()
+	{
+		return fPollInterval;
+	}
+
+	public DPump getDPump()
+	{
+		return fDPump;
+	}
+
+	/////////////////////////////////////////////////////////
+	private void __XML_and_HTML_Status__() {}
+
+	public synchronized void setStats( JDOMHelper inStatsRoot )
+	{
+
+		final boolean debug = false;
+
+		// Whatever we did above, do save the jdom tree
+		fQueueInfo = inStatsRoot;
+
+
+	}
+
+	public synchronized String calculateStatsFormatted()
+	{
+		return calculateStatsFormatted( null );
+	}
+	public synchronized String calculateStatsFormatted( Hashtable inParamsHash )
+	{
+
+		final boolean debug = true;
+
+		String outBuffer = null;
+
+		if( fXsltPath != null )
+		{
+			if(debug)
+						// System.err.println( "Debug: Monitor:calcStatsFmt:"
+						//		+ " xslt path=" + fXsltPath
+						//		);
+						debugMsg( kFName, "xslt path=" + fXsltPath
+								);
+			JDOMHelper lXMLStats = getStats();
+
+			if( lXMLStats != null )
+			{
+
+				if(debug)
+						// System.err.println( "Debug:Monitor:setStats:"
+						//		+ " xslt = '" + fXsltPath
+						//		);
+						debugMsg( kFName, "xslt = '" + fXsltPath
+								);
+				try
+				{
+					//Document tmpDoc = inStatsRoot.xsltElementToDoc( fXsltPath );
+					Document tmpDoc = lXMLStats.xsltElementToDoc(
+						fXsltPath,
+						inParamsHash
+						);
+					//outBuffer = JDOMHelper.JDOMToString( tmpDoc );
+					// Preseve linefeeds in text nodes by setting
+					// PrettyFormat
+					outBuffer = JDOMHelper.JDOMToString( tmpDoc, true );
+					// System.err.println( "Outbuffer=" + outBuffer );
+					setStatsFormattedCache( outBuffer );
+				}
+				catch (Exception e)
+				{
+					// System.err.println( "Error:Monitor:setStats:"
+					//		+ " Unable to convert jdom status tree into formatted string"
+					//		+ " for style sheet '" + fXsltPath + "'"
+					//		+ ", so will not store formatted status (just raw xml)"
+					//		+ ", Exception: " + e
+					//		);
+					mWorkUnit.errorMsg( this, kFName, "Unable to convert jdom status tree into formatted string"
+							+ " for style sheet '" + fXsltPath + "'"
+							+ ", so will not store formatted status (just raw xml)"
+							+ ", Exception: " + e
+							);
+				}
+			}
+			else
+				if(debug)
+						// System.err.println( "Warning:Monitor:calculateStatsFormatted:"
+						//		+ " XML status was null"
+						//		);
+						debugMsg( kFName, "XML status was null"
+								);
+		}
+		else
+			if(debug)
+				// System.err.println( "Debug:Monitor:calculateStatsFormatted:"
+				//		+ " xslt was null"
+				//		);
+				debugMsg( kFName, "xslt was null"
+						);
+
+		return outBuffer;
+	}
+
+	public synchronized void setStatsFormattedCache( String inNewStats )
+	{
+		if( inNewStats != null && ! inNewStats.trim().equals("") )
+			fQueueInfoFormatted = inNewStats;
+		else
+		{
+			// System.err.println( "Error: Monitor: setStatusFormatted:"
+			//	+ " Was passed a null or empty string, ignoring"
+			//	);
+			mWorkUnit.errorMsg( this, kFName, "Was passed a null or empty string, ignoring"
+				);
+		}
+	}
+
+	public synchronized JDOMHelper getStats()
+	{
+		return fQueueInfo;
+	}
+	public synchronized String getStatsFormatted( Hashtable inParamsHash )
+	{
+		// We IGNORE the cache here
+		return calculateStatsFormatted( inParamsHash );
+	}
+	public synchronized String getStatsFormatted()
+	{
+		// We IGNORE the cache here
+		return calculateStatsFormatted();
+	}
+	public synchronized String getStatsFormattedCashed()
+	{
+		return fQueueInfoFormatted;
+	}
+
+	JDOMHelper fQueueInfo = null;
+	String fQueueInfoFormatted = null;
+	DPump fDPump = null;
+	String fXsltPath;
+	int fPollInterval = DEFAULT_INTERVAL;
+	int fPort = DEFAULT_PORT;
+
+
+	static final String STAT_ROOT_ELEMENT_XML_TEXT = "<status />";
+	static final String STAT_ROOT_ELEMENT = "/status";
+
+
+	static final String STAT_QUEUES_ROOT_ELEMENT = "/status/queues";
+	static final String STAT_QUEUES_ROOT_ELEMENT_XML_TEXT = "<queues />";
+
+
+	static final String STAT_PROCESSOR_ROOT_ELEMENT = "/status/processors";
+	static final String STAT_PROCESSOR_ROOT_ELEMENT_XML_TEXT = "<processors />";
+
+	static final String QUEUE_TAG = "queue";
+	static final String NAME_TAG = "name";
+	static final String DEQUEUE_OPERATIONS_TAG = "dequeue_operations";
+	static final String ENQUEUE_OPERATIONS_TAG = "enqueue_operations";
+	static final String TIME_LAST_DEQUEUE_TAG = "last_dequeue";
+	static final String TIME_LAST_ENQUEUE_TAG = "last_enqueue";
+	static final String QUEUE_SIZE_TAG = "size";
+	static final String INTERVAL_PATH = "interval";
+	static final int DEFAULT_INTERVAL = 1000;
+	static final String PORT_PATH = "port";
+	static final int DEFAULT_PORT = 80;
+	static final String XSLT_PATH = "xslt";
+	static final String ABSOLUTE_TIME_ATTRIBUTE = "absolute_time";
+	static final String RELATIVE_TIME_ATTRIBUTE = "relative_time";
+
+}
+

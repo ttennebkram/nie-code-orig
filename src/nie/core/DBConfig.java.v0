@@ -1,0 +1,996 @@
+package nie.core;
+
+import java.util.*;
+import nie.core.*;
+import org.jdom.Element;
+
+import java.sql.*;
+
+public class DBConfig
+{
+
+	private final static String kClassName = "DBConfig";
+
+	// This constructor is usually used for testing
+	// can accept a URI
+	public DBConfig( String inURI )
+		throws DBConfigException
+	{
+		final String kFName = "constructor(1)";
+		final String kExTag = kClassName + ':' + kFName + ": ";
+
+		// create jdom element and store info
+		// Sanity checks
+		if( inURI == null )
+			throw new DBConfigException( kExTag,
+				"Constructor was passed in a NULL URI (file name, url, etc)."
+				);
+
+		// Instantiate and store the main JDOMHelper a
+		fConfigTree = null;
+		try
+		{
+			fConfigTree = new JDOMHelper( inURI );
+		}
+		catch (JDOMHelperException e)
+		{
+			throw new DBConfigException( kExTag,
+				"Got JDOMHelper Exception: "
+				+ e );
+		}
+
+		// Do comoon init stuff, it will throw an exception if it
+		// isn't happy
+		finishInit();
+
+	}
+
+	// construct from an element, perhaps part of a larger tree
+	public DBConfig( Element inElement )
+		throws DBConfigException
+	{
+		final String kFName = "constructor(2)";
+		final String kExTag = kClassName + ':' + kFName + ": ";
+
+		// create jdom element and store info
+		// Sanity checks
+		if( inElement == null )
+			throw new DBConfigException( kExTag,
+				"Constructor was passed in a NULL element."
+				);
+
+		// Instantiate and store the main JDOMHelper a
+		fConfigTree = null;
+		try
+		{
+			fConfigTree = new JDOMHelper( inElement );
+		}
+		catch (JDOMHelperException e)
+		{
+			throw new DBConfigException( kExTag,
+				"Got JDOMHelper Exception: "
+				+ e );
+		}
+
+		// Do comoon init stuff, it will throw an exception if it
+		// isn't happy
+		finishInit();
+	}
+
+	// Second half of constructors
+	private void finishInit()
+		throws DBConfigException
+	{
+		final String kFName = "finishInit";
+		final String kExTag = kClassName + ':' + kFName + ": ";
+
+		if( fConfigTree == null )
+			throw new DBConfigException( kExTag,
+				"Got back a NULL xml tree when trying to create"
+				+ " a Database Configuration object."
+				);
+
+		// Force us to read all get methods once, and store results
+		reinitFieldCache();
+
+		// Check that a couple critical items exist
+		String tmpStr;
+		int tmpInt;
+
+		// Must always have vendor tag
+		tmpStr = getVendorTag();
+		if( tmpStr == null )
+			throw new DBConfigException( kExTag,
+				"Must specifiy the vendor tag"
+				+ " (ex: " + VENDOR_TAG_ORACLE + ") in config."
+				+ " This is true even if specifying a native connect string."
+				);
+		// Todo: update to postgres
+		if( ! tmpStr.equals( VENDOR_TAG_ORACLE ) )
+			throw new DBConfigException( kExTag,
+				"Unsupported database vendor tag in config = \"" + tmpStr + "\"."
+				+ " Currently only support " + VENDOR_TAG_ORACLE
+				);
+
+		// If native connection string IS set, we can SKIP quite a few checks
+		tmpStr = getNativeConnectionString();
+		// Todo: should we just call calculate?
+		// Todo: checks may be vendor specific, revisit when we finish postgres
+		if( tmpStr == null )
+		{
+			// Check Server
+			tmpStr = getServerString();
+			if( tmpStr == null )
+				throw new DBConfigException( kExTag,
+					"Must specifiy the database host machine in config."
+					+ "(unless you're using " + NATIVE_CONNECT_STRING_ATTR + ")"
+					);
+
+
+			tmpInt = getPort();
+			if( tmpInt < 1 )
+				throw new DBConfigException( kExTag,
+					"Must specifiy the database port for the host machine in config."
+					+ " And it must be a positive integer."
+					+ "(unless you're using " + NATIVE_CONNECT_STRING_ATTR + ")"
+					);
+
+		//	tmpStr = getTypeString();
+		//	if( tmpStr == null )
+		//		throw new DBConfigException( kExTag,
+		//			"Must specifiy the database type"
+		//			+ " (ex: " + TYPE_JDBC + ") in config."
+		//			+ "(unless you're using " + NATIVE_CONNECT_STRING_ATTR + ")"
+		//			);
+		//	if( ! tmpStr.equals( TYPE_JDBC ) )
+		//		throw new DBConfigException( kExTag,
+		//			"Unsupported database type in config = \"" + tmpStr + "\"."
+		//			+ " Currently only support " + TYPE_JDBC
+		//			+ "(unless you're using " + NATIVE_CONNECT_STRING_ATTR + ")"
+		//			);
+
+			tmpStr = getDBName();
+			if( tmpStr == null )
+				throw new DBConfigException( kExTag,
+					"Must specifiy the main database to connect to in config."
+					+ "(unless you're using " + NATIVE_CONNECT_STRING_ATTR + ")"
+					);
+		}   // End if native connection string was null
+		else
+		{
+			statusMsg( kFName,
+				"Found optional native connection string \"" + tmpStr + "\""
+				+ ", so will ignore many of the individual settings if present"
+				+ "; native connection strings take precedence over other settings."
+				);
+		}
+
+		if( getUsername() == null || getPassword() == null )
+			warningMsg( kFName,
+				"No Database username and/or password specified in config file."
+				+ " If you have trouble connecting you might want to check that."
+				+ " Will continue with program."
+				);
+
+		// We only peform the rest of the tests if the connection is active
+		// which it normally is
+		if( isActive() )
+		{
+			// Test the connection
+			try
+			{
+				debugMsg( kFName, "About to do test connection." );
+				Connection tmpConn = getConnection();
+				debugMsg( kFName, "Back from test connection." );
+			}
+			catch (SQLException e)
+			{
+				throw new DBConfigException( kExTag,
+					"Got an exception connecting to the database: " + e
+					+ " Unable to construct a valid DB Config."
+					);
+			}
+
+			String testQry = getTestQuery();
+	//		statusMsg( kFName,
+	//			"Found test query \"" + testQry + "\"."
+	//			);
+			if( testQry != null )
+			{
+				statusMsg( kFName,
+					"Running configured test query \"" + testQry + "\"."
+					);
+				int numRows = testQueryNumRows( testQry );
+				// Negative number means an error
+				if( numRows < 0 )
+					throw new DBConfigException( kExTag,
+						"Test Query Failed."
+						+ " Query = \"" + testQry + "\"."
+						+ " If you'd rather not run a test query, then please"
+						+ " comment it out or remove it from your configuration."
+						);
+				// We should at least warn if there were zero
+				if( numRows == 0 )
+				{
+					warningMsg( kFName,
+						"The Test Query returned zero rows."
+						+ " Query = \"" + testQry + "\"."
+						+ " This may be normal for some applications."
+						+ " If the query had an error, or the table didn't exist,"
+						+ " you would be seeing a different, more serious message."
+						+ " You are likely connected to the databse."
+						+ " Query = \"" + testQry + "\"."
+						+ " If you'd rather not run a test query, then please"
+						+ " comment it out or remove it from your configuration."
+						);
+				}
+				else    // Else there was at least one row
+				{
+					statusMsg( kFName,
+						"Test query returned " + numRows + " row(s)."
+						);
+				}
+
+			}
+			else
+			{
+				debugMsg( kFName, "No test query was configured." );
+			}
+		}
+		else    // Not active
+		{
+			debugMsg( kFName,
+				"Database has been deactivated, so no connection or query tests will be run."
+				);
+		}
+
+		// And the rest is handled by methods
+	}
+
+	// Force us to read all get methods once, and store results
+	private void reinitFieldCache()
+	{
+		// Get everything in to the cache
+		// First, specifically turn caching off (should be false anyway via Java init)
+		mUseCache = false;
+		// Now call each getter once, populates cached values
+		isActive();
+		getServerString();
+		getPort();
+		// getTypeString();
+		getDriverClassString();
+		getNetworkProtocal();
+		getDBName();
+		getMainTable();
+		getUsername();
+		getPassword();
+		getExtraParameters();
+		getVendorTag();
+		getVendorString();
+		getDriverClassName();
+		getTestQuery();
+		getNativeConnectionString();
+		calculateConnectionString();
+		// Now turn caching on
+		mUseCache = true;
+	}
+
+	////////////////////////////////////////////////////////////////////
+
+	public Connection getConnection()
+		throws SQLException
+	{
+		final String kFName = "getConnection";
+		final String kExTag = kClassName + ':' + kFName + ": ";
+
+		if( isActive() )
+		{
+			if( mDBConnection == null )
+			{
+				String connectionStr = calculateConnectionString();
+				statusMsg( kFName,
+					"Connecting to database with connection string \""
+					+ connectionStr + "\""
+					+ " as user \"" + getUsername() + "\"."
+					);
+
+				// OLD: This caused compile problems and was inflexible
+				//	DriverManager.registerDriver(
+				//		new oracle.jdbc.OracleDriver()
+				//		);
+
+				// Get the name of the driver and check it
+				// This will pick the default for this vendor, or allow for
+				// an optional supplied driver in the config file
+				String myClassName = getDriverClassName();
+				if( myClassName == null )
+				{
+					throw new SQLException( kExTag
+						 + "Unknown driver for unknown vendor \"" + getVendorTag() + "\""
+						);
+				}
+
+				// Now get the class and driver instance
+				try
+				{
+					Class myDriverClass = Class.forName( myClassName );
+					Driver myDriverInstance = (Driver)myDriverClass.newInstance();
+					// And now register the driver
+					DriverManager.registerDriver( myDriverInstance );
+				}
+				// There are 3 types of exceptions that the enclosed block
+				// could have thrown
+				catch(Exception eload)
+				{
+					throw new SQLException( kExTag
+						+ "Problem loading database driver;"
+						+ " perhaps check config file and class path."
+						+ " Vendor = \"" + getVendorTag() + "\""
+						+ ", Driver Class = \"" + myClassName + "\""
+						+ ", Error/Exception = \"" + eload + "\""
+						);
+				}
+
+				// And get the connection
+				mDBConnection = DriverManager.getConnection(
+					connectionStr,
+					getUsername(), getPassword()
+				);
+			}
+			return mDBConnection;
+		}
+		else    // Else database is NOT active
+		{
+			String connectionStr = calculateConnectionString();
+			String tmpMsg = "Database was DEACTIVATED in the configuration file."
+				+ " Can not connect if database is not configured to be active."
+				+ " Would have connected to the database with connection string \""
+				+ connectionStr + "\""
+				+ " as user \"" + getUsername() + "\"."
+				;
+			throw new SQLException( kExTag + tmpMsg );
+		}
+	}
+	public Connection getConnectionOrNull()
+	{
+		final String kFName = "getConnectionOrNull";
+
+		Connection answer = null;
+		try
+		{
+			answer = getConnection();
+		}
+		catch (SQLException e)
+		{
+			errorMsg( kFName,
+				"Got an exception connecting to the database: " + e
+				+ " Will return null."
+				);
+			return null;
+		}
+		return answer;
+	}
+
+	public Statement createStatement()
+		throws SQLException /*, DBConfigException */
+	{
+		Connection myConnection = getConnection();
+		Statement myStatement = myConnection.createStatement();
+		return myStatement;
+	}
+	public Statement createStatementOrNull()
+	{
+		final String kFName = "createStatementOrNull";
+
+		Statement answer = null;
+		try
+		{
+			answer = createStatement();
+		}
+		catch (SQLException e)
+		{
+			errorMsg( kFName,
+				"Got an exception creating a new statement: \"" + e + "\""
+				+ " Will return null."
+				);
+			return null;
+		}
+		return answer;
+	}
+
+	public PreparedStatement prepareStatement( String inSQL )
+		throws SQLException
+	{
+		Connection myConnection = getConnection();
+		PreparedStatement myStatement = myConnection.prepareStatement( inSQL );
+		return myStatement;
+	}
+	public PreparedStatement prepareStatementOrNull( String inSQL )
+	{
+		final String kFName = "prepareStatementOrNull";
+
+		PreparedStatement answer = null;
+		try
+		{
+			answer = prepareStatement( inSQL );
+		}
+		catch (SQLException e)
+		{
+			errorMsg( kFName,
+				"Got an exception creating a new prepared statement: \"" + e + "\""
+				+ " Will return null."
+				);
+			return null;
+		}
+		return answer;
+	}
+
+
+	public ResultSet runQuery( String inQuery )
+		throws SQLException /*, DBConfigException */
+	{
+		final String kFName = "runQuery";
+		final String kExTag = kClassName + ':' + kFName + ": ";
+
+		// create jdom element and store info
+		// Sanity checks
+		if( inQuery == null )
+			throw new SQLException( kExTag,
+				"Was passed in a NULL Query."
+				);
+//			throw new DBConfigException( kExTag,
+//				"Was passed in a NULL Query."
+//				);
+
+		// Connection myConnection = getConnection();
+		// Statement myStatement = myConnection.createStatement();
+		// Use our built in method
+		Statement myStatement = createStatement();
+
+		ResultSet myResultSet = myStatement.executeQuery( inQuery );
+		return myResultSet;
+	}
+	// Does not throw an exception
+	public ResultSet runQueryOrNull( String inQuery )
+	{
+		final String kFName = "runQueryOrNull";
+
+		ResultSet answer = null;
+		try
+		{
+			answer = runQuery( inQuery );
+		}
+		catch (Exception e)
+		{
+			errorMsg( kFName,
+				"Got an exception running the query \""
+				+ inQuery + "\"."
+				+ " Exception: " + e
+				+ " Will return null."
+				);
+			return null;
+		}
+		return answer;
+	}
+
+
+	public int testQueryNumRows( String inQuery )
+	{
+		final String kFName = "testQueryNumRows";
+
+		ResultSet oracleResultSet = runQueryOrNull( inQuery );
+
+		if( oracleResultSet == null )
+		{
+			errorMsg( kFName,
+				"Got back a null Result Set, returning -1."
+				);
+			return -1;
+		}
+
+		int lRowCount = 0;
+		try
+		{
+			// while( ! oracleResultSet.isAfterLast() )
+			while( oracleResultSet.next() )
+			{
+				lRowCount++;
+//				String field = oracleResultSet.getString( 1 );
+//				statusMsg( kFName,
+//					"Field was \"" + field + "\""
+//					);
+			};
+		}
+		catch (SQLException e)
+		{
+			errorMsg( kFName,
+				"Error while reading through records: " + e
+				+ " Returning -1."
+				);
+			return -1;
+		}
+
+		debugMsg( kFName,
+			"We fetched " + lRowCount + " rows."
+			);
+
+		return lRowCount;
+//		System.out.println( "SQL executed was:" );
+//		System.out.println( kSQLStatement );
+//		if( null != oracleConnection )
+//			System.out.println( "Success... " + oracleConnection );
+//		else
+//			System.out.println( "Failed." );
+
+
+	}
+
+
+
+
+
+
+
+
+
+	///// Higher Level Logic ////////////////////////////////////////////
+	// Still uses caching
+	public String calculateConnectionString()
+	{
+		final String kFName = "calculateConnectionString";
+
+		if( ! mUseCache )
+		{
+			// Did they give us a native one?
+			cFinalConnectionString = getNativeConnectionString();
+			// If not, calculate it with the components
+			if( cFinalConnectionString == null )
+			{
+				// We want something that looks like:
+				// jdbc:oracle:thin:@mchine:nnnn:dbname
+				// jdbc:postgresql:SearchTrack
+
+				// final String lType = getTypeString();
+				final String lVendor = getVendorTag();
+
+				// // Is it JDBC?
+				// if( lType!=null && lType.equals(TYPE_JDBC) )
+				// {
+					// Is it Oracle?
+					if( lVendor!=null && lVendor.equals(VENDOR_TAG_ORACLE) )
+					{
+						debugMsg( kFName, "JDBC Oracle" );
+						// jdbc:oracle:thin:@mchine:nnnn:dbname
+						StringBuffer buff = new StringBuffer();
+						// buff.append( lType );
+						// buff.append( ':' );
+						buff.append( "jdbc:" );
+						buff.append( lVendor );
+						buff.append( ':' );
+						buff.append( "thin:@" );
+						buff.append( getServerString() );
+						buff.append( ':' );
+						buff.append( getPort() );
+						buff.append( ':' );
+						buff.append( getDBName() );
+						cFinalConnectionString = new String( buff );
+					}
+					// Else is it Postgres
+					else if( lVendor!=null && lVendor.equals(VENDOR_TAG_POSTGRES) )
+					{
+						debugMsg( kFName, "JDBC Postgress" );
+						// jdbc:postgresql:SearchTrack
+						StringBuffer buff = new StringBuffer();
+						// buff.append( lType );
+						// buff.append( ':' );
+						buff.append( "jdbc:" );
+						buff.append( lVendor );
+						buff.append( ':' );
+						// Todo: ??? Seems like we would need this for a
+						// remote connection?
+						// buff.append( getServerString() );
+						// buff.append( ':' );
+						// buff.append( getPort() );
+						// buff.append( ':' );
+						buff.append( getDBName() );
+						cFinalConnectionString = new String( buff );
+					}
+					// Else it's not Oracle or Postgres
+					else
+					{
+						errorMsg( kFName,
+							"Unknown or missing JDBC vendor tag " + lVendor
+							+ " Will return null."
+							);
+					}
+			//	}
+			//	// Else it's NOT jdbc
+			//	else
+			//	{
+			//		errorMsg( kFName,
+			//			"Unknown or missing connection type " + lType
+			//			+ " Will return null."
+			//			);
+			//		if( lType!=null && lType.equals("odbc") )
+			//		{
+			//			warningMsg( kFName,
+			//				"You may have a small typo in your configuration."
+			//				+ " You said type odbc, did you perhaps mean jdbc?"
+			//				);
+			//		}
+			//	}   // End else not jdbc
+			}   // End if getNativeConnectionString() was null
+		}   // End if not using cached value
+
+		// Return cache, which we may have just calculated
+		return cFinalConnectionString;
+
+
+
+	}
+
+
+
+	//// Lower Level Loginc ///////////////////////////////////////////////
+
+	public boolean isActive()
+	{
+		final String kFName = "isActive";
+		if( ! mUseCache )
+		{
+			cIsActive = fConfigTree.getBooleanFromAttribute( ACTIVE_ATTR, true );
+			if( ! cIsActive )
+			{
+				warningMsg( kFName,
+					"Database access has been DEACTIVATED in the config file."
+					+ " This is typically done for testing other parts of the system"
+					+ " when a real database connection is not available."
+					+ " No real database will be active"
+					+ " and getConnection() will ALWAYS RETURN NULL."
+					+ " You must still supply valid looking database config settings;"
+					+ " that's often part of the test."
+					);
+			}
+		}
+		return cIsActive;
+	}
+
+	public String getServerString()
+	{
+		if( ! mUseCache )
+			cServerName = fConfigTree.getStringFromAttributeTrimOrNull( SERVER_NAME_ATTR );
+		return cServerName;
+	}
+	public int getPort()
+	{
+		if( ! mUseCache )
+			cPort = fConfigTree.getIntFromAttribute( SERVER_PORT_ATTR, -1 );
+		return cPort;
+	}
+
+//	// Todo: should this be an int?
+//	public String getTypeString()
+//	{
+//		if( ! mUseCache )
+//		{
+//			cType = fConfigTree.getStringFromAttributeTrimOrNull( DB_TYPE_ATTR );
+//			if( cType != null )
+//				cType = cType.toLowerCase();
+//		}
+//		return cType;
+//	}
+
+	public String getDriverClassString()
+	{
+		if( ! mUseCache )
+			cDriverClassString = fConfigTree.getStringFromAttributeTrimOrNull( DRIVER_ATTR );
+		return cDriverClassString;
+	}
+	public String getNetworkProtocal()
+	{
+		if( ! mUseCache )
+			cNetworkProtocol = fConfigTree.getStringFromAttributeTrimOrNull( NET_PROTO_ATTR );
+		return cNetworkProtocol;
+	}
+	public String getDBName()
+	{
+		if( ! mUseCache )
+			cDBName = fConfigTree.getStringFromAttributeTrimOrNull( DB_NAME_ATTR );
+		return cDBName;
+	}
+	public String getMainTable()
+	{
+		if( ! mUseCache )
+			cMainTable = fConfigTree.getStringFromAttributeTrimOrNull( MAIN_TABLE_ATTR );
+		return cMainTable;
+	}
+	public String getUsername()
+	{
+		if( ! mUseCache )
+			cUsername = fConfigTree.getStringFromAttributeTrimOrNull( USERNAME_ATTR );
+		return cUsername;
+	}
+	public String getPassword()
+	{
+		if( ! mUseCache )
+			cPassword = fConfigTree.getStringFromAttributeTrimOrNull( PASSWORD_ATTR );
+		return cPassword;
+	}
+	public String getExtraParameters()
+	{
+		if( ! mUseCache )
+			cExtraParameters= fConfigTree.getStringFromAttributeTrimOrNull( EXTRA_PARAMETERS_ATTR );
+		return cExtraParameters;
+	}
+	// The Vendor, short version
+	public String getVendorTag()
+	{
+		if( ! mUseCache )
+		{
+			cVendorTag = fConfigTree.getStringFromAttributeTrimOrNull( VENDOR_TAG_ATTR );
+			if( cVendorTag != null )
+				cVendorTag = cVendorTag.toLowerCase();
+		}
+		return cVendorTag;
+	}
+	// Longer version for display
+	public String getVendorString()
+	{
+		if( ! mUseCache )
+			cVendorString = fConfigTree.getStringFromAttributeTrimOrNull( VENDOR_STRING_ATTR );
+		return cVendorString;
+	}
+	private String getNativeConnectionString()
+	{
+		if( ! mUseCache )
+			cNativeConnectionString = fConfigTree.getStringFromAttributeTrimOrNull(
+				NATIVE_CONNECT_STRING_ATTR
+				);
+		return cNativeConnectionString;
+	}
+
+	private String getDriverClassName()
+	{
+		if( ! mUseCache )
+		{
+			final String kFName = "getDriverClassName";
+
+			// Did they set one specifically?
+			// Most often NOT
+			cDriverClassString = fConfigTree.getStringFromAttributeTrimOrNull(
+				DRIVER_ATTR
+				);
+
+			// Most of the time we have to figure this out for ourselves
+			// based on the vendor tag
+			if( cDriverClassString == null )
+			{
+				String vTag = getVendorTag();
+				if( vTag != null && vTag.equals(VENDOR_TAG_ORACLE) )
+				{
+					cDriverClassString = ORACLE_CLASS_NAME;
+				}
+				// else if other vendors..., etc.
+				else
+				{
+					errorMsg( kFName,
+						"Can not determine database driver class name"
+						+ " for vendor \"" + vTag + "\"."
+						+ " Returning null."
+						);
+				}
+			}
+			else    // Else they DID set a specific driver class
+			{
+				statusMsg( kFName,
+					"Will use User specified database driver class"
+					+ " = \"" + cDriverClassString + "\""
+					);
+			}
+		}   // End if not using cache
+		return cDriverClassString;
+	}
+
+
+
+	// A query to run once we've connected
+	public String getTestQuery()
+	{
+		if( ! mUseCache )
+			cTestQuery = fConfigTree.getTextByPathTrimOrNull( TEST_QUERY_PATH );
+		return cTestQuery;
+	}
+
+
+
+	///// Run Logging ///////////////////////////////////////
+
+	// This gets us to the logging object
+	private static RunLogInterface getRunLogObject()
+	{
+		return RunLogBasicImpl.getRunLogObject();
+	}
+	private static boolean statusMsg( String inFromRoutine, String inMessage )
+	{
+		return getRunLogObject().statusMsg( kClassName, inFromRoutine,
+			inMessage
+			);
+	}
+	private static boolean transactionStatusMsg( String inFromRoutine, String inMessage )
+	{
+		return getRunLogObject().transactionStatusMsg( kClassName, inFromRoutine,
+			inMessage
+			);
+	}
+	private static boolean shouldDoTransactionStatusMsg( String inFromRoutine )
+	{
+		return getRunLogObject().shouldDoTransactionStatusMsg( kClassName, inFromRoutine );
+	}
+	private static boolean infoMsg( String inFromRoutine, String inMessage )
+	{
+		return getRunLogObject().infoMsg( kClassName, inFromRoutine,
+			inMessage
+			);
+	}
+	private static boolean debugMsg( String inFromRoutine, String inMessage )
+	{
+		return getRunLogObject().debugMsg( kClassName, inFromRoutine,
+			inMessage
+			);
+	}
+	private static boolean traceMsg( String inFromRoutine, String inMessage )
+	{
+		return getRunLogObject().traceMsg( kClassName, inFromRoutine,
+			inMessage
+			);
+	}
+	private static boolean shouldDoTraceMsg( String inFromRoutine )
+	{
+		return getRunLogObject().shouldDoTraceMsg( kClassName, inFromRoutine );
+	}
+	private static boolean warningMsg( String inFromRoutine, String inMessage )
+	{
+		return getRunLogObject().warningMsg( kClassName, inFromRoutine,
+			inMessage
+			);
+	}
+	private static boolean errorMsg( String inFromRoutine, String inMessage )
+	{
+		return getRunLogObject().errorMsg( kClassName, inFromRoutine,
+			inMessage
+			);
+	}
+	private static boolean fatalErrorMsg( String inFromRoutine, String inMessage )
+	{
+		return getRunLogObject().fatalErrorMsg( kClassName, inFromRoutine,
+			inMessage
+			);
+	}
+
+
+	////// Main ////////////////////////////////////////////////////
+
+	public static void main(String[] args)
+	{
+		final String kFName = "main";
+
+		// statusMsg( kFName, "Starting" );
+
+		if( args.length < 1 )
+		{
+			errorMsg( kFName,
+				"Syntax error, missing arg1 (config file name)."
+				+ " Syntax is: java " + kClassName + " db_config_uri.xml"
+				+ " [sql_test_statement]"
+				+ " Exiting program (error code 1)."
+				);
+			System.exit( 1 );
+		}
+		String configFile = args[0];
+
+		statusMsg( kFName,
+			"Will read config URI \"" + configFile + "\""
+			);
+
+		DBConfig myDB = null;
+		try
+		{
+			myDB = new DBConfig( configFile );
+		}
+		catch (DBConfigException e)
+		{
+			errorMsg( kFName,
+				"Unable to construct DB Config object"
+				+ " Exception = " + e
+				+ " Exiting program (error code 2)."
+				);
+			System.exit( 2 );
+		}
+
+		statusMsg( kFName,
+			"Was able to read config."
+			);
+
+		// Todo: try running query
+
+	}
+
+
+
+
+	// The main JDOM configuration tree
+	private JDOMHelper fConfigTree;
+
+	// The main ODBC connection
+	private Connection mDBConnection;
+
+	// Cached variables
+	// =====================================================
+	// Off by default
+	private boolean mUseCache;
+	// Don't forget to call the routines that cache these values
+	private boolean cIsActive;
+	private String cServerName;
+	private int cPort;
+	private String cType;
+	private String cDriverClassString;
+	private String cNetworkProtocol;
+	private String cDBName;
+	private String cMainTable;
+	private String cUsername;
+	private String cPassword;
+	private String cExtraParameters;
+	private String cVendorTag;
+	private String cVendorString;
+	private String cTestQuery;
+	private String cNativeConnectionString;
+	private String cFinalConnectionString;
+
+	// Attribute Names
+	// ======================================================
+	private static final String ACTIVE_ATTR =
+		"active";
+	private static final String SERVER_NAME_ATTR =
+		"server_name";
+	private static final String SERVER_PORT_ATTR =
+		"port";
+//	private static final String DB_TYPE_ATTR =
+//		"type";
+	private static final String DRIVER_ATTR =
+		"driver_java_class";
+	private static final String NET_PROTO_ATTR =
+		"network_protocol";
+	private static final String DB_NAME_ATTR =
+		"database_name";
+	private static final String MAIN_TABLE_ATTR =
+		"main_table";
+	private static final String USERNAME_ATTR =
+		"username";
+	private static final String PASSWORD_ATTR =
+		"password";
+	private static final String EXTRA_PARAMETERS_ATTR =
+		"extra_parameters";
+	private static final String VENDOR_TAG_ATTR =
+		"vendor_tag";
+	private static final String VENDOR_STRING_ATTR =
+		"vendor_description";
+
+	private static final String NATIVE_CONNECT_STRING_ATTR =
+		"native_connection_string";
+
+	private static final String TEST_QUERY_PATH =
+		"test_query";
+
+	// Some specific values
+	// private static final String TYPE_JDBC = "jdbc";
+
+	// Oracle
+	private static final String VENDOR_TAG_ORACLE = "oracle";
+	// This is the DEFAULT driver for Oracle
+	// private static final String ORACLE_CLASS_NAME = "oracle.jdbc.OracleDriver";
+	// This should work with 8i
+	private static final String ORACLE_CLASS_NAME = "oracle.jdbc.driver.OracleDriver";
+
+	private static final String VENDOR_TAG_POSTGRES = "postgres";
+
+}

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<onebox type="external" suppressDateTime="false" suppressIPAddr="false">
+	<name>SearchTrack Suggestions</name>
+	<security userAuth="none" />
+	<description>Provide predefined suggestions for certain search terms, defined by the administrator.</description>
+	<trigger triggerType="null" />
+	<providerURL>searchtrackurl</providerURL>
+	<resultsTemplate>
+	<xsl:template name="suggestions">
+		<xsl:for-each select="MODULE_RESULT">
+		</xsl:for-each>
+		<a>
+			<xsl:attribute name="href">
+				<xsl:value-of select="U" />
+			</xsl:attribute>
+			<b><xsl:value-of select="Field[@name='title']" /></b><br />
+		</a>
+		<small><xsl:value-of select="Field[@name='description']" /></small><p />
+	</xsl:template>
+	</resultsTemplate>
+</onebox>

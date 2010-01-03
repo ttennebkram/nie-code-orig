@@ -1,0 +1,21 @@
+<map>
+
+	<!-- Map the informal abbrevition for terminal to
+		the related correct terms.
+		I think Miles had this backwards????
+	-->
+	<term>term</term>
+
+	<alternate_term>terminal</alternate_term>
+	<alternate_term>terminal procedures</alternate_term>
+
+	<alternate_suggestions_heading
+		text="Related terms:"
+		color="#330088"
+		size="-1"
+		markup_before="&lt;b&gt;"
+		markup_after="&lt;/b&gt;"
+		face="'MS Sans Serif',Geneva,sans-serif"
+	/>
+
+</map>
