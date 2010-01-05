@@ -1,0 +1,9 @@
+<database
+	vendor_tag="postgresql"
+	vendor_description="PostgreSQL Open Source Database"
+	server_name="your_server"
+	database_name="SearchTrack"
+	username="username"
+	password="password"
+	main_table="nie_log"
+/>

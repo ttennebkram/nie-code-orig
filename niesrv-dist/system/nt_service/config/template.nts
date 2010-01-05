@@ -1,0 +1,121 @@
+#
+# WARNING:
+# Environment variables in this file are interpreted EACH TIME
+# it is run, so some may not always be defined when service manager
+# tries to fire them up
+# Thefore, I suggest mostly literal values unless you've been
+# very careful in defining global env's on windows
+# mbennett
+#
+
+#********************************************************************
+# Wrapper parameters
+#********************************************************************
+# Java Application
+#wrapper.java.command=java
+wrapper.java.command=%JVM%
+
+# Java Main class
+#wrapper.java.mainclass=com.silveregg.wrapper.test.Main
+#wrapper.java.mainclass=%MAIN_CLASS%
+wrapper.java.mainclass=com.silveregg.wrapper.WrapperSimpleApp
+#wrapper.java.mainclass=com.silveregg.wrapper.test.Main
+
+# Java Additional Parameters
+#wrapper.java.additional.1=
+#wrapper.java.additional.1=%MAIN_CLASS%
+
+# Application parameters.  Add parameters as needed starting from 1
+#wrapper.app.parameter.1=
+#wrapper.app.parameter.1=%SN_CONFIG%
+wrapper.app.parameter.1=%MAIN_CLASS%
+wrapper.app.parameter.2=%SN_CONFIG%
+
+# Java Classpath (include wrapper.jar)  Add class path elements as
+#  needed starting from 1
+#wrapper.java.classpath.1=../lib/wrapper.jar
+wrapper.java.classpath.1=%NIE_CLASS_PATH%
+#wrapper.java.classpath.2=...
+
+# Java Library Path (location of Wrapper.DLL or libwrapper.so)
+#wrapper.java.library.path.1=../lib
+wrapper.java.library.path.1=%NTS_LIB%
+
+# Initial Java Heap Size (in MB)
+wrapper.java.initmemory=16
+
+# Maximum Java Heap Size (in MB)
+wrapper.java.maxmemory=64
+
+# Port which the native wrapper code will attempt to connect to
+wrapper.port=1777
+
+#********************************************************************
+# Wrapper Logging parameters
+#********************************************************************
+# Format of output for the console.  (See docs for formats)
+wrapper.console.format=PM
+
+# Log Level for console output.  (See docs for log levels)
+wrapper.console.loglevel=INFO
+
+# Log file to use for wrapper output logging.
+#wrapper.logfile=../logs/wrapper.log
+wrapper.logfile=%NTS_LOG_FILE%
+
+# Format of output for the log file.  (See docs for formats)
+wrapper.logfile.format=LPTM
+
+# Log Level for log file output.  (See docs for log levels)
+wrapper.logfile.loglevel=INFO
+
+# Maximum size that the log file will be allowed to grow to before
+#  the log is rolled. Size is specified in bytes.  The default value
+#  of 0, disables log rolling.  May abbreviate with the 'k' (kb) or
+#  'm' (mb) suffix.  For example: 10m = 10 megabytes.
+wrapper.logfile.maxsize=0
+
+# Maximum number of rolled log files which will be allowed before old
+#  files are deleted.  The default value of 0 implies no limit.
+wrapper.logfile.maxfiles=0
+
+# Log Level for sys/event log output.  (See docs for log levels)
+wrapper.syslog.loglevel=NONE
+
+#********************************************************************
+# Wrapper Unix daemon parameters
+#********************************************************************
+# File to write process ID to
+#wrapper.pidfile=/var/run/testwrapper.pid
+wrapper.pidfile=%NTS_PID_FILE%
+
+#********************************************************************
+# Wrapper NT Service parameters
+#********************************************************************
+# WARNING - Do not modify any of these parameters when an application
+#  using this configuration file has been installed as a service.
+#  Please uninstall the service before modifying this section.  The
+#  service can then be reinstalled.
+
+# Name of the service
+#wrapper.ntservice.name=testwrapper
+wrapper.ntservice.name=%NTS_SHORT_NAME%
+
+# Display name of the service
+#wrapper.ntservice.displayname=Test Wrapper Sample Application
+wrapper.ntservice.displayname=%NTS_SHORT_NAME%
+
+# Description of the service
+#wrapper.ntservice.description=Test Wrapper Sample Application Description
+wrapper.ntservice.description=%NTS_DESCRIPTION%
+
+# Service dependencies.  Add dependencies as needed starting from 1
+wrapper.ntservice.dependency.1=
+
+# Mode in which the service is installed.  AUTO_START or DEMAND_START
+wrapper.ntservice.starttype=AUTO_START
+
+# Priority at which the service is run.  NORMAL, LOW, HIGH, or
+#  REALTIME
+wrapper.ntservice.process_priority=NORMAL
+

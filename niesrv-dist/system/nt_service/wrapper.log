@@ -1,0 +1,921 @@
+STATUS | wrapper  | 2002/11/13 22:50:42 | AOPA installed.
+ERROR  | wrapper  | 2002/11/13 22:54:40 | CreateService failed - The specified service already exists. (0x431)
+ERROR  | wrapper  | 2002/11/13 23:08:22 | CreateService failed - The specified service already exists. (0x431)
+ERROR  | wrapper  | 2002/11/13 23:08:51 | CreateService failed - The specified service already exists. (0x431)
+STATUS | wrapper  | 2002/11/13 23:08:51 | AOPA removed.
+STATUS | wrapper  | 2002/11/13 23:08:52 | AOPA installed.
+ERROR  | wrapper  | 2002/11/13 23:10:22 | CreateService failed - The specified service already exists. (0x431)
+STATUS | wrapper  | 2002/11/13 23:10:22 | AOPA removed.
+STATUS | wrapper  | 2002/11/13 23:10:22 | AOPA installed.
+ERROR  | wrapper  | 2002/11/13 23:13:15 | CreateService failed - The specified service already exists. (0x431)
+STATUS | wrapper  | 2002/11/13 23:13:15 | AOPA removed.
+STATUS | wrapper  | 2002/11/13 23:13:16 | AOPA installed.
+ERROR  | wrapper  | 2002/11/13 23:15:27 | CreateService failed - The specified service already exists. (0x431)
+STATUS | wrapper  | 2002/11/13 23:15:27 | AOPA removed.
+STATUS | wrapper  | 2002/11/13 23:15:28 | AOPA installed.
+ERROR  | wrapper  | 2002/11/13 23:25:13 | CreateService failed - The specified service already exists. (0x431)
+STATUS | wrapper  | 2002/11/13 23:25:13 | AOPA removed.
+STATUS | wrapper  | 2002/11/13 23:25:14 | AOPA installed.
+ERROR  | wrapper  | 2002/11/13 23:26:57 | CreateService failed - The specified service already exists. (0x431)
+STATUS | wrapper  | 2002/11/13 23:26:57 | AOPA removed.
+STATUS | wrapper  | 2002/11/13 23:26:58 | AOPA installed.
+ERROR  | wrapper  | 2002/11/13 23:30:55 | CreateService failed - The specified service already exists. (0x431)
+STATUS | wrapper  | 2002/11/13 23:30:55 | AOPA removed.
+STATUS | wrapper  | 2002/11/13 23:30:56 | AOPA installed.
+STATUS | wrapper  | 2002/11/13 23:32:16 | --> Wrapper Started as Console
+STATUS | wrapper  | 2002/11/13 23:32:17 | Launching a JVM...
+INFO   | jvm 1    | 2002/11/13 23:32:17 | Status: 11/13/02 11:32:17 PM PST SearchNamesApp.constructor: Loading configuration data from "D:\data\proj\SearchNames\aopa-config.xml".
+INFO   | jvm 1    | 2002/11/13 23:32:18 | Status: 11/13/02 11:32:18 PM PST JDOMHelper.constructor(2): Will retry with file URL "file:/D:/data/proj/SearchNames/aopa-config.xml".
+INFO   | jvm 1    | 2002/11/13 23:32:19 | Status: 11/13/02 11:32:19 PM PST SearchNamesConfig.loadConfigFile: FYI: No Run Logging specified in this configuration; process status information will continue to be sent to this log.
+INFO   | jvm 1    | 2002/11/13 23:32:19 | Status: 11/13/02 11:32:19 PM PST DBConfig.getConnection: Connecting to database with connection string "jdbc:oracle:thin:@ender:1521:stack" as user "system".
+INFO   | jvm 1    | 2002/11/13 23:32:21 | Status: 11/13/02 11:32:20 PM PST SearchNamesApp.constructor: Configured to listen on port 9000.
+ERROR  | wrapper  | 2002/11/13 23:32:48 | Startup failed: Timed out waiting for signal from JVM.
+ERROR  | wrapper  | 2002/11/13 23:32:48 | Java Virtual Machine did not exit on request, terminated
+STATUS | wrapper  | 2002/11/13 23:32:54 | Launching a JVM...
+INFO   | jvm 2    | 2002/11/13 23:32:54 | Status: 11/13/02 11:32:54 PM PST SearchNamesApp.constructor: Loading configuration data from "D:\data\proj\SearchNames\aopa-config.xml".
+INFO   | jvm 2    | 2002/11/13 23:32:55 | Status: 11/13/02 11:32:55 PM PST JDOMHelper.constructor(2): Will retry with file URL "file:/D:/data/proj/SearchNames/aopa-config.xml".
+INFO   | jvm 2    | 2002/11/13 23:32:56 | Status: 11/13/02 11:32:56 PM PST SearchNamesConfig.loadConfigFile: FYI: No Run Logging specified in this configuration; process status information will continue to be sent to this log.
+INFO   | jvm 2    | 2002/11/13 23:32:56 | Status: 11/13/02 11:32:56 PM PST DBConfig.getConnection: Connecting to database with connection string "jdbc:oracle:thin:@ender:1521:stack" as user "system".
+INFO   | jvm 2    | 2002/11/13 23:32:57 | Status: 11/13/02 11:32:57 PM PST SearchNamesApp.constructor: Configured to listen on port 9000.
+ERROR  | wrapper  | 2002/11/13 23:33:25 | Startup failed: Timed out waiting for signal from JVM.
+ERROR  | wrapper  | 2002/11/13 23:33:25 | Java Virtual Machine did not exit on request, terminated
+STATUS | wrapper  | 2002/11/13 23:33:31 | Launching a JVM...
+INFO   | jvm 3    | 2002/11/13 23:33:31 | Status: 11/13/02 11:33:31 PM PST SearchNamesApp.constructor: Loading configuration data from "D:\data\proj\SearchNames\aopa-config.xml".
+INFO   | jvm 3    | 2002/11/13 23:33:32 | Status: 11/13/02 11:33:32 PM PST JDOMHelper.constructor(2): Will retry with file URL "file:/D:/data/proj/SearchNames/aopa-config.xml".
+INFO   | jvm 3    | 2002/11/13 23:33:33 | Status: 11/13/02 11:33:33 PM PST SearchNamesConfig.loadConfigFile: FYI: No Run Logging specified in this configuration; process status information will continue to be sent to this log.
+INFO   | jvm 3    | 2002/11/13 23:33:33 | Status: 11/13/02 11:33:33 PM PST DBConfig.getConnection: Connecting to database with connection string "jdbc:oracle:thin:@ender:1521:stack" as user "system".
+INFO   | jvm 3    | 2002/11/13 23:33:34 | Status: 11/13/02 11:33:34 PM PST SearchNamesApp.constructor: Configured to listen on port 9000.
+STATUS | wrapper  | 2002/11/13 23:33:34 | CTRL-C trapped.  Shutting down.
+STATUS | wrapper  | 2002/11/13 23:33:59 | CTRL-C trapped.  Shutting down.
+STATUS | wrapper  | 2002/11/13 23:33:59 | CTRL-C trapped.  Shutting down.
+STATUS | wrapper  | 2002/11/13 23:34:00 | CTRL-C trapped.  Shutting down.
+ERROR  | wrapper  | 2002/11/13 23:34:06 | JVM exited unexpectedly while stopping the application.
+STATUS | wrapper  | 2002/11/13 23:34:06 | CTRL-C trapped.  Shutting down.
+STATUS | wrapper  | 2002/11/13 23:34:06 | <-- Wrapper Stopped
+ERROR  | wrapper  | 2002/11/14 11:21:32 | CreateService failed - The specified service already exists. (0x431)
+STATUS | wrapper  | 2002/11/14 11:21:33 | AOPA removed.
+STATUS | wrapper  | 2002/11/14 11:21:33 | AOPA installed.
+STATUS | wrapper  | 2002/11/14 11:40:45 | AOPA removed.
+FATAL  | wrapper  | 2002/11/14 11:42:40 | OpenService failed - The specified service does not exist as an installed service. (0x424)
+STATUS | wrapper  | 2002/11/14 11:43:51 | --> Wrapper Started as Console
+STATUS | wrapper  | 2002/11/14 11:43:52 | Launching a JVM...
+INFO   | jvm 1    | 2002/11/14 11:43:52 | java.lang.NoClassDefFoundError: nie/sn/SearchNamesApp
+INFO   | jvm 1    | 2002/11/14 11:43:52 | Exception in thread "main" 
+ERROR  | wrapper  | 2002/11/14 11:43:52 | JVM exited while loading the application.
+STATUS | wrapper  | 2002/11/14 11:43:59 | Launching a JVM...
+INFO   | jvm 2    | 2002/11/14 11:43:59 | java.lang.NoClassDefFoundError: nie/sn/SearchNamesApp
+INFO   | jvm 2    | 2002/11/14 11:43:59 | Exception in thread "main" 
+ERROR  | wrapper  | 2002/11/14 11:44:00 | JVM exited while loading the application.
+STATUS | wrapper  | 2002/11/14 11:44:06 | Launching a JVM...
+STATUS | wrapper  | 2002/11/14 11:44:06 | CTRL-C trapped.  Shutting down.
+INFO   | jvm 3    | 2002/11/14 11:44:06 | java.lang.NoClassDefFoundError: nie/sn/SearchNamesApp
+INFO   | jvm 3    | 2002/11/14 11:44:06 | Exception in thread "main" 
+ERROR  | wrapper  | 2002/11/14 11:44:06 | JVM exited unexpectedly while stopping the application.
+STATUS | wrapper  | 2002/11/14 11:44:07 | <-- Wrapper Stopped
+FATAL  | wrapper  | 2002/11/14 11:49:28 | unable to open config file. -c
+STATUS | wrapper  | 2002/11/14 11:50:30 | --> Wrapper Started as Console
+DEBUG  | wrapperp | 2002/11/14 11:50:31 | server listening on port 1777.
+STATUS | wrapper  | 2002/11/14 11:50:32 | Launching a JVM...
+DEBUG  | wrapper  | 2002/11/14 11:50:32 | command: "D:\apps\jdk13\bin\java.exe" nie.sn.SearchNamesApp -Xms16m -Xmx64m -Djava.library.path="D:\data\proj\SearchNames\sn098d\system\nt_service" -classpath ";D:\data\proj\SearchNames\sn098d\system\jar_files\crimson.jar;D:\data\proj\SearchNames\sn098d\system\jar_files\jdom.jar;D:\data\proj\SearchNames\sn098d\system\jar_files\msbase.jar;D:\data\proj\SearchNames\sn098d\system\jar_files\mssqlserver.jar;D:\data\proj\SearchNames\sn098d\system\jar_files\msutil.jar;D:\data\proj\SearchNames\sn098d\system\jar_files\mysql-connector-java-2.0.14-bin.jar;D:\data\proj\SearchNames\sn098d\system\jar_files\nie.jar;D:\data\proj\SearchNames\sn098d\system\jar_files\nts_wrapper.jar;D:\data\proj\SearchNames\sn098d\system\jar_files\postgres-pgjdbc2.jar;D:\data\proj\SearchNames\sn098d\system\jar_files\xalan.jar;D:\data\proj\SearchNames\sn098d\system\jar_files\xerces.jar;D:\data\proj\SearchNames\sn098d\system\jar_files\oracle-java-1213.zip" -Dwrapper.key="I2IMvVgKkhAxJWGu" -Dwrapper.port=1777 -Dwrapper.debug="TRUE" -Dwrapper.cpu.timeout="10" -Dwrapper.jvmid=1 com.silveregg.wrapper.WrapperSimpleApp D:\data\proj\SearchNames\aopa-config.xml
+DEBUG  | wrapper  | 2002/11/14 11:50:32 | Java Virtual Machine started (PID=2244)
+INFO   | jvm 1    | 2002/11/14 11:50:33 | java.lang.NoClassDefFoundError: nie/sn/SearchNamesApp
+INFO   | jvm 1    | 2002/11/14 11:50:33 | Exception in thread "main" 
+ERROR  | wrapper  | 2002/11/14 11:50:33 | JVM exited while loading the application.
+DEBUG  | wrapper  | 2002/11/14 11:50:33 | JVM was only running for 1 seconds leading to a failed restart count of 1.
+STATUS | wrapper  | 2002/11/14 11:50:39 | Launching a JVM...
+DEBUG  | wrapper  | 2002/11/14 11:50:39 | command: "D:\apps\jdk13\bin\java.exe" nie.sn.SearchNamesApp -Xms16m -Xmx64m -Djava.library.path="D:\data\proj\SearchNames\sn098d\system\nt_service" -classpath ";D:\data\proj\SearchNames\sn098d\system\jar_files\crimson.jar;D:\data\proj\SearchNames\sn098d\system\jar_files\jdom.jar;D:\data\proj\SearchNames\sn098d\system\jar_files\msbase.jar;D:\data\proj\SearchNames\sn098d\system\jar_files\mssqlserver.jar;D:\data\proj\SearchNames\sn098d\system\jar_files\msutil.jar;D:\data\proj\SearchNames\sn098d\system\jar_files\mysql-connector-java-2.0.14-bin.jar;D:\data\proj\SearchNames\sn098d\system\jar_files\nie.jar;D:\data\proj\SearchNames\sn098d\system\jar_files\nts_wrapper.jar;D:\data\proj\SearchNames\sn098d\system\jar_files\postgres-pgjdbc2.jar;D:\data\proj\SearchNames\sn098d\system\jar_files\xalan.jar;D:\data\proj\SearchNames\sn098d\system\jar_files\xerces.jar;D:\data\proj\SearchNames\sn098d\system\jar_files\oracle-java-1213.zip" -Dwrapper.key="CRk72ZUV13Jup433" -Dwrapper.port=1777 -Dwrapper.debug="TRUE" -Dwrapper.cpu.timeout="10" -Dwrapper.jvmid=2 com.silveregg.wrapper.WrapperSimpleApp D:\data\proj\SearchNames\aopa-config.xml
+DEBUG  | wrapper  | 2002/11/14 11:50:39 | Java Virtual Machine started (PID=1716)
+INFO   | jvm 2    | 2002/11/14 11:50:40 | java.lang.NoClassDefFoundError: nie/sn/SearchNamesApp
+INFO   | jvm 2    | 2002/11/14 11:50:40 | Exception in thread "main" 
+ERROR  | wrapper  | 2002/11/14 11:50:40 | JVM exited while loading the application.
+DEBUG  | wrapper  | 2002/11/14 11:50:40 | JVM was only running for 1 seconds leading to a failed restart count of 2.
+STATUS | wrapper  | 2002/11/14 11:50:46 | Launching a JVM...
+DEBUG  | wrapper  | 2002/11/14 11:50:46 | command: "D:\apps\jdk13\bin\java.exe" nie.sn.SearchNamesApp -Xms16m -Xmx64m -Djava.library.path="D:\data\proj\SearchNames\sn098d\system\nt_service" -classpath ";D:\data\proj\SearchNames\sn098d\system\jar_files\crimson.jar;D:\data\proj\SearchNames\sn098d\system\jar_files\jdom.jar;D:\data\proj\SearchNames\sn098d\system\jar_files\msbase.jar;D:\data\proj\SearchNames\sn098d\system\jar_files\mssqlserver.jar;D:\data\proj\SearchNames\sn098d\system\jar_files\msutil.jar;D:\data\proj\SearchNames\sn098d\system\jar_files\mysql-connector-java-2.0.14-bin.jar;D:\data\proj\SearchNames\sn098d\system\jar_files\nie.jar;D:\data\proj\SearchNames\sn098d\system\jar_files\nts_wrapper.jar;D:\data\proj\SearchNames\sn098d\system\jar_files\postgres-pgjdbc2.jar;D:\data\proj\SearchNames\sn098d\system\jar_files\xalan.jar;D:\data\proj\SearchNames\sn098d\system\jar_files\xerces.jar;D:\data\proj\SearchNames\sn098d\system\jar_files\oracle-java-1213.zip" -Dwrapper.key="EnpfOFQKasbXeT6w" -Dwrapper.port=1777 -Dwrapper.debug="TRUE" -Dwrapper.cpu.timeout="10" -Dwrapper.jvmid=3 com.silveregg.wrapper.WrapperSimpleApp D:\data\proj\SearchNames\aopa-config.xml
+DEBUG  | wrapper  | 2002/11/14 11:50:46 | Java Virtual Machine started (PID=2308)
+INFO   | jvm 3    | 2002/11/14 11:50:47 | java.lang.NoClassDefFoundError: nie/sn/SearchNamesApp
+INFO   | jvm 3    | 2002/11/14 11:50:47 | Exception in thread "main" 
+ERROR  | wrapper  | 2002/11/14 11:50:47 | JVM exited while loading the application.
+DEBUG  | wrapper  | 2002/11/14 11:50:47 | JVM was only running for 1 seconds leading to a failed restart count of 3.
+STATUS | wrapper  | 2002/11/14 11:55:27 | Launching a JVM...
+DEBUG  | wrapper  | 2002/11/14 11:55:27 | command: "D:\apps\jdk13\bin\java.exe" nie.sn.SearchNamesApp -Xms16m -Xmx64m -Djava.library.path="D:\data\proj\SearchNames\sn098d\system\nt_service" -classpath ";D:\data\proj\SearchNames\sn098d\system\jar_files\crimson.jar;D:\data\proj\SearchNames\sn098d\system\jar_files\jdom.jar;D:\data\proj\SearchNames\sn098d\system\jar_files\msbase.jar;D:\data\proj\SearchNames\sn098d\system\jar_files\mssqlserver.jar;D:\data\proj\SearchNames\sn098d\system\jar_files\msutil.jar;D:\data\proj\SearchNames\sn098d\system\jar_files\mysql-connector-java-2.0.14-bin.jar;D:\data\proj\SearchNames\sn098d\system\jar_files\nie.jar;D:\data\proj\SearchNames\sn098d\system\jar_files\nts_wrapper.jar;D:\data\proj\SearchNames\sn098d\system\jar_files\postgres-pgjdbc2.jar;D:\data\proj\SearchNames\sn098d\system\jar_files\xalan.jar;D:\data\proj\SearchNames\sn098d\system\jar_files\xerces.jar;D:\data\proj\SearchNames\sn098d\system\jar_files\oracle-java-1213.zip" -Dwrapper.key="AAhmqhkGAeWdwDky" -Dwrapper.port=1777 -Dwrapper.debug="TRUE" -Dwrapper.cpu.timeout="10" -Dwrapper.jvmid=4 com.silveregg.wrapper.WrapperSimpleApp D:\data\proj\SearchNames\aopa-config.xml
+DEBUG  | wrapper  | 2002/11/14 11:55:27 | Java Virtual Machine started (PID=2460)
+INFO   | wrapper  | 2002/11/14 11:55:27 | Wrapper Process has not received any CPU time for 274 seconds.  Extending timeouts.
+INFO   | jvm 4    | 2002/11/14 11:55:28 | java.lang.NoClassDefFoundError: nie/sn/SearchNamesApp
+INFO   | jvm 4    | 2002/11/14 11:55:28 | Exception in thread "main" 
+ERROR  | wrapper  | 2002/11/14 11:55:28 | JVM exited while loading the application.
+DEBUG  | wrapper  | 2002/11/14 11:55:28 | JVM was only running for 275 seconds leading to a failed restart count of 4.
+STATUS | wrapper  | 2002/11/14 11:55:28 | CTRL-C trapped.  Shutting down.
+DEBUG  | wrapper  | 2002/11/14 11:55:28 | wrapperStopProcess(0) called.
+STATUS | wrapper  | 2002/11/14 11:55:28 | CTRL-C trapped.  Shutting down.
+DEBUG  | wrapper  | 2002/11/14 11:55:28 | wrapperStopProcess(0) called.  (IGNORED)
+STATUS | wrapper  | 2002/11/14 11:55:29 | <-- Wrapper Stopped
+STATUS | wrapper  | 2002/11/14 11:59:04 | --> Wrapper Started as Console
+DEBUG  | wrapperp | 2002/11/14 11:59:04 | server listening on port 1777.
+STATUS | wrapper  | 2002/11/14 11:59:05 | Launching a JVM...
+DEBUG  | wrapper  | 2002/11/14 11:59:05 | command: "D:\apps\jdk13\bin\java.exe" -Xms16m -Xmx64m -Djava.library.path="D:\data\proj\SearchNames\sn098d\system\nt_service" -classpath ";D:\data\proj\SearchNames\sn098d\system\jar_files\crimson.jar;D:\data\proj\SearchNames\sn098d\system\jar_files\jdom.jar;D:\data\proj\SearchNames\sn098d\system\jar_files\msbase.jar;D:\data\proj\SearchNames\sn098d\system\jar_files\mssqlserver.jar;D:\data\proj\SearchNames\sn098d\system\jar_files\msutil.jar;D:\data\proj\SearchNames\sn098d\system\jar_files\mysql-connector-java-2.0.14-bin.jar;D:\data\proj\SearchNames\sn098d\system\jar_files\nie.jar;D:\data\proj\SearchNames\sn098d\system\jar_files\nts_wrapper.jar;D:\data\proj\SearchNames\sn098d\system\jar_files\postgres-pgjdbc2.jar;D:\data\proj\SearchNames\sn098d\system\jar_files\xalan.jar;D:\data\proj\SearchNames\sn098d\system\jar_files\xerces.jar;D:\data\proj\SearchNames\sn098d\system\jar_files\oracle-java-1213.zip" -Dwrapper.key="yvn3dhlyXqbta4Fo" -Dwrapper.port=1777 -Dwrapper.debug="TRUE" -Dwrapper.cpu.timeout="10" -Dwrapper.jvmid=1 com.silveregg.wrapper.WrapperSimpleApp nie.sn.SearchNamesApp D:\data\proj\SearchNames\aopa-config.xml
+DEBUG  | wrapper  | 2002/11/14 11:59:05 | Java Virtual Machine started (PID=2308)
+INFO   | jvm 1    | 2002/11/14 11:59:06 | Wrapper Manager: JVM #1
+INFO   | jvm 1    | 2002/11/14 11:59:06 | Wrapper Manager: Registering shutdown hook
+INFO   | jvm 1    | 2002/11/14 11:59:06 | Wrapper Manager: Using wrapper
+INFO   | jvm 1    | 2002/11/14 11:59:06 | Calling native initialization method.
+INFO   | jvm 1    | 2002/11/14 11:59:06 | Initializing WrapperManager native library.
+INFO   | jvm 1    | 2002/11/14 11:59:06 | Java Executable: D:\apps\jdk13\bin\java.exe
+INFO   | jvm 1    | 2002/11/14 11:59:06 | Java Version   : 1.3.1_02-b02 Java HotSpot(TM) Client VM
+INFO   | jvm 1    | 2002/11/14 11:59:06 | Java VM Vendor : Sun Microsystems Inc.
+INFO   | jvm 1    | 2002/11/14 11:59:06 | 
+INFO   | jvm 1    | 2002/11/14 11:59:06 | Wrapper (Version 2.2.9)
+INFO   | jvm 1    | 2002/11/14 11:59:06 | 
+INFO   | jvm 1    | 2002/11/14 11:59:06 | Open socket to wrapper...
+INFO   | jvm 1    | 2002/11/14 11:59:06 | Opened Socket
+INFO   | jvm 1    | 2002/11/14 11:59:06 | Send a packet 110 : yvn3dhlyXqbta4Fo
+INFO   | jvm 1    | 2002/11/14 11:59:06 | handleSocket(Socket[addr=127.0.0.1/127.0.0.1,port=1777,localport=3092])
+DEBUG  | wrapperp | 2002/11/14 11:59:06 | accepted a socket from 127.0.0.1 on port 3092
+DEBUG  | wrapperp | 2002/11/14 11:59:06 | read a packet 110 : yvn3dhlyXqbta4Fo
+DEBUG  | wrapper  | 2002/11/14 11:59:06 | Got key from JVM: yvn3dhlyXqbta4Fo
+DEBUG  | wrapperp | 2002/11/14 11:59:06 | sent 3 bytes
+DEBUG  | wrapper  | 2002/11/14 11:59:06 | Start Application.
+DEBUG  | wrapperp | 2002/11/14 11:59:06 | sent 7 bytes
+STATUS | wrapper  | 2002/11/14 11:59:06 | CTRL-C trapped.  Shutting down.
+DEBUG  | wrapper  | 2002/11/14 11:59:06 | wrapperStopProcess(0) called.
+INFO   | jvm 1    | 2002/11/14 11:59:06 | Received a packet 112 : 1
+INFO   | jvm 1    | 2002/11/14 11:59:06 | Wrapper Manager: LowLogLevel from Wrapper is 1
+INFO   | jvm 1    | 2002/11/14 11:59:07 | Received a packet 100 : start
+INFO   | jvm 1    | 2002/11/14 11:59:07 | calling listener.start()
+INFO   | jvm 1    | 2002/11/14 11:59:07 | WrapperSimpleApp: start(args)
+INFO   | jvm 1    | 2002/11/14 11:59:07 | WrapperSimpleApp: invoking main method
+INFO   | jvm 1    | 2002/11/14 11:59:07 | Encountered an error running main: java.lang.IllegalAccessException
+INFO   | jvm 1    | 2002/11/14 11:59:07 | java.lang.IllegalAccessException
+INFO   | jvm 1    | 2002/11/14 11:59:07 | 	at java.lang.reflect.Method.invoke(Native Method)
+INFO   | jvm 1    | 2002/11/14 11:59:07 | 	at com.silveregg.wrapper.WrapperSimpleApp.run(WrapperSimpleApp.java:96)
+INFO   | jvm 1    | 2002/11/14 11:59:07 | 	at java.lang.Thread.run(Thread.java:484)
+INFO   | jvm 1    | 2002/11/14 11:59:07 | 
+INFO   | jvm 1    | 2002/11/14 11:59:07 | WrapperSimpleApp Usage:
+INFO   | jvm 1    | 2002/11/14 11:59:07 |   java com.silveregg.wrapper.WrapperSimpleApp {app_class} [app_parameters]
+INFO   | jvm 1    | 2002/11/14 11:59:07 | 
+INFO   | jvm 1    | 2002/11/14 11:59:07 | Where:
+INFO   | jvm 1    | 2002/11/14 11:59:07 |   app_class:      The fully qualified class name of the application to run.
+INFO   | jvm 1    | 2002/11/14 11:59:07 |   app_parameters: The parameters that would normally be passed to the
+INFO   | jvm 1    | 2002/11/14 11:59:07 |                   application.
+INFO   | jvm 1    | 2002/11/14 11:59:07 | WrapperSimpleApp: start(args) end.  Main Completed=true, exitCode=1
+INFO   | jvm 1    | 2002/11/14 11:59:07 | Send a packet 101 : 1
+DEBUG  | wrapperp | 2002/11/14 11:59:07 | read a packet 101 : 1
+DEBUG  | wrapper  | 2002/11/14 11:59:07 | JVM requested a shutdown. (1)
+DEBUG  | wrapper  | 2002/11/14 11:59:07 | wrapperStopProcess(1) called.  (IGNORED)
+DEBUG  | wrapper  | 2002/11/14 11:59:07 | Sending stop signal to JVM
+DEBUG  | wrapperp | 2002/11/14 11:59:07 | sent 2 bytes
+INFO   | jvm 1    | 2002/11/14 11:59:07 | Thread, Wrapper-Connection, handling the shutdown process.
+INFO   | jvm 1    | 2002/11/14 11:59:07 | Send a packet 107 : 0
+INFO   | jvm 1    | 2002/11/14 11:59:07 | Closing socket.
+DEBUG  | wrapperp | 2002/11/14 11:59:07 | read a packet 107 : 0
+DEBUG  | wrapper  | 2002/11/14 11:59:07 | JVM signalled that it was stopped.
+DEBUG  | wrapperp | 2002/11/14 11:59:07 | socket read no code (closed?).
+STATUS | wrapper  | 2002/11/14 11:59:08 | CTRL-C trapped.  Shutting down.
+INFO   | jvm 1    | 2002/11/14 11:59:08 | calling System.exit(1)
+DEBUG  | wrapper  | 2002/11/14 11:59:08 | wrapperStopProcess(0) called.  (IGNORED)
+DEBUG  | wrapper  | 2002/11/14 11:59:08 | JVM exited normally.
+STATUS | wrapper  | 2002/11/14 11:59:08 | CTRL-C trapped.  Shutting down.
+DEBUG  | wrapper  | 2002/11/14 11:59:08 | wrapperStopProcess(0) called.  (IGNORED)
+STATUS | wrapper  | 2002/11/14 11:59:08 | <-- Wrapper Stopped
+STATUS | wrapper  | 2002/11/14 12:00:59 | --> Wrapper Started as Console
+DEBUG  | wrapperp | 2002/11/14 12:00:59 | server listening on port 1777.
+STATUS | wrapper  | 2002/11/14 12:01:00 | Launching a JVM...
+DEBUG  | wrapper  | 2002/11/14 12:01:00 | command: "D:\apps\jdk13\bin\java.exe" -Xms16m -Xmx64m -Djava.library.path="D:\data\proj\SearchNames\sn098d\system\nt_service" -classpath ";D:\data\proj\SearchNames\sn098d\system\jar_files\crimson.jar;D:\data\proj\SearchNames\sn098d\system\jar_files\jdom.jar;D:\data\proj\SearchNames\sn098d\system\jar_files\msbase.jar;D:\data\proj\SearchNames\sn098d\system\jar_files\mssqlserver.jar;D:\data\proj\SearchNames\sn098d\system\jar_files\msutil.jar;D:\data\proj\SearchNames\sn098d\system\jar_files\mysql-connector-java-2.0.14-bin.jar;D:\data\proj\SearchNames\sn098d\system\jar_files\nie.jar;D:\data\proj\SearchNames\sn098d\system\jar_files\nts_wrapper.jar;D:\data\proj\SearchNames\sn098d\system\jar_files\postgres-pgjdbc2.jar;D:\data\proj\SearchNames\sn098d\system\jar_files\xalan.jar;D:\data\proj\SearchNames\sn098d\system\jar_files\xerces.jar;D:\data\proj\SearchNames\sn098d\system\jar_files\oracle-java-1213.zip" -Dwrapper.key="GaNDhC1aceYieCcz" -Dwrapper.port=1777 -Dwrapper.debug="TRUE" -Dwrapper.cpu.timeout="10" -Dwrapper.jvmid=1 com.silveregg.wrapper.WrapperSimpleApp nie.sn.SearchNamesApp D:\data\proj\SearchNames\aopa-config.xml
+DEBUG  | wrapper  | 2002/11/14 12:01:00 | Java Virtual Machine started (PID=1992)
+INFO   | jvm 1    | 2002/11/14 12:01:01 | Wrapper Manager: JVM #1
+INFO   | jvm 1    | 2002/11/14 12:01:01 | Wrapper Manager: Registering shutdown hook
+INFO   | jvm 1    | 2002/11/14 12:01:01 | Wrapper Manager: Using wrapper
+INFO   | jvm 1    | 2002/11/14 12:01:01 | Calling native initialization method.
+INFO   | jvm 1    | 2002/11/14 12:01:01 | Initializing WrapperManager native library.
+INFO   | jvm 1    | 2002/11/14 12:01:01 | Java Executable: D:\apps\jdk13\bin\java.exe
+INFO   | jvm 1    | 2002/11/14 12:01:01 | Java Version   : 1.3.1_02-b02 Java HotSpot(TM) Client VM
+INFO   | jvm 1    | 2002/11/14 12:01:01 | Java VM Vendor : Sun Microsystems Inc.
+INFO   | jvm 1    | 2002/11/14 12:01:01 | 
+INFO   | jvm 1    | 2002/11/14 12:01:01 | Wrapper (Version 2.2.9)
+INFO   | jvm 1    | 2002/11/14 12:01:01 | 
+INFO   | jvm 1    | 2002/11/14 12:01:01 | Open socket to wrapper...
+INFO   | jvm 1    | 2002/11/14 12:01:01 | Opened Socket
+INFO   | jvm 1    | 2002/11/14 12:01:01 | Send a packet 110 : GaNDhC1aceYieCcz
+INFO   | jvm 1    | 2002/11/14 12:01:01 | handleSocket(Socket[addr=127.0.0.1/127.0.0.1,port=1777,localport=3097])
+DEBUG  | wrapperp | 2002/11/14 12:01:01 | accepted a socket from 127.0.0.1 on port 3097
+DEBUG  | wrapperp | 2002/11/14 12:01:01 | read a packet 110 : GaNDhC1aceYieCcz
+DEBUG  | wrapper  | 2002/11/14 12:01:01 | Got key from JVM: GaNDhC1aceYieCcz
+DEBUG  | wrapperp | 2002/11/14 12:01:01 | sent 3 bytes
+DEBUG  | wrapper  | 2002/11/14 12:01:01 | Start Application.
+DEBUG  | wrapperp | 2002/11/14 12:01:01 | sent 7 bytes
+INFO   | jvm 1    | 2002/11/14 12:01:01 | Received a packet 112 : 1
+INFO   | jvm 1    | 2002/11/14 12:01:02 | Wrapper Manager: LowLogLevel from Wrapper is 1
+INFO   | jvm 1    | 2002/11/14 12:01:02 | Received a packet 100 : start
+INFO   | jvm 1    | 2002/11/14 12:01:02 | calling listener.start()
+INFO   | jvm 1    | 2002/11/14 12:01:02 | WrapperSimpleApp: start(args)
+INFO   | jvm 1    | 2002/11/14 12:01:02 | WrapperSimpleApp: invoking main method
+INFO   | jvm 1    | 2002/11/14 12:01:02 | Encountered an error running main: java.lang.IllegalAccessException
+INFO   | jvm 1    | 2002/11/14 12:01:02 | java.lang.IllegalAccessException
+INFO   | jvm 1    | 2002/11/14 12:01:02 | 	at java.lang.reflect.Method.invoke(Native Method)
+INFO   | jvm 1    | 2002/11/14 12:01:02 | 	at com.silveregg.wrapper.WrapperSimpleApp.run(WrapperSimpleApp.java:96)
+INFO   | jvm 1    | 2002/11/14 12:01:02 | 	at java.lang.Thread.run(Thread.java:484)
+INFO   | jvm 1    | 2002/11/14 12:01:02 | 
+INFO   | jvm 1    | 2002/11/14 12:01:02 | WrapperSimpleApp Usage:
+INFO   | jvm 1    | 2002/11/14 12:01:02 |   java com.silveregg.wrapper.WrapperSimpleApp {app_class} [app_parameters]
+INFO   | jvm 1    | 2002/11/14 12:01:02 | 
+INFO   | jvm 1    | 2002/11/14 12:01:02 | Where:
+INFO   | jvm 1    | 2002/11/14 12:01:02 |   app_class:      The fully qualified class name of the application to run.
+INFO   | jvm 1    | 2002/11/14 12:01:02 |   app_parameters: The parameters that would normally be passed to the
+INFO   | jvm 1    | 2002/11/14 12:01:02 |                   application.
+INFO   | jvm 1    | 2002/11/14 12:01:02 | WrapperSimpleApp: start(args) end.  Main Completed=true, exitCode=1
+INFO   | jvm 1    | 2002/11/14 12:01:02 | Send a packet 101 : 1
+DEBUG  | wrapperp | 2002/11/14 12:01:02 | read a packet 101 : 1
+DEBUG  | wrapper  | 2002/11/14 12:01:02 | JVM requested a shutdown. (1)
+DEBUG  | wrapper  | 2002/11/14 12:01:02 | wrapperStopProcess(1) called.
+DEBUG  | wrapper  | 2002/11/14 12:01:02 | Sending stop signal to JVM
+DEBUG  | wrapperp | 2002/11/14 12:01:02 | sent 2 bytes
+INFO   | jvm 1    | 2002/11/14 12:01:02 | Thread, Wrapper-Connection, handling the shutdown process.
+INFO   | jvm 1    | 2002/11/14 12:01:02 | Send a packet 107 : 0
+INFO   | jvm 1    | 2002/11/14 12:01:02 | Closing socket.
+DEBUG  | wrapperp | 2002/11/14 12:01:02 | read a packet 107 : 0
+DEBUG  | wrapper  | 2002/11/14 12:01:02 | JVM signalled that it was stopped.
+DEBUG  | wrapperp | 2002/11/14 12:01:03 | socket read no code (closed?).
+INFO   | jvm 1    | 2002/11/14 12:01:03 | calling System.exit(1)
+DEBUG  | wrapper  | 2002/11/14 12:01:03 | JVM exited normally.
+STATUS | wrapper  | 2002/11/14 12:01:03 | <-- Wrapper Stopped
+STATUS | wrapper  | 2002/11/14 15:34:16 | --> Wrapper Started as Console
+DEBUG  | wrapperp | 2002/11/14 15:34:16 | server listening on port 1777.
+STATUS | wrapper  | 2002/11/14 15:34:17 | Launching a JVM...
+DEBUG  | wrapper  | 2002/11/14 15:34:17 | command: "D:\apps\jdk13\bin\java.exe" -Xms16m -Xmx64m -Djava.library.path="D:\data\proj\SearchNames\sn098d\system\nt_service" -classpath ";D:\data\proj\SearchNames\sn098d\system\jar_files\crimson.jar;D:\data\proj\SearchNames\sn098d\system\jar_files\jdom.jar;D:\data\proj\SearchNames\sn098d\system\jar_files\msbase.jar;D:\data\proj\SearchNames\sn098d\system\jar_files\mssqlserver.jar;D:\data\proj\SearchNames\sn098d\system\jar_files\msutil.jar;D:\data\proj\SearchNames\sn098d\system\jar_files\mysql-connector-java-2.0.14-bin.jar;D:\data\proj\SearchNames\sn098d\system\jar_files\nie.jar;D:\data\proj\SearchNames\sn098d\system\jar_files\nts_wrapper.jar;D:\data\proj\SearchNames\sn098d\system\jar_files\postgres-pgjdbc2.jar;D:\data\proj\SearchNames\sn098d\system\jar_files\xalan.jar;D:\data\proj\SearchNames\sn098d\system\jar_files\xerces.jar;D:\data\proj\SearchNames\sn098d\system\jar_files\oracle-java-1213.zip" -Dwrapper.key="_QLNqqPB93FBPFaa" -Dwrapper.port=1777 -Dwrapper.debug="TRUE" -Dwrapper.cpu.timeout="10" -Dwrapper.jvmid=1 com.silveregg.wrapper.WrapperSimpleApp nie.sn.SearchNamesApp D:\data\proj\SearchNames\aopa-config.xml
+DEBUG  | wrapper  | 2002/11/14 15:34:17 | Java Virtual Machine started (PID=1240)
+INFO   | jvm 1    | 2002/11/14 15:34:18 | Wrapper Manager: JVM #1
+INFO   | jvm 1    | 2002/11/14 15:34:18 | Wrapper Manager: Registering shutdown hook
+INFO   | jvm 1    | 2002/11/14 15:34:18 | Wrapper Manager: Using wrapper
+INFO   | jvm 1    | 2002/11/14 15:34:18 | Calling native initialization method.
+INFO   | jvm 1    | 2002/11/14 15:34:18 | Initializing WrapperManager native library.
+INFO   | jvm 1    | 2002/11/14 15:34:18 | Java Executable: D:\apps\jdk13\bin\java.exe
+INFO   | jvm 1    | 2002/11/14 15:34:18 | Java Version   : 1.3.1_02-b02 Java HotSpot(TM) Client VM
+INFO   | jvm 1    | 2002/11/14 15:34:18 | Java VM Vendor : Sun Microsystems Inc.
+INFO   | jvm 1    | 2002/11/14 15:34:18 | 
+INFO   | jvm 1    | 2002/11/14 15:34:18 | Wrapper (Version 2.2.9)
+INFO   | jvm 1    | 2002/11/14 15:34:18 | 
+INFO   | jvm 1    | 2002/11/14 15:34:18 | Open socket to wrapper...
+INFO   | jvm 1    | 2002/11/14 15:34:18 | Opened Socket
+INFO   | jvm 1    | 2002/11/14 15:34:18 | Send a packet 110 : _QLNqqPB93FBPFaa
+INFO   | jvm 1    | 2002/11/14 15:34:18 | handleSocket(Socket[addr=127.0.0.1/127.0.0.1,port=1777,localport=3517])
+DEBUG  | wrapperp | 2002/11/14 15:34:18 | accepted a socket from 127.0.0.1 on port 3517
+DEBUG  | wrapperp | 2002/11/14 15:34:18 | read a packet 110 : _QLNqqPB93FBPFaa
+DEBUG  | wrapper  | 2002/11/14 15:34:18 | Got key from JVM: _QLNqqPB93FBPFaa
+DEBUG  | wrapperp | 2002/11/14 15:34:18 | sent 3 bytes
+DEBUG  | wrapper  | 2002/11/14 15:34:18 | Start Application.
+DEBUG  | wrapperp | 2002/11/14 15:34:18 | sent 7 bytes
+INFO   | jvm 1    | 2002/11/14 15:34:18 | Received a packet 112 : 1
+INFO   | jvm 1    | 2002/11/14 15:34:19 | Wrapper Manager: LowLogLevel from Wrapper is 1
+INFO   | jvm 1    | 2002/11/14 15:34:19 | Received a packet 100 : start
+INFO   | jvm 1    | 2002/11/14 15:34:19 | calling listener.start()
+INFO   | jvm 1    | 2002/11/14 15:34:19 | WrapperSimpleApp: start(args)
+INFO   | jvm 1    | 2002/11/14 15:34:19 | WrapperSimpleApp: invoking main method
+INFO   | jvm 1    | 2002/11/14 15:34:19 | Encountered an error running main: java.lang.IllegalAccessException
+INFO   | jvm 1    | 2002/11/14 15:34:19 | java.lang.IllegalAccessException
+INFO   | jvm 1    | 2002/11/14 15:34:19 | 	at java.lang.reflect.Method.invoke(Native Method)
+INFO   | jvm 1    | 2002/11/14 15:34:19 | 	at com.silveregg.wrapper.WrapperSimpleApp.run(WrapperSimpleApp.java:96)
+INFO   | jvm 1    | 2002/11/14 15:34:19 | 	at java.lang.Thread.run(Thread.java:484)
+INFO   | jvm 1    | 2002/11/14 15:34:19 | 
+INFO   | jvm 1    | 2002/11/14 15:34:19 | WrapperSimpleApp Usage:
+INFO   | jvm 1    | 2002/11/14 15:34:19 |   java com.silveregg.wrapper.WrapperSimpleApp {app_class} [app_parameters]
+INFO   | jvm 1    | 2002/11/14 15:34:19 | 
+INFO   | jvm 1    | 2002/11/14 15:34:19 | Where:
+INFO   | jvm 1    | 2002/11/14 15:34:19 |   app_class:      The fully qualified class name of the application to run.
+INFO   | jvm 1    | 2002/11/14 15:34:19 |   app_parameters: The parameters that would normally be passed to the
+INFO   | jvm 1    | 2002/11/14 15:34:19 |                   application.
+INFO   | jvm 1    | 2002/11/14 15:34:19 | WrapperSimpleApp: start(args) end.  Main Completed=true, exitCode=1
+INFO   | jvm 1    | 2002/11/14 15:34:19 | Send a packet 101 : 1
+DEBUG  | wrapperp | 2002/11/14 15:34:19 | read a packet 101 : 1
+DEBUG  | wrapper  | 2002/11/14 15:34:19 | JVM requested a shutdown. (1)
+DEBUG  | wrapper  | 2002/11/14 15:34:19 | wrapperStopProcess(1) called.
+DEBUG  | wrapper  | 2002/11/14 15:34:19 | Sending stop signal to JVM
+DEBUG  | wrapperp | 2002/11/14 15:34:19 | sent 2 bytes
+INFO   | jvm 1    | 2002/11/14 15:34:19 | Thread, Wrapper-Connection, handling the shutdown process.
+INFO   | jvm 1    | 2002/11/14 15:34:19 | Send a packet 107 : 0
+INFO   | jvm 1    | 2002/11/14 15:34:19 | Closing socket.
+DEBUG  | wrapperp | 2002/11/14 15:34:19 | read a packet 107 : 0
+DEBUG  | wrapper  | 2002/11/14 15:34:19 | JVM signalled that it was stopped.
+DEBUG  | wrapperp | 2002/11/14 15:34:20 | socket read no code (closed?).
+INFO   | jvm 1    | 2002/11/14 15:34:20 | calling System.exit(1)
+DEBUG  | wrapper  | 2002/11/14 15:34:20 | JVM exited normally.
+STATUS | wrapper  | 2002/11/14 15:34:20 | <-- Wrapper Stopped
+STATUS | wrapper  | 2002/11/14 15:38:30 | --> Wrapper Started as Console
+DEBUG  | wrapperp | 2002/11/14 15:38:30 | server listening on port 1777.
+STATUS | wrapper  | 2002/11/14 15:38:31 | Launching a JVM...
+DEBUG  | wrapper  | 2002/11/14 15:38:31 | command: "D:\apps\jdk13\bin\java.exe" -Xms16m -Xmx64m -Djava.library.path="D:\data\proj\SearchNames\sn098d\system\nt_service" -classpath ";D:\data\proj\SearchNames\sn098d\system\jar_files\crimson.jar;D:\data\proj\SearchNames\sn098d\system\jar_files\jdom.jar;D:\data\proj\SearchNames\sn098d\system\jar_files\msbase.jar;D:\data\proj\SearchNames\sn098d\system\jar_files\mssqlserver.jar;D:\data\proj\SearchNames\sn098d\system\jar_files\msutil.jar;D:\data\proj\SearchNames\sn098d\system\jar_files\mysql-connector-java-2.0.14-bin.jar;D:\data\proj\SearchNames\sn098d\system\jar_files\nie.jar;D:\data\proj\SearchNames\sn098d\system\jar_files\nts_wrapper.jar;D:\data\proj\SearchNames\sn098d\system\jar_files\postgres-pgjdbc2.jar;D:\data\proj\SearchNames\sn098d\system\jar_files\xalan.jar;D:\data\proj\SearchNames\sn098d\system\jar_files\xerces.jar;D:\data\proj\SearchNames\sn098d\system\jar_files\oracle-java-1213.zip" -Dwrapper.key="SFX8UqdZlMQjhGq0" -Dwrapper.port=1777 -Dwrapper.debug="TRUE" -Dwrapper.cpu.timeout="10" -Dwrapper.jvmid=1 com.silveregg.wrapper.test.Main nie.sn.SearchNamesApp D:\data\proj\SearchNames\aopa-config.xml
+DEBUG  | wrapper  | 2002/11/14 15:38:31 | Java Virtual Machine started (PID=2636)
+INFO   | jvm 1    | 2002/11/14 15:38:32 | java.lang.NoClassDefFoundError: com/silveregg/wrapper/test/Main
+INFO   | jvm 1    | 2002/11/14 15:38:32 | Exception in thread "main" 
+ERROR  | wrapper  | 2002/11/14 15:38:32 | JVM exited while loading the application.
+DEBUG  | wrapper  | 2002/11/14 15:38:32 | JVM was only running for 1 seconds leading to a failed restart count of 1.
+STATUS | wrapper  | 2002/11/14 15:38:38 | Launching a JVM...
+DEBUG  | wrapper  | 2002/11/14 15:38:38 | command: "D:\apps\jdk13\bin\java.exe" -Xms16m -Xmx64m -Djava.library.path="D:\data\proj\SearchNames\sn098d\system\nt_service" -classpath ";D:\data\proj\SearchNames\sn098d\system\jar_files\crimson.jar;D:\data\proj\SearchNames\sn098d\system\jar_files\jdom.jar;D:\data\proj\SearchNames\sn098d\system\jar_files\msbase.jar;D:\data\proj\SearchNames\sn098d\system\jar_files\mssqlserver.jar;D:\data\proj\SearchNames\sn098d\system\jar_files\msutil.jar;D:\data\proj\SearchNames\sn098d\system\jar_files\mysql-connector-java-2.0.14-bin.jar;D:\data\proj\SearchNames\sn098d\system\jar_files\nie.jar;D:\data\proj\SearchNames\sn098d\system\jar_files\nts_wrapper.jar;D:\data\proj\SearchNames\sn098d\system\jar_files\postgres-pgjdbc2.jar;D:\data\proj\SearchNames\sn098d\system\jar_files\xalan.jar;D:\data\proj\SearchNames\sn098d\system\jar_files\xerces.jar;D:\data\proj\SearchNames\sn098d\system\jar_files\oracle-java-1213.zip" -Dwrapper.key="8Ijr2xA2_6AmRRaS" -Dwrapper.port=1777 -Dwrapper.debug="TRUE" -Dwrapper.cpu.timeout="10" -Dwrapper.jvmid=2 com.silveregg.wrapper.test.Main nie.sn.SearchNamesApp D:\data\proj\SearchNames\aopa-config.xml
+DEBUG  | wrapper  | 2002/11/14 15:38:38 | Java Virtual Machine started (PID=1860)
+INFO   | jvm 2    | 2002/11/14 15:38:38 | java.lang.NoClassDefFoundError: com/silveregg/wrapper/test/Main
+INFO   | jvm 2    | 2002/11/14 15:38:39 | Exception in thread "main" 
+ERROR  | wrapper  | 2002/11/14 15:38:39 | JVM exited while loading the application.
+DEBUG  | wrapper  | 2002/11/14 15:38:39 | JVM was only running for 1 seconds leading to a failed restart count of 2.
+STATUS | wrapper  | 2002/11/14 15:38:39 | CTRL-C trapped.  Shutting down.
+DEBUG  | wrapper  | 2002/11/14 15:38:39 | wrapperStopProcess(0) called.
+STATUS | wrapper  | 2002/11/14 15:38:39 | CTRL-C trapped.  Shutting down.
+DEBUG  | wrapper  | 2002/11/14 15:38:39 | wrapperStopProcess(0) called.  (IGNORED)
+STATUS | wrapper  | 2002/11/14 15:38:40 | CTRL-C trapped.  Shutting down.
+DEBUG  | wrapper  | 2002/11/14 15:38:40 | wrapperStopProcess(0) called.  (IGNORED)
+STATUS | wrapper  | 2002/11/14 15:38:40 | <-- Wrapper Stopped
+STATUS | wrapper  | 2002/11/14 15:40:14 | --> Wrapper Started as Console
+DEBUG  | wrapperp | 2002/11/14 15:40:14 | server listening on port 1777.
+STATUS | wrapper  | 2002/11/14 15:40:15 | Launching a JVM...
+DEBUG  | wrapper  | 2002/11/14 15:40:15 | command: "D:\apps\jdk13\bin\java.exe" -Xms16m -Xmx64m -Djava.library.path="D:\data\proj\SearchNames\sn098d\system\nt_service" -classpath ";D:\data\proj\SearchNames\sn098d\system\jar_files\crimson.jar;D:\data\proj\SearchNames\sn098d\system\jar_files\jdom.jar;D:\data\proj\SearchNames\sn098d\system\jar_files\msbase.jar;D:\data\proj\SearchNames\sn098d\system\jar_files\mssqlserver.jar;D:\data\proj\SearchNames\sn098d\system\jar_files\msutil.jar;D:\data\proj\SearchNames\sn098d\system\jar_files\mysql-connector-java-2.0.14-bin.jar;D:\data\proj\SearchNames\sn098d\system\jar_files\nie.jar;D:\data\proj\SearchNames\sn098d\system\jar_files\nts_wrapper.jar;D:\data\proj\SearchNames\sn098d\system\jar_files\nts_wrappertest.jar;D:\data\proj\SearchNames\sn098d\system\jar_files\postgres-pgjdbc2.jar;D:\data\proj\SearchNames\sn098d\system\jar_files\xalan.jar;D:\data\proj\SearchNames\sn098d\system\jar_files\xerces.jar;D:\data\proj\SearchNames\sn098d\system\jar_files\oracle-java-1213.zip" -Dwrapper.key="_8LO8zSfHSsB_nX6" -Dwrapper.port=1777 -Dwrapper.debug="TRUE" -Dwrapper.cpu.timeout="10" -Dwrapper.jvmid=1 com.silveregg.wrapper.test.Main nie.sn.SearchNamesApp D:\data\proj\SearchNames\aopa-config.xml
+DEBUG  | wrapper  | 2002/11/14 15:40:15 | Java Virtual Machine started (PID=2004)
+INFO   | jvm 1    | 2002/11/14 15:40:16 | Initializing...
+INFO   | jvm 1    | 2002/11/14 15:40:16 | Wrapper Manager: JVM #1
+INFO   | jvm 1    | 2002/11/14 15:40:16 | Wrapper Manager: Registering shutdown hook
+INFO   | jvm 1    | 2002/11/14 15:40:16 | Wrapper Manager: Using wrapper
+INFO   | jvm 1    | 2002/11/14 15:40:16 | Calling native initialization method.
+INFO   | jvm 1    | 2002/11/14 15:40:16 | Initializing WrapperManager native library.
+INFO   | jvm 1    | 2002/11/14 15:40:16 | Java Executable: D:\apps\jdk13\bin\java.exe
+INFO   | jvm 1    | 2002/11/14 15:40:16 | Java Version   : 1.3.1_02-b02 Java HotSpot(TM) Client VM
+INFO   | jvm 1    | 2002/11/14 15:40:16 | Java VM Vendor : Sun Microsystems Inc.
+INFO   | jvm 1    | 2002/11/14 15:40:16 | 
+INFO   | jvm 1    | 2002/11/14 15:40:16 | Wrapper (Version 2.2.9)
+INFO   | jvm 1    | 2002/11/14 15:40:16 | 
+INFO   | jvm 1    | 2002/11/14 15:40:16 | Open socket to wrapper...
+INFO   | jvm 1    | 2002/11/14 15:40:16 | Opened Socket
+INFO   | jvm 1    | 2002/11/14 15:40:16 | Send a packet 110 : _8LO8zSfHSsB_nX6
+INFO   | jvm 1    | 2002/11/14 15:40:16 | handleSocket(Socket[addr=127.0.0.1/127.0.0.1,port=1777,localport=3528])
+DEBUG  | wrapperp | 2002/11/14 15:40:16 | accepted a socket from 127.0.0.1 on port 3528
+DEBUG  | wrapperp | 2002/11/14 15:40:16 | read a packet 110 : _8LO8zSfHSsB_nX6
+DEBUG  | wrapper  | 2002/11/14 15:40:16 | Got key from JVM: _8LO8zSfHSsB_nX6
+DEBUG  | wrapperp | 2002/11/14 15:40:16 | sent 3 bytes
+DEBUG  | wrapper  | 2002/11/14 15:40:16 | Start Application.
+DEBUG  | wrapperp | 2002/11/14 15:40:16 | sent 7 bytes
+INFO   | jvm 1    | 2002/11/14 15:40:17 | Received a packet 112 : 1
+INFO   | jvm 1    | 2002/11/14 15:40:17 | Wrapper Manager: LowLogLevel from Wrapper is 1
+INFO   | jvm 1    | 2002/11/14 15:40:17 | Received a packet 100 : start
+INFO   | jvm 1    | 2002/11/14 15:40:17 | calling listener.start()
+INFO   | jvm 1    | 2002/11/14 15:40:17 | start()
+INFO   | jvm 1    | 2002/11/14 15:40:17 | returned from listener.start()
+INFO   | jvm 1    | 2002/11/14 15:40:17 | Send a packet 106 : 
+DEBUG  | wrapperp | 2002/11/14 15:40:17 | read a packet 106 : 
+DEBUG  | wrapper  | 2002/11/14 15:40:17 | JVM signalled that it was started.
+DEBUG  | wrapperp | 2002/11/14 15:40:20 | sent 6 bytes
+INFO   | jvm 1    | 2002/11/14 15:40:20 | Received a packet 103 : ping
+INFO   | jvm 1    | 2002/11/14 15:40:20 | Send a packet 103 : ok
+DEBUG  | wrapperp | 2002/11/14 15:40:20 | read a packet 103 : ok
+DEBUG  | wrapper  | 2002/11/14 15:40:20 | Got ping response from JVM
+DEBUG  | wrapperp | 2002/11/14 15:40:26 | sent 6 bytes
+INFO   | jvm 1    | 2002/11/14 15:40:26 | Received a packet 103 : ping
+INFO   | jvm 1    | 2002/11/14 15:40:26 | Send a packet 103 : ok
+DEBUG  | wrapperp | 2002/11/14 15:40:26 | read a packet 103 : ok
+DEBUG  | wrapper  | 2002/11/14 15:40:26 | Got ping response from JVM
+DEBUG  | wrapperp | 2002/11/14 15:40:32 | sent 6 bytes
+INFO   | jvm 1    | 2002/11/14 15:40:32 | Received a packet 103 : ping
+INFO   | jvm 1    | 2002/11/14 15:40:32 | Send a packet 103 : ok
+DEBUG  | wrapperp | 2002/11/14 15:40:32 | read a packet 103 : ok
+DEBUG  | wrapper  | 2002/11/14 15:40:32 | Got ping response from JVM
+DEBUG  | wrapperp | 2002/11/14 15:40:38 | sent 6 bytes
+INFO   | jvm 1    | 2002/11/14 15:40:38 | Received a packet 103 : ping
+INFO   | jvm 1    | 2002/11/14 15:40:38 | Send a packet 103 : ok
+DEBUG  | wrapperp | 2002/11/14 15:40:38 | read a packet 103 : ok
+DEBUG  | wrapper  | 2002/11/14 15:40:38 | Got ping response from JVM
+DEBUG  | wrapperp | 2002/11/14 15:40:44 | sent 6 bytes
+INFO   | jvm 1    | 2002/11/14 15:40:44 | Received a packet 103 : ping
+INFO   | jvm 1    | 2002/11/14 15:40:44 | Send a packet 103 : ok
+DEBUG  | wrapperp | 2002/11/14 15:40:44 | read a packet 103 : ok
+DEBUG  | wrapper  | 2002/11/14 15:40:44 | Got ping response from JVM
+DEBUG  | wrapperp | 2002/11/14 15:40:50 | sent 6 bytes
+INFO   | jvm 1    | 2002/11/14 15:40:50 | Received a packet 103 : ping
+INFO   | jvm 1    | 2002/11/14 15:40:50 | Send a packet 103 : ok
+DEBUG  | wrapperp | 2002/11/14 15:40:50 | read a packet 103 : ok
+DEBUG  | wrapper  | 2002/11/14 15:40:50 | Got ping response from JVM
+INFO   | jvm 1    | 2002/11/14 15:40:52 | WARNING: Attempting to cause an access violation...
+INFO   | jvm 1    | 2002/11/14 15:40:52 | java.lang.NullPointerException
+INFO   | jvm 1    | 2002/11/14 15:40:52 | 	at java.lang.Class.getMethod0(Native Method)
+INFO   | jvm 1    | 2002/11/14 15:40:52 | 	at java.lang.Class.getDeclaredMethod(Class.java:1156)
+INFO   | jvm 1    | 2002/11/14 15:40:52 | 	at com.silveregg.wrapper.WrapperManager.accessViolation(WrapperManager.java:524)
+INFO   | jvm 1    | 2002/11/14 15:40:52 | 	at com.silveregg.wrapper.test.Main$MainFrame.actionPerformed(Main.java:117)
+INFO   | jvm 1    | 2002/11/14 15:40:52 | 	at java.awt.Button.processActionEvent(Button.java:329)
+INFO   | jvm 1    | 2002/11/14 15:40:52 | 	at java.awt.Button.processEvent(Button.java:302)
+INFO   | jvm 1    | 2002/11/14 15:40:52 | 	at java.awt.Component.dispatchEventImpl(Component.java:2593)
+INFO   | jvm 1    | 2002/11/14 15:40:52 | 	at java.awt.Component.dispatchEvent(Component.java:2497)
+INFO   | jvm 1    | 2002/11/14 15:40:52 | 	at java.awt.EventQueue.dispatchEvent(EventQueue.java:339)
+INFO   | jvm 1    | 2002/11/14 15:40:52 | 	at java.awt.EventDispatchThread.pumpOneEventForHierarchy(EventDispatchThread.java:131)
+INFO   | jvm 1    | 2002/11/14 15:40:52 | 	at java.awt.EventDispatchThread.pumpEventsForHierarchy(EventDispatchThread.java:98)
+INFO   | jvm 1    | 2002/11/14 15:40:52 | 	at java.awt.EventDispatchThread.pumpEvents(EventDispatchThread.java:93)
+INFO   | jvm 1    | 2002/11/14 15:40:52 | 	at java.awt.EventDispatchThread.run(EventDispatchThread.java:85)
+INFO   | jvm 1    | 2002/11/14 15:40:52 |   Attempt to cause access violation failed.  JVM is still alive.
+DEBUG  | wrapperp | 2002/11/14 15:40:56 | sent 6 bytes
+INFO   | jvm 1    | 2002/11/14 15:40:56 | Received a packet 103 : ping
+INFO   | jvm 1    | 2002/11/14 15:40:56 | Send a packet 103 : ok
+DEBUG  | wrapperp | 2002/11/14 15:40:56 | read a packet 103 : ok
+DEBUG  | wrapper  | 2002/11/14 15:40:56 | Got ping response from JVM
+DEBUG  | wrapperp | 2002/11/14 15:41:02 | sent 6 bytes
+INFO   | jvm 1    | 2002/11/14 15:41:02 | Received a packet 103 : ping
+INFO   | jvm 1    | 2002/11/14 15:41:02 | Send a packet 103 : ok
+DEBUG  | wrapperp | 2002/11/14 15:41:02 | read a packet 103 : ok
+DEBUG  | wrapper  | 2002/11/14 15:41:02 | Got ping response from JVM
+DEBUG  | wrapperp | 2002/11/14 15:41:08 | sent 6 bytes
+INFO   | jvm 1    | 2002/11/14 15:41:08 | Received a packet 103 : ping
+INFO   | jvm 1    | 2002/11/14 15:41:08 | Send a packet 103 : ok
+DEBUG  | wrapperp | 2002/11/14 15:41:08 | read a packet 103 : ok
+DEBUG  | wrapper  | 2002/11/14 15:41:08 | Got ping response from JVM
+INFO   | jvm 1    | 2002/11/14 15:41:12 | Send a packet 102 : restart
+DEBUG  | wrapperp | 2002/11/14 15:41:12 | read a packet 102 : restart
+STATUS | wrapper  | 2002/11/14 15:41:12 | JVM requested a restart.
+DEBUG  | wrapper  | 2002/11/14 15:41:12 | wrapperRestartProcess() called.
+DEBUG  | wrapper  | 2002/11/14 15:41:12 | Sending stop signal to JVM
+DEBUG  | wrapperp | 2002/11/14 15:41:12 | sent 2 bytes
+INFO   | jvm 1    | 2002/11/14 15:41:12 | Received a packet 101 : 
+INFO   | jvm 1    | 2002/11/14 15:41:12 | Thread, AWT-EventQueue-0, handling the shutdown process.
+INFO   | jvm 1    | 2002/11/14 15:41:13 | calling listener.stop()
+INFO   | jvm 1    | 2002/11/14 15:41:13 | stop(0)
+INFO   | jvm 1    | 2002/11/14 15:41:13 | returned from listener.stop()
+INFO   | jvm 1    | 2002/11/14 15:41:13 | Send a packet 107 : 0
+INFO   | jvm 1    | 2002/11/14 15:41:13 | Closing socket.
+INFO   | jvm 1    | 2002/11/14 15:41:13 | Closed socket: java.net.SocketException: Descriptor not a socket: JVM_recv in socket input stream read
+DEBUG  | wrapperp | 2002/11/14 15:41:13 | read a packet 107 : 0
+DEBUG  | wrapper  | 2002/11/14 15:41:13 | JVM signalled that it was stopped.
+DEBUG  | wrapperp | 2002/11/14 15:41:13 | socket read no code (closed?).
+INFO   | jvm 1    | 2002/11/14 15:41:13 | calling System.exit(0)
+INFO   | jvm 1    | 2002/11/14 15:41:13 | Server daemon shut down
+DEBUG  | wrapper  | 2002/11/14 15:41:13 | JVM exited normally.
+STATUS | wrapper  | 2002/11/14 15:41:20 | Launching a JVM...
+DEBUG  | wrapper  | 2002/11/14 15:41:20 | command: "D:\apps\jdk13\bin\java.exe" -Xms16m -Xmx64m -Djava.library.path="D:\data\proj\SearchNames\sn098d\system\nt_service" -classpath ";D:\data\proj\SearchNames\sn098d\system\jar_files\crimson.jar;D:\data\proj\SearchNames\sn098d\system\jar_files\jdom.jar;D:\data\proj\SearchNames\sn098d\system\jar_files\msbase.jar;D:\data\proj\SearchNames\sn098d\system\jar_files\mssqlserver.jar;D:\data\proj\SearchNames\sn098d\system\jar_files\msutil.jar;D:\data\proj\SearchNames\sn098d\system\jar_files\mysql-connector-java-2.0.14-bin.jar;D:\data\proj\SearchNames\sn098d\system\jar_files\nie.jar;D:\data\proj\SearchNames\sn098d\system\jar_files\nts_wrapper.jar;D:\data\proj\SearchNames\sn098d\system\jar_files\nts_wrappertest.jar;D:\data\proj\SearchNames\sn098d\system\jar_files\postgres-pgjdbc2.jar;D:\data\proj\SearchNames\sn098d\system\jar_files\xalan.jar;D:\data\proj\SearchNames\sn098d\system\jar_files\xerces.jar;D:\data\proj\SearchNames\sn098d\system\jar_files\oracle-java-1213.zip" -Dwrapper.key="KlaRKDMTyfyHKC7d" -Dwrapper.port=1777 -Dwrapper.debug="TRUE" -Dwrapper.cpu.timeout="10" -Dwrapper.jvmid=2 com.silveregg.wrapper.test.Main nie.sn.SearchNamesApp D:\data\proj\SearchNames\aopa-config.xml
+DEBUG  | wrapper  | 2002/11/14 15:41:20 | Java Virtual Machine started (PID=2432)
+INFO   | jvm 2    | 2002/11/14 15:41:20 | Initializing...
+INFO   | jvm 2    | 2002/11/14 15:41:21 | Wrapper Manager: JVM #2
+INFO   | jvm 2    | 2002/11/14 15:41:21 | Wrapper Manager: Registering shutdown hook
+INFO   | jvm 2    | 2002/11/14 15:41:21 | Wrapper Manager: Using wrapper
+INFO   | jvm 2    | 2002/11/14 15:41:21 | Calling native initialization method.
+INFO   | jvm 2    | 2002/11/14 15:41:21 | Initializing WrapperManager native library.
+INFO   | jvm 2    | 2002/11/14 15:41:21 | Java Executable: D:\apps\jdk13\bin\java.exe
+INFO   | jvm 2    | 2002/11/14 15:41:21 | Java Version   : 1.3.1_02-b02 Java HotSpot(TM) Client VM
+INFO   | jvm 2    | 2002/11/14 15:41:21 | Java VM Vendor : Sun Microsystems Inc.
+INFO   | jvm 2    | 2002/11/14 15:41:21 | 
+INFO   | jvm 2    | 2002/11/14 15:41:21 | Wrapper (Version 2.2.9)
+INFO   | jvm 2    | 2002/11/14 15:41:21 | 
+INFO   | jvm 2    | 2002/11/14 15:41:21 | Open socket to wrapper...
+INFO   | jvm 2    | 2002/11/14 15:41:21 | Opened Socket
+INFO   | jvm 2    | 2002/11/14 15:41:21 | Send a packet 110 : KlaRKDMTyfyHKC7d
+INFO   | jvm 2    | 2002/11/14 15:41:21 | handleSocket(Socket[addr=127.0.0.1/127.0.0.1,port=1777,localport=3530])
+DEBUG  | wrapperp | 2002/11/14 15:41:21 | accepted a socket from 127.0.0.1 on port 3530
+DEBUG  | wrapperp | 2002/11/14 15:41:21 | read a packet 110 : KlaRKDMTyfyHKC7d
+DEBUG  | wrapper  | 2002/11/14 15:41:21 | Got key from JVM: KlaRKDMTyfyHKC7d
+DEBUG  | wrapperp | 2002/11/14 15:41:21 | sent 3 bytes
+DEBUG  | wrapper  | 2002/11/14 15:41:21 | Start Application.
+DEBUG  | wrapperp | 2002/11/14 15:41:21 | sent 7 bytes
+INFO   | jvm 2    | 2002/11/14 15:41:21 | Received a packet 112 : 1
+INFO   | jvm 2    | 2002/11/14 15:41:21 | Wrapper Manager: LowLogLevel from Wrapper is 1
+INFO   | jvm 2    | 2002/11/14 15:41:21 | Received a packet 100 : start
+INFO   | jvm 2    | 2002/11/14 15:41:21 | calling listener.start()
+INFO   | jvm 2    | 2002/11/14 15:41:21 | start()
+INFO   | jvm 2    | 2002/11/14 15:41:22 | returned from listener.start()
+INFO   | jvm 2    | 2002/11/14 15:41:22 | Send a packet 106 : 
+DEBUG  | wrapperp | 2002/11/14 15:41:22 | read a packet 106 : 
+DEBUG  | wrapper  | 2002/11/14 15:41:22 | JVM signalled that it was started.
+DEBUG  | wrapperp | 2002/11/14 15:41:22 | sent 6 bytes
+INFO   | jvm 2    | 2002/11/14 15:41:22 | Received a packet 103 : ping
+INFO   | jvm 2    | 2002/11/14 15:41:22 | Send a packet 103 : ok
+DEBUG  | wrapperp | 2002/11/14 15:41:22 | read a packet 103 : ok
+DEBUG  | wrapper  | 2002/11/14 15:41:22 | Got ping response from JVM
+INFO   | jvm 2    | 2002/11/14 15:41:24 | Send a packet 101 : 0
+DEBUG  | wrapperp | 2002/11/14 15:41:24 | read a packet 101 : 0
+DEBUG  | wrapper  | 2002/11/14 15:41:24 | JVM requested a shutdown. (0)
+DEBUG  | wrapper  | 2002/11/14 15:41:24 | wrapperStopProcess(0) called.
+DEBUG  | wrapper  | 2002/11/14 15:41:24 | Sending stop signal to JVM
+DEBUG  | wrapperp | 2002/11/14 15:41:24 | sent 2 bytes
+INFO   | jvm 2    | 2002/11/14 15:41:25 | Received a packet 101 : 
+INFO   | jvm 2    | 2002/11/14 15:41:25 | Thread, AWT-EventQueue-0, handling the shutdown process.
+INFO   | jvm 2    | 2002/11/14 15:41:25 | calling listener.stop()
+INFO   | jvm 2    | 2002/11/14 15:41:25 | stop(0)
+INFO   | jvm 2    | 2002/11/14 15:41:25 | returned from listener.stop()
+INFO   | jvm 2    | 2002/11/14 15:41:25 | Send a packet 107 : 0
+INFO   | jvm 2    | 2002/11/14 15:41:25 | Closing socket.
+INFO   | jvm 2    | 2002/11/14 15:41:25 | Closed socket: java.net.SocketException: Descriptor not a socket: JVM_recv in socket input stream read
+DEBUG  | wrapperp | 2002/11/14 15:41:25 | read a packet 107 : 0
+DEBUG  | wrapper  | 2002/11/14 15:41:25 | JVM signalled that it was stopped.
+DEBUG  | wrapperp | 2002/11/14 15:41:25 | socket read no code (closed?).
+INFO   | jvm 2    | 2002/11/14 15:41:26 | calling System.exit(0)
+INFO   | jvm 2    | 2002/11/14 15:41:26 | Server daemon shut down
+DEBUG  | wrapper  | 2002/11/14 15:41:26 | JVM exited normally.
+STATUS | wrapper  | 2002/11/14 15:41:26 | <-- Wrapper Stopped
+STATUS | wrapper  | 2002/11/14 15:42:15 | AOPA installed.
+ERROR  | wrapper  | 2002/11/14 15:42:40 | CreateService failed - The specified service already exists. (0x431)
+STATUS | wrapper  | 2002/11/14 15:42:40 | AOPA removed.
+STATUS | wrapper  | 2002/11/14 15:42:41 | AOPA installed.
+STATUS | wrapper  | 2002/11/14 15:48:09 | --> Wrapper Started as Console
+DEBUG  | wrapperp | 2002/11/14 15:48:09 | server listening on port 1777.
+STATUS | wrapper  | 2002/11/14 15:48:10 | Launching a JVM...
+DEBUG  | wrapper  | 2002/11/14 15:48:10 | command: "D:\apps\jdk13\bin\java.exe" -Xms16m -Xmx64m -Djava.library.path="D:\data\proj\SearchNames\sn098d\system\nt_service" -classpath ";D:\data\proj\SearchNames\sn098d\system\jar_files\crimson.jar;D:\data\proj\SearchNames\sn098d\system\jar_files\jdom.jar;D:\data\proj\SearchNames\sn098d\system\jar_files\msbase.jar;D:\data\proj\SearchNames\sn098d\system\jar_files\mssqlserver.jar;D:\data\proj\SearchNames\sn098d\system\jar_files\msutil.jar;D:\data\proj\SearchNames\sn098d\system\jar_files\mysql-connector-java-2.0.14-bin.jar;D:\data\proj\SearchNames\sn098d\system\jar_files\nie.jar;D:\data\proj\SearchNames\sn098d\system\jar_files\nts_wrapper.jar;D:\data\proj\SearchNames\sn098d\system\jar_files\nts_wrappertest.jar;D:\data\proj\SearchNames\sn098d\system\jar_files\postgres-pgjdbc2.jar;D:\data\proj\SearchNames\sn098d\system\jar_files\xalan.jar;D:\data\proj\SearchNames\sn098d\system\jar_files\xerces.jar;D:\data\proj\SearchNames\sn098d\system\jar_files\oracle-java-1213.zip" -Dwrapper.key="KeiPCZwWnblqRTsv" -Dwrapper.port=1777 -Dwrapper.debug="TRUE" -Dwrapper.cpu.timeout="10" -Dwrapper.jvmid=1 com.silveregg.wrapper.WrapperSimpleApp nie.sn.SearchNamesApp D:\data\proj\SearchNames\aopa-config.xml
+DEBUG  | wrapper  | 2002/11/14 15:48:10 | Java Virtual Machine started (PID=2636)
+INFO   | jvm 1    | 2002/11/14 15:48:11 | Wrapper Manager: JVM #1
+INFO   | jvm 1    | 2002/11/14 15:48:11 | Wrapper Manager: Registering shutdown hook
+INFO   | jvm 1    | 2002/11/14 15:48:11 | Wrapper Manager: Using wrapper
+INFO   | jvm 1    | 2002/11/14 15:48:11 | Calling native initialization method.
+INFO   | jvm 1    | 2002/11/14 15:48:11 | Initializing WrapperManager native library.
+INFO   | jvm 1    | 2002/11/14 15:48:11 | Java Executable: D:\apps\jdk13\bin\java.exe
+INFO   | jvm 1    | 2002/11/14 15:48:11 | Java Version   : 1.3.1_02-b02 Java HotSpot(TM) Client VM
+INFO   | jvm 1    | 2002/11/14 15:48:11 | Java VM Vendor : Sun Microsystems Inc.
+INFO   | jvm 1    | 2002/11/14 15:48:11 | 
+INFO   | jvm 1    | 2002/11/14 15:48:11 | Wrapper (Version 2.2.9)
+INFO   | jvm 1    | 2002/11/14 15:48:11 | 
+INFO   | jvm 1    | 2002/11/14 15:48:11 | Open socket to wrapper...
+INFO   | jvm 1    | 2002/11/14 15:48:11 | Opened Socket
+INFO   | jvm 1    | 2002/11/14 15:48:11 | Send a packet 110 : KeiPCZwWnblqRTsv
+INFO   | jvm 1    | 2002/11/14 15:48:11 | handleSocket(Socket[addr=127.0.0.1/127.0.0.1,port=1777,localport=3546])
+DEBUG  | wrapperp | 2002/11/14 15:48:11 | accepted a socket from 127.0.0.1 on port 3546
+DEBUG  | wrapperp | 2002/11/14 15:48:11 | read a packet 110 : KeiPCZwWnblqRTsv
+DEBUG  | wrapper  | 2002/11/14 15:48:11 | Got key from JVM: KeiPCZwWnblqRTsv
+DEBUG  | wrapperp | 2002/11/14 15:48:11 | sent 3 bytes
+DEBUG  | wrapper  | 2002/11/14 15:48:11 | Start Application.
+DEBUG  | wrapperp | 2002/11/14 15:48:11 | sent 7 bytes
+INFO   | jvm 1    | 2002/11/14 15:48:12 | Received a packet 112 : 1
+INFO   | jvm 1    | 2002/11/14 15:48:12 | Wrapper Manager: LowLogLevel from Wrapper is 1
+INFO   | jvm 1    | 2002/11/14 15:48:12 | Received a packet 100 : start
+INFO   | jvm 1    | 2002/11/14 15:48:12 | calling listener.start()
+INFO   | jvm 1    | 2002/11/14 15:48:12 | WrapperSimpleApp: start(args)
+INFO   | jvm 1    | 2002/11/14 15:48:12 | WrapperSimpleApp: invoking main method
+INFO   | jvm 1    | 2002/11/14 15:48:12 | Status: 11/14/02 3:48:11 PM PST SearchNamesApp.constructor(2): Loading configuration data from "D:\data\proj\SearchNames\aopa-config.xml".
+INFO   | jvm 1    | 2002/11/14 15:48:13 | Status: 11/14/02 3:48:12 PM PST JDOMHelper.constructor(2): Will retry with file URL "file:/D:/data/proj/SearchNames/aopa-config.xml".
+INFO   | jvm 1    | 2002/11/14 15:48:13 | Status: 11/14/02 3:48:13 PM PST SearchNamesConfig.loadConfigFile: FYI: No Run Logging specified in this configuration; process status information will continue to be sent to this log.
+INFO   | jvm 1    | 2002/11/14 15:48:13 | Status: 11/14/02 3:48:13 PM PST DBConfig.getConnection: Connecting to database with connection string "jdbc:oracle:thin:@ender:1521:stack" as user "system".
+INFO   | jvm 1    | 2002/11/14 15:48:13 | WrapperSimpleApp: start(args) end.  Main Completed=false, exitCode=null
+INFO   | jvm 1    | 2002/11/14 15:48:13 | returned from listener.start()
+INFO   | jvm 1    | 2002/11/14 15:48:13 | Send a packet 106 : 
+DEBUG  | wrapperp | 2002/11/14 15:48:14 | read a packet 106 : 
+DEBUG  | wrapper  | 2002/11/14 15:48:14 | JVM signalled that it was started.
+INFO   | jvm 1    | 2002/11/14 15:48:15 | Status: 11/14/02 3:48:14 PM PST SearchNamesApp.constructor(2): Configured to listen on port 9000.
+DEBUG  | wrapperp | 2002/11/14 15:48:15 | sent 6 bytes
+INFO   | jvm 1    | 2002/11/14 15:48:15 | Received a packet 103 : ping
+INFO   | jvm 1    | 2002/11/14 15:48:15 | Send a packet 103 : ok
+DEBUG  | wrapperp | 2002/11/14 15:48:15 | read a packet 103 : ok
+DEBUG  | wrapper  | 2002/11/14 15:48:15 | Got ping response from JVM
+DEBUG  | wrapperp | 2002/11/14 15:48:21 | sent 6 bytes
+INFO   | jvm 1    | 2002/11/14 15:48:21 | Received a packet 103 : ping
+INFO   | jvm 1    | 2002/11/14 15:48:21 | Send a packet 103 : ok
+DEBUG  | wrapperp | 2002/11/14 15:48:21 | read a packet 103 : ok
+DEBUG  | wrapper  | 2002/11/14 15:48:21 | Got ping response from JVM
+DEBUG  | wrapperp | 2002/11/14 15:48:27 | sent 6 bytes
+INFO   | jvm 1    | 2002/11/14 15:48:27 | Received a packet 103 : ping
+INFO   | jvm 1    | 2002/11/14 15:48:27 | Send a packet 103 : ok
+DEBUG  | wrapperp | 2002/11/14 15:48:27 | read a packet 103 : ok
+DEBUG  | wrapper  | 2002/11/14 15:48:27 | Got ping response from JVM
+DEBUG  | wrapperp | 2002/11/14 15:48:33 | sent 6 bytes
+INFO   | jvm 1    | 2002/11/14 15:48:33 | Received a packet 103 : ping
+INFO   | jvm 1    | 2002/11/14 15:48:33 | Send a packet 103 : ok
+DEBUG  | wrapperp | 2002/11/14 15:48:33 | read a packet 103 : ok
+DEBUG  | wrapper  | 2002/11/14 15:48:33 | Got ping response from JVM
+DEBUG  | wrapperp | 2002/11/14 15:48:39 | sent 6 bytes
+INFO   | jvm 1    | 2002/11/14 15:48:39 | Received a packet 103 : ping
+INFO   | jvm 1    | 2002/11/14 15:48:39 | Send a packet 103 : ok
+DEBUG  | wrapperp | 2002/11/14 15:48:39 | read a packet 103 : ok
+DEBUG  | wrapper  | 2002/11/14 15:48:39 | Got ping response from JVM
+DEBUG  | wrapperp | 2002/11/14 15:48:45 | sent 6 bytes
+INFO   | jvm 1    | 2002/11/14 15:48:45 | Received a packet 103 : ping
+INFO   | jvm 1    | 2002/11/14 15:48:45 | Send a packet 103 : ok
+DEBUG  | wrapperp | 2002/11/14 15:48:45 | read a packet 103 : ok
+DEBUG  | wrapper  | 2002/11/14 15:48:45 | Got ping response from JVM
+STATUS | wrapper  | 2002/11/14 15:48:49 | CTRL-C trapped.  Shutting down.
+DEBUG  | wrapper  | 2002/11/14 15:48:49 | wrapperStopProcess(0) called.
+DEBUG  | wrapper  | 2002/11/14 15:48:49 | Sending stop signal to JVM
+DEBUG  | wrapperp | 2002/11/14 15:48:49 | sent 2 bytes
+INFO   | jvm 1    | 2002/11/14 15:48:49 | Received a packet 101 : 
+INFO   | jvm 1    | 2002/11/14 15:48:49 | Thread, Wrapper-Connection, handling the shutdown process.
+INFO   | jvm 1    | 2002/11/14 15:48:49 | calling listener.stop()
+INFO   | jvm 1    | 2002/11/14 15:48:49 | WrapperSimpleApp: stop(0)
+INFO   | jvm 1    | 2002/11/14 15:48:49 | returned from listener.stop()
+INFO   | jvm 1    | 2002/11/14 15:48:49 | Send a packet 107 : 0
+INFO   | jvm 1    | 2002/11/14 15:48:49 | Closing socket.
+DEBUG  | wrapperp | 2002/11/14 15:48:49 | read a packet 107 : 0
+DEBUG  | wrapper  | 2002/11/14 15:48:49 | JVM signalled that it was stopped.
+DEBUG  | wrapperp | 2002/11/14 15:48:49 | socket read no code (closed?).
+INFO   | jvm 1    | 2002/11/14 15:48:50 | calling System.exit(0)
+DEBUG  | wrapper  | 2002/11/14 15:48:50 | JVM exited normally.
+STATUS | wrapper  | 2002/11/14 15:48:50 | <-- Wrapper Stopped
+ERROR  | wrapper  | 2002/11/14 15:49:27 | CreateService failed - The specified service already exists. (0x431)
+STATUS | wrapper  | 2002/11/14 15:49:27 | AOPA removed.
+STATUS | wrapper  | 2002/11/14 15:49:28 | AOPA installed.
+STATUS | wrapper  | 2002/11/14 17:52:38 | AOPA  installed.
+STATUS | wrapper  | 2002/11/14 17:53:49 | AOPA  removed.
+STATUS | wrapper  | 2002/11/14 17:54:52 | AOPA removed.
+STATUS | wrapper  | 2002/11/14 17:55:52 | AOPA installed.
+STATUS | wrapper  | 2002/11/14 17:56:33 | --> Wrapper Started as Service
+STATUS | wrapper  | 2002/11/14 17:56:34 | Launching a JVM...
+INFO   | jvm 1    | 2002/11/14 17:56:35 | Wrapper (Version 2.2.9)
+INFO   | jvm 1    | 2002/11/14 17:56:35 | 
+INFO   | jvm 1    | 2002/11/14 17:56:35 | Status: 11/14/02 5:56:35 PM PST SearchNamesApp.constructor(2): Loading configuration data from "D:\data\proj\SearchNames\aopa-config.xml".
+INFO   | jvm 1    | 2002/11/14 17:56:36 | Status: 11/14/02 5:56:36 PM PST JDOMHelper.constructor(2): Will retry with file URL "file:/D:/data/proj/SearchNames/aopa-config.xml".
+INFO   | jvm 1    | 2002/11/14 17:56:36 | Status: 11/14/02 5:56:36 PM PST SearchNamesConfig.loadConfigFile: FYI: No Run Logging specified in this configuration; process status information will continue to be sent to this log.
+INFO   | jvm 1    | 2002/11/14 17:56:36 | Status: 11/14/02 5:56:36 PM PST DBConfig.getConnection: Connecting to database with connection string "jdbc:oracle:thin:@ender:1521:stack" as user "system".
+INFO   | jvm 1    | 2002/11/14 17:56:38 | Status: 11/14/02 5:56:38 PM PST SearchNamesApp.constructor(2): Configured to listen on port 9000.
+INFO   | jvm 1    | 2002/11/14 17:57:42 | Transaction: 11/14/02 5:57:42 PM PST SnHTTPServer.run: New connection established from 127.0.0.1
+INFO   | jvm 1    | 2002/11/14 17:58:20 | Transaction: 11/14/02 5:58:20 PM PST SnHTTPServer.run: New connection established from 127.0.0.1
+INFO   | jvm 1    | 2002/11/14 17:58:59 | Transaction: 11/14/02 5:58:59 PM PST SnHTTPServer.run: New connection established from 127.0.0.1
+STATUS | wrapper  | 2002/11/14 18:00:24 | <-- Wrapper Stopped
+STATUS | wrapper  | 2002/11/14 18:01:44 | --> Wrapper Started as Service
+STATUS | wrapper  | 2002/11/14 18:01:45 | Launching a JVM...
+INFO   | jvm 1    | 2002/11/14 18:01:46 | Wrapper (Version 2.2.9)
+INFO   | jvm 1    | 2002/11/14 18:01:46 | 
+INFO   | jvm 1    | 2002/11/14 18:01:46 | Status: 11/14/02 6:01:46 PM PST SearchNamesApp.constructor(2): Loading configuration data from "D:\data\proj\SearchNames\aopa-config.xml".
+INFO   | jvm 1    | 2002/11/14 18:01:47 | Status: 11/14/02 6:01:47 PM PST JDOMHelper.constructor(2): Will retry with file URL "file:/D:/data/proj/SearchNames/aopa-config.xml".
+INFO   | jvm 1    | 2002/11/14 18:01:47 | Status: 11/14/02 6:01:47 PM PST RunLog.setOutputURI(2): Setting output to different location/file of "d:\data\proj\SearchNames\logs\aopa.log". We will be appending to the existing log file.
+STATUS | wrapper  | 2002/11/14 18:13:59 | Service is running.  Stopping it...
+STATUS | wrapper  | 2002/11/14 18:14:00 | <-- Wrapper Stopped
+INFO   | wrapper  | 2002/11/14 18:14:00 | Waiting to stop...
+STATUS | wrapper  | 2002/11/14 18:14:01 | AOPA stopped.
+STATUS | wrapper  | 2002/11/14 18:14:01 | AOPA removed.
+ERROR  | wrapper  | 2002/11/14 18:27:36 | CreateService failed - The specified service has been marked for deletion. (0x430)
+ERROR  | wrapper  | 2002/11/14 18:27:36 | DeleteService failed - The specified service has been marked for deletion. (0x430)
+STATUS | wrapper  | 2002/11/14 18:28:30 | AOPA installed.
+STATUS | wrapper  | 2002/11/14 18:28:40 | --> Wrapper Started as Service
+STATUS | wrapper  | 2002/11/14 18:28:42 | Launching a JVM...
+INFO   | jvm 1    | 2002/11/14 18:28:42 | Wrapper (Version 2.2.9)
+INFO   | jvm 1    | 2002/11/14 18:28:42 | 
+INFO   | jvm 1    | 2002/11/14 18:28:43 | Status: 11/14/02 6:28:43 PM PST SearchNamesApp.constructor(2): Loading configuration data from "D:\data\proj\SearchNames\aopa-config.xml".
+INFO   | jvm 1    | 2002/11/14 18:28:44 | Status: 11/14/02 6:28:44 PM PST JDOMHelper.constructor(2): Will retry with file URL "file:/D:/data/proj/SearchNames/aopa-config.xml".
+INFO   | jvm 1    | 2002/11/14 18:28:44 | Status: 11/14/02 6:28:44 PM PST RunLog.setOutputURI(2): Setting output to different location/file of "d:\data\proj\SearchNames\logs\aopa.log". We will be appending to the existing log file.
+ERROR  | wrapper  | 2002/11/14 18:33:52 | CreateService failed - The specified service already exists. (0x431)
+STATUS | wrapper  | 2002/11/14 18:33:52 | Service is running.  Stopping it...
+STATUS | wrapper  | 2002/11/14 18:33:53 | <-- Wrapper Stopped
+INFO   | wrapper  | 2002/11/14 18:33:53 | Waiting to stop...
+STATUS | wrapper  | 2002/11/14 18:33:54 | AOPA stopped.
+STATUS | wrapper  | 2002/11/14 18:33:54 | AOPA removed.
+STATUS | wrapper  | 2002/11/14 18:33:55 | AOPA installed.
+STATUS | wrapper  | 2002/11/14 18:35:27 | --> Wrapper Started as Service
+STATUS | wrapper  | 2002/11/14 18:35:28 | Launching a JVM...
+INFO   | jvm 1    | 2002/11/14 18:35:28 | Wrapper (Version 2.2.9)
+INFO   | jvm 1    | 2002/11/14 18:35:28 | 
+INFO   | jvm 1    | 2002/11/14 18:35:29 | Status: 11/14/02 6:35:29 PM PST SearchNamesApp.constructor(2): Loading configuration data from "D:\data\proj\SearchNames\aopa-config.xml".
+INFO   | jvm 1    | 2002/11/14 18:35:30 | Status: 11/14/02 6:35:30 PM PST JDOMHelper.constructor(2): Will retry with file URL "file:/D:/data/proj/SearchNames/aopa-config.xml".
+INFO   | jvm 1    | 2002/11/14 18:35:30 | Status: 11/14/02 6:35:30 PM PST RunLog.setOutputURI(2): Setting output to different location/file of "d:\data\proj\SearchNames\logs\aopa.log". We will be appending to the existing log file.
+ERROR  | wrapper  | 2002/11/14 18:58:58 | CreateService failed - The specified service already exists. (0x431)
+STATUS | wrapper  | 2002/11/14 18:58:59 | Service is running.  Stopping it...
+INFO   | wrapper  | 2002/11/14 18:59:00 | Waiting to stop...
+STATUS | wrapper  | 2002/11/14 18:59:00 | <-- Wrapper Stopped
+STATUS | wrapper  | 2002/11/14 18:59:01 | AOPA stopped.
+STATUS | wrapper  | 2002/11/14 18:59:01 | AOPA removed.
+STATUS | wrapper  | 2002/11/14 18:59:01 | AOPA installed.
+STATUS | wrapper  | 2002/11/14 19:00:01 | --> Wrapper Started as Service
+STATUS | wrapper  | 2002/11/14 19:00:02 | Launching a JVM...
+INFO   | jvm 1    | 2002/11/14 19:00:02 | Wrapper (Version 2.2.9)
+INFO   | jvm 1    | 2002/11/14 19:00:02 | 
+INFO   | jvm 1    | 2002/11/14 19:00:03 | Status: 11/14/02 7:00:03 PM PST SearchNamesApp.constructor(2): Loading configuration data from "D:\data\proj\SearchNames\aopa-config.xml".
+INFO   | jvm 1    | 2002/11/14 19:00:04 | Status: 11/14/02 7:00:04 PM PST JDOMHelper.constructor(2): Will retry with file URL "file:/D:/data/proj/SearchNames/aopa-config.xml".
+INFO   | jvm 1    | 2002/11/14 19:00:04 | Status: 11/14/02 7:00:04 PM PST RunLog.setOutputURI(2): Setting output to different location/file of "d:\data\proj\SearchNames\logs\aopa.log". We will be appending to the existing log file.
+ERROR  | wrapper  | 2002/11/14 19:14:48 | CreateService failed - The specified service already exists. (0x431)
+STATUS | wrapper  | 2002/11/14 19:14:48 | Service is running.  Stopping it...
+INFO   | wrapper  | 2002/11/14 19:14:49 | Waiting to stop...
+STATUS | wrapper  | 2002/11/14 19:14:49 | <-- Wrapper Stopped
+STATUS | wrapper  | 2002/11/14 19:14:50 | AOPA stopped.
+STATUS | wrapper  | 2002/11/14 19:14:50 | AOPA removed.
+STATUS | wrapper  | 2002/11/14 19:14:50 | AOPA installed.
+STATUS | wrapper  | 2002/11/14 19:15:01 | --> Wrapper Started as Service
+STATUS | wrapper  | 2002/11/14 19:15:02 | Launching a JVM...
+INFO   | jvm 1    | 2002/11/14 19:15:02 | Wrapper (Version 2.2.9)
+INFO   | jvm 1    | 2002/11/14 19:15:02 | 
+INFO   | jvm 1    | 2002/11/14 19:15:03 | Status: 11/14/02 7:15:03 PM PST SearchNamesApp.constructor(2): Loading configuration data from "D:\data\proj\SearchNames\aopa-config.xml".
+INFO   | jvm 1    | 2002/11/14 19:15:04 | Status: 11/14/02 7:15:04 PM PST JDOMHelper.constructor(2): Will retry with file URL "file:/D:/data/proj/SearchNames/aopa-config.xml".
+INFO   | jvm 1    | 2002/11/14 19:15:04 | Status: 11/14/02 7:15:04 PM PST RunLog.setOutputURI(2): Setting output to different location/file of "d:\data\proj\SearchNames\logs\aopa.log". We will be appending to the existing log file.
+ERROR  | wrapper  | 2002/11/14 19:16:01 | CreateService failed - The specified service already exists. (0x431)
+STATUS | wrapper  | 2002/11/14 19:16:01 | Service is running.  Stopping it...
+INFO   | wrapper  | 2002/11/14 19:16:02 | Waiting to stop...
+STATUS | wrapper  | 2002/11/14 19:16:02 | <-- Wrapper Stopped
+STATUS | wrapper  | 2002/11/14 19:16:03 | AOPA stopped.
+STATUS | wrapper  | 2002/11/14 19:16:03 | AOPA removed.
+STATUS | wrapper  | 2002/11/14 19:16:04 | AOPA installed.
+STATUS | wrapper  | 2002/11/14 19:16:19 | --> Wrapper Started as Service
+STATUS | wrapper  | 2002/11/14 19:16:20 | Launching a JVM...
+INFO   | jvm 1    | 2002/11/14 19:16:20 | Wrapper (Version 2.2.9)
+INFO   | jvm 1    | 2002/11/14 19:16:20 | 
+INFO   | jvm 1    | 2002/11/14 19:16:21 | Status: 11/14/02 7:16:21 PM PST SearchNamesApp.constructor(2): Loading configuration data from "D:\data\proj\SearchNames\aopa-config.xml".
+INFO   | jvm 1    | 2002/11/14 19:16:22 | Status: 11/14/02 7:16:22 PM PST JDOMHelper.constructor(2): Will retry with file URL "file:/D:/data/proj/SearchNames/aopa-config.xml".
+INFO   | jvm 1    | 2002/11/14 19:16:22 | Status: 11/14/02 7:16:22 PM PST RunLog.setOutputURI(2): Setting output to different location/file of "d:\data\proj\SearchNames\logs\aopa.log". We will be appending to the existing log file.
+STATUS | wrapper  | 2002/11/14 19:16:41 | Service is running.  Stopping it...
+INFO   | wrapper  | 2002/11/14 19:16:42 | Waiting to stop...
+STATUS | wrapper  | 2002/11/14 19:16:43 | <-- Wrapper Stopped
+STATUS | wrapper  | 2002/11/14 19:16:43 | AOPA stopped.
+STATUS | wrapper  | 2002/11/14 19:16:44 | AOPA removed.
+STATUS | wrapper  | 2002/11/14 19:17:09 | AOPA installed.
+STATUS | wrapper  | 2002/11/14 19:17:17 | --> Wrapper Started as Service
+STATUS | wrapper  | 2002/11/14 19:17:18 | Launching a JVM...
+INFO   | jvm 1    | 2002/11/14 19:17:18 | Wrapper (Version 2.2.9)
+INFO   | jvm 1    | 2002/11/14 19:17:18 | 
+INFO   | jvm 1    | 2002/11/14 19:17:19 | Status: 11/14/02 7:17:19 PM PST SearchNamesApp.constructor(2): Loading configuration data from "D:\data\proj\SearchNames\aopa-config.xml".
+INFO   | jvm 1    | 2002/11/14 19:17:20 | Status: 11/14/02 7:17:20 PM PST JDOMHelper.constructor(2): Will retry with file URL "file:/D:/data/proj/SearchNames/aopa-config.xml".
+INFO   | jvm 1    | 2002/11/14 19:17:20 | Status: 11/14/02 7:17:20 PM PST RunLog.setOutputURI(2): Setting output to different location/file of "d:\data\proj\SearchNames\logs\aopa.log". We will be appending to the existing log file.
+ERROR  | wrapper  | 2002/11/14 19:23:14 | CreateService failed - The specified service already exists. (0x431)
+STATUS | wrapper  | 2002/11/14 19:23:15 | Service is running.  Stopping it...
+INFO   | wrapper  | 2002/11/14 19:23:16 | Waiting to stop...
+STATUS | wrapper  | 2002/11/14 19:23:16 | <-- Wrapper Stopped
+STATUS | wrapper  | 2002/11/14 19:23:17 | AOPA stopped.
+STATUS | wrapper  | 2002/11/14 19:23:17 | AOPA removed.
+STATUS | wrapper  | 2002/11/14 19:23:17 | AOPA installed.
+STATUS | wrapper  | 2002/11/14 19:23:31 | --> Wrapper Started as Service
+STATUS | wrapper  | 2002/11/14 19:23:32 | Launching a JVM...
+INFO   | jvm 1    | 2002/11/14 19:23:32 | Wrapper (Version 2.2.9)
+INFO   | jvm 1    | 2002/11/14 19:23:32 | 
+INFO   | jvm 1    | 2002/11/14 19:23:33 | Status: 11/14/02 7:23:33 PM PST SearchNamesApp.constructor(2): Loading configuration data from "D:\data\proj\SearchNames\aopa-config.xml".
+INFO   | jvm 1    | 2002/11/14 19:23:34 | Status: 11/14/02 7:23:34 PM PST JDOMHelper.constructor(2): Will retry with file URL "file:/D:/data/proj/SearchNames/aopa-config.xml".
+INFO   | jvm 1    | 2002/11/14 19:23:34 | Status: 11/14/02 7:23:34 PM PST RunLog.setOutputURI(2): Setting output to different location/file of "d:\data\proj\SearchNames\logs\aopa.log". We will be appending to the existing log file.
+ERROR  | wrapper  | 2002/11/14 19:28:41 | CreateService failed - The specified service already exists. (0x431)
+STATUS | wrapper  | 2002/11/14 19:28:42 | Service is running.  Stopping it...
+INFO   | wrapper  | 2002/11/14 19:28:43 | Waiting to stop...
+STATUS | wrapper  | 2002/11/14 19:28:43 | <-- Wrapper Stopped
+STATUS | wrapper  | 2002/11/14 19:28:44 | AOPA stopped.
+STATUS | wrapper  | 2002/11/14 19:28:44 | AOPA removed.
+STATUS | wrapper  | 2002/11/14 19:28:44 | AOPA installed.
+STATUS | wrapper  | 2002/11/14 19:28:47 | --> Wrapper Started as Service
+STATUS | wrapper  | 2002/11/14 19:28:49 | Launching a JVM...
+INFO   | jvm 1    | 2002/11/14 19:28:49 | Wrapper (Version 2.2.9)
+INFO   | jvm 1    | 2002/11/14 19:28:49 | 
+INFO   | jvm 1    | 2002/11/14 19:28:50 | Status: 11/14/02 7:28:50 PM PST SearchNamesApp.constructor(2): Loading configuration data from "D:\data\proj\SearchNames\aopa-config.xml".
+INFO   | jvm 1    | 2002/11/14 19:28:51 | Status: 11/14/02 7:28:51 PM PST JDOMHelper.constructor(2): Will retry with file URL "file:/D:/data/proj/SearchNames/aopa-config.xml".
+INFO   | jvm 1    | 2002/11/14 19:28:51 | Status: 11/14/02 7:28:51 PM PST RunLog.setOutputURI(2): Setting output to different location/file of "d:\data\proj\SearchNames\logs\aopa.log". We will be appending to the existing log file.
+ERROR  | wrapper  | 2002/11/14 20:09:46 | CreateService failed - The specified service already exists. (0x431)
+STATUS | wrapper  | 2002/11/14 20:09:46 | Service is running.  Stopping it...
+INFO   | wrapper  | 2002/11/14 20:09:47 | Waiting to stop...
+STATUS | wrapper  | 2002/11/14 20:09:47 | <-- Wrapper Stopped
+STATUS | wrapper  | 2002/11/14 20:09:48 | AOPA stopped.
+STATUS | wrapper  | 2002/11/14 20:09:48 | AOPA removed.
+STATUS | wrapper  | 2002/11/14 20:09:49 | AOPA installed.
+STATUS | wrapper  | 2002/11/14 20:10:40 | --> Wrapper Started as Service
+STATUS | wrapper  | 2002/11/14 20:10:41 | Launching a JVM...
+INFO   | jvm 1    | 2002/11/14 20:10:41 | Wrapper (Version 2.2.9)
+INFO   | jvm 1    | 2002/11/14 20:10:41 | 
+INFO   | jvm 1    | 2002/11/14 20:10:42 | Status: 11/14/02 8:10:42 PM PST SearchNamesApp.constructor(2): Loading configuration data from "D:\data\proj\SearchNames\aopa-config.xml".
+INFO   | jvm 1    | 2002/11/14 20:10:43 | Status: 11/14/02 8:10:43 PM PST JDOMHelper.constructor(2): Will retry with file URL "file:/D:/data/proj/SearchNames/aopa-config.xml".
+INFO   | jvm 1    | 2002/11/14 20:10:43 | Status: 11/14/02 8:10:43 PM PST RunLog.setOutputURI(2): Setting output to different location/file of "d:\data\proj\SearchNames\logs\aopa.log". We will be appending to the existing log file.
+ERROR  | wrapper  | 2002/11/14 20:12:05 | CreateService failed - The specified service already exists. (0x431)
+STATUS | wrapper  | 2002/11/14 20:12:05 | Service is running.  Stopping it...
+INFO   | wrapper  | 2002/11/14 20:12:06 | Waiting to stop...
+STATUS | wrapper  | 2002/11/14 20:12:06 | <-- Wrapper Stopped
+STATUS | wrapper  | 2002/11/14 20:12:07 | AOPA stopped.
+STATUS | wrapper  | 2002/11/14 20:12:07 | AOPA removed.
+STATUS | wrapper  | 2002/11/14 20:12:08 | AOPA installed.
+STATUS | wrapper  | 2002/11/14 20:12:17 | --> Wrapper Started as Service
+STATUS | wrapper  | 2002/11/14 20:12:18 | Launching a JVM...
+INFO   | jvm 1    | 2002/11/14 20:12:18 | Wrapper (Version 2.2.9)
+INFO   | jvm 1    | 2002/11/14 20:12:18 | 
+INFO   | jvm 1    | 2002/11/14 20:12:19 | Status: 11/14/02 8:12:19 PM PST SearchNamesApp.constructor(2): Loading configuration data from "D:\data\proj\SearchNames\aopa-config.xml".
+INFO   | jvm 1    | 2002/11/14 20:12:20 | Status: 11/14/02 8:12:20 PM PST JDOMHelper.constructor(2): Will retry with file URL "file:/D:/data/proj/SearchNames/aopa-config.xml".
+INFO   | jvm 1    | 2002/11/14 20:12:20 | Status: 11/14/02 8:12:20 PM PST RunLog.setOutputURI(2): Setting output to different location/file of "d:\data\proj\SearchNames\logs\aopa.log". We will be appending to the existing log file.
+ERROR  | wrapper  | 2002/11/14 20:12:58 | CreateService failed - The specified service already exists. (0x431)
+STATUS | wrapper  | 2002/11/14 20:12:58 | Service is running.  Stopping it...
+INFO   | wrapper  | 2002/11/14 20:12:59 | Waiting to stop...
+STATUS | wrapper  | 2002/11/14 20:12:59 | <-- Wrapper Stopped
+STATUS | wrapper  | 2002/11/14 20:13:00 | AOPA stopped.
+STATUS | wrapper  | 2002/11/14 20:13:00 | AOPA removed.
+STATUS | wrapper  | 2002/11/14 20:13:01 | AOPA installed.
+STATUS | wrapper  | 2002/11/14 20:13:11 | --> Wrapper Started as Service
+STATUS | wrapper  | 2002/11/14 20:13:12 | Launching a JVM...
+INFO   | jvm 1    | 2002/11/14 20:13:12 | Wrapper (Version 2.2.9)
+INFO   | jvm 1    | 2002/11/14 20:13:12 | 
+INFO   | jvm 1    | 2002/11/14 20:13:13 | Status: 11/14/02 8:13:13 PM PST SearchNamesApp.constructor(2): Loading configuration data from "D:\data\proj\SearchNames\aopa-config.xml".
+INFO   | jvm 1    | 2002/11/14 20:13:14 | Status: 11/14/02 8:13:14 PM PST JDOMHelper.constructor(2): Will retry with file URL "file:/D:/data/proj/SearchNames/aopa-config.xml".
+INFO   | jvm 1    | 2002/11/14 20:13:14 | Status: 11/14/02 8:13:14 PM PST RunLog.setOutputURI(2): Setting output to different location/file of "d:\data\proj\SearchNames\logs\aopa.log". We will be appending to the existing log file.
+STATUS | wrapper  | 2002/11/14 20:15:45 | <-- Wrapper Stopped
+ERROR  | wrapper  | 2002/11/26 08:25:33 | CreateService failed - The specified service already exists. (0x431)
+STATUS | wrapper  | 2002/11/26 08:25:33 | AOPA removed.
+ERROR  | wrapper  | 2002/11/26 08:26:42 | CreateService failed - The specified service already exists. (0x431)
+STATUS | wrapper  | 2002/11/26 08:26:42 | AOPA removed.
+STATUS | wrapper  | 2002/11/26 08:26:43 | AOPA installed.
+ERROR  | wrapper  | 2002/11/26 08:40:17 | CreateService failed - The specified service already exists. (0x431)
+STATUS | wrapper  | 2002/11/26 08:40:17 | AOPA removed.
+STATUS | wrapper  | 2002/11/26 08:40:18 | AOPA installed.
+STATUS | wrapper  | 2002/11/26 08:41:25 | --> Wrapper Started as Service
+INFO   | wrapperp | 2002/11/26 08:41:25 | port 1777 already in use, using port 1778 instead.
+STATUS | wrapper  | 2002/11/26 08:41:26 | Launching a JVM...
+INFO   | jvm 1    | 2002/11/26 08:41:27 | Wrapper (Version 2.2.9)
+INFO   | jvm 1    | 2002/11/26 08:41:27 | 
+INFO   | jvm 1    | 2002/11/26 08:41:27 | Status: 11/26/02 8:41:27 AM PST SearchNamesApp.constructor(2): Loading configuration data from "D:\data\proj\SearchNames\aopa-config.xml".
+INFO   | jvm 1    | 2002/11/26 08:41:28 | Status: 11/26/02 8:41:28 AM PST JDOMHelper.constructor(2): Will retry with file URL "file:/D:/data/proj/SearchNames/aopa-config.xml".
+INFO   | jvm 1    | 2002/11/26 08:41:28 | Status: 11/26/02 8:41:28 AM PST SearchNamesConfig.readGlobalOptions: FYI: No Search Track query logging specified in this configuration; user searches will not be logged.
+INFO   | jvm 1    | 2002/11/26 08:41:28 | Status: 11/26/02 8:41:28 AM PST SearchNamesApp.constructor(2): Configured to listen on port 9000.
+STATUS | wrapper  | 2002/11/26 08:41:49 | <-- Wrapper Stopped
+STATUS | wrapper  | 2002/11/26 08:42:08 | --> Wrapper Started as Service
+INFO   | wrapperp | 2002/11/26 08:42:08 | port 1777 already in use, using port 1778 instead.
+STATUS | wrapper  | 2002/11/26 08:42:09 | Launching a JVM...
+INFO   | jvm 1    | 2002/11/26 08:42:09 | Wrapper (Version 2.2.9)
+INFO   | jvm 1    | 2002/11/26 08:42:09 | 
+INFO   | jvm 1    | 2002/11/26 08:42:10 | Status: 11/26/02 8:42:10 AM PST SearchNamesApp.constructor(2): Loading configuration data from "D:\data\proj\SearchNames\aopa-config.xml".
+INFO   | jvm 1    | 2002/11/26 08:42:11 | Status: 11/26/02 8:42:11 AM PST JDOMHelper.constructor(2): Will retry with file URL "file:/D:/data/proj/SearchNames/aopa-config.xml".
+INFO   | jvm 1    | 2002/11/26 08:42:11 | Status: 11/26/02 8:42:11 AM PST SearchNamesConfig.readGlobalOptions: FYI: No Search Track query logging specified in this configuration; user searches will not be logged.
+INFO   | jvm 1    | 2002/11/26 08:42:11 | Status: 11/26/02 8:42:11 AM PST SearchNamesApp.constructor(2): Configured to listen on port 9000.
+ERROR  | wrapper  | 2002/11/26 08:47:00 | CreateService failed - The specified service already exists. (0x431)
+STATUS | wrapper  | 2002/11/26 08:47:00 | Service is running.  Stopping it...
+STATUS | wrapper  | 2002/11/26 08:47:01 | <-- Wrapper Stopped
+INFO   | wrapper  | 2002/11/26 08:47:01 | Waiting to stop...
+STATUS | wrapper  | 2002/11/26 08:47:02 | AOPA stopped.
+STATUS | wrapper  | 2002/11/26 08:47:02 | AOPA removed.
+STATUS | wrapper  | 2002/11/26 08:47:03 | AOPA installed.
+STATUS | wrapper  | 2002/11/26 08:47:09 | --> Wrapper Started as Service
+INFO   | wrapperp | 2002/11/26 08:47:09 | port 1777 already in use, using port 1778 instead.
+STATUS | wrapper  | 2002/11/26 08:47:10 | Launching a JVM...
+INFO   | jvm 1    | 2002/11/26 08:47:10 | Wrapper (Version 2.2.9)
+INFO   | jvm 1    | 2002/11/26 08:47:10 | 
+INFO   | jvm 1    | 2002/11/26 08:47:11 | Status: 11/26/02 8:47:11 AM PST SearchNamesApp.constructor(2): Loading configuration data from "D:\data\proj\SearchNames\aopa-config.xml".
+INFO   | jvm 1    | 2002/11/26 08:47:12 | Status: 11/26/02 8:47:12 AM PST JDOMHelper.constructor(2): Will retry with file URL "file:/D:/data/proj/SearchNames/aopa-config.xml".
+INFO   | jvm 1    | 2002/11/26 08:47:12 | Status: 11/26/02 8:47:12 AM PST SearchNamesConfig.readGlobalOptions: FYI: No Search Track query logging specified in this configuration; user searches will not be logged.
+INFO   | jvm 1    | 2002/11/26 08:47:12 | Status: 11/26/02 8:47:12 AM PST SearchNamesApp.constructor(2): Configured to listen on port 9000.
+STATUS | wrapper  | 2002/11/26 08:50:04 | <-- Wrapper Stopped
+STATUS | wrapper  | 2002/11/26 08:50:15 | --> Wrapper Started as Service
+INFO   | wrapperp | 2002/11/26 08:50:15 | port 1777 already in use, using port 1778 instead.
+STATUS | wrapper  | 2002/11/26 08:50:16 | Launching a JVM...
+INFO   | jvm 1    | 2002/11/26 08:50:16 | Wrapper (Version 2.2.9)
+INFO   | jvm 1    | 2002/11/26 08:50:16 | 
+INFO   | jvm 1    | 2002/11/26 08:50:17 | Status: 11/26/02 8:50:17 AM PST SearchNamesApp.constructor(2): Loading configuration data from "D:\data\proj\SearchNames\aopa-config.xml".
+INFO   | jvm 1    | 2002/11/26 08:50:18 | Status: 11/26/02 8:50:18 AM PST JDOMHelper.constructor(2): Will retry with file URL "file:/D:/data/proj/SearchNames/aopa-config.xml".
+INFO   | jvm 1    | 2002/11/26 08:50:18 | Status: 11/26/02 8:50:18 AM PST SearchNamesConfig.readGlobalOptions: FYI: No Search Track query logging specified in this configuration; user searches will not be logged.
+INFO   | jvm 1    | 2002/11/26 08:50:18 | Status: 11/26/02 8:50:18 AM PST SearchNamesApp.constructor(2): Configured to listen on port 9000.
+STATUS | wrapper  | 2002/11/26 08:50:34 | <-- Wrapper Stopped
+STATUS | wrapper  | 2002/11/26 09:15:14 | foo bar installed.
+STATUS | wrapper  | 2002/11/26 09:15:25 | --> Wrapper Started as Service
+INFO   | wrapperp | 2002/11/26 09:15:26 | port 1777 already in use, using port 1778 instead.
+STATUS | wrapper  | 2002/11/26 09:15:27 | Launching a JVM...
+INFO   | jvm 1    | 2002/11/26 09:15:27 | Wrapper (Version 2.2.9)
+INFO   | jvm 1    | 2002/11/26 09:15:27 | 
+INFO   | jvm 1    | 2002/11/26 09:15:28 | Status: 11/26/02 9:15:28 AM PST SearchNamesApp.constructor(2): Loading configuration data from "D:\data\proj\SearchNames\aopa-config.xml".
+INFO   | jvm 1    | 2002/11/26 09:15:29 | Status: 11/26/02 9:15:29 AM PST JDOMHelper.constructor(2): Will retry with file URL "file:/D:/data/proj/SearchNames/aopa-config.xml".
+INFO   | jvm 1    | 2002/11/26 09:15:29 | Status: 11/26/02 9:15:29 AM PST SearchNamesConfig.readGlobalOptions: FYI: No Search Track query logging specified in this configuration; user searches will not be logged.
+INFO   | jvm 1    | 2002/11/26 09:15:29 | Status: 11/26/02 9:15:29 AM PST SearchNamesApp.constructor(2): Configured to listen on port 9000.
+STATUS | wrapper  | 2002/11/26 09:19:11 | <-- Wrapper Stopped
+STATUS | wrapper  | 2002/11/26 09:19:30 | foo bar removed.
+STATUS | wrapper  | 2002/11/26 09:20:41 | AOPA removed.
+STATUS | wrapper  | 2002/11/26 16:10:47 | nie installed.
+STATUS | wrapper  | 2002/11/26 16:11:21 | --> Wrapper Started as Service
+INFO   | wrapperp | 2002/11/26 16:11:21 | port 1777 already in use, using port 1778 instead.
+STATUS | wrapper  | 2002/11/26 16:11:22 | Launching a JVM...
+INFO   | jvm 1    | 2002/11/26 16:11:22 | Wrapper (Version 2.2.9)
+INFO   | jvm 1    | 2002/11/26 16:11:22 | 
+INFO   | jvm 1    | 2002/11/26 16:11:23 | Status: 11/26/02 4:11:23 PM PST SearchNamesApp.constructor(2): Loading configuration data from "D:\data\proj\SearchNames\nie-config.xml".
+INFO   | jvm 1    | 2002/11/26 16:11:24 | Status: 11/26/02 4:11:24 PM PST JDOMHelper.constructor(2): Will retry with file URL "file:/D:/data/proj/SearchNames/nie-config.xml".
+INFO   | jvm 1    | 2002/11/26 16:11:24 | Status: 11/26/02 4:11:24 PM PST RunLog.setOutputURI(2): Setting output to different location/file of "D:\data\proj\SearchNames\logs\nie-9001.log". We will be appending to the existing log file.
+STATUS | wrapper  | 2002/11/26 16:31:53 | <-- Wrapper Stopped
+ERROR  | wrapper  | 2002/11/26 16:47:33 | CreateService failed - The specified service already exists. (0x431)
+STATUS | wrapper  | 2002/11/26 16:47:33 | nie removed.
+STATUS | wrapper  | 2002/11/26 16:47:34 | nie installed.
+STATUS | wrapper  | 2002/11/26 16:47:39 | --> Wrapper Started as Service
+INFO   | wrapperp | 2002/11/26 16:47:40 | port 1777 already in use, using port 1778 instead.
+STATUS | wrapper  | 2002/11/26 16:47:41 | Launching a JVM...
+INFO   | jvm 1    | 2002/11/26 16:47:42 | Wrapper (Version 2.2.9)
+INFO   | jvm 1    | 2002/11/26 16:47:42 | 
+INFO   | jvm 1    | 2002/11/26 16:47:42 | Status: 11/26/02 4:47:42 PM PST SearchNamesApp.constructor(2): Loading configuration data from "D:\data\proj\SearchNames\nie-config.xml".
+INFO   | jvm 1    | 2002/11/26 16:47:43 | Status: 11/26/02 4:47:43 PM PST JDOMHelper.constructor(2): Will retry with file URL "file:/D:/data/proj/SearchNames/nie-config.xml".
+INFO   | jvm 1    | 2002/11/26 16:47:43 | Status: 11/26/02 4:47:43 PM PST RunLog.setOutputURI(2): Setting output to different location/file of "D:\data\proj\SearchNames\logs\nie-9001.log". We will be appending to the existing log file.
+STATUS | wrapper  | 2002/11/26 16:47:55 | Service is running.  Stopping it...
+INFO   | wrapper  | 2002/11/26 16:47:56 | Waiting to stop...
+STATUS | wrapper  | 2002/11/26 16:47:56 | <-- Wrapper Stopped
+STATUS | wrapper  | 2002/11/26 16:47:57 | nie stopped.
+STATUS | wrapper  | 2002/11/26 16:47:57 | nie removed.
+STATUS | wrapper  | 2002/11/26 17:01:25 | nie installed.
+STATUS | wrapper  | 2002/11/26 17:01:30 | --> Wrapper Started as Service
+INFO   | wrapperp | 2002/11/26 17:01:30 | port 1777 already in use, using port 1778 instead.
+STATUS | wrapper  | 2002/11/26 17:01:31 | Launching a JVM...
+INFO   | jvm 1    | 2002/11/26 17:01:31 | Wrapper (Version 2.2.9)
+INFO   | jvm 1    | 2002/11/26 17:01:31 | 
+INFO   | jvm 1    | 2002/11/26 17:01:32 | Status: 11/26/02 5:01:32 PM PST SearchNamesApp.constructor(2): Loading configuration data from "D:\data\proj\SearchNames\nie-config.xml".
+INFO   | jvm 1    | 2002/11/26 17:01:33 | Status: 11/26/02 5:01:33 PM PST JDOMHelper.constructor(2): Will retry with file URL "file:/D:/data/proj/SearchNames/nie-config.xml".
+INFO   | jvm 1    | 2002/11/26 17:01:33 | Status: 11/26/02 5:01:33 PM PST RunLog.setOutputURI(2): Setting output to different location/file of "D:\data\proj\SearchNames\logs\nie-9001.log". We will be appending to the existing log file.
+STATUS | wrapper  | 2002/11/26 17:01:45 | <-- Wrapper Stopped
+STATUS | wrapper  | 2002/11/26 17:05:30 | --> Wrapper Started as Service
+STATUS | wrapper  | 2002/11/26 17:05:31 | Launching a JVM...
+INFO   | jvm 1    | 2002/11/26 17:05:39 | Wrapper (Version 2.2.9)
+INFO   | jvm 1    | 2002/11/26 17:05:39 | 
+INFO   | jvm 1    | 2002/11/26 17:05:47 | Status: 11/26/02 5:05:47 PM PST SearchNamesApp.constructor(2): Loading configuration data from "D:\data\proj\SearchNames\nie-config.xml".
+INFO   | jvm 1    | 2002/11/26 17:05:50 | Status: 11/26/02 5:05:50 PM PST JDOMHelper.constructor(2): Will retry with file URL "file:/D:/data/proj/SearchNames/nie-config.xml".
+INFO   | jvm 1    | 2002/11/26 17:05:51 | Status: 11/26/02 5:05:50 PM PST RunLog.setOutputURI(2): Setting output to different location/file of "D:\data\proj\SearchNames\logs\nie-9001.log". We will be creating a new log file.
+STATUS | wrapper  | 2002/11/26 17:10:50 | <-- Wrapper Stopped
+ERROR  | wrapper  | 2003/02/05 16:03:15 | CreateService failed - The specified service already exists. (0x431)
+ERROR  | wrapper  | 2003/02/05 16:03:56 | CreateService failed - The specified service already exists. (0x431)
+STATUS | wrapper  | 2003/02/05 16:03:57 | test1 removed.
+STATUS | wrapper  | 2003/02/05 16:03:58 | test1 installed.
+STATUS | wrapper  | 2003/02/05 16:04:10 | --> Wrapper Started as Service
+STATUS | wrapper  | 2003/02/05 16:04:11 | Launching a JVM...
+INFO   | jvm 1    | 2003/02/05 16:04:12 | Wrapper (Version 2.2.9)
+INFO   | jvm 1    | 2003/02/05 16:04:12 | 
+INFO   | jvm 1    | 2003/02/05 16:04:13 | Status: 2/5/03 4:04:12 PM PST SearchNamesApp.constructor(2): Loading configuration data from "D:\data\proj\niecode\adsrv.xml".
+INFO   | jvm 1    | 2003/02/05 16:04:14 | Status: 2/5/03 4:04:14 PM PST RunLog.setOutputURI(2): Setting output to different location/file of "d:\data\proj\niecode\logs\aopa.log". We will be appending to the existing log file.
+STATUS | wrapper  | 2003/02/05 16:04:30 | Service is running.  Stopping it...
+STATUS | wrapper  | 2003/02/05 16:04:31 | <-- Wrapper Stopped
+INFO   | wrapper  | 2003/02/05 16:04:31 | Waiting to stop...
+STATUS | wrapper  | 2003/02/05 16:04:32 | test1 stopped.
+STATUS | wrapper  | 2003/02/05 16:04:32 | test1 removed.
+STATUS | wrapper  | 2003/05/05 16:07:47 | niesrv installed.
+STATUS | wrapper  | 2003/05/05 16:07:53 | --> Wrapper Started as Service
+STATUS | wrapper  | 2003/05/05 16:07:55 | Launching a JVM...
+INFO   | jvm 1    | 2003/05/05 16:07:56 | Wrapper (Version 2.2.9)
+INFO   | jvm 1    | 2003/05/05 16:07:56 | 
+INFO   | jvm 1    | 2003/05/05 16:07:56 | Status: 5/5/03 4:07:56 PM PDT SearchTuningApp.constructor(2): Loading configuration data from "D:\data\proj\niecode\config\main.xml".
+INFO   | jvm 1    | 2003/05/05 16:07:58 | Status: 5/5/03 4:07:58 PM PDT RunLog.setOutputURI(2): Setting output to different location/file of "D:\data\proj\niecode\niesrv.log". We will be appending to the existing log file.
+STATUS | wrapper  | 2003/05/05 16:08:13 | <-- Wrapper Stopped
+STATUS | wrapper  | 2003/05/05 16:08:18 | --> Wrapper Started as Service
+STATUS | wrapper  | 2003/05/05 16:08:19 | Launching a JVM...
+INFO   | jvm 1    | 2003/05/05 16:08:20 | Wrapper (Version 2.2.9)
+INFO   | jvm 1    | 2003/05/05 16:08:20 | 
+INFO   | jvm 1    | 2003/05/05 16:08:20 | Status: 5/5/03 4:08:20 PM PDT SearchTuningApp.constructor(2): Loading configuration data from "D:\data\proj\niecode\config\main.xml".
+INFO   | jvm 1    | 2003/05/05 16:08:22 | Status: 5/5/03 4:08:22 PM PDT RunLog.setOutputURI(2): Setting output to different location/file of "D:\data\proj\niecode\niesrv.log". We will be appending to the existing log file.
+INFO   | jvm 1    | 2003/05/05 16:10:04 | Status: 5/5/03 4:10:04 PM PDT RunLog.setOutputURI(2): Setting output to different location/file of "D:\data\proj\niecode\niesrv.log". We will be appending to the existing log file.
+STATUS | wrapper  | 2003/05/05 16:10:46 | Service is running.  Stopping it...
+INFO   | wrapper  | 2003/05/05 16:10:47 | Waiting to stop...
+STATUS | wrapper  | 2003/05/05 16:10:47 | <-- Wrapper Stopped
+STATUS | wrapper  | 2003/05/05 16:10:48 | niesrv stopped.
+STATUS | wrapper  | 2003/05/05 16:10:48 | niesrv removed.

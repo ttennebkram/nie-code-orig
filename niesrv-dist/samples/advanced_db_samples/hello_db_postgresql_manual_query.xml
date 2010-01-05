@@ -1,0 +1,22 @@
+<database
+	vendor_tag="postgresql"
+	server_name="your_server"
+	database_name="stack"
+	username="username"
+	password="password"
+>
+
+	<!-- Manually configured test query to run when we
+		first connect, to test the connection.
+		In this case we ask the system will show BOTH
+		a row count AND show us the first row.
+	-->
+	<test_query
+		show_first_row="true"
+	>
+		<![CDATA[
+			select count(*) from my_table
+		]]>
+	</test_query>
+
+</database>

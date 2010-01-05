@@ -1,0 +1,50 @@
+Some SUGGESTIONS:
+
+Did you remember to specify your config file on the command line?
+And if it was a relative path, were you in the correct directory?
+
+Is java in your path?  If not, it should be.
+Or it can be hard coded in the main batch file or shell script.
+
+If you did NOT specify a config file on the command line, then
+we look for searchnames_config.xml by default.
+And we do NOT ship a default config file with that name in our package
+because we don't know the search engine settings for YOUR site.
+So perhaps you need to create a config file?  See the README
+file and samples directory; there are some good examples.
+
+Did Java run?  Did it give a possibly long winded error messaage?
+It may be trying to tell you about a mistake in your XML config file.
+
+Finally, you may wish to check some of the environment variables
+that were set.  You can run tools\showenv.bat
+If these variables look incorrect, you may want to run tools\clearenv.bat
+and then try rerunning searchnames.
+
+
+Registering as a Service
+--------------------------
+Did you define run logging in your config file?
+
+Did you specify an absolute path to your logging file?
+
+Have you tried setting the environment variable JVM to the correct
+JDK before running register_service.bat?  Some JVM's do not work with
+SearchNames when running as a service, even if that JVM will normally
+run with SearchNames from a cmd.exe window.
+
+Are you trying to run more than one Search Names process as a Windows
+Service?  This is currently unsupported, please contact New Idea Engineering.
+
+
+Other Specific Errors:
+
+"
+A nonfatal internal JIT (3.00.078(x)) error
+'Relocation error: NULL relocation target' has occurred in :
+'org/apache/crimson/parser/Parser2.maybeComment (Z)Z': Interpreting method.
+Please report this error in detail to http://java.sun.com/cgi-bin/bugreport.cgi
+"
+This seems to be a harmless warning message from the JVM from very old versions
+of Java, such as Java 1.2.x, circa 2001.  We don't believe any action is
+needed, but to clear the error try upgrading to a more recent JVM - it's Free!

@@ -1,0 +1,24 @@
+<!-- A test XML file to check the connectivitiy to Oracle
+	for use with hello_db.bat and hello_db.sh
+	You will need to modify this for your site's specific settings
+-->
+<database
+	vendor_tag="oracle"
+	vendor_description="Oracle 8i/9i"
+	server_name="your_server_name_or_ip_address"
+	port="1521"
+	database_name="your_database"
+	username="username"
+	password="password"
+>
+
+	<!-- Optional test query to run when connecting -->
+	<!--
+	<test_query>
+		<![CDATA[
+			select count(*) from your_table
+		]]>
+	</test_query>
+	-->
+
+</database>

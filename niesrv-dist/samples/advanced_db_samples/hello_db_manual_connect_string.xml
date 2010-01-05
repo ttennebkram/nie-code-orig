@@ -1,0 +1,9 @@
+<!-- This is a very abbreviated database configuration.
+	It is strongly suggested that you use the longer form as a template.
+-->
+<database
+	vendor_tag="oracle"
+	native_connection_string="jdbc:oracle:thin:@machine_name:1521:dbname"
+	username="account"
+	password="password"
+/>

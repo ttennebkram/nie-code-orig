@@ -1,0 +1,9 @@
+<database
+	vendor_tag="sqlserver"
+	vendor_description="Microsoft SQL Server"
+	server_name="your_server"
+	database_name="SearchTrack"
+	username="sa"
+	password="password"
+	main_table="nie_log"
+/>

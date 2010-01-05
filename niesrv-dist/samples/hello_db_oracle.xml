@@ -1,0 +1,9 @@
+<database
+	vendor_tag="oracle"
+	vendor_description="Oracle 8i/9i"
+	server_name="your_server"
+	database_name="SearchTrack"
+	username="scott"
+	password="tiger"
+	main_table="nie_log"
+/>

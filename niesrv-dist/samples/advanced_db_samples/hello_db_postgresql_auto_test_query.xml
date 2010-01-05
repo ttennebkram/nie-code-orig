@@ -1,0 +1,14 @@
+<database
+	vendor_tag="postgresql"
+	server_name="your_server"
+	database_name="SearchTrack"
+	username="username"
+	password="password"
+	main_table="nie_log"
+>
+	<!-- Run a test query,
+		does a count(*) on main table by default
+	-->
+	<test_query />
+
+</database>

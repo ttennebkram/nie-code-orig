@@ -1,0 +1,117 @@
+<!--
+	This shows a VERY short configuration using Google as an example.
+	This really isn't a good template file to base yours on, but shows
+	the absolute minimum requirements.
+
+	The comments make it look a little longer than it actually is.
+-->
+<nie_config>
+
+
+	<!-- Note:
+		Here is where the <run_logging> and <search_track> logging / database
+		configuration would go, if this file were configuring them.
+		These are optional, and are omitted in this simple example.
+	-->
+
+
+	<!-- Define the sole NIE Server process -->
+	<!-- ================================== -->
+	<search_tuning>
+
+		<!-- Tell us the machine name and port you will run this process on.
+			Make sure to include the port, even if it is included above.
+		-->
+ 		<nie_server_url>
+			http://localhost:9000
+		</nie_server_url>
+
+
+		<!-- You must tell us about your host search engine -->
+		<!-- ============================================== -->
+		<search_engine_info>
+			<!-- We need the main CGI entry point for the search engine -->
+			<search_url>
+				http://google.com/search
+			</search_url>
+			<!-- For google, we look at the CGI field q,
+				this is how we know what the user searched for.
+			-->
+			<search_term_field_name>q</search_term_field_name>
+
+			<!-- In order for us to place suggestions on the page, we need to
+				know where to put them.  This pattern marks the end of the Google
+				status bar, where it says how many documents were matched and
+				how long it took.
+				We want our suggestions to go AFTER that blue box.
+				Do a View Source in your browser after a Google search to see this.
+			-->
+			<suggestion_marker_text>
+			<![CDATA[
+				</b> seconds.</font></td></tr></table></td></tr></table><p>
+			]]>
+			</suggestion_marker_text>
+
+		</search_engine_info>
+
+
+
+		<!-- Tell us about the search terms and phrases you would like
+			us to have an affect on.
+		-->
+		<fixed_redirection_map>
+
+
+			<!-- Example 1: If somebody searches for Yahoo, just take
+				them immediately to the Yahoo home page, bypassing any
+				search results.
+			-->
+			<map>
+				<term>yahoo</term>
+				<url redirect="1">
+					http://yahoo.com
+				</url>
+			</map>
+
+
+			<!-- Example 2: If somebody searches for News, suggest
+				several news sites, but ALSO show Google's results.
+				Do the same thing if they searched for headlines or current events.
+			-->
+			<map>
+				<term>news</term>
+				<term>headlines</term>
+				<term>current events</term>
+
+				<!-- Suggested URL # 1: Google's own news page -->
+				<url redirect="0">
+					http://news.google.com
+					<title>Google News</title>
+					<description>
+						Google has a very thorough news search portal.
+						They index news articles from many sites.
+					</description>
+				</url>
+
+				<!-- Suggested URL # 2: BBC -->
+				<url redirect="0">
+					http://bbc.co.uk
+					<title>BBC World News</title>
+					<description>
+						News from a more European perspective
+						from Great Britain's number one news source.
+						The BBC is respected around the world for fine journalism.
+					</description>
+				</url>
+
+			</map>	<!-- End of 2nd example -->
+
+
+			<!-- There are other types of mappings you can do. -->
+
+
+		</fixed_redirection_map>
+
+	</search_tuning>
+
+</nie_config>
