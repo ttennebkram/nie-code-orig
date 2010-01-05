@@ -1,0 +1,26 @@
+Looks like we needed a single top level node, I nested the existing top stuff in a <div> pair.
+Gives error
+java.util.EmptyStackException
+        at java.util.Stack.peek(Unknown Source)
+        at org.jdom.input.SAXHandler.characters(SAXHandler.java:483)
+        at org.xml.sax.helpers.XMLFilterImpl.characters(XMLFilterImpl.java:614)
+        at org.apache.xalan.transformer.ResultTreeHandler.characters(ResultTreeH
+andler.java:446)
+        at org.apache.xalan.templates.ElemTextLiteral.execute(ElemTextLiteral.ja
+va:233)
+        at org.apache.xalan.templates.ElemForEach.transformSelectedNodes(ElemFor
+Each.java:495)
+        at org.apache.xalan.templates.ElemApplyTemplates.execute(ElemApplyTempla
+tes.java:193)
+        at org.apache.xalan.transformer.TransformerImpl.executeChildTemplates(Tr
+ansformerImpl.java:2154)
+        at org.apache.xalan.transformer.TransformerImpl.executeChildTemplates(Tr
+ansformerImpl.java:2097)
+        at org.apache.xalan.transformer.TransformerImpl.applyTemplateToNode(Tran
+sformerImpl.java:2029)
+        at org.apache.xalan.transformer.TransformerImpl.transformNode(Transforme
+rImpl.java:1189)
+        at org.apache.xalan.transformer.TransformerImpl.run(TransformerImpl.java
+:2894)
+        at java.lang.Thread.run(Unknown Source)
+

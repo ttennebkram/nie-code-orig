@@ -1,0 +1,1192 @@
+<html xmlns:o="urn:schemas-microsoft-com:office:office"
+xmlns:w="urn:schemas-microsoft-com:office:word"
+xmlns="http://www.w3.org/TR/REC-html40">
+
+<head>
+<meta http-equiv=Content-Type content="text/html; charset=windows-1252">
+<meta name=ProgId content=Word.Document>
+<meta name=Generator content="Microsoft Word 9">
+<meta name=Originator content="Microsoft Word 9">
+<link rel=File-List href="./searchnames-reference_files/filelist.xml">
+<title>SearchNames Command and Configuration Reference</title>
+<!--[if gte mso 9]><xml>
+ <o:DocumentProperties>
+  <o:Author>Mark</o:Author>
+  <o:LastAuthor>Mark</o:LastAuthor>
+  <o:Revision>2</o:Revision>
+  <o:TotalTime>74</o:TotalTime>
+  <o:Created>2002-08-04T05:48:00Z</o:Created>
+  <o:LastSaved>2002-08-04T05:48:00Z</o:LastSaved>
+  <o:Pages>13</o:Pages>
+  <o:Words>2225</o:Words>
+  <o:Characters>12687</o:Characters>
+  <o:Company>NIE</o:Company>
+  <o:Lines>105</o:Lines>
+  <o:Paragraphs>25</o:Paragraphs>
+  <o:CharactersWithSpaces>15580</o:CharactersWithSpaces>
+  <o:Version>9.3821</o:Version>
+ </o:DocumentProperties>
+</xml><![endif]--><!--[if gte mso 9]><xml>
+ <w:WordDocument>
+  <w:View>MasterPages</w:View>
+ </w:WordDocument>
+</xml><![endif]-->
+<style>
+<!--
+ /* Style Definitions */
+p.MsoNormal, li.MsoNormal, div.MsoNormal
+	{mso-style-parent:"";
+	margin:0in;
+	margin-bottom:.0001pt;
+	mso-pagination:widow-orphan;
+	font-size:12.0pt;
+	font-family:"Times New Roman";
+	mso-fareast-font-family:"Times New Roman";}
+h1
+	{mso-style-update:auto;
+	mso-style-next:Normal;
+	margin-top:12.0pt;
+	margin-right:0in;
+	margin-bottom:3.0pt;
+	margin-left:0in;
+	page-break-before:always;
+	mso-pagination:widow-orphan;
+	page-break-after:avoid;
+	mso-outline-level:1;
+	font-size:16.0pt;
+	font-family:Arial;
+	mso-font-kerning:16.0pt;}
+h2
+	{mso-style-update:auto;
+	mso-style-next:Normal;
+	margin-top:12.0pt;
+	margin-right:0in;
+	margin-bottom:3.0pt;
+	margin-left:0in;
+	mso-pagination:widow-orphan;
+	page-break-after:avoid;
+	mso-outline-level:2;
+	font-size:14.0pt;
+	font-family:Arial;
+	mso-bidi-font-style:italic;}
+h3
+	{mso-style-next:Normal;
+	margin-top:12.0pt;
+	margin-right:0in;
+	margin-bottom:3.0pt;
+	margin-left:0in;
+	mso-pagination:widow-orphan;
+	page-break-after:avoid;
+	mso-outline-level:3;
+	font-size:13.0pt;
+	font-family:Arial;}
+h4
+	{mso-style-update:auto;
+	mso-style-next:Normal;
+	margin-top:12.0pt;
+	margin-right:0in;
+	margin-bottom:3.0pt;
+	margin-left:0in;
+	mso-pagination:widow-orphan;
+	page-break-after:avoid;
+	mso-outline-level:4;
+	font-size:12.0pt;
+	mso-bidi-font-size:14.0pt;
+	font-family:Arial;
+	mso-bidi-font-family:"Times New Roman";}
+h5
+	{mso-style-update:auto;
+	mso-style-next:Normal;
+	margin-top:12.0pt;
+	margin-right:0in;
+	margin-bottom:3.0pt;
+	margin-left:0in;
+	mso-pagination:widow-orphan;
+	mso-outline-level:5;
+	font-size:13.0pt;
+	font-family:"Times New Roman";
+	mso-bidi-font-style:italic;}
+a:link, span.MsoHyperlink
+	{color:blue;
+	text-decoration:underline;
+	text-underline:single;}
+a:visited, span.MsoHyperlinkFollowed
+	{color:purple;
+	text-decoration:underline;
+	text-underline:single;}
+@page Section1
+	{size:8.5in 11.0in;
+	margin:1.0in 1.25in 1.0in 1.25in;
+	mso-header-margin:.5in;
+	mso-footer-margin:.5in;
+	mso-paper-source:0;}
+div.Section1
+	{page:Section1;}
+-->
+</style>
+</head>
+
+<body lang=EN-US link=blue vlink=purple style='tab-interval:.5in'>
+
+<div class=Section1>
+
+<h1>SearchNames Command and Configuration Reference</h1>
+
+<p class=MsoNormal>v0.07, 8/3/02</p>
+
+<h1>Overview</h1>
+
+<h2>Where to Find Documentation</h2>
+
+<p class=MsoNormal>The samples directory contains a number of sample HTML forms
+and XML configuration files.</p>
+
+<p class=MsoNormal>The README.txt file contains detailed instructions on how to
+setup and run SearchNames.<span style="mso-spacerun: yes">  </span>Please see
+that file for general instructions.<span style="mso-spacerun: yes"> 
+</span>This file contains some introductory material and a syntax reference
+guide.</p>
+
+<p class=MsoNormal>The reference section of this file is based in part on
+source code comments.<span style="mso-spacerun: yes">  </span>It may be
+reformatted to be more user friendly in a future version.</p>
+
+<h2>searchnames.bat and searchnames.sh Wrappers</h2>
+
+<p class=MsoNormal>SearchNames is written in Java.<span style="mso-spacerun:
+yes">  </span>Therefore, in order to start SearchNames, it is necessary to
+start Java.<span style="mso-spacerun: yes">  </span>However, Java takes many
+command line parameters and can be difficult to start directly.</p>
+
+<p class=MsoNormal>SearchNames solves his problem by providing a &quot;shell
+script&quot; that starts the Java executable and passes it the correct
+parameters to run the SearchNames<span style="mso-spacerun: yes"> 
+</span>application.</p>
+
+<p class=MsoNormal>On Windows NT, 2000 and XP this script is called
+searchnames.bat<span style="mso-spacerun: yes">  </span>On Unix distributions,
+such as Solaris, Linux, FreeBSD, etc. this script is called searchnames.sh</p>
+
+<p class=MsoNormal>You can pass in command line parameters to these scripts,
+and they will in turn be passed on to Java and then to the SearchNames
+application.<span style="mso-spacerun: yes">  </span>For example, your configuration
+file can be passed in as command line parameter.</p>
+
+<p class=MsoNormal>See the README file for more details.</p>
+
+<h2>&quot;Path Names&quot; in XML</h2>
+
+<p class=MsoNormal>An XML file is a hierarchal tree structure similar to a disk
+file system.<span style="mso-spacerun: yes">  </span>When developers want to
+refer to a particular part of an XML tree, they use &quot;path names&quot; that
+look similar to Unix style directory names.</p>
+
+<p class=MsoNormal>Some of the SearchNames warning and error messages use this
+shorthand syntax, so you should be aware of it.</p>
+
+<p class=MsoNormal><![if !supportEmptyParas]>&nbsp;<![endif]><o:p></o:p></p>
+
+<p class=MsoNormal>Example:</p>
+
+<p class=MsoNormal><![if !supportEmptyParas]>&nbsp;<![endif]><o:p></o:p></p>
+
+<p class=MsoNormal>In the XML file below, we want to refer to the string
+&quot;My data&quot;</p>
+
+<p class=MsoNormal>&lt;xml_level1&gt;</p>
+
+<p class=MsoNormal><span style="mso-spacerun: yes">  </span>&lt;xml_level2&gt;</p>
+
+<p class=MsoNormal><span style="mso-spacerun: yes">    </span>My data</p>
+
+<p class=MsoNormal><span style="mso-spacerun: yes">  </span>&lt;/xml_level2&gt;</p>
+
+<p class=MsoNormal>&lt;/xml_level1&gt;</p>
+
+<p class=MsoNormal><![if !supportEmptyParas]>&nbsp;<![endif]><o:p></o:p></p>
+
+<p class=MsoNormal>This can be represented as:</p>
+
+<p class=MsoNormal>/xml_level1/xml_level2</p>
+
+<p class=MsoNormal><![if !supportEmptyParas]>&nbsp;<![endif]><o:p></o:p></p>
+
+<p class=MsoNormal>This conention is a subset of the XML &quot;XPath&quot;
+syntax.</p>
+
+<h1>Overall XML Structure</h1>
+
+<h2>Main Tags</h2>
+
+<p class=MsoNormal>Main tag is located at /nie_config/search_names</p>
+
+<p class=MsoNormal>Which would look something like:</p>
+
+<p class=MsoNormal>&lt;nie_config&gt;</p>
+
+<p class=MsoNormal><span style="mso-spacerun: yes">  </span>&lt;search_names
+…options…&gt;</p>
+
+<p class=MsoNormal><span style="mso-spacerun: yes">    </span>….. search name
+data ….</p>
+
+<p class=MsoNormal><span style="mso-spacerun: yes"> 
+</span>&lt;/search_names&gt;</p>
+
+<p class=MsoNormal>&lt;/nie_config&gt;</p>
+
+<h2>Critical Options</h2>
+
+<h3>The main /nie_config/search_names has two important options:</h3>
+
+<p class=MsoNormal>port=&quot;nnnn&quot; which port to run on</p>
+
+<p class=MsoNormal>admin_password=&quot;password&quot; the password you will
+use to control the server</p>
+
+<h3>/nie_config/search_names/search_names_url</h3>
+
+<p class=MsoNormal>This is the machine name and port that you will be running
+SearchNames on.</p>
+
+<p class=MsoNormal>… header options …</p>
+
+<p class=MsoNormal>&lt;search_names_url&gt;</p>
+
+<p class=MsoNormal><span style="mso-spacerun: yes">  </span><a
+href="http://my_machine:nnnn/">http://my_machine:nnnn</a></p>
+
+<p class=MsoNormal>&lt;/search_names_url&gt;</p>
+
+<p class=MsoNormal>Note that you DO need to specify a port in BOTH</p>
+
+<p class=MsoNormal>&lt;search_names port=&quot;nnnn&quot;&gt;</p>
+
+<p class=MsoNormal>AND in</p>
+
+<p class=MsoNormal><a href="http://my_machine:nnnn/">http://my_machine:nnnn</a></p>
+
+<h3>/nie_config/search_names/search_engine_info</h3>
+
+<p class=MsoNormal>Tell us about your search server.</p>
+
+<p class=MsoNormal>See the section below for details</p>
+
+<h3>/nie_config/search_names/fixed_redirection_map</h3>
+
+<p class=MsoNormal>Tell us about search terms you'd like to affect, and what to
+do when we encounter them.</p>
+
+<p class=MsoNormal>See the Map section below for details.</p>
+
+<h1>Search Engine Information</h1>
+
+<p class=MsoNormal>Tell us about your search engine</p>
+
+<h2>From the code:</h2>
+
+<p class=MsoNormal><span style='mso-tab-count:1'>            </span>// The name
+of the query field to look for</p>
+
+<p class=MsoNormal><span style='mso-tab-count:1'>            </span>// For
+example, with Verity, it would be QueryText</p>
+
+<p class=MsoNormal><span style='mso-tab-count:1'>            </span>// This one
+is REQUIRED</p>
+
+<p class=MsoNormal><span style='mso-tab-count:1'>            </span>private
+static final String QUERY_FIELD_PATH =</p>
+
+<p class=MsoNormal><span style='mso-tab-count:2'>                        </span>&quot;search_term_field_name&quot;;</p>
+
+<p class=MsoNormal><span style='mso-tab-count:1'>            </span>// This one
+is REQUIRED</p>
+
+<p class=MsoNormal><span style='mso-tab-count:1'>            </span>private
+static final String SEARCH_ENGINE_URL_PATH =</p>
+
+<p class=MsoNormal><span style='mso-tab-count:2'>                        </span>&quot;search_url&quot;;</p>
+
+<p class=MsoNormal><span style='mso-tab-count:1'>            </span>private
+static final String VENDOR_PATH =</p>
+
+<p class=MsoNormal><span style='mso-tab-count:2'>                        </span>&quot;vendor&quot;;</p>
+
+<p class=MsoNormal><span style='mso-tab-count:1'>            </span>private
+static final String NO_ACTION_INDICATOR_PATH =</p>
+
+<p class=MsoNormal><span style='mso-tab-count:2'>                        </span>&quot;no_action_indicator_field&quot;;</p>
+
+<p class=MsoNormal><![if !supportEmptyParas]>&nbsp;<![endif]><o:p></o:p></p>
+
+<p class=MsoNormal><span style='mso-tab-count:1'>            </span>// Markers
+for figuring out where to put the various suggestions</p>
+
+<p class=MsoNormal><span style='mso-tab-count:1'>            </span>// Can have
+more than one!</p>
+
+<p class=MsoNormal><span style='mso-tab-count:1'>            </span>private
+static final String SUGGESTION_MARKER_TEXT_PATH =</p>
+
+<p class=MsoNormal><span style='mso-tab-count:2'>                        </span>&quot;suggestion_marker_text&quot;;</p>
+
+<p class=MsoNormal><span style='mso-tab-count:1'>            </span>// A flag
+that modifies the behavior of all the markers specified</p>
+
+<p class=MsoNormal><span style='mso-tab-count:1'>            </span>private
+static final String SUGGESTION_MARKER_MODIFIER_PATH =</p>
+
+<p class=MsoNormal><span style='mso-tab-count:2'>                        </span>SUGGESTION_MARKER_TEXT_PATH
++ &quot;_modifiers&quot;;</p>
+
+<p class=MsoNormal><span style='mso-tab-count:1'>            </span>//
+Atributes to change the modified behavior</p>
+
+<p class=MsoNormal><span style='mso-tab-count:1'>            </span>private
+static final String MARKER_TEXT_AFTER_ATTR = &quot;after&quot;;</p>
+
+<p class=MsoNormal><span style='mso-tab-count:1'>            </span>private
+static final String MARKER_TEXT_REPLACE_ATTR = &quot;replace&quot;;</p>
+
+<p class=MsoNormal><span style='mso-tab-count:1'>            </span>private static
+final String MARKER_TEXT_CASEN_ATTR = &quot;casen&quot;;</p>
+
+<p class=MsoNormal><![if !supportEmptyParas]>&nbsp;<![endif]><o:p></o:p></p>
+
+<p class=MsoNormal><span style='mso-tab-count:1'>            </span>// By
+default, where do we put the new text</p>
+
+<p class=MsoNormal><span style='mso-tab-count:1'>            </span>private
+static final boolean DEFAULT_SUGGESTION_MARKER_NEW_TEXT_AFTER</p>
+
+<p class=MsoNormal><span style='mso-tab-count:2'>                        </span>=
+true;</p>
+
+<p class=MsoNormal><span style='mso-tab-count:1'>            </span>// By
+default, should we replace the marker text when we find it</p>
+
+<p class=MsoNormal><span style='mso-tab-count:1'>            </span>private static
+final boolean DEFAULT_SUGGESTION_MARKER_IS_REPLACED</p>
+
+<p class=MsoNormal><span style='mso-tab-count:2'>                        </span>=
+false;</p>
+
+<p class=MsoNormal><span style='mso-tab-count:1'>            </span>// By
+default, are the patterns case sensitive</p>
+
+<p class=MsoNormal><span style='mso-tab-count:1'>            </span>private
+static final boolean DEFAULT_SUGGESTION_MARKER_IS_CASEN</p>
+
+<p class=MsoNormal><span style='mso-tab-count:2'>                        </span>=
+false;</p>
+
+<h2>Sample:</h2>
+
+<p class=MsoNormal>&lt;!-- Edit: Insert URL of search engine here<span
+style="mso-spacerun: yes">  </span>--&gt;</p>
+
+<p class=MsoNormal>&lt;!-- Tell us about the search engine we're shimming
+--&gt;</p>
+
+<p class=MsoNormal>&lt;!-- Define the name of the sewarch box field --&gt;</p>
+
+<p class=MsoNormal>&lt;!-- For Verity, we look at QueryText --&gt;</p>
+
+<p class=MsoNormal>&lt;search_engine_info&gt;</p>
+
+<p class=MsoNormal><span style="mso-spacerun: yes"> 
+</span>&lt;search_term_field_name&gt;QueryText&lt;/search_term_field_name&gt;</p>
+
+<p class=MsoNormal><span style="mso-spacerun: yes">  </span>&lt;search_url&gt;</p>
+
+<p class=MsoNormal><span style="mso-spacerun: yes">    </span>http://www.aopa.org/search97cgi/s97_cgi</p>
+
+<p class=MsoNormal>&lt;!-- Comment out to use internal test s97 server --&gt;</p>
+
+<p class=MsoNormal>&lt;!--<span style="mso-spacerun: yes">   
+</span>http://s97a/search97cgi/s97_cgi<span style="mso-spacerun: yes"> 
+</span>--&gt;</p>
+
+<p class=MsoNormal><span style="mso-spacerun: yes">  </span>&lt;/search_url&gt;</p>
+
+<p class=MsoNormal><![if !supportEmptyParas]>&nbsp;<![endif]><o:p></o:p></p>
+
+<p class=MsoNormal>&lt;vendor&gt;Verity / Search97&lt;/vendor&gt;</p>
+
+<p class=MsoNormal>&lt;!-- Optional, for future use --&gt;</p>
+
+<p class=MsoNormal>&lt;!-- If this field is present, do NOT take any</p>
+
+<p class=MsoNormal><span style="mso-spacerun: yes">  </span>SearchNames
+actions.<span style="mso-spacerun: yes">  </span>In the case of</p>
+
+<p class=MsoNormal><span style="mso-spacerun: yes">  </span>Verity, this
+indicates they have</p>
+
+<p class=MsoNormal><span style="mso-spacerun: yes">  </span>browsed to page 2
+of the results,</p>
+
+<p class=MsoNormal><span style="mso-spacerun: yes">  </span>or a subsequent
+page.</p>
+
+<p class=MsoNormal><span style="mso-spacerun: yes">          </span>--&gt;</p>
+
+<p class=MsoNormal><![if !supportEmptyParas]>&nbsp;<![endif]><o:p></o:p></p>
+
+<p class=MsoNormal>&lt;no_action_indicator_field&gt;ResultStart&lt;/no_action_indicator_field&gt;</p>
+
+<p class=MsoNormal>&lt;no_action_indicator_field&gt;nie_no_op&lt;/no_action_indicator_field&gt;</p>
+
+<p class=MsoNormal>&lt;suggestion_marker_text&gt;</p>
+
+<p class=MsoNormal><span style="mso-spacerun: yes">  </span>&lt;![CDATA[</p>
+
+<p class=MsoNormal><span style="mso-spacerun: yes">    </span>&lt;!-- Search
+again --&gt;</p>
+
+<p class=MsoNormal><span style="mso-spacerun: yes">  </span>]]&gt;</p>
+
+<p class=MsoNormal>&lt;/suggestion_marker_text&gt;</p>
+
+<p class=MsoNormal>&lt;/search_engine_info&gt;</p>
+
+<h2>Notes about &lt;suggestion_marker_text&gt;</h2>
+
+<p class=MsoNormal>This tells us where to look on YOUR results page to put the
+webmaster suggests</p>
+
+<p class=MsoNormal>You can have more than one; we'll try them in order.</p>
+
+<h2>Notes about &lt;suggestion_marker_text_modifier&gt;</h2>
+
+<p class=MsoNormal>These are options that affect how we match text and where we
+put our text.</p>
+
+<p class=MsoNormal>If your marker text contains angle brackets, as HTML OFTEN
+does, then you should enclose your marker text inside a CDATA section, or use
+&amp;lt; for &lt;, &amp;gt; for &gt;, etc.</p>
+
+<p class=MsoNormal>For example, by default we do NOT care about upper vs lower
+case.<span style="mso-spacerun: yes">  </span>But if you need us to, then you
+can set that.<span style="mso-spacerun: yes">  </span>Or you may want us to put
+our suggestion BEFORE your marker text, vs after, or to replace it all
+together.</p>
+
+<h1>Look and Feel Defaults</h1>
+
+<p class=MsoNormal>There are three types of look and feel control you have over
+the Webmaster Suggests and Alternative Suggestions areas.</p>
+
+<p class=MsoNormal>ALL of these are set under the path /nie_config/search_names</p>
+
+<p class=MsoNormal>They can be overridden in specific map tags.<span
+style="mso-spacerun: yes">  </span>For example, you can have a default icon,
+and then change it for a few specific terms to something else.</p>
+
+<p class=MsoNormal>Our apologies for the very rough formatting of this
+documentation; clearly it needs lots of work.</p>
+
+<h2>List of Settings Tags</h2>
+
+<p class=MsoNormal><b>default_webmaster_suggests_header<o:p></o:p></b></p>
+
+<p class=MsoNormal>Controls the text that says &quot;The Webmaster
+Suggests&quot;.</p>
+
+<p class=MsoNormal>You can change both the message and the appearance.</p>
+
+<p class=MsoNormal>Mirrors many of the HTML &lt;font&gt; tag attributes.</p>
+
+<p class=MsoNormal>Note that this does NOT control the appearance of the titles,
+summaries and links at this time.</p>
+
+<p class=MsoNormal><![if !supportEmptyParas]>&nbsp;<![endif]><o:p></o:p></p>
+
+<p class=MsoNormal><b>default_webmaster_suggests_box<o:p></o:p></b></p>
+
+<p class=MsoNormal>Controls the box around the Webmaster Suggestions.</p>
+
+<p class=MsoNormal>You can control things like the width, color and border.</p>
+
+<p class=MsoNormal>Mirrors many of the HTML &lt;table&gt; tag options.</p>
+
+<p class=MsoNormal><![if !supportEmptyParas]>&nbsp;<![endif]><o:p></o:p></p>
+
+<p class=MsoNormal><b>default_webmaster_suggests_icon<o:p></o:p></b></p>
+
+<p class=MsoNormal>The icon that is presented in the left part of the Webmaster
+Suggests box.</p>
+
+<p class=MsoNormal>If you don't haven an icon, you'll get a green exclamation
+point.</p>
+
+<p class=MsoNormal>If you don't want an icon NOR the green exclamation point,
+then setup an icon that refers to a blank pixel; this will be addressed in a
+future version.</p>
+
+<p class=MsoNormal>Mirrors many of the HTML &lt;img&gt; tag options.</p>
+
+<p class=MsoNormal><![if !supportEmptyParas]>&nbsp;<![endif]><o:p></o:p></p>
+
+<p class=MsoNormal><b>default_alternate_suggestions_heading<o:p></o:p></b></p>
+
+<p class=MsoNormal>Controls the &quot;Related Terms&quot; message we put before
+the hyperlinked Alternative Suggetions.</p>
+
+<p class=MsoNormal>This controls just the intro text, not the links themselves.</p>
+
+<p class=MsoNormal>Mirrors many of the HTML &lt;font&gt; tag options.</p>
+
+<p class=MsoNormal><![if !supportEmptyParas]>&nbsp;<![endif]><o:p></o:p></p>
+
+<p class=MsoNormal><![if !supportEmptyParas]>&nbsp;<![endif]><o:p></o:p></p>
+
+<h2>default_webmaster_suggests_header</h2>
+
+<h3>Sample</h3>
+
+<p class=MsoNormal><span style="mso-spacerun:
+yes"> </span>&lt;default_webmaster_suggests_header</p>
+
+<p class=MsoNormal><span style="mso-spacerun: yes">   </span>text=&quot;The
+AOPA Webmaster suggests:&quot;</p>
+
+<p class=MsoNormal><span style="mso-spacerun: yes">  
+</span>color=&quot;#000084&quot;</p>
+
+<p class=MsoNormal><span style="mso-spacerun: yes">  
+</span>size=&quot;+1&quot;</p>
+
+<p class=MsoNormal><span style="mso-spacerun: yes">  
+</span>markup_before=&quot;&amp;lt;b&amp;gt;&quot;</p>
+
+<p class=MsoNormal><span style="mso-spacerun: yes">   </span>markup_after=&quot;&amp;lt;/b&amp;gt;&quot;</p>
+
+<p class=MsoNormal><span style="mso-spacerun: yes">   </span>face=&quot;'MS
+Sans Serif',Geneva,sans-serif&quot;</p>
+
+<p class=MsoNormal><span style="mso-spacerun: yes"> </span>/&gt;</p>
+
+<h3>From the Code</h3>
+
+<p class=MsoNormal><span style='mso-tab-count:3'>                                    </span>lSlogan
+= JDOMHelper.getTextFromPathOrInheritTrimOrNull(</p>
+
+<p class=MsoNormal><span style='mso-tab-count:4'>                                                </span>map,
+kMainTag, &quot;text&quot;,</p>
+
+<p class=MsoNormal><span style='mso-tab-count:4'>                                                </span>kBackupTag,
+2</p>
+
+<p class=MsoNormal><span style='mso-tab-count:4'>                                                </span>);</p>
+
+<p class=MsoNormal><span style='mso-tab-count:3'>                                    </span>lSloganColor
+= JDOMHelper.getTextFromPathOrInheritTrimOrNull(</p>
+
+<p class=MsoNormal><span style='mso-tab-count:4'>                                                </span>map,
+kMainTag, &quot;color&quot;,</p>
+
+<p class=MsoNormal><span style='mso-tab-count:4'>                                                </span>kBackupTag,
+2</p>
+
+<p class=MsoNormal><span style='mso-tab-count:4'>                                                </span>);</p>
+
+<p class=MsoNormal><span style='mso-tab-count:3'>                                    </span>lSloganSize
+= JDOMHelper.getTextFromPathOrInheritTrimOrNull(</p>
+
+<p class=MsoNormal><span style='mso-tab-count:4'>                                                </span>map,
+kMainTag, &quot;size&quot;,</p>
+
+<p class=MsoNormal><span style='mso-tab-count:4'>                                                </span>kBackupTag,
+2</p>
+
+<p class=MsoNormal><span style='mso-tab-count:4'>                                                </span>);</p>
+
+<p class=MsoNormal><span style='mso-tab-count:3'>                                    </span>lSloganFontFace
+= JDOMHelper.getTextFromPathOrInheritTrimOrNull(</p>
+
+<p class=MsoNormal><span style='mso-tab-count:4'>                                                </span>map,
+kMainTag, &quot;face&quot;,</p>
+
+<p class=MsoNormal><span style='mso-tab-count:4'>                                                </span>kBackupTag,
+2</p>
+
+<p class=MsoNormal><span style='mso-tab-count:4'>                                                </span>);</p>
+
+<p class=MsoNormal><span style='mso-tab-count:3'>                                    </span>lSloganOpenText
+= JDOMHelper.getTextFromPathOrInheritTrimOrNull(</p>
+
+<p class=MsoNormal><span style='mso-tab-count:4'>                                                </span>map,
+kMainTag, &quot;markup_before&quot;,</p>
+
+<p class=MsoNormal><span style='mso-tab-count:4'>                                                </span>kBackupTag,
+2</p>
+
+<p class=MsoNormal><span style='mso-tab-count:4'>                                                </span>);</p>
+
+<p class=MsoNormal><span style='mso-tab-count:3'>                                    </span>lSloganCloseText
+= JDOMHelper.getTextFromPathOrInheritTrimOrNull(</p>
+
+<p class=MsoNormal><span style='mso-tab-count:4'>                                                </span>map,
+kMainTag, &quot;markup_after&quot;,</p>
+
+<p class=MsoNormal><span style='mso-tab-count:4'>                                                </span>kBackupTag,
+2</p>
+
+<p class=MsoNormal><span style='mso-tab-count:4'>                                                </span>);</p>
+
+<h2>default_webmaster_suggests_box</h2>
+
+<h3>Sample</h3>
+
+<p class=MsoNormal>&lt;default_webmaster_suggests_box</p>
+
+<p class=MsoNormal><span style="mso-spacerun: yes"> 
+</span>bgcolor=&quot;#CEFFFF&quot;</p>
+
+<p class=MsoNormal>/&gt;</p>
+
+<h3>From the Code</h3>
+
+<p class=MsoNormal><span style='mso-tab-count:3'>                                    </span>lTableWidth
+= JDOMHelper.getTextFromPathOrInheritTrimOrNull(</p>
+
+<p class=MsoNormal><span style='mso-tab-count:4'>                                                </span>map,
+kMainTag, &quot;width&quot;,</p>
+
+<p class=MsoNormal><span style='mso-tab-count:4'>                                                </span>kBackupTag,
+2</p>
+
+<p class=MsoNormal><span style='mso-tab-count:3'>                                    </span><span
+style='mso-tab-count:1'>            </span>);</p>
+
+<p class=MsoNormal><span style='mso-tab-count:3'>                                    </span>lTableBorder
+= JDOMHelper.getTextFromPathOrInheritTrimOrNull(</p>
+
+<p class=MsoNormal><span style='mso-tab-count:4'>                                                </span>map,
+kMainTag, &quot;border&quot;,</p>
+
+<p class=MsoNormal><span style='mso-tab-count:4'>                                                </span>kBackupTag,
+2</p>
+
+<p class=MsoNormal><span style='mso-tab-count:4'>                                                </span>);</p>
+
+<p class=MsoNormal><span style='mso-tab-count:3'>                                    </span>lTableCellPadding
+= JDOMHelper.getTextFromPathOrInheritTrimOrNull(</p>
+
+<p class=MsoNormal><span style='mso-tab-count:4'>                                                </span>map,
+kMainTag, &quot;cellpadding&quot;,</p>
+
+<p class=MsoNormal><span style='mso-tab-count:4'>                                                </span>kBackupTag,
+2</p>
+
+<p class=MsoNormal><span style='mso-tab-count:4'>                                                </span>);</p>
+
+<p class=MsoNormal><span style='mso-tab-count:3'>                                    </span>lTableCellSpacing
+= JDOMHelper.getTextFromPathOrInheritTrimOrNull(</p>
+
+<p class=MsoNormal><span style='mso-tab-count:4'>                                                </span>map,
+kMainTag, &quot;cellspacing&quot;,</p>
+
+<p class=MsoNormal><span style='mso-tab-count:4'>                                                </span>kBackupTag,
+2</p>
+
+<p class=MsoNormal><span style='mso-tab-count:4'>                                                </span>);</p>
+
+<p class=MsoNormal><span style='mso-tab-count:3'>                                    </span>//
+Note: it's now &quot;bgcolor&quot;, vs &quot;color&quot;, to be consistent with
+html</p>
+
+<p class=MsoNormal><span style='mso-tab-count:3'>                                    </span>lTableBGColor
+= JDOMHelper.getTextFromPathOrInheritTrimOrNull(</p>
+
+<p class=MsoNormal><span style='mso-tab-count:4'>                                                </span>map,
+kMainTag, &quot;bgcolor&quot;,</p>
+
+<p class=MsoNormal><span style='mso-tab-count:4'>                                                </span>kBackupTag,
+2</p>
+
+<p class=MsoNormal><span style='mso-tab-count:4'>                                                </span>);</p>
+
+<p class=MsoNormal><span style='mso-tab-count:3'>                                    </span>//
+NOTE: it's &quot;background&quot;, not &quot;background_image&quot;</p>
+
+<p class=MsoNormal><span style='mso-tab-count:3'>                                    </span>lTableBGImage
+= JDOMHelper.getTextFromPathOrInheritTrimOrNull(</p>
+
+<p class=MsoNormal><span style='mso-tab-count:4'>                                                </span>map,
+kMainTag, &quot;background&quot;,</p>
+
+<p class=MsoNormal><span style='mso-tab-count:4'>                                                </span>kBackupTag,
+2</p>
+
+<p class=MsoNormal><span style='mso-tab-count:4'>                                                </span>);</p>
+
+<h2>default_webmaster_suggests_icon</h2>
+
+<h3>Sample</h3>
+
+<p class=MsoNormal>&lt;default_webmaster_suggests_icon</p>
+
+<p class=MsoNormal><span style="mso-spacerun: yes"> 
+</span>src=&quot;http://www.aopa.org/images/rep/morearrow.gif&quot;</p>
+
+<p class=MsoNormal><span style="mso-spacerun: yes">  </span>width=&quot;7&quot;</p>
+
+<p class=MsoNormal><span style="mso-spacerun: yes"> 
+</span>height=&quot;11&quot;</p>
+
+<p class=MsoNormal><span style="mso-spacerun: yes">  </span>alt=&quot;[more
+arrow]&quot;</p>
+
+<p class=MsoNormal>/&gt;</p>
+
+<h3>From the Code</h3>
+
+<p class=MsoNormal><span style='mso-tab-count:3'>                                    </span>lIconSrc
+= JDOMHelper.getTextFromPathOrInheritTrimOrNull(</p>
+
+<p class=MsoNormal><span style='mso-tab-count:4'>                                                </span>map,
+kMainTag, &quot;src&quot;,</p>
+
+<p class=MsoNormal><span style='mso-tab-count:4'>                                                </span>kBackupTag,
+2</p>
+
+<p class=MsoNormal><span style='mso-tab-count:4'>                                                </span>);</p>
+
+<p class=MsoNormal><span style='mso-tab-count:3'>                                    </span>lIconAlt
+= JDOMHelper.getTextFromPathOrInheritTrimOrNull(</p>
+
+<p class=MsoNormal><span style='mso-tab-count:4'>                                                </span>map,
+kMainTag, &quot;alt&quot;,</p>
+
+<p class=MsoNormal><span style='mso-tab-count:4'>                                                </span>kBackupTag,
+2</p>
+
+<p class=MsoNormal><span style='mso-tab-count:4'>                                                </span>);</p>
+
+<p class=MsoNormal><span style='mso-tab-count:3'>                                    </span>lIconWidth
+= JDOMHelper.getTextFromPathOrInheritTrimOrNull(</p>
+
+<p class=MsoNormal><span style='mso-tab-count:4'>                                                </span>map,
+kMainTag, &quot;width&quot;,</p>
+
+<p class=MsoNormal><span style='mso-tab-count:4'>                                                </span>kBackupTag,
+2</p>
+
+<p class=MsoNormal><span style='mso-tab-count:4'>                                                </span>);</p>
+
+<p class=MsoNormal><span style='mso-tab-count:3'>                                    </span>lIconHeight
+= JDOMHelper.getTextFromPathOrInheritTrimOrNull(</p>
+
+<p class=MsoNormal><span style='mso-tab-count:4'>                                                </span>map,
+kMainTag, &quot;height&quot;,</p>
+
+<p class=MsoNormal><span style='mso-tab-count:4'>                                                </span>kBackupTag,
+2</p>
+
+<p class=MsoNormal><span style='mso-tab-count:4'>                                                </span>);</p>
+
+<p class=MsoNormal><span style='mso-tab-count:3'>                                    </span>lIconBorder
+= JDOMHelper.getTextFromPathOrInheritTrimOrNull(</p>
+
+<p class=MsoNormal><span style='mso-tab-count:4'>                                                </span>map,
+kMainTag, &quot;border&quot;,</p>
+
+<p class=MsoNormal><span style='mso-tab-count:4'>                                                </span>kBackupTag,
+2</p>
+
+<p class=MsoNormal><span style='mso-tab-count:4'>                                                </span>);</p>
+
+<p class=MsoNormal><span style='mso-tab-count:3'>                                    </span>lIconVSpace
+= JDOMHelper.getTextFromPathOrInheritTrimOrNull(</p>
+
+<p class=MsoNormal><span style='mso-tab-count:4'>                                                </span>map,
+kMainTag, &quot;vspace&quot;,</p>
+
+<p class=MsoNormal><span style='mso-tab-count:4'>                                                </span>kBackupTag,
+2</p>
+
+<p class=MsoNormal><span style='mso-tab-count:4'>                                                </span>);</p>
+
+<p class=MsoNormal><span style='mso-tab-count:3'>                                    </span>lIconHSpace
+= JDOMHelper.getTextFromPathOrInheritTrimOrNull(</p>
+
+<p class=MsoNormal><span style='mso-tab-count:4'>                                                </span>map,
+kMainTag, &quot;hspace&quot;,</p>
+
+<p class=MsoNormal><span style='mso-tab-count:4'>                                                </span>kBackupTag,
+2</p>
+
+<p class=MsoNormal><span style='mso-tab-count:4'>                                                </span>);</p>
+
+<h2>default_alternate_suggestions_heading</h2>
+
+<h3>Sample</h3>
+
+<p class=MsoNormal>&lt;default_alternate_suggestions_heading</p>
+
+<p class=MsoNormal><span style="mso-spacerun: yes">  </span>text=&quot;You
+might also want to check out:&quot;</p>
+
+<p class=MsoNormal><span style="mso-spacerun: yes"> 
+</span>color=&quot;#330088&quot;</p>
+
+<p class=MsoNormal><span style="mso-spacerun: yes">  </span>size=&quot;-1&quot;</p>
+
+<p class=MsoNormal><span style="mso-spacerun: yes"> 
+</span>markup_before=&quot;&amp;lt;b&amp;gt;&quot;</p>
+
+<p class=MsoNormal><span style="mso-spacerun: yes"> 
+</span>markup_after=&quot;&amp;lt;/b&amp;gt;&quot;</p>
+
+<p class=MsoNormal><span style="mso-spacerun: yes">  </span>face=&quot;'MS Sans
+Serif',Geneva,sans-serif&quot;</p>
+
+<p class=MsoNormal>/&gt;</p>
+
+<h3>From the Code</h3>
+
+<p class=MsoNormal><span style='mso-tab-count:3'>                                    </span>lSlogan
+= JDOMHelper.getTextFromPathOrInheritTrimOrNull(</p>
+
+<p class=MsoNormal><span style='mso-tab-count:4'>                                                </span>map,
+kMainTag, &quot;text&quot;,</p>
+
+<p class=MsoNormal><span style='mso-tab-count:4'>                                                </span>kBackupTag,
+2</p>
+
+<p class=MsoNormal><span style='mso-tab-count:4'>                                                </span>);</p>
+
+<p class=MsoNormal><span style='mso-tab-count:3'>                                    </span>lSloganColor
+= JDOMHelper.getTextFromPathOrInheritTrimOrNull(</p>
+
+<p class=MsoNormal><span style='mso-tab-count:4'>                                                </span>map,
+kMainTag, &quot;color&quot;,</p>
+
+<p class=MsoNormal><span style='mso-tab-count:4'>                                                </span>kBackupTag,
+2</p>
+
+<p class=MsoNormal><span style='mso-tab-count:4'>                                                </span>);</p>
+
+<p class=MsoNormal><span style='mso-tab-count:3'>                                    </span>lSloganSize
+= JDOMHelper.getTextFromPathOrInheritTrimOrNull(</p>
+
+<p class=MsoNormal><span style='mso-tab-count:4'>                                                </span>map,
+kMainTag, &quot;size&quot;,</p>
+
+<p class=MsoNormal><span style='mso-tab-count:4'>                                                </span>kBackupTag,
+2</p>
+
+<p class=MsoNormal><span style='mso-tab-count:4'>                                                </span>);</p>
+
+<p class=MsoNormal><span style='mso-tab-count:3'>                                    </span>lSloganFontFace
+= JDOMHelper.getTextFromPathOrInheritTrimOrNull(</p>
+
+<p class=MsoNormal><span style='mso-tab-count:4'>                                                </span>map,
+kMainTag, &quot;face&quot;,</p>
+
+<p class=MsoNormal><span style='mso-tab-count:4'>                                                </span>kBackupTag,
+2</p>
+
+<p class=MsoNormal><span style='mso-tab-count:4'>                                                </span>);</p>
+
+<p class=MsoNormal><span style='mso-tab-count:3'>                                    </span>lSloganOpenText
+= JDOMHelper.getTextFromPathOrInheritTrimOrNull(</p>
+
+<p class=MsoNormal><span style='mso-tab-count:1'>            </span><span
+style='mso-tab-count:3'>                                    </span>map,
+kMainTag, &quot;markup_before&quot;,</p>
+
+<p class=MsoNormal><span style='mso-tab-count:4'>                                                </span>kBackupTag,
+2</p>
+
+<p class=MsoNormal><span style='mso-tab-count:4'>                                                </span>);</p>
+
+<p class=MsoNormal><span style='mso-tab-count:3'>                                    </span>lSloganCloseText
+= JDOMHelper.getTextFromPathOrInheritTrimOrNull(</p>
+
+<p class=MsoNormal><span style='mso-tab-count:4'>                                                </span>map,
+kMainTag, &quot;markup_after&quot;,</p>
+
+<p class=MsoNormal><span style='mso-tab-count:4'>                                                </span>kBackupTag,
+2</p>
+
+<p class=MsoNormal><span style='mso-tab-count:4'>                                                </span>);</p>
+
+<p class=MsoNormal><span style='mso-tab-count:3'>                                    </span>lTableBGColor
+= JDOMHelper.getTextFromPathOrInheritTrimOrNull(</p>
+
+<p class=MsoNormal><span style='mso-tab-count:1'>            </span><span
+style='mso-tab-count:3'>                                    </span>map,
+kMainTag, &quot;color&quot;,</p>
+
+<p class=MsoNormal><span style='mso-tab-count:4'>                                                </span>kBackupTag,
+2</p>
+
+<p class=MsoNormal><span style='mso-tab-count:4'>                                                </span>);</p>
+
+<h1>Map Entries</h1>
+
+<p class=MsoNormal>The path /nie_config/search_names/fixed_redirection_map
+should contain one or more &lt;map&gt; entries.</p>
+
+<p class=MsoNormal>Each mapping can have more than one search term or phrase
+that will match.<span style="mso-spacerun: yes">  </span>Also, it can then suggest
+one or more URL or related term.<span style="mso-spacerun: yes">  </span>The
+entire map is treated the same, in terms of the action that will be taken,
+regardless of which term in the group matches.<span style="mso-spacerun: yes"> 
+</span>A term should only be used in one map.</p>
+
+<p class=MsoNormal>When specifying a URL that will be used as a Webmaster
+Suggestion, you should also specify a title and description.</p>
+
+<h2>Example:</h2>
+
+<p class=MsoNormal>… preamble of config file ….</p>
+
+<p class=MsoNormal>&lt;fixed_redirection_map&gt;</p>
+
+<p class=MsoNormal><span style="mso-spacerun: yes">  </span>&lt;map&gt;</p>
+
+<p class=MsoNormal><span style="mso-spacerun: yes">    </span>… map # 1 details
+…</p>
+
+<p class=MsoNormal><span style="mso-spacerun: yes">  </span>&lt;/map&gt;</p>
+
+<p class=MsoNormal><span style="mso-spacerun: yes">  </span>&lt;map&gt;</p>
+
+<p class=MsoNormal><span style="mso-spacerun: yes">    </span>… map # 2 details
+…</p>
+
+<p class=MsoNormal><span style="mso-spacerun: yes">  </span>&lt;/map&gt;</p>
+
+<p class=MsoNormal><span style="mso-spacerun: yes">  </span>… etc …</p>
+
+<p class=MsoNormal>&lt;/fixed_redirection_map&gt;</p>
+
+<h2>Three Basic Types of Map Entries</h2>
+
+<h3>Sample Map Entry for a Simple Redirect:</h3>
+
+<p class=MsoNormal>&lt;map&gt;</p>
+
+<p class=MsoNormal><span style="mso-spacerun: yes"> 
+</span>&lt;term&gt;join&lt;/term&gt;</p>
+
+<p class=MsoNormal><span style="mso-spacerun: yes"> 
+</span>&lt;term&gt;joining&lt;/term&gt;</p>
+
+<p class=MsoNormal><span style="mso-spacerun: yes">  </span>&lt;term&gt;join
+aopa&lt;/term&gt;</p>
+
+<p class=MsoNormal><span style="mso-spacerun: yes">  </span>&lt;term&gt;joining
+aopa&lt;/term&gt;</p>
+
+<p class=MsoNormal><span style="mso-spacerun: yes">  </span>&lt;term&gt;how to
+join&lt;/term&gt;</p>
+
+<p class=MsoNormal><span style="mso-spacerun: yes">  </span>&lt;term&gt;how to
+join aopa&lt;/term&gt;</p>
+
+<p class=MsoNormal><span style="mso-spacerun: yes"> 
+</span>&lt;term&gt;signup&lt;/term&gt;</p>
+
+<p class=MsoNormal><span style="mso-spacerun: yes">  </span>&lt;term&gt;sign
+up&lt;/term&gt;</p>
+
+<p class=MsoNormal><span style="mso-spacerun: yes">  </span>&lt;term&gt;signing
+up&lt;/term&gt;</p>
+
+<p class=MsoNormal><span style="mso-spacerun: yes"> 
+</span>&lt;url&gt;http://www.aopa.org/join/&lt;/url&gt;</p>
+
+<p class=MsoNormal>&lt;/map&gt;</p>
+
+<h3>Sample Map Entry for a Webmaster Suggests:</h3>
+
+<p class=MsoNormal>&lt;map&gt;</p>
+
+<p class=MsoNormal><span style="mso-spacerun: yes">  </span>&lt;term&gt;phil
+boyer&lt;/term&gt;</p>
+
+<p class=MsoNormal><span style="mso-spacerun: yes"> 
+</span>&lt;term&gt;boyer&lt;/term&gt;</p>
+
+<p class=MsoNormal><span style="mso-spacerun: yes"> 
+</span>&lt;term&gt;president&lt;/term&gt;</p>
+
+<p class=MsoNormal><span style="mso-spacerun: yes">  </span>&lt;url
+redirect=&quot;0&quot;&gt;</p>
+
+<p class=MsoNormal><span style="mso-spacerun: yes">   
+</span>http://www.aopa.org/prez/boyerbio.html</p>
+
+<p class=MsoNormal><span style="mso-spacerun: yes">    </span>&lt;title&gt;AOPA
+President Phil Boyer&lt;/title&gt;</p>
+
+<p class=MsoNormal><span style="mso-spacerun: yes">   
+</span>&lt;description&gt;</p>
+
+<p class=MsoNormal><span style="mso-spacerun: yes">      </span>Phil Boyer
+became only the third</p>
+
+<p class=MsoNormal><span style="mso-spacerun: yes">      </span>full-time
+president in the 60-year</p>
+
+<p class=MsoNormal><span style="mso-spacerun: yes">      </span>history of the
+Aircraft Owners and</p>
+
+<p class=MsoNormal><span style="mso-spacerun: yes">      </span>Pilots
+Association on January 1, 1991.</p>
+
+<p class=MsoNormal><span style="mso-spacerun: yes">      </span>Boyer was
+previously Senior</p>
+
+<p class=MsoNormal><span style="mso-spacerun: yes">      </span>Vice
+President-Development for Capital</p>
+
+<p class=MsoNormal><span style="mso-spacerun: yes">      </span>Cities/ABC
+Video Enterprises, Inc.</p>
+
+<p class=MsoNormal><span style="mso-spacerun: yes">   
+</span>&lt;/description&gt;</p>
+
+<p class=MsoNormal><span style="mso-spacerun: yes">  </span>&lt;/url&gt;</p>
+
+<p class=MsoNormal>&lt;/map&gt;</p>
+
+<h3>Sample Map Entry for an Alternative Suggestion / Related Term:</h3>
+
+<p class=MsoNormal>&lt;map&gt;</p>
+
+<p class=MsoNormal><span style="mso-spacerun: yes">  </span>&lt;!-- Map the
+informal abbrevition for terminal to</p>
+
+<p class=MsoNormal><span style="mso-spacerun: yes">    </span>the related
+correct terms.</p>
+
+<p class=MsoNormal><span style="mso-spacerun: yes">    </span>I think Miles had
+this backwards :-)</p>
+
+<p class=MsoNormal><span style="mso-spacerun: yes">  </span>--&gt;</p>
+
+<p class=MsoNormal><span style="mso-spacerun: yes"> 
+</span>&lt;term&gt;term&lt;/term&gt;</p>
+
+<p class=MsoNormal><span style="mso-spacerun: yes"> 
+</span>&lt;alternate_term&gt;terminal&lt;/alternate_term&gt;</p>
+
+<p class=MsoNormal><span style="mso-spacerun: yes"> 
+</span>&lt;alternate_term&gt;terminal procedures&lt;/alternate_term&gt;</p>
+
+<p class=MsoNormal>&lt;/map&gt;</p>
+
+<h2>Changing the Wording and Appearance of Map Entries</h2>
+
+<p class=MsoNormal>You can set the options for each map.<span
+style="mso-spacerun: yes">  </span>If you specified defaults, then setting
+these options for a particular map will override the default options, within
+that map.</p>
+
+<p class=MsoNormal>These options MIRROR the default options in almost every
+way, except they do not have the &quot;default_&quot; prefix in the tag name.</p>
+
+<h3>List of Settings Tags</h3>
+
+<p class=MsoNormal><b>webmaster_suggests_header<o:p></o:p></b></p>
+
+<p class=MsoNormal>Controls the text that says &quot;The Webmaster
+Suggests&quot;.</p>
+
+<p class=MsoNormal>You can change both the message and the appearance.</p>
+
+<p class=MsoNormal>See default_webmaster_suggests_header above.</p>
+
+<p class=MsoNormal><![if !supportEmptyParas]>&nbsp;<![endif]><o:p></o:p></p>
+
+<p class=MsoNormal><b>default_webmaster_suggests_box<o:p></o:p></b></p>
+
+<p class=MsoNormal>Controls the box around the Webmaster Suggestions.</p>
+
+<p class=MsoNormal>You can control things like the width, color and border.</p>
+
+<p class=MsoNormal>See default_webmaster_suggests_box above.</p>
+
+<p class=MsoNormal><![if !supportEmptyParas]>&nbsp;<![endif]><o:p></o:p></p>
+
+<p class=MsoNormal><b>webmaster_suggests_icon<o:p></o:p></b></p>
+
+<p class=MsoNormal>The icon that is presented in the left part of the Webmaster
+Suggests box.</p>
+
+<p class=MsoNormal>See default_webmaster_suggests_icon above</p>
+
+<p class=MsoNormal><![if !supportEmptyParas]>&nbsp;<![endif]><o:p></o:p></p>
+
+<p class=MsoNormal><b>alternate_suggestions_heading<o:p></o:p></b></p>
+
+<p class=MsoNormal>Controls the &quot;Related Terms&quot; message we put before
+the hyperlinked Alternative Suggetions.</p>
+
+<p class=MsoNormal>See default_alternate_suggestions_heading above</p>
+
+<h3>Example:</h3>
+
+<p class=MsoNormal>.This example repeats one of the examples from above, but
+now it also sets some local options:</p>
+
+<p class=MsoNormal>&lt;map&gt;</p>
+
+<p class=MsoNormal><span style="mso-spacerun: yes">  </span>&lt;!-- Map the
+informal abbrevition for terminal to</p>
+
+<p class=MsoNormal><span style="mso-spacerun: yes">    </span>the related
+correct terms.</p>
+
+<p class=MsoNormal><span style="mso-spacerun: yes">    </span>I think Miles had
+this backwards :-)</p>
+
+<p class=MsoNormal><span style="mso-spacerun: yes">  </span>--&gt;</p>
+
+<p class=MsoNormal><span style="mso-spacerun: yes"> 
+</span>&lt;term&gt;term&lt;/term&gt;</p>
+
+<p class=MsoNormal><span style="mso-spacerun: yes"> 
+</span>&lt;alternate_term&gt;terminal&lt;/alternate_term&gt;</p>
+
+<p class=MsoNormal><span style="mso-spacerun: yes"> 
+</span>&lt;alternate_term&gt;terminal procedures&lt;/alternate_term&gt;</p>
+
+<p class=MsoNormal><![if !supportEmptyParas]>&nbsp;<![endif]><o:p></o:p></p>
+
+<p class=MsoNormal><span style="mso-spacerun: yes"> 
+</span>&lt;alternate_suggestions_heading</p>
+
+<p class=MsoNormal><span style="mso-spacerun: yes">   
+</span>text=&quot;Related terms:&quot;</p>
+
+<p class=MsoNormal><span style="mso-spacerun: yes">   
+</span>color=&quot;#330088&quot;</p>
+
+<p class=MsoNormal><span style="mso-spacerun: yes">   
+</span>size=&quot;-1&quot;</p>
+
+<p class=MsoNormal><span style="mso-spacerun: yes">   
+</span>markup_before=&quot;&amp;lt;b&amp;gt;&quot;</p>
+
+<p class=MsoNormal><span style="mso-spacerun: yes">   
+</span>markup_after=&quot;&amp;lt;/b&amp;gt;&quot;</p>
+
+<p class=MsoNormal><span style="mso-spacerun: yes">    </span>face=&quot;'MS
+Sans Serif',Geneva,sans-serif&quot;</p>
+
+<p class=MsoNormal><span style="mso-spacerun: yes">    </span>/&gt;</p>
+
+<p class=MsoNormal>&lt;/map&gt;</p>
+
+</div>
+
+</body>
+
+</html>
