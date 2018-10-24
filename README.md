@@ -8,6 +8,8 @@ Of note:
 * Hand-coded web server.
 * Lots of XML utilities, featuring "include statements", AND the ability to change in memory but properly write back out to the separate files.
 
+We've talked about doing this for years, but just never got around to it... so now the code is even older ;-)
+
 Since we are no longer selling this code, and it had some cool capabilities,
 we're open sourcing it!, under Apache ASL2
 https://www.apache.org/licenses/LICENSE-2.0
